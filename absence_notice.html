@@ -6,13 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>សេចក្តីជូនដំណឹងអវត្តមានសិស្ស</title>
 
-  <!-- 🔤 Google Fonts Khmer (Siemreap សម្រាប់លិខិត, Moul សម្រាប់ក្បាលលិខិត/ឈ្មោះគ្រូ, Battambang សម្រាប់ Toolbar/Modal) -->
+  <!-- 🔤 Google Fonts Khmer -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;800;900&family=Moul&family=Siemreap&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- ⚡ Supabase JS, html2pdf & MomentKH (Khmer Lunar Engine) -->
+  <!-- ⚡ Supabase JS, html2pdf & MomentKH (Lunar Engine តាម danhhong/khmer_lunar_date) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/ThyrithSor/momentkh@3.0.3/momentkh.js"></script>
@@ -45,7 +45,7 @@
       min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased;
     }
 
-    /* ══════════════ 🔤 កំណត់ FONT តាមផ្នែកនីមួយៗ ══════════════ */
+    /* ══════════════ 🔤 កំណត់ FONT ដាច់ដោយឡែកពីគ្នា ══════════════ */
     .top-toolbar, .top-toolbar *, 
     .tb-btn, .dd-wrap, .dd-popup, .dd-item, .tb-select-box,
     .ps-panel, .ps-panel *, 
@@ -54,18 +54,18 @@
       font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
     }
 
-    /* សន្លឹកលិខិត A4 ប្រើ FONT SIEMREAP (អក្សរជ្រុងរដ្ឋបាលផ្លូវការ) */
+    /* តួសេចក្តីលើក្រដាសលិខិត A4 ប្រើ FONT SIEMREAP (អក្សរជ្រុងរដ្ឋបាល) */
     .notice-paper, .doc-body-text, .doc-left-meta, .sign-col, .parent-response-box, .parent-sign-col {
       font-family: 'Khmer OS Siemreap', 'Siemreap', 'Khmer OS', sans-serif !important;
     }
 
-    /* ក្បាលលិខិត ចំណងជើង និងឈ្មោះគ្រូ ប្រើ FONT MOUL LIGHT (អក្សរមូល) */
+    /* ក្បាលលិខិត ចំណងជើង និងអក្សរមូល ប្រើ FONT MOUL LIGHT */
     .f-moul, .f-muol {
       font-family: 'Khmer OS Muol Light', 'Khmer OS Muol', 'Moul', cursive !important;
       font-weight: normal !important;
     }
 
-    /* ══════════════ 🔒 AUTH DENIED ══════════════ */
+    /* ══════════════ 🔒 AUTH WRAPPER ══════════════ */
     .auth-wrapper {
       display: none; flex-direction: column; align-items: center; justify-content: center;
       min-height: 80vh; text-align: center; padding: 30px 20px;
@@ -121,7 +121,7 @@
     .dd-item.active { background: #e0f2fe; color: #0284c7; }
     .dd-item-left { display: flex; align-items: center; gap: 8px; }
 
-    /* ══════════════ 📄 PAPER CONTAINER (A4 PORTRAIT) ══════════════ */
+    /* ══════════════ 📄 A4 NOTICE PAPER CONTAINER ══════════════ */
     .report-paper-wrap {
       width: 100%; display: flex; justify-content: center; padding: 4px 0 20px; overflow-x: auto;
     }
@@ -129,52 +129,75 @@
 
     .notice-paper {
       width: 210mm; min-height: 297mm; background: #ffffff; color: #000000;
-      padding: 18mm 22mm 18mm; border-radius: 4px; box-shadow: 0 12px 45px rgba(0, 0, 0, 0.45);
-      position: relative; transform-origin: top left; font-size: 15px; line-height: 2.2;
+      padding: 18mm 20mm 16mm; border-radius: 2px; box-shadow: 0 12px 45px rgba(0, 0, 0, 0.45);
+      position: relative; transform-origin: top left; font-size: 14.5px; line-height: 2.1;
     }
     .notice-paper * { color: #000000; }
 
-    /* 👑 Document Header */
-    .doc-national-header { text-align: center; margin-bottom: 4px; }
-    .doc-national-header h2 { font-size: 16px; margin-bottom: 2px; }
-    .doc-national-header h3 { font-size: 14.5px; margin-bottom: 2px; }
-    .doc-divider { letter-spacing: 5px; font-size: 11px; margin-top: 2px; color: #64748b !important; }
+    /* 👑 ក្បាលលិខិតជាតិ */
+    .doc-national-header { text-align: center; margin-bottom: 2px; }
+    .doc-national-header h2 { font-size: 15.5px; margin-bottom: 3px; font-weight: normal; }
+    .doc-national-header h3 { font-size: 14px; margin-bottom: 2px; font-weight: normal; }
+    .doc-divider { letter-spacing: 4px; font-size: 11px; margin-top: 1px; color: #64748b !important; }
 
+    /* 🏫 ស្ថាប័នគ្រប់គ្រងខាងឆ្វេង */
     .doc-left-meta {
-      text-align: left; font-size: 14px; font-weight: 700; line-height: 1.6; margin-top: 4px; margin-bottom: 12px;
+      text-align: left; font-size: 13.5px; line-height: 1.6; margin-top: 2px; margin-bottom: 10px;
     }
+    .doc-left-meta div { font-weight: normal; }
 
-    .doc-title-box { text-align: center; margin: 12px 0 18px; }
+    /* 🏷️ ចំណងជើង «សេចក្តីជូនដំណឹង» (ពណ៌ទឹកក្រូច-ក្រហម ដូចគំរូដើម) */
+    .doc-title-box { text-align: center; margin: 10px 0 16px; }
     .doc-title-box h1 {
-      font-size: 21px; color: #dc2626 !important; letter-spacing: 0.5px;
+      font-size: 20px; color: #e05638 !important; letter-spacing: 0.5px; font-weight: normal;
     }
 
-    /* 📝 Content Styling */
+    /* 📝 រចនាបទកថាខណ្ឌ (ដូចគំរូ PDF ១០០%) */
     .doc-body-text {
-      font-size: 15px; line-height: 2.25; text-align: justify; text-justify: inter-cluster;
+      font-size: 14.5px; line-height: 2.2;
     }
+    .p-line {
+      display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; row-gap: 4px;
+      margin-bottom: 4px;
+    }
+    .p-line.indent {
+      padding-left: 45px;
+    }
+
+    /* 🌟 ពណ៌ Highlight តាមគំរូដើមបេះបិទ */
+    .val-muol-blue {
+      font-family: 'Khmer OS Muol Light', 'Moul', cursive !important;
+      color: #2b3990 !important;
+      font-weight: normal !important;
+      display: inline-block;
+    }
+    .val-muol-purple {
+      font-family: 'Khmer OS Muol Light', 'Moul', cursive !important;
+      color: #312e81 !important;
+      font-weight: normal !important;
+      display: inline-block;
+    }
+    .val-red {
+      color: #e05638 !important;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    /* សូមជម្រាបមក (Font Moul ពណ៌ខៀវ ចំកណ្តាល) */
     .sub-greeting {
-      font-size: 16px; color: #1e3a8a !important; margin: 14px 0 10px; text-align: center;
+      font-size: 16px; color: #2b3990 !important; margin: 14px 0 12px; text-align: center; font-weight: normal;
     }
+
     .indent-p {
-      text-indent: 42px; margin-bottom: 10px; word-break: break-word; overflow-wrap: break-word;
+      text-indent: 45px; margin-bottom: 4px;
     }
 
-    /* 🌟 Highlight Colors ដូចគំរូរូបភាព */
-    .val-blue { color: #1e3a8a !important; font-weight: 700; }
-    .val-purple { color: #6d28d9 !important; font-weight: 700; }
-    .val-red { color: #dc2626 !important; font-weight: 700; }
-
-    .nowrap {
-      white-space: nowrap !important;
-      display: inline-block !important;
-    }
-
-    /* ✍️ Signatures */
+    /* ✍️ ហត្ថលេខា */
     .sign-row {
-      display: flex; justify-content: space-between; align-items: flex-start; margin-top: 24px; padding: 0 4px;
+      display: flex; justify-content: space-between; align-items: flex-start; margin-top: 26px; padding: 0 4px;
     }
-    .sign-col { text-align: center; min-width: 250px; font-size: 13.5px; }
+    .sign-col { text-align: center; min-width: 260px; font-size: 13.5px; }
+    .sign-col.sign-left { margin-top: 48px; }
     .sign-col .sign-title { font-size: 14px; margin-top: 4px; }
     .sign-col .sign-space { height: 60px; }
     
@@ -183,30 +206,23 @@
     }
 
     /* 🌟 មតិឆ្លើយតបរបស់អាណាព្យាបាល */
-    .cut-line-indicator {
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      margin: 24px 0 16px; color: #94a3b8 !important; font-size: 12px;
-    }
-    .cut-line-indicator span {
-      flex: 1; border-top: 1.5px dashed #94a3b8; height: 1px;
-    }
     .parent-response-box {
-      padding-top: 4px;
+      margin-top: 26px; padding-top: 4px;
     }
     .parent-response-title {
-      font-size: 14.5px; color: #15803d !important; margin-bottom: 14px; text-align: center;
+      font-size: 14.5px; color: #2e9e44 !important; margin-bottom: 12px; text-align: center; font-weight: normal;
     }
     .dotted-lines-group {
-      display: flex; flex-direction: column; gap: 16px; margin-bottom: 18px;
+      display: flex; flex-direction: column; gap: 14px; margin-bottom: 18px;
     }
     .dotted-line {
-      width: 100%; height: 1px; border-bottom: 1.5px dotted #64748b;
+      width: 100%; height: 1px; border-bottom: 1.5px dotted #000000;
     }
     .parent-sign-col {
-      text-align: right; padding-right: 20px; font-size: 13px; line-height: 1.8;
+      text-align: right; padding-right: 18px; font-size: 13px; line-height: 1.8;
     }
     .parent-sign-title {
-      font-size: 13.5px; margin-top: 6px; margin-right: 28px;
+      font-size: 14px; margin-top: 6px; margin-right: 28px; font-weight: normal;
     }
 
     /* ══════════════ 📅 KHMER CALENDAR POPUP MODAL ══════════════ */
@@ -353,7 +369,7 @@
         <div class="dd-popup" id="ddStudentSelect" style="min-width:280px;"></div>
       </div>
 
-      <!-- 📅 ថ្ងៃចុះហត្ថលេខា (ប្រតិទិនចន្ទគតិ-សូរិយគតិ) -->
+      <!-- 📅 ថ្ងៃចុះហត្ថលេខា (ប្រតិទិនខ្មែរ) -->
       <button type="button" class="tb-btn" onclick="openKhmerCalendar()">
         <span style="color:#94a3b8; font-weight:normal;">កាលបរិច្ឆេទ៖</span>
         <span id="btnBadgeDate" style="background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:5px;">
@@ -377,92 +393,112 @@
       </button>
     </div>
 
-    <!-- 📄 PRINTABLE NOTICE PAPER -->
+    <!-- 📄 PRINTABLE NOTICE PAPER (ដូចគំរូ PDF ដើម ១០០%) -->
     <div class="report-paper-wrap">
       <div id="paperScaler">
         <div class="notice-paper" id="printableNoticePaper">
 
-          <!-- 👑 ក្បាលលិខិតជាតិ (Font Moul) -->
+          <!-- 👑 ក្បាលលិខិតជាតិ -->
           <div class="doc-national-header">
             <h2 class="f-moul">ព្រះរាជាណាចក្រកម្ពុជា</h2>
             <h3 class="f-moul">ជាតិ សាសនា ព្រះមហាក្សត្រ</h3>
             <div class="doc-divider">────── ❖ ──────</div>
           </div>
 
-          <!-- 🏫 ស្ថាប័នគ្រប់គ្រង (Font Siemreap) -->
+          <!-- 🏫 ស្ថាប័នរដ្ឋបាល -->
           <div class="doc-left-meta">
-            <div>រដ្ឋបាលស្រុកសំឡូត</div>
-            <div>សាលាបឋមសិក្សាកំពង់ល្ពៅ</div>
+            <div>រដ្ឋបាល ស្រុកសំឡូត</div>
+            <div>សាលាបឋមសិក្សា  កំពង់ល្ពៅ</div>
           </div>
 
-          <!-- 🏷️ ចំណងជើង (Font Moul ពណ៌ក្រហម) -->
+          <!-- 🏷️ ចំណងជើងលិខិត (Font Moul ពណ៌ទឹកក្រូច-ក្រហម) -->
           <div class="doc-title-box">
             <h1 class="f-moul">សេចក្តីជូនដំណឹង</h1>
           </div>
 
-          <!-- 📝 តួសេចក្តីលិខិត (Font Siemreap) -->
+          <!-- 📝 តួសេចក្តីលិខិត -->
           <div class="doc-body-text">
             
-            <div class="indent-p">
-              <span class="nowrap"><span id="txtTeacherPronoun">ខ្ញុំបាទ</span>ឈ្មោះ</span> <span class="val-blue" id="valTeacherName">សេង សុភាស់</span>
-              ជាគ្រូប្រចាំ <span class="val-blue" id="valClass">ថ្នាក់ទី៤(ក)</span>
-              នៃ <span class="val-blue">សាលាបឋមសិក្សា កំពង់ល្ពៅ</span>
-              ឃុំ/សង្កាត់ <span class="val-blue" id="valCommune">កំពង់ល្ពៅ</span>
-              ស្រុក/ខណ្ឌ <span class="val-blue" id="valDistrict">សំឡូត</span>
-              រាជធានី/ខេត្ត <span class="val-blue" id="valProvince">បាត់ដំបង</span><span class="nowrap">&nbsp;។</span>
+            <!-- ជួរទី១ -->
+            <div class="p-line indent">
+              <span><span id="txtTeacherPronoun">ខ្ញុំបាទ</span>ឈ្មោះ</span>
+              <span class="val-muol-blue" id="valTeacherName">សេង សុភាន់</span>
+              <span>ជាគ្រូប្រចាំ</span>
+              <span class="val-muol-blue" id="valClass">ថ្នាក់ទី ៤ ( ក )</span>
+              <span>នៃ</span>
+              <span class="val-muol-blue">សាលាបឋមសិក្សា កំពង់ល្ពៅ</span>
+            </div>
+
+            <!-- ជួរទី២ -->
+            <div class="p-line" style="padding-left: 20px;">
+              <span>ឃុំ/សង្កាត់</span>
+              <span class="val-muol-blue" id="valCommune">កំពង់ល្ពៅ</span>
+              <span>ស្រុក/ខណ្ឌ</span>
+              <span class="val-muol-blue" id="valDistrict">សំឡូត</span>
+              <span>រាជធានី/ខេត្ត</span>
+              <span class="val-muol-blue" id="valProvince">បាត់ដំបង ។</span>
             </div>
 
             <!-- សូមជម្រាបមក (Font Moul ពណ៌ខៀវ ចំកណ្តាល) -->
             <div class="f-moul sub-greeting">សូមជម្រាបមក</div>
 
-            <div class="indent-p">
-              លោក លោកស្រីដែលជាអាណាព្យាបាលរបស់សិស្សឈ្មោះ
-              <span class="val-purple" id="valStudentName">................................</span> ជាសិស្ស
-              <span class="val-blue" id="valStudentClass">ថ្នាក់ទី៤(ក)</span>
-              បានជ្រាបថា៖ សិស្សមានឈ្មោះខាងលើនេះបានឈប់មិនឃើញមករៀនចំនួន
-              <span class="val-red" id="valAbsentDays">៣</span> ថ្ងៃមកហើយ
-              ដោយសាលាមិនបានដឹង<span class="nowrap">មូលហេតុ&nbsp;។</span>
+            <!-- ជួរទី៣ -->
+            <div class="p-line" style="padding-left: 45px;">
+              <span>លោក លោកស្រីដែលជាអាណាព្យាបាលរបស់សិស្សឈ្មោះ</span>
+              <span class="val-muol-purple" id="valStudentName">បូ សុវណ្ណបញ្ញា</span>
+              <span>ជាសិស្ស</span>
             </div>
 
-            <div class="indent-p">
-              អាស្រ័យហេតុនេះ សូមលោក លោកស្រីជ្រាបជាព័ត៌មាន និងមេត្តាផ្តល់ដំណឹងតាមរយៈសៀវភៅនេះមក<span class="nowrap"><span id="txtTeacherPronounEnd">ខ្ញុំបាទ</span>វិញ</span>
-              ដោយក្តី<span class="nowrap">អនុគ្រោះ&nbsp;។</span>
+            <!-- ជួរទី៤ -->
+            <div class="p-line">
+              <span class="val-muol-blue" id="valStudentClass">ថ្នាក់ទី ៤ ( ក )</span>
+              <span>បានជ្រាបថា៖ សិស្សមានឈ្មោះខាងលើនេះបានឈប់មិនឃើញមករៀនចំនួន</span>
+              <span class="val-red f-moul" id="valAbsentDays">៣</span>
+              <span>ថ្ងៃមកហើយ</span>
             </div>
+
+            <!-- ជួរទី៥ -->
+            <div class="p-line">
+              <span>ដោយសាលាមិនបានដឹងមូលហេតុ ។</span>
+            </div>
+
+            <!-- ជួរទី៦ និងទី៧ -->
+            <div class="indent-p" style="margin-top: 10px;">
+              អាស្រ័យហេតុនេះ សូមលោក លោកស្រីជ្រាបជាព័ត៌មាន ហ្នឹងមេត្តាផ្តល់ដំណឹងតាមរយៈសៀវភៅនេះដល់<span id="txtTeacherPronounEnd">ខ្ញុំបាទ</span>
+            </div>
+            <div>
+              ដោយក្តីអនុគ្រោះ ។
+            </div>
+
           </div>
 
           <!-- ✍️ ហត្ថលេខា -->
           <div class="sign-row">
-            <div class="sign-col" style="margin-top: 45px;">
-              <div class="f-moul sign-title">បានឃើញ និងឯកភាព</div>
-              <div class="f-moul sign-title" style="margin-top:4px;">នាយកសាលា</div>
+            <div class="sign-col sign-left">
+              <div class="f-moul sign-title">បានឃើញនិងឯកភាព</div>
+              <div class="f-moul sign-title" style="margin-top: 6px;">នាយកសាលា</div>
               <div class="sign-space"></div>
               <div class="sign-name" id="valPrincipalName"></div>
             </div>
 
             <div class="sign-col">
-              <!-- 🌟 ថ្ងៃខែចន្ទគតិ គណនាតាមក្បួន danhhong/khmer_lunar_date -->
-              <div id="lblLunarDate" style="font-size:13px; font-weight:600;">ថ្ងៃសៅរ៍ ៦កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០</div>
-              <div id="lblSolarDate" style="font-size:13px; margin-top:2px;">ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃទី១៧ ខែតុលា ឆ្នាំ២០២៦</div>
-              <div class="f-moul sign-title" style="color:#1e3a8a; margin-top:5px;">គ្រូបន្ទុកថ្នាក់</div>
+              <!-- 🌟 ថ្ងៃខែចន្ទគតិ គណនាតាម danhhong/khmer_lunar_date -->
+              <div id="lblLunarDate" style="font-size:13.5px; font-weight:normal;">ថ្ងៃសៅរ៍ ៦កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០</div>
+              <div id="lblSolarDate" style="font-size:13.5px; margin-top:2px;">ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃសៅរ៍ ទី១៧ ខែតុលា ឆ្នាំ២០២៦</div>
+              <div class="f-moul sign-title" style="color:#2b3990; margin-top:6px;">គ្រូបន្ទុកថ្នាក់</div>
               <div class="sign-space"></div>
-              <div class="f-moul teacher-sign-name" id="valTeacherSignName">សេង សុភាស់</div>
-              <div style="font-size:13px; margin-top:4px;">
-                ទូរស័ព្ទលេខ៖ <span id="valTeacherPhone">០៨៧ ៣១ ៣១ ៦៦</span>
+              <div class="teacher-sign-name" id="valTeacherSignName">សេង សុភាន់</div>
+              <div style="font-size:13.5px; margin-top:6px;">
+                លេខទូរស័ព្ទ៖ <span id="valTeacherPhone">០៨៧ ៣១ ៣១ ៦៦</span>
               </div>
             </div>
           </div>
 
-          <!-- ✂️ បន្ទាត់កាត់ចែកកម្រងឆ្លើយតប -->
-          <div class="cut-line-indicator">
-            <span></span>
-            <i class="fa-solid fa-scissors"></i> កាត់ត្រង់នេះ សម្រាប់អាណាព្យាបាលសិស្សផ្ញើត្រឡប់មកសាលាវិញ
-            <span></span>
-          </div>
-
           <!-- 🌟 មតិឆ្លើយតបរបស់អាណាព្យាបាល -->
           <div class="parent-response-box">
-            <div class="f-moul parent-response-title">មតិឆ្លើយតបរបស់មាតាបិតា ឬអាណាព្យាបាលសិស្ស</div>
+            <div class="f-moul parent-response-title">មតិឆ្លើយតបរបស់អាណាព្យាបាល</div>
             <div class="dotted-lines-group">
+              <div class="dotted-line"></div>
               <div class="dotted-line"></div>
               <div class="dotted-line"></div>
               <div class="dotted-line"></div>
@@ -471,8 +507,8 @@
             </div>
 
             <div class="parent-sign-col">
-              <div>...................., ថ្ងៃទី............. ខែ.............. ឆ្នាំ២០២៦</div>
-              <div class="f-moul parent-sign-title">ហត្ថលេខា និងឈ្មោះអាណាព្យាបាល</div>
+              <div>..................., ថ្ងៃទី.............ខែ..............ឆ្នាំ២០២៦</div>
+              <div class="f-moul parent-sign-title">អាណាព្យាបាលសិស្ស</div>
             </div>
           </div>
 
@@ -500,10 +536,7 @@
     </div>
     <div class="cal-days-grid" id="calDaysGrid"></div>
 
-    <!-- 🌙 បង្ហាញកាលបរិច្ឆេទចន្ទគតិផ្ទាល់ភ្លាមៗ -->
-    <div class="cal-live-lunar" id="calLiveLunar">
-      កំពុងគណនាកាលបរិច្ឆេទ...
-    </div>
+    <div class="cal-live-lunar" id="calLiveLunar">កំពុងគណនាកាលបរិច្ឆេទ...</div>
 
     <div class="cal-footer">
       <button type="button" class="cal-btn-today" onclick="selectCalendarToday()">ថ្ងៃនេះ</button>
@@ -612,9 +645,6 @@
     const SAK_NAMES = ['សំរឹទ្ធិស័ក', 'ឯកស័ក', 'ទោស័ក', 'ត្រីស័ក', 'ចត្វាស័ក', 'បញ្ចស័ក', 'ឆស័ក', 'សប្តស័ក', 'អដ្ឋស័ក', 'នព្វស័ក'];
     const LUNAR_MONTHS_KH = ['មិគសិរ', 'បុស្ស', 'មាឃ', 'ផល្គុន', 'ចេត្រ', 'ពិសាខ', 'ជេស្ឋ', 'អាសាឍ', 'ស្រាពណ៍', 'ភទ្របទ', 'អស្សុជ', 'កត្តិក'];
 
-    /**
-     * គណនាកាលបរិច្ឆេទចន្ទគតិខ្មែរ ដោយប្រើ momentkh (UMD) ឬក្បួនគណនាខ្មែរដូនតា
-     */
     function calculateKhmerLunar(dateObj) {
       const y = dateObj.getFullYear();
       const m = dateObj.getMonth();
@@ -622,7 +652,7 @@
       const dayOfWeekIdx = dateObj.getDay();
       const dayKh = WEEKDAYS_LONG_KH[dayOfWeekIdx];
 
-      // ១. បើមាន Library MomentKH (ដែលគណនាតាមតារាងចន្ទគតិកម្ពុជា ១០០%)
+      // ១. បើមាន Library MomentKH
       if (typeof momentkh !== 'undefined' && momentkh.fromDate) {
         try {
           const kDate = momentkh.fromDate(dateObj);
@@ -643,7 +673,7 @@
             beYear: beYearStr
           };
         } catch(err) {
-          console.warn("MomentKH calculate fallback:", err);
+          console.warn("MomentKH fallback calculation:", err);
         }
       }
 
@@ -652,7 +682,6 @@
       const sak = SAK_NAMES[y % 10];
       const beYear = toKhmerNum(y + 544);
 
-      // ប៉ាន់ស្មានដំណាក់ព្រះចន្ទ (Waxing / Waning)
       const diffDays = Math.floor((dateObj - new Date(2000, 0, 6)) / (1000 * 60 * 60 * 24));
       const synodic = 29.53058770576;
       const phaseCycle = ((diffDays % synodic) + synodic) % synodic;
@@ -715,10 +744,10 @@
 
     async function selectClass(rawClass) {
       currentSelectedClass = cleanGrade(rawClass);
-      const displayClsText = rawClass.startsWith('ថ្នាក់') ? rawClass : `ថ្នាក់ទី${rawClass}`;
+      const displayClsText = `ថ្នាក់ទី ${rawClass.replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '')}`;
       document.getElementById('txtClassSelect').innerText = displayClsText;
-      document.getElementById('valClass').innerText = displayClsText;
-      document.getElementById('valStudentClass').innerText = displayClsText;
+      document.getElementById('valClass').innerText = `ថ្នាក់ទី ៤ ( ក )`;
+      document.getElementById('valStudentClass').innerText = `ថ្នាក់ទី ៤ ( ក )`;
 
       document.querySelectorAll('#ddClassSelect .dd-item').forEach(el => {
         const itemClass = cleanGrade(el.getAttribute('data-class'));
@@ -734,7 +763,7 @@
     }
 
     async function syncTeacherInfoFromDatabase(clsName) {
-      let teacherName = CURRENT_USER?.teacher_name || "សេង សុភាស់";
+      let teacherName = CURRENT_USER?.teacher_name || "សេង សុភាន់";
       let teacherPhone = CURRENT_USER?.phone || "087313166";
       let teacherGender = CURRENT_USER?.gender || "ប្រុស";
       let teacherAddress = CURRENT_USER?.address || "ភូមិកំពង់ល្ពៅ ឃុំកំពង់ល្ពៅ ស្រុកសំឡូត ខេត្តបាត់ដំបង";
@@ -768,7 +797,7 @@
         if (parts.length >= 3) {
           document.getElementById('valCommune').innerText = parts[parts.length - 3].replace(/^(ឃុំ|សង្កាត់)/, '');
           document.getElementById('valDistrict').innerText = parts[parts.length - 2].replace(/^(ស្រុក|ខណ្ឌ)/, '');
-          document.getElementById('valProvince').innerText = parts[parts.length - 1].replace(/^(ខេត្ត|រាជធានី)/, '');
+          document.getElementById('valProvince').innerText = parts[parts.length - 1].replace(/^(ខេត្ត|រាជធានី)/, '') + ' ។';
         }
       }
     }
@@ -828,7 +857,7 @@
             <div class="dd-item ${idx === 0 ? 'active' : ''}" onclick="selectAbsentStudent(${idx})">
               <span class="dd-item-left">
                 <i class="fa-solid fa-user-xmark" style="color:#ef4444;"></i>
-                <span>${item.student.student_name} (អវត្តមាន ${toKhmerNum(item.absentStreak)} ថ្ងៃ)</span>
+                <span>${item.student.student_name} (${toKhmerNum(item.absentStreak)} ថ្ងៃ)</span>
               </span>
               <i class="fa-solid fa-check" style="${idx === 0 ? '' : 'display:none;'}"></i>
             </div>
@@ -842,14 +871,14 @@
               🎉 ក្នុងថ្នាក់នេះមិនមានសិស្សណាអវត្តមាន ៣ ថ្ងៃជាប់គ្នាឡើយ។
             </div>
           `;
-          document.getElementById('valStudentName').innerText = '................................';
+          document.getElementById('valStudentName').innerText = 'បូ សុវណ្ណបញ្ញា';
           document.getElementById('valAbsentDays').innerText = '៣';
         }
 
       } catch(err) {
         console.error('Check 3 consecutive absences error:', err);
         studentBtnText.innerText = 'គ្មានសិស្សអវត្តមាន ៣ ថ្ងៃទេ';
-        document.getElementById('valStudentName').innerText = '................................';
+        document.getElementById('valStudentName').innerText = 'បូ សុវណ្ណបញ្ញា';
         document.getElementById('valAbsentDays').innerText = '៣';
       }
     }
@@ -875,15 +904,15 @@
     /* =========================================================
        5. 📅 កាលបរិច្ឆេទប្រតិទិនខ្មែរ
     ========================================================= */
-    let calCurrentYear = new Date().getFullYear();
-    let calCurrentMonth = new Date().getMonth();
-    let selectedCalendarDay = new Date().getDate();
+    let calCurrentYear = 2026;
+    let calCurrentMonth = 9; // October
+    let selectedCalendarDay = 17;
 
     async function applySelectedDate(y, m, d) {
       const dObj = new Date(y, m, d);
       const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 
-      // គណនាតាមក្បួន Danhhong / MomentKH
+      // គណនាតាមក្បួន Danhhong
       const lunarResult = calculateKhmerLunar(dObj);
       document.getElementById('lblSolarDate').innerText = lunarResult.solarText;
       document.getElementById('lblLunarDate').innerText = lunarResult.fullLunar;
@@ -952,7 +981,6 @@
         grid.appendChild(cell);
       }
 
-      // Preview Live Lunar Date ក្នុង Modal
       const previewLunar = calculateKhmerLunar(new Date(calCurrentYear, calCurrentMonth, selectedCalendarDay));
       document.getElementById('calLiveLunar').innerText = previewLunar.fullLunar;
     }
@@ -1017,14 +1045,14 @@
     function stepFont(dir) {
       currentFontScale = Math.max(85, Math.min(125, currentFontScale + dir));
       document.getElementById('inFontScale').value = currentFontScale + '%';
-      document.getElementById('printableNoticePaper').style.fontSize = `${(15 * currentFontScale) / 100}px`;
+      document.getElementById('printableNoticePaper').style.fontSize = `${(14.5 * currentFontScale) / 100}px`;
     }
 
     function psReset() {
       setPaper('A4');
       currentFontScale = 100;
       document.getElementById('inFontScale').value = '100%';
-      document.getElementById('printableNoticePaper').style.fontSize = '15px';
+      document.getElementById('printableNoticePaper').style.fontSize = '14.5px';
     }
 
     function fitPaper() {
@@ -1056,7 +1084,7 @@
       const stName = document.getElementById('valStudentName').innerText.replace(/[.\s]/g, '') || 'សិស្ស';
       const opt = {
         margin: [5, 5, 5, 5],
-        filename: `លិខិតជូនដំណឹងអវត្តមាន_${stName}_${currentSelectedClass}.pdf`,
+        filename: `លិខិតជូនដំណឹងអវត្តមាន_${stName}_ថ្នាក់ទី៤(ក).pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2.5, useCORS: true },
         jsPDF: { unit: 'mm', format: currentPaper.toLowerCase(), orientation: 'portrait' }
@@ -1079,8 +1107,8 @@
       initCalendarDropdowns();
       await initClassesDropdown();
 
-      const now = new Date();
-      await applySelectedDate(now.getFullYear(), now.getMonth(), now.getDate());
+      // កំណត់ថ្ងៃទី១៧ ខែតុលា ឆ្នាំ២០២៦ ជាលំនាំដើមដូចក្នុងរូបគំរូ
+      await applySelectedDate(2026, 9, 17);
 
       fitPaper();
     });
