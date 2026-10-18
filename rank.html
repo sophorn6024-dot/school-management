@@ -148,15 +148,12 @@
     .btn-secondary:hover { border-color: var(--input-focus); color: var(--input-focus); }
     .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: #fff; box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25); }
 
-    .zoom-btn-group { display: inline-flex; align-items: center; gap: 4px; background: var(--ctrl-group-bg); padding: 3px; border-radius: 9px; border: 1px solid var(--tb-border); }
-    .zoom-btn { background: transparent; border: none; color: var(--text-muted); padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
-    .zoom-btn.active { background: #0284c7 !important; color: #ffffff !important; box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4); }
 
     /* =========================================================
        📄 A4 PRINT PAGE CONTAINER
     ========================================================= */
     #printPage {
-      position: relative; transition: zoom 0.2s ease; padding: 20px 30px 200px; max-width: 1050px;
+      position: relative; padding: 20px 30px 200px; width: 1050px; max-width: none;
       margin: 20px auto 0; background: #ffffff !important; color: #000000 !important;
       box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2); border-radius: 4px;
     }
@@ -313,8 +310,8 @@
       .control-row { flex-direction: column; align-items: stretch; gap: 8px; }
       .cp-group { width: 100%; justify-content: space-between; }
       .panel-pill-box { width: 100%; }
-      .period-type-switcher, .layout-switcher, .zoom-btn-group { width: 100%; justify-content: center; }
-      .period-type-btn, .layout-btn, .zoom-btn { flex: 1; text-align: center; }
+      .period-type-switcher, .layout-switcher { width: 100%; justify-content: center; }
+      .period-type-btn, .layout-btn { flex: 1; text-align: center; }
     }
 
     /* =========================================================
@@ -327,7 +324,7 @@
       }
       .no-print { display: none !important; }
       body { padding: 0 !important; background: white !important; }
-      #printPage { zoom: 1 !important; transform: none !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; }
+      #printPage { width: auto !important; zoom: 1 !important; transform: none !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; }
       table.data-table { page-break-inside: auto; break-inside: auto; }
       table.data-table tr { page-break-inside: avoid !important; break-inside: avoid !important; }
       table.data-table thead { display: table-header-group; }
@@ -408,12 +405,6 @@
             <span id="fontLabel">ពុម្ពអក្សរដើម</span>
             <i class="fa-solid fa-chevron-down" style="font-size:10px; color:#0284c7;"></i>
           </button>
-        </div>
-
-        <div class="zoom-btn-group" title="ពង្រីក/បង្រួមទំហំមើល">
-          <button type="button" class="zoom-btn active" data-zoom="1" onclick="setZoom(1, this)">100%</button>
-          <button type="button" class="zoom-btn" data-zoom="0.75" onclick="setZoom(0.75, this)">75%</button>
-          <button type="button" class="zoom-btn" data-zoom="0.5" onclick="setZoom(0.5, this)">50%</button>
         </div>
 
         <div class="layout-switcher">
@@ -608,12 +599,11 @@
     <div class="footer-container">
       <div class="footer-left">
         <div id="signDateD"></div>
-        <div style="margin-top:2px;">បានឃើញ និងឯកភាព</div>
+        <div style="margin-top:8px;">បានឃើញ និងឯកភាព</div>
         <div class="khmer-moul" style="font-size:12px; margin-top:5px;">នាយកសាលា</div>
       </div>
       <div class="footer-right">
         <div id="signDateT"></div>
-        <div style="margin-top:2px; visibility:hidden;" aria-hidden="true">.</div>
         <div class="khmer-moul" style="font-size:12px; margin-top:5px;">គ្រូបន្ទុកថ្នាក់</div>
         <div class="teacher-name-display" id="teacherNameDisplay" title="អូសដើម្បីផ្លាស់ទីតាំង">&nbsp;</div>
       </div>
@@ -1805,12 +1795,23 @@ exports.default = {
     applyTheme(localStorage.getItem('krou_theme_manual') || 'dark');
     window.addEventListener('message', e => { if (e.data && (e.data.type === 'THEME_CHANGE' || e.data.theme)) applyTheme(e.data.theme || e.data); });
 
-    function setZoom(scale, btnEl) {
+    /* 📱 ទំព័រត្រូវបង្រួមស្វ័យប្រវត្តិតាមទទឹងអេក្រង់ (គ្រប់ឧបករណ៍) */
+    const PAGE_DESIGN_W = 1050;
+    function fitPageToScreen() {
       const el = document.getElementById('printPage');
-      if (el) el.style.zoom = scale;
-      document.querySelectorAll('.zoom-btn').forEach(b => b.classList.remove('active'));
-      if (btnEl) btnEl.classList.add('active');
+      if (!el || el.style.display === 'none') return;
+      const avail = document.documentElement.clientWidth - 12;
+      const z = Math.max(0.3, Math.min(1, avail / PAGE_DESIGN_W));
+      const v = z >= 0.999 ? '1' : z.toFixed(4);
+      if (el.style.zoom !== v) el.style.zoom = v;
     }
+    window.addEventListener('resize', fitPageToScreen);
+    window.addEventListener('orientationchange', () => setTimeout(fitPageToScreen, 150));
+    window.addEventListener('DOMContentLoaded', () => {
+      const el = document.getElementById('printPage');
+      if (el) new MutationObserver(fitPageToScreen).observe(el, { attributes: true, attributeFilter: ['style'] });
+      fitPageToScreen();
+    });
 
     const TEACHER_POS_KEY = 'rankTeacherTranslate_v2';
     let curX = 0, curY = 0;
@@ -2038,6 +2039,9 @@ exports.default = {
     // HTML ថ្ងៃខែ សម្រាប់ footer (withPlace = មាន "ធ្វើនៅកំពង់ល្ពៅ")
     function signDateHTML(role, withPlace) {
       const { y, m, d } = signParts(role), place = withPlace ? 'ធ្វើនៅកំពង់ល្ពៅ, ' : '';
+      if (signDates[role].blank && role === 'director') {
+        return '<div class="sd-lunar">&nbsp;</div><div class="sign-date-line">&nbsp;</div>';   // ទទេ : មិនបង្ហាញអ្វី
+      }
       if (signDates[role].blank || typeof momentkh === 'undefined') {
         return '<div class="sign-date-line">' + place + 'ថ្ងៃទី...... ខែ...... ឆ្នាំ' + toKhmerNum(y) + '</div>';
       }
