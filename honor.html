@@ -86,7 +86,7 @@
     .tb-btn.success { background: #059669; border-color: transparent; }
     .tb-btn.success:hover { background: #047857; }
 
-    /* 🌟 CUSTOM DROPDOWN (លាតត្រដាងពេញ មិនកំបុត ជាមួយ Z-INDEX ខ្ពស់) */
+    /* 🌟 CUSTOM DROPDOWN (FONT BATTAMBANG) */
     .dd-wrap {
       position: relative;
       display: inline-block;
@@ -135,7 +135,8 @@
       width: 794px; height: 1123px; min-height: 1123px; max-height: 1123px;
       background: #ffffff; color: #000000; position: relative;
       box-shadow: 0 18px 50px rgba(0,0,0,0.45);
-      padding: 30px 42px 48px 42px;
+      /* 🌟 លើកគូទក្រោមឡើងលើ ដោយកំណត់ padding-bottom: 22mm */
+      padding: 26px 42px 65px 42px;
       display: flex; flex-direction: column; justify-content: space-between;
       overflow: hidden; box-sizing: border-box;
     }
@@ -153,11 +154,11 @@
     .header-divider { letter-spacing: 5px; font-size: 10px; color: #64748b; }
 
     .meta-left {
-      position: absolute; top: 95px; left: 50px; text-align: left;
+      position: absolute; top: 92px; left: 50px; text-align: left;
       font-size: 13.5px; line-height: 1.6; font-weight: bold;
     }
 
-    .main-title-box { text-align: center; margin-top: 25px; margin-bottom: 10px; }
+    .main-title-box { text-align: center; margin-top: 22px; margin-bottom: 6px; }
     .main-title-text {
       font-size: 42px; color: #f59e0b;
       text-shadow: 2.5px 2.5px 0 #581c87, -2.5px -2.5px 0 #581c87, 2.5px -2.5px 0 #581c87, -2.5px 2.5px 0 #581c87, 0 4px 10px rgba(0,0,0,0.3);
@@ -169,22 +170,43 @@
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    /* ══════════════ 🏆 PODIUM RANKS (ធំៗ ញ៉ែកពេញក្រដាស A4) ══════════════ */
+    /* ══════════════ 🏆 PODIUM RANKS CONTAINER ══════════════ */
     .podium-container {
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;
-      margin: 8px 0; position: relative; z-index: 10;
+      margin: 4px 0 12px 0; position: relative; z-index: 10;
     }
-    .podium-row-1 { display: flex; justify-content: center; width: 100%; }
-    
-    .podium-row-2, .podium-row-3 {
-      display: flex; justify-content: center; gap: 45px; width: 100%;
+
+    /* 🌟 ប្លង់តម្រឹមរូបថត៖ លេខ២,៤ ស្មើជ្រុងឆ្វេងនៃលេខ១ ហើយលេខ៣,៥ ស្មើជ្រុងស្តាំនៃលេខ១ */
+    .photo-podium-row-1 {
+      display: flex; justify-content: center; width: 100%;
     }
+    .photo-podium-row-2, .photo-podium-row-3 {
+      display: flex; justify-content: center; align-items: center; width: 100%;
+    }
+    .photo-center-spacer {
+      width: 175px; /* ស្មើនឹងទទឹងកាតសិស្សលេខ១ */
+      flex-shrink: 0;
+    }
+    .photo-col-left {
+      width: 165px;
+      display: flex; justify-content: flex-end;
+      flex-shrink: 0;
+    }
+    .photo-col-right {
+      width: 165px;
+      display: flex; justify-content: flex-start;
+      flex-shrink: 0;
+    }
+
+    /* សម្រាប់គំរូទាំង៦ ផ្សេងទៀត (Banner, Bee, Arrow, etc.) */
+    .vector-podium-row-1 { display: flex; justify-content: center; width: 100%; }
+    .vector-podium-row-2, .vector-podium-row-3 { display: flex; justify-content: center; gap: 45px; width: 100%; }
 
     .rank-card-slot {
       position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
 
-    /* 🌟 អក្សរឈ្មោះសិស្សធំៗដិតច្បាស់ */
+    /* 🌟 អក្សរឈ្មោះសិស្ស */
     .student-name-text {
       font-weight: normal; text-align: center; white-space: nowrap; user-select: none;
     }
@@ -200,16 +222,16 @@
       box-shadow: 0 5px 14px rgba(0, 0, 0, 0.18); background: #f8fafc;
     }
 
-    /* ✍️ FOOTER DATES & SIGNATURES */
+    /* ✍️ FOOTER DATES & SIGNATURES (លើកឡើងលើមិនកៀកបាតក្រោម) */
     .footer-row {
       display: flex; justify-content: space-between; align-items: flex-end;
-      margin-bottom: 12px; padding: 0 35px; font-size: 13.5px;
+      margin-bottom: 18px; padding: 0 35px; font-size: 13.5px;
     }
     .footer-col { text-align: center; min-width: 250px; }
     .footer-col .sign-title { font-size: 14px; margin-top: 3px; }
-    .footer-col .sign-space { height: 42px; }
+    .footer-col .sign-space { height: 44px; }
 
-    /* ══════════════ 📅 KHMER CALENDAR MODAL (ចម្លងពីប្រតិទិនដែលផ្ញើមក) ══════════════ */
+    /* ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ */
     .cal-modal-backdrop {
       display: none; position: fixed; inset: 0; z-index: 2900; background: rgba(0,0,0,0.65);
     }
@@ -276,7 +298,7 @@
       }
       .honor-paper {
         width: 210mm !important; height: 297mm !important; min-height: 297mm !important;
-        max-height: 297mm !important; padding: 10mm 12mm 14mm 12mm !important;
+        max-height: 297mm !important; padding: 10mm 12mm 16mm 12mm !important;
         box-shadow: none !important; border-radius: 0 !important;
         page-break-after: avoid !important; page-break-inside: avoid !important;
         overflow: hidden !important;
@@ -317,41 +339,41 @@
           <div class="dd-popup" id="ddClassList"></div>
         </div>
 
-        <!-- ⏱️ រយៈពេល -->
+        <!-- ⏱️ រយៈពេល (លំនាំដើម បង្ហាញ «ប្រចាំខែ») -->
         <div class="dd-wrap">
           <button type="button" class="tb-btn" onclick="toggleDropdown('ddPeriodList')">
-            <span id="txtPeriodSelect">ប្រចាំឆ្នាំ</span>
+            <span id="txtPeriodSelect">ប្រចាំខែ</span>
             <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
           </button>
           <div class="dd-popup" id="ddPeriodList">
-            <div class="dd-item" data-val="monthly" onclick="selectPeriodType('monthly', 'ប្រចាំខែ')">ប្រចាំខែ</div>
+            <div class="dd-item active" data-val="monthly" onclick="selectPeriodType('monthly', 'ប្រចាំខែ')">ប្រចាំខែ</div>
             <div class="dd-item" data-val="exam_semester" onclick="selectPeriodType('exam_semester', 'ការប្រឡងឆមាស')">ការប្រឡងឆមាស</div>
             <div class="dd-item" data-val="semester_total" onclick="selectPeriodType('semester_total', 'ប្រចាំឆមាស (សរុប)')">ប្រចាំឆមាស (សរុប)</div>
-            <div class="dd-item active" data-val="yearly" onclick="selectPeriodType('yearly', 'ប្រចាំឆ្នាំ')">ប្រចាំឆ្នាំ</div>
+            <div class="dd-item" data-val="yearly" onclick="selectPeriodType('yearly', 'ប្រចាំឆ្នាំ')">ប្រចាំឆ្នាំ</div>
           </div>
         </div>
 
-        <!-- Dropdown កូន (ខែ / ឆមាស) -->
-        <div class="dd-wrap" id="childPeriodWrap" style="display:none;">
+        <!-- Dropdown កូន (លំនាំដើម បង្ហាញ «ខែមុន») -->
+        <div class="dd-wrap" id="childPeriodWrap">
           <button type="button" class="tb-btn" onclick="toggleDropdown('ddChildPeriodList')">
-            <span id="txtChildPeriodSelect">តុលា</span>
+            <span id="txtChildPeriodSelect">កញ្ញា</span>
             <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
           </button>
           <div class="dd-popup" id="ddChildPeriodList"></div>
         </div>
 
-        <!-- 🎨 ទម្រង់ទាំង ៦ + ទម្រង់ដើម -->
+        <!-- 🎨 ទម្រង់ (លំនាំដើម បង្ហាញ «គំរូ ៖ ទម្រង់ដើម (មានរូបថត)») -->
         <div class="dd-wrap">
           <button type="button" class="tb-btn" onclick="toggleDropdown('ddTemplateList')">
             <i class="fa-solid fa-palette" style="color:#c084fc;"></i>
-            <span id="txtTemplateSelect">គំរូ ៖ ព្រួញបៃតង</span>
+            <span id="txtTemplateSelect">គំរូ ៖ ទម្រង់ដើម (មានរូបថត)</span>
             <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
           </button>
           <div class="dd-popup" id="ddTemplateList">
-            <div class="dd-item" onclick="selectTemplate('original', 'គំរូ ៖ ទម្រង់ដើម (មានរូបថត)')">គំរូ ៖ ទម្រង់ដើម (មានរូបថត)</div>
+            <div class="dd-item active" onclick="selectTemplate('original', 'គំរូ ៖ ទម្រង់ដើម (មានរូបថត)')">គំរូ ៖ ទម្រង់ដើម (មានរូបថត)</div>
             <div class="dd-item" onclick="selectTemplate('banner', 'គំរូ ៖ បដាកណ្ដាល')">គំរូ ៖ បដាកណ្ដាល</div>
             <div class="dd-item" onclick="selectTemplate('bee', 'គំរូ ៖ ឃ្មុំ')">គំរូ ៖ ឃ្មុំ</div>
-            <div class="dd-item active" onclick="selectTemplate('arrow', 'គំរូ ៖ ព្រួញបៃតង')">គំរូ ៖ ព្រួញបៃតង</div>
+            <div class="dd-item" onclick="selectTemplate('arrow', 'គំរូ ៖ ព្រួញបៃតង')">គំរូ ៖ ព្រួញបៃតង</div>
             <div class="dd-item" onclick="selectTemplate('window', 'គំរូ ៖ បង្អួច')">គំរូ ៖ បង្អួច</div>
             <div class="dd-item" onclick="selectTemplate('cat', 'គំរូ ៖ ឆ្មា')">គំរូ ៖ ឆ្មា</div>
             <div class="dd-item" onclick="selectTemplate('kbach', 'គំរូ ៖ ឆ្លាក់មាស')">គំរូ ៖ ឆ្លាក់មាស</div>
@@ -363,7 +385,7 @@
         <!-- 📅 ប៊ូតុងបើកប្រតិទិនខ្មែរ -->
         <button type="button" class="tb-btn" onclick="openKhmerCalendar()">
           <i class="fa-regular fa-calendar-days" style="color:#60a5fa;"></i>
-          <span id="lblBtnDate">ថ្ងៃទី១៩ តុលា</span>
+          <span id="lblBtnDate">កាលបរិច្ឆេទ</span>
         </button>
 
         <!-- 📥 ទាញយក PDF & បោះពុម្ព -->
@@ -406,11 +428,11 @@
             <!-- 🏷️ ចំណងជើងធំ តារាងកិត្តិយស -->
             <div class="main-title-box">
               <div class="main-title-text font-moul">តារាងកិត្តិយស</div>
-              <div class="period-title font-moul" id="lblPeriodTitle">ប្រចាំឆ្នាំ</div>
+              <div class="period-title font-moul" id="lblPeriodTitle">ប្រចាំខែ កញ្ញា</div>
             </div>
           </div>
 
-          <!-- 🏆 កន្លែងបង្ហាញចំណាត់ថ្នាក់ទាំង ៥ (ធំៗ ញ៉ែកពេញក្រដាស A4) -->
+          <!-- 🏆 កន្លែងបង្ហាញចំណាត់ថ្នាក់ទាំង ៥ -->
           <div class="podium-container" id="podiumArea">
             <!-- Render ដោយ JavaScript -->
           </div>
@@ -439,7 +461,7 @@
 
   </div> <!-- END #mainPageContent -->
 
-  <!-- ══════════════ 📅 KHMER CALENDAR MODAL (ចម្លងតាមប្រតិទិនដែលផ្ញើមក) ══════════════ -->
+  <!-- ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ -->
   <div class="cal-modal-backdrop" id="calBackdrop" onclick="closeCalendarPopup()"></div>
   <div class="cal-modal" id="calModal">
     <div class="cal-modal-header">
@@ -457,7 +479,7 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ MOMENTKH ENGINE (ចម្លងពីឯកសារប្រតិទិនដែលអ្នកបានផ្ញើមក)
+       ⚡ MOMENTKH ENGINE (ចម្លងពីឯកសារប្រតិទិនដែលអ្នកបានផ្ញើមក ១០០%)
   ══════════════════════════════════════════════════════════════════════════ -->
   <script>
     (function (root, factory) {
@@ -525,8 +547,8 @@
       }
       function getNumberOfDaysInKhmerMonth(mi, be) {
         var lt = getLeapType(be);
-        if (mi === MonthIndex.Jesth && lt === 2) return 30;
-        if (mi === MonthIndex.Pathamasadh || mi === MonthIndex.Tutiyasadh) return lt === 1 ? 30 : 0;
+        if (mi === 6 && lt === 2) return 30;
+        if (mi === 12 || mi === 13) return lt === 1 ? 30 : 0;
         return mi % 2 === 0 ? 29 : 30;
       }
       function getNumberOfDaysInKhmerYear(be) {
@@ -535,10 +557,10 @@
       }
       function nextMonthOf(mi, be) {
         var lt = getLeapType(be);
-        if (mi === MonthIndex.Jesth && lt === 1) return MonthIndex.Pathamasadh;
-        if (mi === MonthIndex.Kadeuk) return MonthIndex.Migasir;
-        if (mi === MonthIndex.Pathamasadh) return MonthIndex.Tutiyasadh;
-        if (mi === MonthIndex.Tutiyasadh) return MonthIndex.Srap;
+        if (mi === 6 && lt === 1) return 12;
+        if (mi === 11) return 0;
+        if (mi === 12) return 13;
+        if (mi === 13) return 8;
         return mi + 1;
       }
 
@@ -570,7 +592,7 @@
           } else break;
         }
 
-        var finalBE = getMaybeBEYear(year, month);
+        var finalBE = (month <= 4 ? year + 543 : year + 544);
         var totalDim = getNumberOfDaysInKhmerMonth(khMonth, finalBE);
         if (diffDays >= totalDim) {
           diffDays %= totalDim;
@@ -671,9 +693,15 @@
     );
 
     let currentSelectedClass = cleanGrade(USER_CLASS) || '៤(ក)';
-    let currentSelectedTemplate = 'arrow';
-    let currentPeriodType = 'yearly';
-    let currentPeriodChild = 'តុលា';
+
+    // 🌟 1. បង្ហាញទម្រង់រូបថតមុនគេ (original)
+    let currentSelectedTemplate = 'original';
+
+    // 🌟 2. ពេលបើកដំបូង បង្ហាញ «ខែមុន» ជាលំនាំដើម
+    let currentPeriodType = 'monthly';
+    const nowInit = new Date();
+    const prevMonthIndex = (nowInit.getMonth() - 1 + 12) % 12;
+    let currentPeriodChild = GM[prevMonthIndex];
 
     let currentTop5Students = [
       { name: "សេសៈ សេសៈ", imageUrl: "" },
@@ -704,44 +732,47 @@
 
     window.addEventListener('resize', fitPaper);
 
-    /* ══════════════ 🎨 RENDER 6 TEMPLATES + ORIGINAL PHOTO MODE ══════════════ */
-    function getCardSvg(template, rank, student) {
+    /* ══════════════ 🎨 RENDER PHOTO CARD & 6 TEMPLATES ══════════════ */
+    function getPhotoCard(rank, student) {
       const khRank = kn(rank);
       const name = student?.name || '...';
       const img = student?.imageUrl || PLACEHOLDER_IMG;
       const nameColorClass = `r-color-${rank}`;
       const isTop1 = (rank === 1);
 
-      // 0. 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស - ធំៗ ញ៉ែកពេញទទឹង)
-      if (template === 'original') {
-        const w = isTop1 ? 160 : 142;
-        const h = isTop1 ? 190 : 172;
-        const badgeBg = rank === 1 ? '#f59e0b' : (rank === 2 ? '#64748b' : (rank === 3 ? '#b45309' : '#e11d48'));
+      const w = isTop1 ? 155 : 138;
+      const h = isTop1 ? 185 : 168;
+      const badgeBg = rank === 1 ? '#f59e0b' : (rank === 2 ? '#64748b' : (rank === 3 ? '#b45309' : '#e11d48'));
 
-        return `
-          <div style="text-align:center;">
-            <div style="position:relative; width:${w}px; height:${h}px; margin:0 auto;">
-              <div class="orig-photo-box" style="width:${w}px; height:${h}px;">
-                <img src="${img}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src=PLACEHOLDER_IMG">
-              </div>
-              <span style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:${badgeBg}; color:#fff; font-weight:bold; width:32px; height:32px; border-radius:50%; font-size:14.5px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.25); border:2px solid #fff; z-index:10;">
-                ${khRank}
-              </span>
+      return `
+        <div style="text-align:center;">
+          <div style="position:relative; width:${w}px; height:${h}px; margin:0 auto;">
+            <div class="orig-photo-box" style="width:${w}px; height:${h}px;">
+              <img src="${img}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src=PLACEHOLDER_IMG">
             </div>
-            <div style="margin-top:6px; display:flex; justify-content:center;">
-              <span class="font-moul ${nameColorClass}" style="white-space:nowrap; background:#fff; border:1.5px solid #fbbf24; padding:5px 18px; border-radius:8px; font-size:${isTop1 ? '18px' : '16px'}; box-shadow:0 2px 6px rgba(0,0,0,0.06);">
-                ${name}
-              </span>
-            </div>
+            <span style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:${badgeBg}; color:#fff; font-weight:bold; width:32px; height:32px; border-radius:50%; font-size:14.5px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.25); border:2px solid #fff; z-index:10;">
+              ${khRank}
+            </span>
           </div>
-        `;
-      }
+          <div style="margin-top:6px; display:flex; justify-content:center;">
+            <span class="font-moul ${nameColorClass}" style="white-space:nowrap; background:#fff; border:1.5px solid #fbbf24; padding:5px 16px; border-radius:8px; font-size:${isTop1 ? '17px' : '15px'}; box-shadow:0 2px 6px rgba(0,0,0,0.06);">
+              ${name}
+            </span>
+          </div>
+        </div>
+      `;
+    }
 
-      // 1. គំរូ ៖ ព្រួញបៃតង (Green Arrow - ធំទូលាយដិតច្បាស់)
+    function getVectorCardSvg(template, rank, student) {
+      const khRank = kn(rank);
+      const name = student?.name || '...';
+      const nameColorClass = `r-color-${rank}`;
+      const isTop1 = (rank === 1);
+
+      // 1. គំរូ ៖ ព្រួញបៃតង
       if (template === 'arrow') {
         const boxW = isTop1 ? 350 : 320;
         const fontSize = isTop1 ? '25px' : '22px';
-
         return `
           <div style="position:relative; width:${boxW}px; height:110px; display:flex; flex-direction:column; align-items:center;">
             <div style="position:relative; margin-bottom:-14px; z-index:3;">
@@ -763,12 +794,11 @@
         `;
       }
 
-      // 2. គំរូ ៖ បដាកណ្ដាល (Banner - ធំទូលាយ)
+      // 2. គំរូ ៖ បដាកណ្ដាល
       if (template === 'banner') {
         const boxW = isTop1 ? 350 : 320;
         const boxH = isTop1 ? 120 : 110;
         const fontSize = isTop1 ? '25px' : '22px';
-
         return `
           <div style="position:relative; width:${boxW}px; height:${boxH}px; display:flex; align-items:center; justify-content:center;">
             <svg width="${boxW}" height="${boxH}" viewBox="0 0 270 95" fill="none">
@@ -783,11 +813,10 @@
         `;
       }
 
-      // 3. គំរូ ៖ ឃ្មុំ (Cute Bee - ធំច្បាស់)
+      // 3. គំរូ ៖ ឃ្មុំ
       if (template === 'bee') {
         const boxW = isTop1 ? 330 : 305;
         const fontSize = isTop1 ? '24px' : '21.5px';
-
         return `
           <div style="position:relative; width:${boxW}px; height:130px; display:flex; flex-direction:column; align-items:center;">
             <svg width="84" height="58" viewBox="0 0 70 50" fill="none" style="margin-bottom:-12px; z-index:2;">
@@ -808,11 +837,10 @@
         `;
       }
 
-      // 4. គំរូ ៖ បង្អួច (Wooden Window - ធំច្បាស់)
+      // 4. គំរូ ៖ បង្អួច
       if (template === 'window') {
         const boxW = isTop1 ? 340 : 315;
         const fontSize = isTop1 ? '24px' : '21.5px';
-
         return `
           <div style="position:relative; width:${boxW}px; height:120px; display:flex; flex-direction:column; align-items:center;">
             <div style="position:relative; margin-bottom:-12px; z-index:3;">
@@ -836,11 +864,10 @@
         `;
       }
 
-      // 5. គំរូ ៖ ឆ្មា (Cute Cats - ធំច្បាស់)
+      // 5. គំរូ ៖ ឆ្មា
       if (template === 'cat') {
         const boxW = isTop1 ? 320 : 295;
         const fontSize = isTop1 ? '24px' : '21.5px';
-
         return `
           <div style="position:relative; width:${boxW}px; height:130px; display:flex; flex-direction:column; align-items:center;">
             <div style="display:flex; align-items:flex-end; gap:8px; margin-bottom:-14px; z-index:2;">
@@ -867,11 +894,10 @@
         `;
       }
 
-      // 6. គំរូ ៖ ឆ្លាក់មាស (Kbach Gold - ធំច្បាស់)
+      // 6. គំរូ ៖ ឆ្លាក់មាស
       if (template === 'kbach') {
         const boxW = isTop1 ? 340 : 315;
         const fontSize = isTop1 ? '24px' : '21.5px';
-
         return `
           <div style="position:relative; width:${boxW}px; height:125px; display:flex; flex-direction:column; align-items:center;">
             <div style="position:relative; margin-bottom:-10px; z-index:3;">
@@ -894,23 +920,58 @@
       }
     }
 
+    /* 🌟 ប្លង់តម្រឹម៖ លេខ២,៤ ស្មើជ្រុងឆ្វេងនៃលេខ១ ហើយលេខ៣,៥ ស្មើជ្រុងស្តាំនៃលេខ១ */
     function renderActiveTemplate() {
       const area = document.getElementById('podiumArea');
       const s = currentTop5Students;
+      const t = currentSelectedTemplate;
 
-      area.innerHTML = `
-        <div class="podium-row-1">
-          <div class="rank-card-slot">${getCardSvg(currentSelectedTemplate, 1, s[0])}</div>
-        </div>
-        <div class="podium-row-2">
-          <div class="rank-card-slot">${getCardSvg(currentSelectedTemplate, 2, s[1])}</div>
-          <div class="rank-card-slot">${getCardSvg(currentSelectedTemplate, 3, s[2])}</div>
-        </div>
-        <div class="podium-row-3">
-          <div class="rank-card-slot">${getCardSvg(currentSelectedTemplate, 4, s[3])}</div>
-          <div class="rank-card-slot">${getCardSvg(currentSelectedTemplate, 5, s[4])}</div>
-        </div>
-      `;
+      if (t === 'original') {
+        area.innerHTML = `
+          <!-- លេខ ១ នៅចំកណ្តាល -->
+          <div class="photo-podium-row-1">
+            <div style="width: 175px; display: flex; justify-content: center;">
+              ${getPhotoCard(1, s[0])}
+            </div>
+          </div>
+
+          <!-- លេខ ២ (ខាងឆ្វេងស្មើជ្រុងលេខ១) និង លេខ ៣ (ខាងស្តាំស្មើជ្រុងលេខ១) -->
+          <div class="photo-podium-row-2">
+            <div class="photo-col-left">
+              ${getPhotoCard(2, s[1])}
+            </div>
+            <div class="photo-center-spacer"></div>
+            <div class="photo-col-right">
+              ${getPhotoCard(3, s[2])}
+            </div>
+          </div>
+
+          <!-- លេខ ៤ (ខាងឆ្វេងស្មើជ្រុងលេខ១) និង លេខ ៥ (ខាងស្តាំស្មើជ្រុងលេខ១) -->
+          <div class="photo-podium-row-3">
+            <div class="photo-col-left">
+              ${getPhotoCard(4, s[3])}
+            </div>
+            <div class="photo-center-spacer"></div>
+            <div class="photo-col-right">
+              ${getPhotoCard(5, s[4])}
+            </div>
+          </div>
+        `;
+      } else {
+        area.innerHTML = `
+          <div class="vector-podium-row-1">
+            <div class="rank-card-slot">${getVectorCardSvg(t, 1, s[0])}</div>
+          </div>
+          <div class="vector-podium-row-2">
+            <div class="rank-card-slot">${getVectorCardSvg(t, 2, s[1])}</div>
+            <div class="rank-card-slot">${getVectorCardSvg(t, 3, s[2])}</div>
+          </div>
+          <div class="vector-podium-row-3">
+            <div class="rank-card-slot">${getVectorCardSvg(t, 4, s[3])}</div>
+            <div class="rank-card-slot">${getVectorCardSvg(t, 5, s[4])}</div>
+          </div>
+        `;
+      }
 
       fitPaper();
     }
@@ -1000,7 +1061,7 @@
       const o = getKhmerDateInfo(y, m, d);
 
       document.getElementById('lblLunarDate').innerText = fullText(o);
-      document.getElementById('lblSolarDate').innerText = 'កំពង់ល្ពៅ ' + gText(o);
+      document.getElementById('lblSolarDate').innerText = 'កំពង់ល្ពៅ, ' + gText(o);
       document.getElementById('lblBtnDate').innerText = 'ថ្ងៃទី' + kn(d) + ' ' + GM[m - 1];
     }
 
@@ -1102,7 +1163,17 @@
         currentSelectedClass = cleanGrade(USER_CLASS);
       }
 
-      applySelectedDate(2026, 10, 19);
+      // 🌟 បង្ហាញ Dropdown ខែមុនជាលំនាំដើម
+      const childPopup = document.getElementById('ddChildPeriodList');
+      document.getElementById('txtChildPeriodSelect').innerText = currentPeriodChild;
+      childPopup.innerHTML = GM.map(m => `
+        <div class="dd-item ${m === currentPeriodChild ? 'active' : ''}" onclick="selectChildPeriod('${m}')">${m}</div>
+      `).join('');
+
+      // 🌟 កាលបរិច្ឆេទថ្ងៃនេះតាមប្រតិទិន MomentKH
+      const now = new Date();
+      applySelectedDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
+
       await loadHonorRoll();
       fitPaper();
     }
@@ -1120,10 +1191,11 @@
     async function loadHonorRoll() {
       document.getElementById('lblDocumentClass').innerText = `ថ្នាក់ទី${currentSelectedClass}`;
 
-      let pLabel = "ប្រចាំឆ្នាំ";
+      let pLabel = "ប្រចាំខែ " + currentPeriodChild;
       if (currentPeriodType === 'monthly') pLabel = `ប្រចាំខែ ${currentPeriodChild}`;
       else if (currentPeriodType === 'exam_semester') pLabel = `ការប្រឡង ${currentPeriodChild}`;
       else if (currentPeriodType === 'semester_total') pLabel = currentPeriodChild;
+      else if (currentPeriodType === 'yearly') pLabel = "ប្រចាំឆ្នាំ";
       document.getElementById('lblPeriodTitle').innerText = pLabel;
 
       // ទាញយកឈ្មោះគ្រូថ្នាក់
