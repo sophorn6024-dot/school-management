@@ -375,12 +375,7 @@
           </div>
         </div>
 
-        <div id="teacherClassBadge" class="teacher-class-badge" style="display:none;">
-          <i class="fa-solid fa-chalkboard-user"></i>
-          <span id="teacherClassText">ថ្នាក់ទី...</span>
-        </div>
-
-        <div class="panel-pill-box">
+        <div class="panel-pill-box" id="teacherNamePill" style="display:none;">
           <span class="toolbar-label"><i class="fa-solid fa-user-tie" style="color:#10b981;"></i> គ្រូបន្ទុកថ្នាក់៖</span>
           <input type="text" id="teacherNameCtrl" class="form-control" placeholder="វាយឈ្មោះគ្រូ..." oninput="syncTeacherName(this.value)">
         </div>
@@ -409,8 +404,8 @@
 
         <div class="layout-switcher">
           <button id="layout1Btn" class="layout-btn active" onclick="setRankLayout(1)">ទម្រង់ទី ១</button>
-          <button id="layout2Btn" class="layout-btn" onclick="setRankLayout(2)">ទម្រង់ទី ២ (ចែកជា២)</button>
-          <button id="layout3Btn" class="layout-btn" onclick="setRankLayout(3)">ទម្រង់ទី ៣ (មានអវត្តមាន)</button>
+          <button id="layout2Btn" class="layout-btn" onclick="setRankLayout(2)">ទម្រង់ទី ២</button>
+          <button id="layout3Btn" class="layout-btn" onclick="setRankLayout(3)">ទម្រង់ទី ៣</button>
         </div>
 
         <button id="resetTeacherPosBtn" class="btn btn-secondary" onclick="resetTeacherNamePosition()">
@@ -2207,6 +2202,10 @@ exports.default = {
       if (TEACHER_NAME) {
         document.getElementById('teacherNameCtrl').value = TEACHER_NAME;
         document.getElementById('teacherNameDisplay').textContent = TEACHER_NAME;
+      } else {
+        // មិនមានឈ្មោះក្នុងគណនី (ឧ. Admin) ៖ បង្ហាញប្រអប់វាយឈ្មោះគ្រូ
+        const pill = document.getElementById('teacherNamePill');
+        if (pill) pill.style.display = '';
       }
 
       initDraggableTeacherName();
@@ -2215,27 +2214,21 @@ exports.default = {
 
     async function initClassesDropdown() {
       const adminBox = document.getElementById('adminClassBox');
-      const teacherBadge = document.getElementById('teacherClassBadge');
       const select = document.getElementById('classSelect');
       const cleanCls = cleanGrade(USER_CLASS);
 
       if (!IS_ADMIN) {
         adminBox.style.display = 'none';
         if (cleanCls) {
-          document.getElementById('teacherClassText').innerText = 'ថ្នាក់ទី ' + cleanCls;
-          teacherBadge.style.display = 'inline-flex';
           select.innerHTML = `<option value="${cleanCls}">ថ្នាក់ទី ${cleanCls}</option>`;
           select.value = cleanCls;
           loadRankData();
         } else {
-          teacherBadge.style.display = 'inline-flex';
-          document.getElementById('teacherClassText').innerText = 'មិនទាន់កំណត់ថ្នាក់';
           document.getElementById('rankBody').innerHTML = '<tr><td colspan="9" style="padding:20px; color:#d97706; font-weight:bold;">⚠️ គណនីរបស់អ្នកមិនទាន់មានថ្នាក់ទទួលបន្ទុកឡើយ។</td></tr>';
         }
         return;
       }
 
-      teacherBadge.style.display = 'none';
       adminBox.style.display = 'inline-block';
 
       try {
