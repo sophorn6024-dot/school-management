@@ -8,1204 +8,833 @@
 
   <title>តារាងកិត្តិយស - សាលាបឋមសិក្សាកំពង់ល្ពៅ</title>
 
-  <!-- 🔤 Google Fonts Khmer & FontAwesome -->
+  <!-- 🔤 Google Fonts Khmer & FontAwesome 6.5.1 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Moul&family=Kantumruy+Pro:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;800;900&family=Moul&family=Siemreap&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <!-- ⚡ Supabase JS Client (v2) -->
+  <!-- ⚡ Supabase JS & html2pdf -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
-    /* =========================================================
-       🎨 DYNAMIC THEME SYSTEM (LIGHT & DARK MODE)
-    ========================================================= */
     :root {
-      --app-bg: #f8fafc;
-      --tb-bg: rgba(255, 255, 255, 0.96);
-      --tb-border: #e2e8f0;
-      --card-panel-bg: #ffffff;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --input-bg: #ffffff;
-      --input-border: #cbd5e1;
-      --input-focus: #0284c7;
-      --ctrl-group-bg: #f1f5f9;
-      --shadow-sm: 0 4px 16px rgba(15, 23, 42, 0.06);
-    }
-
-    [data-theme="dark"] {
-      --app-bg: #090e17;
-      --tb-bg: rgba(15, 23, 42, 0.95);
-      --tb-border: #1e293b;
-      --card-panel-bg: #111e33;
-      --text-main: #f8fafc;
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
       --text-muted: #94a3b8;
-      --input-bg: #162642;
-      --input-border: #233f66;
-      --input-focus: #38bdf8;
-      --ctrl-group-bg: #0e1a2d;
-      --shadow-sm: 0 8px 24px rgba(0, 0, 0, 0.45);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    [data-theme="light"] {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #64748b;
     }
 
-    html, body {
-      width: 100%;
-      min-height: 100%;
-      background-color: var(--app-bg);
-      color: var(--text-main);
-      font-family: 'Kantumruy Pro', sans-serif;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Khmer OS Battambang', 'Battambang', sans-serif;
+      min-height: 100vh;
       overflow-x: hidden;
       padding-bottom: 60px;
-      transition: background-color 0.25s ease, color 0.25s ease;
     }
 
-    .font-moul {
-      font-family: 'Moul', cursive;
-    }
+    .font-moul { font-family: 'Khmer OS Muol Light', 'Moul', cursive !important; }
+    .font-siemreap { font-family: 'Khmer OS Siemreap', 'Siemreap', sans-serif !important; }
 
-    /* ══════════════ 🔒 AUTH DENIED WRAPPER ══════════════ */
-    .auth-wrapper {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 80vh;
-      text-align: center;
-      padding: 30px 20px;
-    }
-    .auth-card {
-      background: var(--card-panel-bg);
-      border: 1.5px solid var(--tb-border);
-      border-radius: 24px;
-      padding: 40px 28px;
-      max-width: 440px;
-      width: 100%;
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .auth-icon {
-      width: 68px;
-      height: 68px;
-      border-radius: 20px;
-      background: rgba(239, 68, 68, 0.15);
-      color: #ef4444;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-      margin-bottom: 16px;
-    }
-    .auth-card h2 { font-size: 18px; margin-bottom: 8px; color: #ef4444; font-weight: 700; }
-    .auth-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; }
-    .btn-login-redirect {
-      background: linear-gradient(135deg, #0284c7, #7c3aed);
-      color: #ffffff;
-      padding: 10px 24px;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 13.5px;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3);
-      cursor: pointer;
-      border: none;
-    }
-
-    /* =========================================================
-       🎛️ NEW SINGLE-ROW SLEEK TOOLBAR (TABLET & MOBILE)
-    ========================================================= */
-    .no-print-toolbar {
+    /* ══════════════ 🛠️ SLEEK TOOLBAR ══════════════ */
+    .top-toolbar {
       position: sticky;
       top: 0;
       z-index: 1000;
-      background: var(--tb-bg);
-      backdrop-filter: blur(14px);
-      padding: 7px 14px;
+      background: rgba(15, 23, 42, 0.94);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      box-shadow: var(--shadow-sm);
-      border-bottom: 1.5px solid var(--tb-border);
-      transition: all 0.25s ease;
       overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      white-space: nowrap;
-      margin-bottom: 20px;
-    }
-
-    .no-print-toolbar::-webkit-scrollbar { height: 3px; }
-    .no-print-toolbar::-webkit-scrollbar-thumb { background: rgba(2, 132, 199, 0.25); border-radius: 3px; }
-
-    .tb-group {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      flex-shrink: 0;
-    }
-
-    .panel-pill-box {
-      background: var(--ctrl-group-bg);
-      border: 1px solid var(--tb-border);
-      border-radius: 9px;
-      padding: 3px 7px;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .toolbar-label {
-      font-size: 11.5px;
-      font-weight: 700;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      gap: 4px;
       white-space: nowrap;
     }
-
-    .form-control {
-      padding: 4px 7px;
-      font-family: 'Kantumruy Pro', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      border: 1.5px solid var(--input-border);
-      border-radius: 7px;
-      outline: none;
-      background: var(--input-bg);
-      color: var(--text-main);
-      transition: all 0.2s ease;
-      height: 30px;
+    .tb-group { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    
+    .tb-btn {
+      height: 36px; padding: 0 12px; border-radius: 9px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: #1e293b; color: #f8fafc; font-size: 12.5px; font-weight: 700;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      transition: all .15s ease; white-space: nowrap; user-select: none;
     }
-    .form-control:focus {
-      border-color: var(--input-focus);
-      box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15);
-    }
+    .tb-btn:hover { background: #334155; border-color: rgba(255, 255, 255, 0.3); }
+    .tb-btn.primary { background: #0284c7; border-color: transparent; }
+    .tb-btn.primary:hover { background: #0369a1; }
+    .tb-btn.success { background: #059669; border-color: transparent; }
+    .tb-btn.success:hover { background: #047857; }
 
-    .teacher-class-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      background: linear-gradient(135deg, #0284c7, #2563eb);
-      color: #ffffff;
-      padding: 3px 10px;
-      border-radius: 9px;
-      font-weight: 700;
-      font-size: 12px;
-      height: 30px;
-      white-space: nowrap;
-      user-select: none;
+    .tb-select {
+      height: 36px; padding: 0 10px; border-radius: 9px;
+      background: #1e293b; color: #f8fafc; border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 12px; font-weight: 700; outline: none; cursor: pointer;
     }
 
-    .btn {
-      padding: 4px 10px;
-      font-family: 'Kantumruy Pro', sans-serif;
-      font-size: 12px;
-      font-weight: 700;
-      border-radius: 8px;
-      border: 1px solid transparent;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-      user-select: none;
-      white-space: nowrap;
-      height: 30px;
+    /* ══════════════ 📄 A4 HONOR CARD CONTAINER ══════════════ */
+    .paper-wrapper {
+      width: 100%; display: flex; justify-content: center; padding: 20px 0; overflow-x: auto;
     }
-    .btn:active { transform: scale(0.96); }
-
-    .btn-secondary {
-      background: var(--ctrl-group-bg);
-      color: var(--text-main);
-      border-color: var(--input-border);
-    }
-    .btn-secondary:hover {
-      border-color: var(--input-focus);
-      color: var(--input-focus);
+    #paperScaler {
+      width: 794px; min-width: 794px; height: 1123px; position: relative;
+      margin: 0 auto; transform-origin: top center;
     }
 
-    .btn-primary {
-      background: linear-gradient(135deg, #0284c7, #2563eb);
-      color: #fff;
-      box-shadow: 0 2px 7px rgba(2, 132, 199, 0.25);
-    }
-
-    .btn-success {
-      background: linear-gradient(135deg, #10b981, #059669);
-      color: #fff;
-      box-shadow: 0 2px 7px rgba(16, 185, 129, 0.25);
-    }
-
-    .zoom-btn-group {
-      display: inline-flex;
-      align-items: center;
-      gap: 2px;
-      background: var(--ctrl-group-bg);
-      padding: 2px;
-      border-radius: 8px;
-      border: 1px solid var(--tb-border);
-      height: 30px;
-    }
-    .zoom-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 2px 7px;
-      border-radius: 5px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      font-family: 'Kantumruy Pro', sans-serif;
-      height: 24px;
-      display: flex;
-      align-items: center;
-    }
-    .zoom-btn:hover { color: var(--text-main); }
-    .zoom-btn.active {
-      background: #0284c7 !important;
-      color: #ffffff !important;
-      box-shadow: 0 1px 5px rgba(2, 132, 199, 0.35);
-    }
-
-    /* =========================================================
-       📄 A4 VIEW WRAPPER & HONOR CARD (រក្សាពណ៌ដើម ១០០%)
-    ========================================================= */
-    .a4-view {
-      width: 794px;
-      height: 1123px;
-      margin: 0 auto;
-      position: relative;
-      transform-origin: top center;
-      transform: scale(var(--a4-scale, 1));
-      margin-bottom: calc(1123px * (var(--a4-scale, 1) - 1));
-      transition: transform 0.2s ease;
-    }
-
-    .honor-card {
-      width: 794px;
-      height: 1123px;
-      background: #ffffff !important;
-      color: #0f172a !important;
-      position: relative;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-      margin: 0 auto;
+    .honor-paper {
+      width: 794px; height: 1123px; background: #ffffff; color: #000000;
+      position: relative; box-shadow: 0 15px 45px rgba(0,0,0,0.4);
+      padding: 30px 40px; display: flex; flex-direction: column; justify-content: space-between;
       overflow: hidden;
-      border: 10px solid #047857;
-      outline: 4px solid #d97706;
-      outline-offset: -14px;
-      padding: 45px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
     }
 
-    .photo-box {
-      border: 3px solid #d97706;
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-      background: #f8fafc;
-      transition: all 0.3s ease;
-    }
-    .photo-box:hover {
-      transform: scale(1.03);
+    /* 🌸 គែមស៊ុមផ្កាភ្ញីក្រហម-បៃតង ដូចរូបគំរូ */
+    .page-floral-border {
+      position: absolute; inset: 12px; border: 10px solid transparent;
+      border-image: repeating-linear-gradient(45deg, #b91c1c 0, #b91c1c 12px, #15803d 12px, #15803d 24px, #f59e0b 24px, #f59e0b 36px) 12;
+      pointer-events: none; z-index: 20;
     }
 
-    .draggable-block {
-      cursor: move;
-      -webkit-user-select: none;
+    /* 👑 Document Header */
+    .header-box { text-align: center; margin-top: 10px; }
+    .header-box h2 { font-size: 16px; margin-bottom: 2px; }
+    .header-box h3 { font-size: 14.5px; margin-bottom: 3px; }
+    .header-divider { letter-spacing: 5px; font-size: 11px; color: #64748b; }
+
+    .meta-left {
+      position: absolute; top: 120px; left: 45px; text-align: left;
+      font-size: 13.5px; line-height: 1.7; font-weight: bold;
+    }
+
+    .main-title-box { text-align: center; margin-top: 35px; }
+    .main-title-text {
+      font-size: 42px; color: #f59e0b;
+      text-shadow: 3px 3px 0 #581c87, -3px -3px 0 #581c87, 3px -3px 0 #581c87, -3px 3px 0 #581c87, 0 4px 10px rgba(0,0,0,0.3);
+      letter-spacing: 2px; display: inline-block;
+    }
+    .period-title {
+      font-size: 17px; margin-top: 4px; font-weight: bold;
+      background: linear-gradient(135deg, #1d4ed8, #b91c1c);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    /* ══════════════ 🏆 5 PODIUM RANKS ══════════════ */
+    .podium-container {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 22px; margin-top: 15px; position: relative; z-index: 10;
+    }
+    .podium-row-1 { display: flex; justify-content: center; width: 100%; }
+    .podium-row-2, .podium-row-3 {
+      display: flex; justify-content: center; gap: 40px; width: 100%;
+    }
+
+    .rank-card-slot {
+      position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    /* 🎨 ស្តាយពណ៌អក្សរឈ្មោះសិស្សតាមចំណាត់ថ្នាក់ដូចរូបគំរូ */
+    .student-name-text {
+      font-size: 15.5px; font-weight: normal; text-align: center; white-space: nowrap;
       user-select: none;
-      touch-action: none;
-      border: 1px dashed transparent;
-      border-radius: 4px;
-      padding: 4px 6px;
-      display: inline-block;
     }
-    .draggable-block:hover {
-      border-color: #93c5fd;
-      background: rgba(59, 130, 246, 0.06);
-    }
-    .draggable-block.dragging {
-      border-color: #2563eb;
-      background: rgba(37, 99, 235, 0.10);
-    }
+    .r-color-1 { color: #b91c1c; } /* លេខ១ ក្រហម */
+    .r-color-2 { color: #1d4ed8; } /* លេខ២ ខៀវ */
+    .r-color-3 { color: #15803d; } /* លេខ៣ បៃតង */
+    .r-color-4 { color: #b91c1c; } /* លេខ៤ ក្រហម */
+    .r-color-5 { color: #7e22ce; } /* លេខ៥ ស្វាយ */
 
-    /* ── Tablet & Mobile Responsive Tweaks ── */
-    @media screen and (min-width: 769px) and (max-width: 1180px) {
-      .no-print-toolbar { padding: 8px 16px; gap: 8px; }
-      .form-control, .btn { height: 32px; font-size: 12.5px; }
+    /* ✍️ FOOTER DATES & SIGNATURES */
+    .footer-row {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-top: 10px; margin-bottom: 15px; padding: 0 25px; font-size: 13.5px;
     }
+    .footer-col { text-align: center; min-width: 260px; }
+    .footer-col .sign-title { font-size: 14px; margin-top: 4px; }
+    .footer-col .sign-space { height: 50px; }
 
-    @media screen and (max-width: 768px) {
-      body { padding: 0 0 50px 0 !important; }
-      .no-print-toolbar { padding: 6px 10px; gap: 5px; }
-      .tb-group { gap: 4px; }
-      .form-control { height: 28px; font-size: 11px; padding: 2px 5px; }
-      .btn { height: 28px; padding: 2px 7px; font-size: 11px; gap: 4px; }
-      .zoom-btn-group { height: 28px; }
-      .zoom-btn { height: 22px; padding: 1px 5px; font-size: 10px; }
+    /* ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ */
+    .cal-modal-backdrop {
+      display: none; position: fixed; inset: 0; z-index: 2900; background: rgba(0,0,0,0.6);
     }
+    .cal-modal-backdrop.show { display: block; }
+    .cal-popup {
+      display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 340px; background: #ffffff; border-radius: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+      padding: 18px; z-index: 3000; color: #0f172a; user-select: none;
+    }
+    .cal-popup.show { display: block; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-top: 10px; }
+    .cal-day-cell {
+      height: 36px; display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; font-weight: bold; cursor: pointer; font-size: 13px;
+    }
+    .cal-day-cell:hover { background: #e0f2fe; color: #0284c7; }
+    .cal-day-cell.selected { background: #0284c7 !important; color: #fff !important; }
+    .cal-day-cell.other { opacity: 0.35; }
 
-    /* =========================================================
-       🖨️ PRINT RULES (A4 PORTRAIT)
-    ========================================================= */
     @media print {
-      @page {
-        size: A4 portrait;
-        margin: 0;
-      }
-      html, body {
-        width: 210mm !important;
-        height: 297mm !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: visible !important;
-        background: none !important;
-      }
-      .no-print-toolbar {
-        display: none !important;
-      }
-      .a4-view {
-        width: 794px !important;
-        height: 1123px !important;
-        transform: none !important;
-        margin: 0 !important;
-        position: relative !important;
-      }
-      .draggable-block {
-        border-color: transparent !important;
-        background: transparent !important;
-        padding: 0 !important;
-        cursor: default;
-      }
-      .honor-card {
-        box-shadow: none !important;
-        border: 8px solid #047857 !important;
-        outline: 3px solid #d97706 !important;
-        outline-offset: -12px !important;
-        width: 794px !important;
-        height: 1123px !important;
-        margin: 0 !important;
-        padding: 45px !important;
-      }
-      input, select {
-        border: none !important;
-        background: transparent !important;
-        appearance: none;
-        padding: 0 !important;
-        text-align: center;
-        font-weight: bold;
-      }
-      * {
-        -webkit-print-color-adjust: exact !important;
-        color: exact !important;
-        print-color-adjust: exact !important;
-      }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      body { background: #fff !important; padding: 0 !important; margin: 0 !important; }
+      .top-toolbar, .cal-modal-backdrop, .cal-popup, #authDeniedWrap { display: none !important; }
+      .paper-wrapper { padding: 0 !important; }
+      #paperScaler { transform: none !important; width: 794px !important; height: 1123px !important; }
+      .honor-paper { box-shadow: none !important; }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- ══════════════ 🔒 AUTH DENIED WRAPPER ══════════════ -->
-  <div class="auth-wrapper" id="authDeniedWrap">
-    <div class="auth-card">
-      <div class="auth-icon">🔒</div>
-      <h2>សូមចូលប្រើប្រាស់ជាមុនសិន!</h2>
-      <p>លោកអ្នកមិនទាន់បាន Login ចូលក្នុងប្រព័ន្ធនៅឡើយទេ។ សូម Login គណនីរបស់អ្នកដើម្បីមើលតារាងកិត្តិយស។</p>
-      <a href="index.html" target="_top" class="btn-login-redirect" onclick="goToIndex(event)">
-        <span>🔑</span> <span>ទៅកាន់ទំព័រដើម (Login)</span>
-      </a>
+  <!-- 🔒 AUTH DENIED WRAPPER -->
+  <div id="authDeniedWrap" style="display:none; flex-direction:column; align-items:center; justify-content:center; min-height:80vh; text-align:center;">
+    <div style="background:#1e293b; padding:35px 25px; border-radius:20px; max-width:400px; border:1px solid #334155;">
+      <i class="fa-solid fa-lock" style="font-size:45px; color:#ef4444; margin-bottom:15px;"></i>
+      <h2 style="font-size:18px; color:#ef4444; margin-bottom:10px;">សូមចូលប្រើប្រាស់ជាមុនសិន!</h2>
+      <p style="font-size:13px; color:#94a3b8; margin-bottom:20px;">លោកអ្នកមិនទាន់បាន Login ចូលក្នុងប្រព័ន្ធនៅឡើយទេ។</p>
+      <a href="index.html" class="tb-btn primary" style="text-decoration:none; justify-content:center;">ទៅកាន់ទំព័រដើម</a>
     </div>
   </div>
 
-  <!-- =========================================================
-       🎛️ NEW SINGLE-ROW SLEEK TOOLBAR DESIGN
-  ========================================================== -->
-  <div class="no-print-toolbar" id="controlToolbar" style="display:none;">
-    
-    <!-- ផ្នែកខាងឆ្វេង ៖ Filters -->
-    <div class="tb-group">
-      <!-- ថ្នាក់ -->
-      <div class="panel-pill-box" id="adminClassBox" style="display:none;">
-        <span class="toolbar-label"><i class="fa-solid fa-graduation-cap" style="color:#0284c7;"></i> ថ្នាក់ទី៖</span>
-        <select id="classSelect" class="form-control" onchange="loadHonorRoll()">
-          <option value="">កំពុងទាញយក...</option>
+  <!-- 🌟 MAIN CONTENT -->
+  <div id="mainPageContent" style="display:none;">
+
+    <!-- 🛠️ TOP TOOLBAR -->
+    <div class="top-toolbar">
+      <div class="tb-group">
+        <button type="button" class="tb-btn" onclick="goBack()">
+          <i class="fa-solid fa-arrow-left"></i> <span>ត្រឡប់</span>
+        </button>
+
+        <!-- 🏫 ថ្នាក់ទី (បង្ហាញសម្រាប់តែ ADMIN ប៉ុណ្ណោះ តាមការណែនាំ) -->
+        <div id="adminClassBox" style="display:none; align-items:center; gap:5px;">
+          <span style="font-size:12px; color:#94a3b8; font-weight:bold;"><i class="fa-solid fa-school" style="color:#38bdf8;"></i> ថ្នាក់៖</span>
+          <select id="selClass" class="tb-select" onchange="loadHonorRoll()"></select>
+        </div>
+
+        <!-- ⏱️ រយៈពេល -->
+        <select id="selPeriodType" class="tb-select" onchange="changePeriodType()">
+          <option value="monthly">ប្រចាំខែ</option>
+          <option value="exam_semester">ការប្រឡងឆមាស</option>
+          <option value="semester_total">ប្រចាំឆមាស (សរុប)</option>
+          <option value="yearly" selected>ប្រចាំឆ្នាំ</option>
+        </select>
+
+        <span id="periodChildContainer"></span>
+
+        <!-- 🎨 ទម្រង់ទាំង ៦ តាមរូបគំរូ -->
+        <span style="font-size:12px; color:#94a3b8; font-weight:bold; margin-left:4px;"><i class="fa-solid fa-palette" style="color:#c084fc;"></i> ទម្រង់៖</span>
+        <select id="selTemplate" class="tb-select" onchange="renderActiveTemplate()">
+          <option value="banner" selected>គំរូ ៖ បដាកណ្ដាល</option>
+          <option value="bee">គំរូ ៖ ឃ្មុំ</option>
+          <option value="arrow">គំរូ ៖ ព្រួញបៃតង</option>
+          <option value="window">គំរូ ៖ បង្អួច</option>
+          <option value="cat">គំរូ ៖ ឆ្មា</option>
+          <option value="kbach">គំរូ ៖ ក្បាច់មាស</option>
         </select>
       </div>
 
-      <div id="teacherClassBadge" class="teacher-class-badge" style="display:none;">
-        <i class="fa-solid fa-chalkboard-user"></i>
-        <span id="teacherClassText">ថ្នាក់ទី...</span>
-      </div>
+      <div class="tb-group">
+        <!-- 📅 ប្រតិទិនខ្មែរ (ជ្រើសថ្ងៃចុះហត្ថលេខា) -->
+        <button type="button" class="tb-btn" onclick="openKhmerCalendar()">
+          <i class="fa-regular fa-calendar-days" style="color:#60a5fa;"></i>
+          <span id="lblBtnDate">ថ្ងៃទី១៨ តុលា</span>
+        </button>
 
-      <!-- ប្រភេទ -->
-      <div class="panel-pill-box">
-        <span class="toolbar-label"><i class="fa-solid fa-sliders" style="color:#7c3aed;"></i> ប្រភេទ៖</span>
-        <select id="typeSelect" class="form-control" onchange="togglePeriodOptions()">
-          <option value="ប្រចាំខែ">ប្រចាំខែ</option>
-          <option value="ការប្រឡងឆមាស">ការប្រឡងឆមាស</option>
-          <option value="ប្រចាំឆមាស">ប្រចាំឆមាស (សរុប)</option>
-          <option value="ប្រចាំឆ្នាំ">ប្រចាំឆ្នាំ</option>
-        </select>
-      </div>
-
-      <!-- រយៈពេល / ខែ -->
-      <div class="panel-pill-box" id="periodContainer">
-        <span class="toolbar-label"><i class="fa-solid fa-calendar-days" style="color:#f59e0b;"></i> រយៈពេល៖</span>
-        <select id="monthSelect" class="form-control" onchange="loadHonorRoll()">
-          <option value="មករា">មករា</option>
-          <option value="កុម្ភៈ">កុម្ភៈ</option>
-          <option value="មីនា">មីនា</option>
-          <option value="មេសា">មេសា</option>
-          <option value="ឧសភា">ឧសភា</option>
-          <option value="មិថុនា">មិថុនា</option>
-          <option value="កក្កដា">កក្កដា</option>
-          <option value="សីហា">សីហា</option>
-          <option value="កញ្ញា">កញ្ញា</option>
-          <option value="តុលា">តុលា</option>
-          <option value="វិច្ឆិកា">វិច្ឆិកា</option>
-          <option value="ធ្នូ">ធ្នូ</option>
-        </select>
+        <!-- 📥 ទាញយក PDF & បោះពុម្ព -->
+        <button type="button" class="tb-btn success" onclick="downloadPDF()">
+          <i class="fa-solid fa-file-pdf"></i> <span>ទាញយក PDF</span>
+        </button>
+        <button type="button" class="tb-btn primary" onclick="printReport()">
+          <i class="fa-solid fa-print"></i> <span>បោះពុម្ព</span>
+        </button>
       </div>
     </div>
 
-    <!-- ផ្នែកខាងស្តាំ ៖ Zoom & Action Buttons -->
-    <div class="tb-group">
-      <!-- 🔍 Zoom Buttons (មានប៊ូតុង សម / Fit សម្រាប់ Tablet & Mobile) -->
-      <div class="zoom-btn-group" title="ពង្រីក/បង្រួមទំហំ">
-        <button type="button" class="zoom-btn active" id="zFit" onclick="setFitZoom()">សម</button>
-        <button type="button" class="zoom-btn" id="z75" onclick="setZoom(0.75, 'z75')">75%</button>
-        <button type="button" class="zoom-btn" id="z100" onclick="setZoom(1, 'z100')">100%</button>
+    <!-- 📄 A4 HONOR ROLL CANVAS -->
+    <div class="paper-wrapper">
+      <div id="paperScaler">
+        <div class="honor-paper" id="honorPaper">
+          
+          <!-- ស៊ុមផ្កាភ្ញីជុំវិញសន្លឹក -->
+          <div class="page-floral-border"></div>
+
+          <!-- 👑 ក្បាលលិខិតជាតិ -->
+          <div>
+            <div class="header-box">
+              <h2 class="font-moul">ព្រះរាជាណាចក្រកម្ពុជា</h2>
+              <h3 class="font-moul">ជាតិ សាសនា ព្រះមហាក្សត្រ</h3>
+              <div class="header-divider">────── ❖ ──────</div>
+            </div>
+
+            <!-- 🏫 ស្ថាប័នរដ្ឋបាល -->
+            <div class="meta-left font-siemreap">
+              <div>ការិយាល័យអប់រំ យុវជន និងកីឡា</div>
+              <div>សាលាបឋមសិក្សាកំពង់ល្ពៅ</div>
+              <div id="lblDocumentClass" style="margin-top:2px;">ថ្នាក់ទី៤ក</div>
+            </div>
+
+            <!-- 🏷️ ចំណងជើងធំ តារាងកិត្តិយស -->
+            <div class="main-title-box">
+              <div class="main-title-text font-moul">តារាងកិត្តិយស</div>
+              <div class="period-title font-moul" id="lblPeriodTitle">ប្រចាំឆ្នាំ</div>
+            </div>
+          </div>
+
+          <!-- 🏆 កន្លែងបង្ហាញចំណាត់ថ្នាក់ទាំង ៥ (ប្តូរតាមទម្រង់ទាំង ៦ ស្វ័យប្រវត្ត) -->
+          <div class="podium-container" id="podiumArea">
+            <!-- Render ដោយ JavaScript -->
+          </div>
+
+          <!-- ✍️ ហត្ថលេខា និងកាលបរិច្ឆេទចន្ទគតិ-សូរិយគតិ -->
+          <div class="footer-row font-siemreap">
+            <div class="footer-col" style="margin-top: 35px;">
+              <div class="font-moul sign-title">បានឃើញនិងឯកភាព</div>
+              <div class="font-moul sign-title" style="margin-top:4px;">នាយកសាលា</div>
+              <div class="sign-space"></div>
+              <div id="lblPrincipalName" class="font-moul" style="font-size:13px;"></div>
+            </div>
+
+            <div class="footer-col">
+              <div id="lblLunarDate" style="font-size:13px;">ថ្ងៃអាទិត្យ ៧កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០</div>
+              <div id="lblSolarDate" style="font-size:13px; margin-top:2px;">កំពង់ល្ពៅ ថ្ងៃទី១៨ ខែតុលា ឆ្នាំ២០២៦</div>
+              <div class="font-moul sign-title" style="color:#2b3990; margin-top:5px;">គ្រូបន្ទុកថ្នាក់</div>
+              <div class="sign-space"></div>
+              <div id="lblTeacherName" class="font-moul" style="font-size:13.5px;"></div>
+            </div>
+          </div>
+
+        </div>
       </div>
-
-      <button onclick="resetDraggablePositions()" class="btn btn-secondary" title="ដាក់ឈ្មោះគ្រូបន្ទុកថ្នាក់ត្រឡប់ទីតាំងដើមវិញ">
-        <i class="fa-solid fa-rotate-left"></i> <span>ទីតាំងដើម</span>
-      </button>
-
-      <button onclick="loadHonorRoll()" class="btn btn-primary" title="ផ្ទុកឡើងវិញ">
-        <i class="fa-solid fa-rotate"></i> <span>ផ្ទុកឡើងវិញ</span>
-      </button>
-
-      <button onclick="doPrint()" class="btn btn-success" title="បោះពុម្ពតារាងកិត្តិយស">
-        <i class="fa-solid fa-print"></i> <span>បោះពុម្ព</span>
-      </button>
     </div>
 
-  </div>
+  </div> <!-- END #mainPageContent -->
 
-  <!-- =========================================================
-       📄 A4 VIEW WRAPPER
-  ========================================================== -->
-  <div class="a4-view" id="a4View" style="display:none;">
-    <div class="honor-card">
-
-      <!-- HEADER -->
-      <div>
-        <div style="text-align:center; font-weight:bold; font-size:14px; color:#1e293b; line-height:1.6;">
-          <p>ព្រះរាជាណាចក្រកម្ពុជា</p>
-          <p>ជាតិ សាសនា ព្រះមហាក្សត្រ</p>
-          <div style="width:130px; height:3.5px; background:#f59e0b; margin:6px auto 8px; border-radius:99px;"></div>
-        </div>
-
-        <div style="font-size:12px; font-weight:bold; margin-top:8px; color:#334155; line-height:1.6;">
-          <p>រដ្ឋបាលក្រុង ស្រុកសំឡូត</p>
-          <p>សាលាបឋមសិក្សា ៖ កំពង់ល្ពៅ</p>
-          <p id="lblClass" style="color:#1e3a8a; font-weight:800; font-size:14px; margin-top:2px;">
-            ថ្នាក់ទី...
-          </p>
-        </div>
-
-        <!-- TITLE -->
-        <div style="text-align:center; margin-top:14px;">
-          <h1 class="font-moul" style="font-size:30px; color:#065f46; letter-spacing:1px;">
-            តារាងកិត្តិយស
-          </h1>
-          <p id="lblMonth" style="font-size:14px; font-weight:bold; color:#b45309; margin-top:6px; background:#fffbeb; padding:2px 16px; border-radius:20px; display:inline-block; border:1px solid #fde68a;">
-            ប្រចាំខែ.....
-          </p>
-        </div>
-      </div>
-
-      <!-- STUDENTS PODIUM (TOP 5) -->
-      <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; gap:26px; margin-top:8px; margin-bottom:12px;">
-
-        <!-- RANK 1 -->
-        <div id="rank1" style="text-align:center;">
-          <div style="position:relative; width:128px; height:158px; margin:0 auto;">
-            <div class="photo-box" style="width:128px; height:158px; border-radius:12px; overflow:hidden;">
-              <img src="" style="width:100%; height:100%; object-fit:cover;" id="img1" alt="រូបថតលេខ១" onerror="this.src=PLACEHOLDER_IMG">
-            </div>
-            <span style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:#f59e0b; color:#fff; font-weight:bold; width:30px; height:30px; border-radius:50%; font-size:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.25); border:2px solid #fff; z-index:10;">
-              ១
-            </span>
-          </div>
-
-          <div style="margin-top:8px; display:flex; justify-content:center;">
-            <span id="name1" class="font-moul" style="white-space:nowrap; background:#fff; border:1.5px solid #fbbf24; padding:4px 14px; border-radius:8px; font-size:13.5px; box-shadow:0 2px 6px rgba(0,0,0,0.06); color:#78350f;">
-              ឈ្មោះសិស្ស
-            </span>
-          </div>
-        </div>
-
-        <!-- RANK 2 + 3 -->
-        <div style="width:100%; display:flex; align-items:flex-start; justify-content:center; gap:85px;">
-          <!-- RANK 2 -->
-          <div id="rank2" style="text-align:center; transform:translateX(-30px);">
-            <div style="position:relative; width:112px; height:142px; margin:0 auto;">
-              <div class="photo-box" style="width:112px; height:142px; border-radius:12px; overflow:hidden;">
-                <img src="" style="width:100%; height:100%; object-fit:cover;" id="img2" alt="រូបថតលេខ២" onerror="this.src=PLACEHOLDER_IMG">
-              </div>
-              <span style="position:absolute; top:-10px; left:-8px; background:#64748b; color:#fff; font-weight:bold; width:28px; height:28px; border-radius:50%; font-size:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.25); border:2px solid #fff; z-index:10;">
-                ២
-              </span>
-            </div>
-
-            <div style="margin-top:6px; display:flex; justify-content:center;">
-              <span id="name2" class="font-moul" style="white-space:nowrap; background:#fff; border:1.5px solid #cbd5e1; padding:3px 12px; border-radius:8px; font-size:12.5px; box-shadow:0 2px 6px rgba(0,0,0,0.06); color:#1e293b;">
-                ឈ្មោះសិស្ស
-              </span>
-            </div>
-          </div>
-
-          <!-- RANK 3 -->
-          <div id="rank3" style="text-align:center; transform:translateX(30px);">
-            <div style="position:relative; width:112px; height:142px; margin:0 auto;">
-              <div class="photo-box" style="width:112px; height:142px; border-radius:12px; overflow:hidden;">
-                <img src="" style="width:100%; height:100%; object-fit:cover;" id="img3" alt="រូបថតលេខ៣" onerror="this.src=PLACEHOLDER_IMG">
-              </div>
-              <span style="position:absolute; top:-10px; right:-8px; background:#b45309; color:#fff; font-weight:bold; width:28px; height:28px; border-radius:50%; font-size:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.25); border:2px solid #fff; z-index:10;">
-                ៣
-              </span>
-            </div>
-
-            <div style="margin-top:6px; display:flex; justify-content:center;">
-              <span id="name3" class="font-moul" style="white-space:nowrap; background:#fff; border:1.5px solid rgba(180,83,9,0.3); padding:3px 12px; border-radius:8px; font-size:12.5px; box-shadow:0 2px 6px rgba(0,0,0,0.06); color:#78350f;">
-                ឈ្មោះសិស្ស
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <!-- RANK 4 + 5 -->
-        <div style="width:100%; display:flex; align-items:flex-start; justify-content:center; gap:85px;">
-          <!-- RANK 4 -->
-          <div id="rank4" style="text-align:center; transform:translateX(-30px);">
-            <div style="position:relative; width:112px; height:142px; margin:0 auto;">
-              <div class="photo-box" style="width:112px; height:142px; border-radius:12px; overflow:hidden;">
-                <img src="" style="width:100%; height:100%; object-fit:cover;" id="img4" alt="រូបថតលេខ៤" onerror="this.src=PLACEHOLDER_IMG">
-              </div>
-              <span style="position:absolute; top:-10px; left:-8px; background:#e11d48; color:#fff; font-weight:bold; width:28px; height:28px; border-radius:50%; font-size:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.25); border:2px solid #fff; z-index:10;">
-                ៤
-              </span>
-            </div>
-
-            <div style="margin-top:6px; display:flex; justify-content:center;">
-              <span id="name4" class="font-moul" style="white-space:nowrap; background:#fff; border:1.5px solid #fda4af; padding:3px 12px; border-radius:8px; font-size:12.5px; box-shadow:0 2px 6px rgba(0,0,0,0.06); color:#1e293b;">
-                ឈ្មោះសិស្ស
-              </span>
-            </div>
-          </div>
-
-          <!-- RANK 5 -->
-          <div id="rank5" style="text-align:center; transform:translateX(30px);">
-            <div style="position:relative; width:112px; height:142px; margin:0 auto;">
-              <div class="photo-box" style="width:112px; height:142px; border-radius:12px; overflow:hidden;">
-                <img src="" style="width:100%; height:100%; object-fit:cover;" id="img5" alt="រូបថតលេខ៥" onerror="this.src=PLACEHOLDER_IMG">
-              </div>
-              <span style="position:absolute; top:-10px; right:-8px; background:#e11d48; color:#fff; font-weight:bold; width:28px; height:28px; border-radius:50%; font-size:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.25); border:2px solid #fff; z-index:10;">
-                ៥
-              </span>
-            </div>
-
-            <div style="margin-top:6px; display:flex; justify-content:center;">
-              <span id="name5" class="font-moul" style="white-space:nowrap; background:#fff; border:1.5px solid #fda4af; padding:3px 12px; border-radius:8px; font-size:12.5px; box-shadow:0 2px 6px rgba(0,0,0,0.06); color:#1e293b;">
-                ឈ្មោះសិស្ស
-              </span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- FOOTER -->
-      <div id="footerRow" style="display:flex; justify-content:space-between; align-items:flex-start; font-size:12px; font-weight:bold; padding-bottom:4px; color:#1e293b; border-top:1px solid #f1f5f9; padding-top:10px;">
-        <!-- DIRECTOR -->
-        <div style="text-align:center;">
-          <div id="directorTopSpacer"></div>
-          <p style="color:#475569;">បានឃើញ និងឯកភាព</p>
-          <p id="directorLabel" style="font-weight:800; color:#0f172a; margin-top:4px;">នាយកសាលា</p>
-          <div style="margin-top:35px;"></div>
-        </div>
-
-        <!-- TEACHER -->
-        <div style="text-align:center;">
-          <div id="dateBlock" style="display:inline-block;">
-            <input type="text" id="lunarDateText" value="" placeholder="វាយបញ្ចូលថ្ងៃខែឆ្នាំចន្ទគតិនៅទីនេះ..." style="font-weight:600; color:#92400e; background:#fffbeb; padding:2px 8px; border-radius:6px; margin-bottom:5px; border:1px solid #fde68a; text-align:center; width:360px; display:block; outline:none;">
-
-            <div style="display:flex; align-items:center; justify-content:center; gap:4px; font-weight:normal; color:#334155;">
-              <span>ធ្វើនៅកំពង់ល្ពៅ ថ្ងៃទី</span>
-              <input type="text" id="inputDay" value="" style="width:38px; text-align:center; border:1px solid #60a5fa; background:#eff6ff; border-radius:4px; padding:2px 0; font-weight:bold; color:#1e3a8a; outline:none;">
-              <span>ខែ</span>
-              <input type="text" id="inputMonth" value="" style="width:60px; text-align:center; border:1px solid #60a5fa; background:#eff6ff; border-radius:4px; padding:2px 0; font-weight:bold; color:#1e3a8a; outline:none;">
-              <span>ឆ្នាំ</span>
-              <input type="text" id="inputYear" value="២០២៦" style="width:50px; text-align:center; border:1px solid #60a5fa; background:#eff6ff; border-radius:4px; padding:2px 0; font-weight:bold; color:#1e3a8a; outline:none;">
-            </div>
-          </div>
-
-          <p style="font-size:13px; font-weight:800; color:#065f46; margin-top:4px;" id="teacherLabel">គ្រូបន្ទុកថ្នាក់</p>
-
-          <div id="teacherNameDisplay" class="draggable-block font-moul" style="font-size:13px; color:#0f172a; margin-top:4px; min-height:20px;" title="អូសដើម្បីផ្លាស់ទីតាំង">
-            &nbsp;
-          </div>
-          <div style="margin-top:20px;"></div>
-        </div>
-      </div>
-
+  <!-- ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ -->
+  <div class="cal-modal-backdrop" id="calBackdrop" onclick="closeCalendarPopup()"></div>
+  <div class="cal-popup" id="calPopup">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+      <select id="calMonthSelect" class="tb-select" style="background:#f1f5f9; color:#000; border:1px solid #cbd5e1;" onchange="renderCalendarDays()"></select>
+      <select id="calYearSelect" class="tb-select" style="background:#f1f5f9; color:#000; border:1px solid #cbd5e1;" onchange="renderCalendarDays()"></select>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:12px; font-weight:bold; color:#64748b;">
+      <span>អា</span><span>ច</span><span>អ</span><span>ព</span><span>ព្រ</span><span>សុ</span><span>ស</span>
+    </div>
+    <div class="cal-grid" id="calDaysGrid"></div>
+    <div style="margin-top:12px; text-align:center; font-size:12px; color:#0284c7; font-weight:bold;" id="calLivePreview"></div>
+    <div style="display:flex; justify-content:space-between; margin-top:10px;">
+      <button type="button" class="tb-btn" style="background:#f1f5f9; color:#000;" onclick="selectCalendarToday()">ថ្ងៃនេះ</button>
+      <button type="button" class="tb-btn primary" onclick="closeCalendarPopup()">រួចរាល់</button>
     </div>
   </div>
 
-  <!-- =========================================================
-       ⚙️ JAVASCRIPT ENGINE (SUPABASE INTEGRATED)
-  ========================================================== -->
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       ⚡ STANDALONE MOMENTKH ENGINE (គណនាចន្ទគតិសុក្រឹត ១០០% គ្មាន DATABASE)
+  ══════════════════════════════════════════════════════════════════════════ -->
   <script>
-    /* 1. SUPABASE CLIENT CONFIG */
+    (function (root, factory) {
+      if (typeof define === 'function' && define.amd) { define([], factory); }
+      else if (typeof module === 'object' && module.exports) { module.exports = factory(); }
+      else { root.momentkh = factory(); }
+    }(typeof self !== 'undefined' ? self : this, function () {
+      "use strict";
+      var MoonPhase = { Waxing: 0, Waning: 1 };
+      var MonthIndex = { Migasir: 0, Boss: 1, Meak: 2, Phalkun: 3, Cheit: 4, Pisakh: 5, Jesth: 6, Asadh: 7, Srap: 8, Phatrabot: 9, Assoch: 10, Kadeuk: 11, Pathamasadh: 12, Tutiyasadh: 13 };
+      var LunarMonthNames = ['មិគសិរ','បុស្ស','មាឃ','ផល្គុន','ចេត្រ','ពិសាខ','ជេស្ឋ','អាសាឍ','ស្រាពណ៍','ភទ្របទ','អស្សុជ','កត្តិក','បឋមាសាឍ','ទុតិយាសាឍ'];
+      var AnimalYearNames = ['ជូត','ឆ្លូវ','ខាល','ថោះ','រោង','ម្សាញ់','មមី','មមែ','វក','រកា','ច','កុរ'];
+      var SakNames = ['សំរឹទ្ធិស័ក','ឯកស័ក','ទោស័ក','ត្រីស័ក','ចត្វាស័ក','បញ្ចស័ក','ឆស័ក','សប្តស័ក','អដ្ឋស័ក','នព្វស័ក'];
+      var WeekdayNames = ['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
+      var MoonPhaseNames = ['កើត','រោច'];
+
+      function isLeap(y) { return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0); }
+      function g2j(y, m, d) {
+        var a = Math.floor((14 - m) / 12), y1 = y + 4800 - a, m1 = m + 12 * a - 3;
+        return d + Math.floor((153 * m1 + 2) / 5) + 365 * y1 + Math.floor(y1 / 4) - Math.floor(y1 / 100) + Math.floor(y1 / 400) - 32045;
+      }
+      function j2g(jdn) {
+        var a = jdn + 32044, b = Math.floor((4 * a + 3) / 146097), c = a - Math.floor((146097 * b) / 4);
+        var d = Math.floor((4 * c + 3) / 1461), e = c - Math.floor((1461 * d) / 4), m = Math.floor((5 * e + 2) / 153);
+        var day = e - Math.floor((153 * m + 2) / 5) + 1, month = m + 3 - 12 * Math.floor(m / 10), year = 100 * b + d - 4800 + Math.floor(m / 10);
+        return { year: year, month: month, day: day };
+      }
+      function getDow(y, m, d) { return (g2j(y, m, d) + 1) % 7; }
+      function getAharkun(be) { return Math.floor((be * 292207 + 499) / 800) + 4; }
+      function getAvoman(be) { return (getAharkun(be) * 11 + 25) % 692; }
+      function getBodithey(be) { var ah = getAharkun(be); return (Math.floor((ah * 11 + 25) / 692) + ah + 29) % 30; }
+      function isSolarLeap(be) { return (800 - ((be * 292207 + 499) % 800)) <= 207; }
+      function isLeapDay(be) { var av = getAvoman(be); if (av === 0 && getAvoman(be - 1) === 137) return true; if (isSolarLeap(be)) return av < 127; return av < 138; }
+      function isLeapMonth(be) { var b1 = getBodithey(be), b2 = getBodithey(be + 1); if (b1 === 25 && b2 === 5) return false; return (b1 === 24 && b2 === 6) || (b1 >= 25) || (b1 < 6); }
+      function getLeapType(be) { if (isLeapMonth(be)) return 1; if (isLeapDay(be)) return 2; return 0; }
+      function daysInKhMonth(mi, be) { var lt = getLeapType(be); if (mi === MonthIndex.Jesth && lt === 2) return 30; if (mi === MonthIndex.Pathamasadh || mi === MonthIndex.Tutiyasadh) return lt === 1 ? 30 : 0; return mi % 2 === 0 ? 29 : 30; }
+      function daysInKhYear(be) { var lt = getLeapType(be); return lt === 1 ? 384 : (lt === 2 ? 355 : 354); }
+      function nextKhMonth(mi, be) { var lt = getLeapType(be); if (mi === MonthIndex.Jesth && lt === 1) return MonthIndex.Pathamasadh; if (mi === MonthIndex.Kadeuk) return MonthIndex.Migasir; if (mi === MonthIndex.Pathamasadh) return MonthIndex.Tutiyasadh; if (mi === MonthIndex.Tutiyasadh) return MonthIndex.Srap; return mi + 1; }
+
+      function fromGregorian(year, month, day) {
+        var epochJdn = g2j(1900, 1, 1), targetJdn = g2j(year, month, day), khMonth = 1, diffDays = targetJdn - epochJdn;
+        if (diffDays > 0) {
+          while (true) {
+            var eg = j2g(epochJdn), nBE = eg.month <= 4 ? eg.year + 544 : eg.year + 545;
+            var dy = daysInKhYear(nBE);
+            if (diffDays > dy) { diffDays -= dy; epochJdn += dy; } else break;
+          }
+        }
+        while (diffDays > 0) {
+          var eg2 = j2g(epochJdn), cBE = eg2.month <= 4 ? eg2.year + 543 : eg2.year + 544;
+          var dm = daysInKhMonth(khMonth, cBE);
+          if (diffDays > dm) { diffDays -= dm; epochJdn += dm; khMonth = nextKhMonth(khMonth, cBE); } else break;
+        }
+        var finalBE = month <= 4 ? year + 543 : year + 544;
+        var totalDim = daysInKhMonth(khMonth, finalBE);
+        if (diffDays >= totalDim) { diffDays %= totalDim; khMonth = nextKhMonth(khMonth, finalBE); }
+        var dayInPhase = diffDays < 15 ? diffDays + 1 : (diffDays - 15) + 1;
+        var phase = diffDays < 15 ? MoonPhase.Waxing : MoonPhase.Waning;
+        var dow = getDow(year, month, day);
+        return {
+          gregorian: { year: year, month: month, day: day, dayOfWeek: dow },
+          khmer: {
+            day: dayInPhase, moonPhaseName: MoonPhaseNames[phase],
+            monthName: LunarMonthNames[khMonth], beYear: finalBE,
+            animalYearName: AnimalYearNames[((finalBE + 4) % 12 + 12) % 12],
+            sakName: SakNames[((finalBE - 1182) % 10 + 10) % 10],
+            dayOfWeekName: WeekdayNames[dow]
+          }
+        };
+      }
+      return { fromGregorian: fromGregorian };
+    }));
+  </script>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       ⚡ MAIN CONTROLLER & 6 TEMPLATES SVG ENGINE
+  ══════════════════════════════════════════════════════════════════════════ -->
+  <script>
     const SUPABASE_URL = "https://nggnuobnrxiqjtcwlvwk.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    /* 2. AUTH GUARD */
+    const khDigits = ['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
+    const KHMER_MONTHS = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+
+    function toKh(n) { return (n === null || n === undefined) ? '' : String(n).replace(/\d/g, d => khDigits[d]); }
+    function cleanGrade(g) { return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').replace(/[()\-_\s]/g, '').trim(); }
+
     function readSession() {
       try { return JSON.parse(localStorage.getItem('krou_supabase_user') || 'null'); } catch(e) { return null; }
     }
     const CURRENT_USER = readSession();
+    const IS_ADMIN = String(CURRENT_USER?.role || '').toLowerCase().trim() === 'admin';
+    const USER_CLASS = CURRENT_USER?.assigned_classes || CURRENT_USER?.assigned_class || "៤(ក)";
 
-    function checkAuthentication() {
-      if (!CURRENT_USER || !CURRENT_USER.username) {
-        document.getElementById('controlToolbar').style.display = 'none';
-        document.getElementById('a4View').style.display = 'none';
-        document.getElementById('authDeniedWrap').style.display = 'flex';
-        return false;
-      }
-      document.getElementById('authDeniedWrap').style.display = 'none';
-      document.getElementById('controlToolbar').style.display = 'flex';
-      document.getElementById('a4View').style.display = 'block';
-      return true;
-    }
+    let currentSelectedClass = cleanGrade(USER_CLASS) || '៤(ក)';
+    let currentTop5Students = [
+      { name: "សេសៈ សេសៈ" },
+      { name: "នា នា" },
+      { name: "មាន់ មាន់" },
+      { name: "កូ កូ" },
+      { name: "កេះ លីណា" }
+    ];
 
-    function goToIndex(e) {
-      if (e) e.preventDefault();
-      if (window.parent && window.parent !== window) {
-        try {
-          window.parent.postMessage({ type: 'OPEN_LOGIN', action: 'LOGIN' }, '*');
-          window.parent.location.href = 'index.html';
-          return;
-        } catch(err) {}
-      }
-      window.location.href = 'index.html';
-    }
+    /* ══════════════ 🎨 GENERATE 6 SVG TEMPLATES ══════════════ */
+    function getCardSvg(template, rank, name) {
+      const khRank = toKh(rank);
+      const nameColorClass = `r-color-${rank}`;
 
-    const USER_ROLE    = CURRENT_USER?.role || "teacher";
-    const USER_CLASS   = CURRENT_USER?.assigned_classes || CURRENT_USER?.assigned_class || "";
-    const TEACHER_NAME = CURRENT_USER?.teacher_name || "";
-    const IS_ADMIN     = String(USER_ROLE).toLowerCase().trim() === 'admin';
-
-    const KHMER_MONTHS = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
-    const KHMER_DIGITS = ['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
-
-    function cleanGrade(g) { return String(g || '').replace(/^ថ្នាក់ទី\s*/, '').trim(); }
-    function toKhmerNum(num) {
-      if (num === null || num === undefined) return '';
-      return num.toString().replace(/\d/g, d => KHMER_DIGITS[parseInt(d)] !== undefined ? KHMER_DIGITS[parseInt(d)] : d);
-    }
-
-    function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme || 'dark'); }
-    applyTheme(localStorage.getItem('krou_theme_manual') || 'dark');
-    window.addEventListener('message', e => { if (e.data && (e.data.type === 'THEME_CHANGE' || e.data.theme)) applyTheme(e.data.theme || e.data); });
-
-    const PLACEHOLDER_IMG = "data:image/svg+xml;utf8," + encodeURIComponent(
-      "<svg xmlns='http://www.w3.org/2000/svg' width='200' height='240'>" +
-      "<rect width='100%' height='100%' fill='#f1f5f9'/>" +
-      "<circle cx='100' cy='90' r='38' fill='#cbd5e1'/>" +
-      "<path d='M40 210 Q100 140 160 210 Z' fill='#cbd5e1'/>" +
-      "</svg>"
-    );
-
-    /* 3. ZOOM & RESPONSIVE FIT FOR TABLET & MOBILE */
-    function setZoom(scale, btnId) {
-      const wrapper = document.getElementById('a4View');
-      if (wrapper) {
-        wrapper.style.setProperty('--a4-scale', scale);
-        wrapper.style.height = (1123 * scale) + 'px';
-        wrapper.style.marginBottom = '0px';
-      }
-      ['zFit', 'z75', 'z100'].forEach(id => document.getElementById(id)?.classList.remove('active'));
-      document.getElementById(btnId)?.classList.add('active');
-    }
-
-    function setFitZoom() {
-      const wrapper = document.getElementById('a4View');
-      if (!wrapper) return;
-      const screenWidth = window.innerWidth;
-      if (screenWidth > 840) {
-        setZoom(1, 'zFit');
-        return;
-      }
-      const availableWidth = screenWidth - 24;
-      let scale = availableWidth / 794;
-      scale = Math.min(scale, 1);
-      scale = Math.max(scale, 0.35);
-      setZoom(scale, 'zFit');
-    }
-
-    window.addEventListener('resize', () => {
-      if (window.innerWidth <= 840 && document.getElementById('zFit')?.classList.contains('active')) {
-        setFitZoom();
-      }
-      alignFooterLabels();
-    });
-
-    function doPrint() {
-      window.focus();
-      setTimeout(() => {
-        try { window.print(); } catch(e) { window.parent.print(); }
-      }, 100);
-    }
-
-    function setCurrentKhmerDay() {
-      const dayEl = document.getElementById('inputDay');
-      if (dayEl) dayEl.value = toKhmerNum(new Date().getDate());
-    }
-
-    function setCurrentKhmerYear() {
-      const yearEl = document.getElementById('inputYear');
-      if (yearEl) yearEl.value = toKhmerNum(new Date().getFullYear());
-    }
-
-    function alignFooterLabels() {
-      const spacer = document.getElementById('directorTopSpacer');
-      const directorLabel = document.getElementById('directorLabel');
-      const teacherLabel = document.getElementById('teacherLabel');
-      if (!spacer || !directorLabel || !teacherLabel) return;
-      spacer.style.height = '0px';
-      const dRect = directorLabel.getBoundingClientRect();
-      const tRect = teacherLabel.getBoundingClientRect();
-      const wrapper = document.getElementById('a4View');
-      let scale = 1;
-      const isPrinting = window.matchMedia && window.matchMedia('print').matches;
-      if (wrapper && !isPrinting) {
-        const scaleStr = getComputedStyle(wrapper).getPropertyValue('--a4-scale');
-        const parsed = parseFloat(scaleStr);
-        if (!isNaN(parsed) && parsed > 0) scale = parsed;
-      }
-      const desiredGap = 10;
-      const diffScreen = tRect.top - dRect.top;
-      const diffSource = (diffScreen / scale) + desiredGap;
-      if (diffSource > 0) spacer.style.height = diffSource + 'px';
-    }
-
-    /* 4. DRAGGABLE TEACHER NAME */
-    const DRAG_KEY = 'honorTeacherPosPct_v2';
-    function initDraggableBlock(elementId, storageKey) {
-      const el = document.getElementById(elementId);
-      const page = document.querySelector('.honor-card');
-      if (!el || !page) return;
-
-      try {
-        const saved = JSON.parse(localStorage.getItem(storageKey) || 'null');
-        if (saved && typeof saved.leftPct === 'number' && typeof saved.topPct === 'number') {
-          el.style.position = 'absolute';
-          el.style.left = saved.leftPct + '%';
-          el.style.top = saved.topPct + '%';
-          el.style.margin = '0';
-        }
-      } catch (e) {}
-
-      let isDragging = false, offsetX = 0, offsetY = 0;
-
-      function startDrag(clientX, clientY) {
-        isDragging = true;
-        el.classList.add('dragging');
-        if (el.style.position !== 'absolute') {
-          const pageRect = page.getBoundingClientRect();
-          const rect = el.getBoundingClientRect();
-          el.style.position = 'absolute';
-          el.style.left = (rect.left - pageRect.left) + 'px';
-          el.style.top = (rect.top - pageRect.top) + 'px';
-          el.style.margin = '0';
-        }
-        const rect2 = el.getBoundingClientRect();
-        offsetX = clientX - rect2.left;
-        offsetY = clientY - rect2.top;
+      // 1. គំរូ ៖ បដាកណ្ដាល (Banner)
+      if (template === 'banner') {
+        return `
+          <div style="position:relative; width:270px; height:95px; display:flex; align-items:center; justify-content:center;">
+            <svg width="270" height="95" viewBox="0 0 270 95" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M70 20 L200 20 L185 85 L85 85 Z" fill="#1e3a8a"/>
+              <path d="M100 85 L170 85 L180 94 L90 94 Z" fill="#15803d"/>
+              <rect x="25" y="28" width="220" height="48" rx="24" fill="#ffffff" stroke="#f59e0b" stroke-width="3"/>
+              <circle cx="135" cy="18" r="14" fill="#ffffff" stroke="#f59e0b" stroke-width="2.5"/>
+            </svg>
+            <span class="font-moul" style="position:absolute; top:7px; font-size:13px; color:#b91c1c;">${khRank}</span>
+            <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; top:42px; width:200px;">${name}</div>
+          </div>
+        `;
       }
 
-      function moveDrag(clientX, clientY) {
-        if (!isDragging) return;
-        const pageRect = page.getBoundingClientRect();
-        const leftPx = clientX - offsetX - pageRect.left;
-        const topPx = clientY - offsetY - pageRect.top;
-        el.style.left = leftPx + 'px';
-        el.style.top = topPx + 'px';
+      // 2. គំរូ ៖ ឃ្មុំ (Cute Bee)
+      if (template === 'bee') {
+        return `
+          <div style="position:relative; width:270px; height:120px; display:flex; flex-direction:column; align-items:center;">
+            <!-- Cartoon Bee SVG -->
+            <svg width="70" height="50" viewBox="0 0 70 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:-10px; z-index:2;">
+              <ellipse cx="20" cy="18" rx="14" ry="8" fill="#bae6fd" opacity="0.8" transform="rotate(-25 20 18)"/>
+              <ellipse cx="50" cy="18" rx="14" ry="8" fill="#bae6fd" opacity="0.8" transform="rotate(25 50 18)"/>
+              <ellipse cx="35" cy="30" rx="20" ry="16" fill="#f59e0b"/>
+              <path d="M22 24 Q35 20 48 24 M20 32 Q35 28 50 32" stroke="#000" stroke-width="3.5" stroke-linecap="round"/>
+              <circle cx="28" cy="28" r="4.5" fill="#000"/><circle cx="27" cy="26" r="1.5" fill="#fff"/>
+              <circle cx="42" cy="28" r="4.5" fill="#000"/><circle cx="41" cy="26" r="1.5" fill="#fff"/>
+              <path d="M31 35 Q35 39 39 35" stroke="#b91c1c" stroke-width="2" stroke-linecap="round"/>
+              <path d="M28 16 Q24 8 20 10 M42 16 Q46 8 50 10" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <!-- Badge & Namebox -->
+            <div style="position:relative; width:230px; height:50px; background:#fff; border:3px solid #f59e0b; border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 10px rgba(0,0,0,0.08);">
+              <span class="font-moul" style="position:absolute; top:-14px; left:10px; font-size:18px; color:#1d4ed8;">${khRank}</span>
+              <div class="student-name-text font-moul ${nameColorClass}">${name}</div>
+            </div>
+          </div>
+        `;
       }
 
-      function endDrag() {
-        if (!isDragging) return;
-        isDragging = false;
-        el.classList.remove('dragging');
-        const pageRect = page.getBoundingClientRect();
-        const elRect = el.getBoundingClientRect();
-        const leftPct = pageRect.width > 0 ? ((elRect.left - pageRect.left) / pageRect.width) * 100 : 0;
-        const topPct = pageRect.height > 0 ? ((elRect.top - pageRect.top) / pageRect.height) * 100 : 0;
-        el.style.left = leftPct + '%';
-        el.style.top = topPct + '%';
-        localStorage.setItem(storageKey, JSON.stringify({ leftPct: leftPct, topPct: topPct }));
+      // 3. គំរូ ៖ ព្រួញបៃតង (Green Arrow Ribbon)
+      if (template === 'arrow') {
+        return `
+          <div style="position:relative; width:270px; height:95px; display:flex; flex-direction:column; align-items:center;">
+            <div style="position:relative; margin-bottom:-12px; z-index:3;">
+              <svg width="34" height="34" viewBox="0 0 34 34">
+                <circle cx="17" cy="17" r="15" fill="#ffffff" stroke="#f59e0b" stroke-width="3"/>
+                <circle cx="17" cy="17" r="11" fill="#fef3c7"/>
+              </svg>
+              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13px; color:#b91c1c;">${khRank}</span>
+            </div>
+            <div style="position:relative; width:260px; height:55px;">
+              <svg width="260" height="55" viewBox="0 0 260 55" fill="none">
+                <path d="M10 5 L230 5 L250 27 L230 50 L10 50 L10 5 Z" fill="#15803d"/>
+                <path d="M15 10 L225 10 L242 27 L225 45 L15 45 Z" fill="#ffffff"/>
+                <path d="M10 50 L0 50 L10 40 Z" fill="#14532d"/>
+              </svg>
+              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding-right:20px;">${name}</div>
+            </div>
+          </div>
+        `;
       }
 
-      el.addEventListener('mousedown', e => { startDrag(e.clientX, e.clientY); e.preventDefault(); });
-      document.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
-      document.addEventListener('mouseup', endDrag);
+      // 4. គំរូ ៖ បង្អួច (Wooden Window)
+      if (template === 'window') {
+        return `
+          <div style="position:relative; width:270px; height:105px; display:flex; flex-direction:column; align-items:center;">
+            <div style="position:relative; margin-bottom:-10px; z-index:3;">
+              <svg width="110" height="28" viewBox="0 0 110 28" fill="none">
+                <path d="M10 14 Q55 0 100 14 L95 24 Q55 12 15 24 Z" fill="#b91c1c"/>
+                <circle cx="55" cy="14" r="11" fill="#fff" stroke="#f59e0b" stroke-width="2"/>
+              </svg>
+              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:12px; color:#b91c1c;">${khRank}</span>
+            </div>
+            <div style="position:relative; width:260px; height:68px; display:flex; align-items:center; justify-content:center;">
+              <svg width="260" height="68" viewBox="0 0 260 68" fill="none">
+                <rect x="50" y="8" width="160" height="52" rx="4" fill="#ffffff" stroke="#854d0e" stroke-width="4"/>
+                <!-- Shutter Left -->
+                <path d="M15 4 L50 8 L50 60 L15 64 Z" fill="#854d0e"/>
+                <rect x="22" y="12" width="22" height="42" fill="#7dd3fc" stroke="#5b3408" stroke-width="2"/>
+                <!-- Shutter Right -->
+                <path d="M245 4 L210 8 L210 60 L245 64 Z" fill="#854d0e"/>
+                <rect x="216" y="12" width="22" height="42" fill="#7dd3fc" stroke="#5b3408" stroke-width="2"/>
+              </svg>
+              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute;">${name}</div>
+            </div>
+          </div>
+        `;
+      }
 
-      el.addEventListener('touchstart', e => { const t = e.touches[0]; startDrag(t.clientX, t.clientY); }, { passive: true });
-      document.addEventListener('touchmove', e => { if (isDragging) moveDrag(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
-      document.addEventListener('touchend', endDrag);
-    }
+      // 5. គំរូ ៖ ឆ្មា (Cute Cats)
+      if (template === 'cat') {
+        return `
+          <div style="position:relative; width:270px; height:115px; display:flex; flex-direction:column; align-items:center;">
+            <!-- Two Cats Sitting -->
+            <div style="display:flex; align-items:flex-end; gap:6px; margin-bottom:-12px; z-index:2;">
+              <!-- Cat 1 (Ginger) -->
+              <svg width="45" height="45" viewBox="0 0 45 45">
+                <circle cx="22" cy="25" r="17" fill="#fb923c"/>
+                <polygon points="10,12 18,5 20,15" fill="#fb923c"/>
+                <polygon points="35,12 27,5 25,15" fill="#fb923c"/>
+                <circle cx="17" cy="23" r="3" fill="#000"/><circle cx="28" cy="23" r="3" fill="#000"/>
+                <circle cx="22.5" cy="28" r="2" fill="#b91c1c"/>
+              </svg>
+              <!-- Medal in Middle -->
+              <span class="font-moul" style="font-size:18px; color:#f59e0b; margin-bottom:4px;">${khRank}</span>
+              <!-- Cat 2 (White) -->
+              <svg width="45" height="45" viewBox="0 0 45 45">
+                <circle cx="22" cy="25" r="17" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+                <polygon points="10,12 18,5 20,15" fill="#f8fafc" stroke="#e2e8f0"/>
+                <polygon points="35,12 27,5 25,15" fill="#f8fafc" stroke="#e2e8f0"/>
+                <circle cx="17" cy="23" r="3" fill="#0284c7"/><circle cx="28" cy="23" r="3" fill="#0284c7"/>
+                <circle cx="22.5" cy="28" r="2" fill="#ec4899"/>
+              </svg>
+            </div>
+            <div style="position:relative; width:220px; height:48px; background:#fff; border:3px solid #b91c1c; border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.06);">
+              <div class="student-name-text font-moul ${nameColorClass}">${name}</div>
+            </div>
+          </div>
+        `;
+      }
 
-    function resetDraggablePositions() {
-      localStorage.removeItem(DRAG_KEY);
-      const el = document.getElementById('teacherNameDisplay');
-      if (el) {
-        el.style.position = '';
-        el.style.left = '';
-        el.style.top = '';
-        el.style.margin = '';
+      // 6. គំរូ ៖ ក្បាច់មាស (Golden Ornate Khmer Kbach)
+      if (template === 'kbach') {
+        return `
+          <div style="position:relative; width:270px; height:105px; display:flex; flex-direction:column; align-items:center;">
+            <!-- Kbach Crown -->
+            <div style="position:relative; margin-bottom:-10px; z-index:3;">
+              <svg width="60" height="30" viewBox="0 0 60 30" fill="none">
+                <path d="M30 2 L38 14 L52 14 L42 22 L46 30 L30 24 L14 30 L18 22 L8 14 L22 14 Z" fill="#eab308" stroke="#a16207" stroke-width="1"/>
+                <circle cx="30" cy="18" r="8" fill="#ffffff" stroke="#ca8a04" stroke-width="2"/>
+              </svg>
+              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:12px; color:#b91c1c; padding-top:6px;">${khRank}</span>
+            </div>
+            <!-- Golden Nameplate -->
+            <div style="position:relative; width:260px; height:60px; display:flex; align-items:center; justify-content:center;">
+              <svg width="260" height="60" viewBox="0 0 260 60" fill="none">
+                <!-- Wing Left -->
+                <path d="M55 30 Q20 5 5 30 Q20 55 55 30 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="2"/>
+                <!-- Wing Right -->
+                <path d="M205 30 Q240 5 255 30 Q240 55 205 30 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="2"/>
+                <!-- Center Box -->
+                <rect x="50" y="8" width="160" height="44" rx="3" fill="#ffffff" stroke="#eab308" stroke-width="3"/>
+              </svg>
+              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute;">${name}</div>
+            </div>
+          </div>
+        `;
       }
     }
 
-    /* 5. INITIALIZATION */
-    window.addEventListener('DOMContentLoaded', async () => {
-      if (!checkAuthentication()) return;
+    function renderActiveTemplate() {
+      const template = document.getElementById('selTemplate').value;
+      const area = document.getElementById('podiumArea');
+      const s = currentTop5Students;
 
+      area.innerHTML = `
+        <div class="podium-row-1">
+          <div class="rank-card-slot">${getCardSvg(template, 1, s[0]?.name || '...')}</div>
+        </div>
+        <div class="podium-row-2">
+          <div class="rank-card-slot">${getCardSvg(template, 2, s[1]?.name || '...')}</div>
+          <div class="rank-card-slot">${getCardSvg(template, 3, s[2]?.name || '...')}</div>
+        </div>
+        <div class="podium-row-3">
+          <div class="rank-card-slot">${getCardSvg(template, 4, s[3]?.name || '...')}</div>
+          <div class="rank-card-slot">${getCardSvg(template, 5, s[4]?.name || '...')}</div>
+        </div>
+      `;
+    }
+
+    /* ══════════════ 📅 KHMER CALENDAR LOGIC ══════════════ */
+    let calY = 2026, calM = 10, calD = 18;
+
+    function applySelectedDate(y, m, d) {
+      calY = y; calM = m; calD = d;
+      const res = momentkh.fromGregorian(y, m, d);
+      const k = res.khmer;
+
+      document.getElementById('lblLunarDate').innerText =
+        `ថ្ងៃ${k.dayOfWeekName} ${toKh(k.day)}${k.moonPhaseName} ខែ${k.monthName} ឆ្នាំ${k.animalYearName} ${k.sakName} ពុទ្ធសករាជ ${toKh(k.beYear)}`;
+      document.getElementById('lblSolarDate').innerText =
+        `កំពង់ល្ពៅ ថ្ងៃទី${toKh(d)} ខែ${KHMER_MONTHS[m - 1]} ឆ្នាំ${toKh(y)}`;
+      document.getElementById('lblBtnDate').innerText = `ថ្ងៃទី${toKh(d)} ${KHMER_MONTHS[m - 1]}`;
+    }
+
+    function openKhmerCalendar() {
+      document.getElementById('calBackdrop').classList.add('show');
+      document.getElementById('calPopup').classList.add('show');
+      initCalendarPopup();
+    }
+    function closeCalendarPopup() {
+      document.getElementById('calBackdrop').classList.remove('show');
+      document.getElementById('calPopup').classList.remove('show');
+    }
+
+    function initCalendarPopup() {
+      const ms = document.getElementById('calMonthSelect');
+      const ys = document.getElementById('calYearSelect');
+      ms.innerHTML = KHMER_MONTHS.map((m, i) => `<option value="${i+1}" ${i+1 === calM ? 'selected':''}>${m}</option>`).join('');
+      let yh = '';
+      for (let y = 2030; y >= 2022; y--) yh += `<option value="${y}" ${y === calY ? 'selected':''}>${toKh(y)}</option>`;
+      ys.innerHTML = yh;
+      renderCalendarDays();
+    }
+
+    function renderCalendarDays() {
+      calM = parseInt(document.getElementById('calMonthSelect').value, 10);
+      calY = parseInt(document.getElementById('calYearSelect').value, 10);
+      const grid = document.getElementById('calDaysGrid');
+      grid.innerHTML = '';
+
+      const first = new Date(calY, calM - 1, 1).getDay();
+      const total = new Date(calY, calM, 0).getDate();
+      const prevTotal = new Date(calY, calM - 1, 0).getDate();
+
+      for (let p = first - 1; p >= 0; p--) {
+        const cell = document.createElement('div');
+        cell.className = 'cal-day-cell other';
+        cell.innerText = toKh(prevTotal - p);
+        grid.appendChild(cell);
+      }
+      for (let d = 1; d <= total; d++) {
+        const cell = document.createElement('div');
+        cell.className = `cal-day-cell ${d === calD ? 'selected':''}`;
+        cell.innerText = toKh(d);
+        cell.onclick = () => {
+          calD = d;
+          applySelectedDate(calY, calM, calD);
+          renderCalendarDays();
+        };
+        grid.appendChild(cell);
+      }
+
+      const res = momentkh.fromGregorian(calY, calM, calD);
+      document.getElementById('calLivePreview').innerText =
+        `${res.khmer.dayOfWeekName} ${toKh(res.khmer.day)}${res.khmer.moonPhaseName} ខែ${res.khmer.monthName}`;
+    }
+
+    function selectCalendarToday() {
       const now = new Date();
-      const curMonth = KHMER_MONTHS[now.getMonth()];
-      const mSel = document.getElementById('monthSelect');
-      if (mSel && curMonth) mSel.value = curMonth;
-
-      setCurrentKhmerDay();
-      setCurrentKhmerYear();
-
-      for (let i = 1; i <= 5; i++) {
-        document.getElementById(`img${i}`).src = PLACEHOLDER_IMG;
-      }
-
-      if (TEACHER_NAME) {
-        document.getElementById('teacherNameDisplay').innerText = TEACHER_NAME;
-      }
-
-      initDraggableBlock('teacherNameDisplay', DRAG_KEY);
-      await initClassesDropdown();
-
-      alignFooterLabels();
-      setTimeout(alignFooterLabels, 300);
-
-      if (window.innerWidth <= 840) {
-        setFitZoom();
-      }
-    });
-
-    async function initClassesDropdown() {
-      const adminBox = document.getElementById('adminClassBox');
-      const teacherBadge = document.getElementById('teacherClassBadge');
-      const select = document.getElementById('classSelect');
-      const cleanCls = cleanGrade(USER_CLASS);
-
-      if (!IS_ADMIN) {
-        adminBox.style.display = 'none';
-        if (cleanCls) {
-          document.getElementById('teacherClassText').innerText = 'ថ្នាក់ទី ' + cleanCls;
-          teacherBadge.style.display = 'inline-flex';
-          select.innerHTML = `<option value="${cleanCls}">ថ្នាក់ទី ${cleanCls}</option>`;
-          select.value = cleanCls;
-          loadHonorRoll();
-        } else {
-          teacherBadge.style.display = 'inline-flex';
-          document.getElementById('teacherClassText').innerText = 'មិនទាន់កំណត់ថ្នាក់';
-        }
-        return;
-      }
-
-      teacherBadge.style.display = 'none';
-      adminBox.style.display = 'inline-flex';
-
-      try {
-        const { data, error } = await sb.from('students').select('grade');
-        let classes = [];
-        if (!error && data) {
-          classes = [...new Set(data.map(d => cleanGrade(d.grade)).filter(Boolean))];
-        }
-        if (!classes.length) classes = ['១', '២', '៣', '៤(ក)', '៤(ខ)', '៥', '៦'];
-
-        select.innerHTML = classes.map(c => `<option value="${c}">ថ្នាក់ទី ${c}</option>`).join('');
-        if (cleanCls && classes.includes(cleanCls)) select.value = cleanCls;
-        loadHonorRoll();
-      } catch (err) {
-        select.innerHTML = '<option value="">កំហុសទាញយកថ្នាក់</option>';
-      }
+      applySelectedDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
+      closeCalendarPopup();
     }
 
-    function togglePeriodOptions() {
-      const type = document.getElementById('typeSelect').value;
-      const container = document.getElementById('periodContainer');
-      const nowKhMonth = KHMER_MONTHS[new Date().getMonth()];
+    /* ══════════════ 🏫 SUPABASE DATA & ROLE LOGIC ══════════════ */
+    async function initPage() {
+      if (!CURRENT_USER || !CURRENT_USER.username) {
+        document.getElementById('authDeniedWrap').style.display = 'flex';
+        return;
+      }
+      document.getElementById('mainPageContent').style.display = 'block';
 
-      if (type === 'ប្រចាំខែ') {
-        container.innerHTML = `
-          <span class="toolbar-label"><i class="fa-solid fa-calendar-days" style="color:#f59e0b;"></i> រយៈពេល៖</span>
-          <select id="monthSelect" class="form-control" onchange="loadHonorRoll()">
-            ${KHMER_MONTHS.map(m => `<option value="${m}" ${m === nowKhMonth ? 'selected' : ''}>${m}</option>`).join('')}
-          </select>
-        `;
-      } else if (type === 'ការប្រឡងឆមាស') {
-        container.innerHTML = `
-          <span class="toolbar-label"><i class="fa-solid fa-calendar-days" style="color:#f59e0b;"></i> រយៈពេល៖</span>
-          <select id="monthSelect" class="form-control" onchange="loadHonorRoll()">
-            <option value="ឆមាសទី១">ការប្រឡងឆមាសទី១</option>
-            <option value="ឆមាសទី២">ការប្រឡងឆមាសទី២</option>
-          </select>
-        `;
-      } else if (type === 'ប្រចាំឆមាស') {
-        container.innerHTML = `
-          <span class="toolbar-label"><i class="fa-solid fa-calendar-days" style="color:#f59e0b;"></i> រយៈពេល៖</span>
-          <select id="monthSelect" class="form-control" onchange="loadHonorRoll()">
-            <option value="ប្រចាំឆមាសទី១">ប្រចាំឆមាសទី១ (សរុប)</option>
-            <option value="ប្រចាំឆមាសទី២">ប្រចាំឆមាសទី២ (សរុប)</option>
-          </select>
-        `;
-      } else if (type === 'ប្រចាំឆ្នាំ') {
-        container.innerHTML = `
-          <span class="toolbar-label"><i class="fa-solid fa-calendar-days" style="color:#f59e0b;"></i> រយៈពេល៖</span>
-          <select id="monthSelect" class="form-control" onchange="loadHonorRoll()">
-            <option value="ប្រចាំឆ្នាំ">ពេញមួយឆ្នាំសិក្សា</option>
-          </select>
-        `;
+      // 🌟 បង្ហាញ Dropdown ថ្នាក់សម្រាប់តែ ADMIN ប៉ុណ្ណោះ
+      const adminBox = document.getElementById('adminClassBox');
+      const selClass = document.getElementById('selClass');
+
+      if (IS_ADMIN) {
+        adminBox.style.display = 'inline-flex';
+        try {
+          const { data } = await sb.from('students').select('grade');
+          let classes = [...new Set((data || []).map(d => cleanGrade(d.grade)).filter(Boolean))];
+          if (!classes.length) classes = ['១', '២', '៣', '៤(ក)', '៤(ខ)', '៥', '៦'];
+          classes.sort((a,b) => a.localeCompare(b, 'km'));
+          selClass.innerHTML = classes.map(c => `<option value="${c}">ថ្នាក់ទី ${c}</option>`).join('');
+          currentSelectedClass = cleanGrade(selClass.value) || '៤(ក)';
+        } catch(e) {
+          selClass.innerHTML = '<option value="៤(ក)">ថ្នាក់ទី ៤(ក)</option>';
+        }
+      } else {
+        adminBox.style.display = 'none';
+        currentSelectedClass = cleanGrade(USER_CLASS);
+      }
+
+      changePeriodType();
+      applySelectedDate(2026, 10, 18);
+      await loadHonorRoll();
+    }
+
+    function changePeriodType() {
+      const type = document.getElementById('selPeriodType').value;
+      const box = document.getElementById('periodChildContainer');
+
+      if (type === 'monthly') {
+        box.innerHTML = `<select id="selPeriodChild" class="tb-select" onchange="loadHonorRoll()">
+          ${KHMER_MONTHS.map(m => `<option value="${m}" ${m==='តុលា'?'selected':''}>${m}</option>`).join('')}
+        </select>`;
+      } else if (type === 'exam_semester') {
+        box.innerHTML = `<select id="selPeriodChild" class="tb-select" onchange="loadHonorRoll()">
+          <option value="ឆមាសទី១">ឆមាសទី១</option>
+          <option value="ឆមាសទី២">ឆមាសទី២</option>
+        </select>`;
+      } else if (type === 'semester_total') {
+        box.innerHTML = `<select id="selPeriodChild" class="tb-select" onchange="loadHonorRoll()">
+          <option value="ប្រចាំឆមាសទី១">ប្រចាំឆមាសទី១</option>
+          <option value="ប្រចាំឆមាសទី២">ប្រចាំឆមាសទី២</option>
+        </select>`;
+      } else {
+        box.innerHTML = '';
       }
       loadHonorRoll();
     }
 
-    function getPeriodLabel(period) {
-      const labels = {
-        "ឆមាសទី១": "ការប្រឡងឆមាសទី១",
-        "ឆមាសទី២": "ការប្រឡងឆមាសទី២",
-        "ប្រចាំឆមាសទី១": "ប្រចាំឆមាសទី១ (សរុប)",
-        "ប្រចាំឆមាសទី២": "ប្រចាំឆមាសទី២ (សរុប)",
-        "ប្រចាំឆ្នាំ": "ប្រចាំឆ្នាំសិក្សា"
-      };
-      return labels[period] || ("ប្រចាំខែ " + period);
-    }
-
-    /* 6. LOAD HONOR ROLL TOP 5 STUDENTS FROM SUPABASE */
     async function loadHonorRoll() {
-      const classSelect = document.getElementById('classSelect');
-      if (!classSelect || !classSelect.value) return;
-
-      const curPure = cleanGrade(classSelect.value || USER_CLASS);
-      const type = document.getElementById('typeSelect').value;
-      const monthSelect = document.getElementById('monthSelect');
-      if (!monthSelect) return;
-      const period = monthSelect.value;
-
-      document.getElementById('lblClass').innerText = "ថ្នាក់ទី " + curPure;
-      document.getElementById('lblMonth').innerText = getPeriodLabel(period);
-
-      const inputMonthEl = document.getElementById('inputMonth');
-      if (inputMonthEl) {
-        inputMonthEl.value = type === 'ប្រចាំខែ' ? period : '';
+      if (IS_ADMIN) {
+        const sc = document.getElementById('selClass');
+        if (sc && sc.value) currentSelectedClass = cleanGrade(sc.value);
+      } else {
+        currentSelectedClass = cleanGrade(USER_CLASS);
       }
 
-      for (let i = 1; i <= 5; i++) {
-        document.getElementById(`name${i}`).innerText = "កំពុងទាញយក...";
-        document.getElementById(`img${i}`).src = PLACEHOLDER_IMG;
-        document.getElementById(`rank${i}`).style.display = "block";
-      }
+      document.getElementById('lblDocumentClass').innerText = `ថ្នាក់ទី${currentSelectedClass}`;
 
+      const type = document.getElementById('selPeriodType').value;
+      const childEl = document.getElementById('selPeriodChild');
+      const periodVal = childEl ? childEl.value : '';
+
+      let pLabel = "ប្រចាំឆ្នាំ";
+      if (type === 'monthly') pLabel = `ប្រចាំខែ ${periodVal}`;
+      else if (type === 'exam_semester') pLabel = `ការប្រឡង ${periodVal}`;
+      else if (type === 'semester_total') pLabel = periodVal;
+      document.getElementById('lblPeriodTitle').innerText = pLabel;
+
+      // ទាញយកគ្រូថ្នាក់
       try {
-        // ក. ទាញយកសិស្សសកម្មក្នុងថ្នាក់
-        const { data: stList, error: stErr } = await sb
-          .from('students')
-          .select('id, student_id, student_name, gender, grade, photo_url, dropout_semester')
-          .order('id', { ascending: true });
+        const { data: users } = await sb.from('users').select('*');
+        const teacher = (users || []).find(u => cleanGrade(u.assigned_classes || u.assigned_class) === currentSelectedClass);
+        if (teacher) document.getElementById('lblTeacherName').innerText = teacher.teacher_name || '';
+      } catch(e) {}
 
-        if (stErr) throw stErr;
+      // ទាញយកសិស្ស និងពិន្ទុ Top 5
+      try {
+        const { data: students } = await sb.from('students').select('id, student_id, student_name, grade');
+        const classStudents = (students || []).filter(s => cleanGrade(s.grade) === currentSelectedClass);
+        const sIds = classStudents.map(s => String(s.student_id || s.id));
 
-        const isSem2 = ['ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា'].includes(period) || period === 'ឆមាសទី២' || period === 'ប្រចាំឆមាសទី២';
-        const students = (stList || [])
-          .filter(s => cleanGrade(s.grade) === curPure)
-          .filter(s => {
-            const drop = String(s.dropout_semester || '').trim();
-            if (isSem2 && (drop.includes('ឆមាស១') || drop.includes('ឆមាសទី១') || drop === '១')) return false;
-            return true;
-          });
+        const { data: scores } = await sb.from('scores').select('student_id, average, period, score_type').in('student_id', sIds);
 
-        if (!students.length) {
-          renderHonorRoll([]);
-          return;
+        const list = classStudents.map(st => {
+          const sid = String(st.student_id || st.id);
+          const sc = (scores || []).find(s => String(s.student_id) === sid);
+          return { name: st.student_name, avg: Number(sc?.average || 0) };
+        });
+
+        list.sort((a,b) => b.avg - a.avg);
+        const top5 = list.slice(0, 5);
+
+        if (top5.length > 0) {
+          currentTop5Students = top5;
+          while (currentTop5Students.length < 5) currentTop5Students.push({ name: '...' });
         }
+      } catch(e) {}
 
-        const studentIds = students.map(s => String(s.student_id || s.id));
-        let studentRanks = [];
-
-        // ខ. គណនាពិន្ទុតាមប្រភេទ (ខែ, ប្រឡងឆមាស, ប្រចាំឆមាស, ប្រចាំឆ្នាំ)
-        if (type === 'ប្រចាំឆមាស') {
-          const semMonths = period === 'ប្រចាំឆមាសទី១'
-            ? ['វិច្ឆិកា', 'ធ្នូ', 'មករា', 'កុម្ភៈ', 'មីនា', 'មេសា']
-            : ['ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា'];
-          const examPeriod = period === 'ប្រចាំឆមាសទី១' ? 'ឆមាសទី១' : 'ឆមាសទី២';
-
-          const { data: scData } = await sb
-            .from('scores')
-            .select('student_id, score_type, period, average')
-            .eq('assigned_class', curPure)
-            .in('student_id', studentIds);
-
-          studentRanks = students.map(st => {
-            const sId = String(st.student_id || st.id);
-            const myScores = (scData || []).filter(r => String(r.student_id) === sId);
-
-            let sumAvgs = 0, countAvgs = 0;
-            semMonths.forEach(m => {
-              const row = myScores.find(sc => sc.score_type === 'monthly' && sc.period === m);
-              if (row && Number(row.average) > 0) { sumAvgs += Number(row.average); countAvgs++; }
-            });
-            const examRow = myScores.find(sc => sc.score_type === 'semester' && sc.period === examPeriod);
-            if (examRow && Number(examRow.average) > 0) { sumAvgs += Number(examRow.average); countAvgs++; }
-
-            const finalAvg = countAvgs > 0 ? (sumAvgs / countAvgs) : 0;
-            return {
-              id: sId,
-              name: st.student_name || 'គ្មានឈ្មោះ',
-              imageUrl: st.photo_url || '',
-              avg: finalAvg
-            };
-          });
-
-        } else if (type === 'ប្រចាំឆ្នាំ') {
-          const { data: scData } = await sb
-            .from('scores')
-            .select('student_id, score_type, period, average')
-            .eq('assigned_class', curPure)
-            .in('student_id', studentIds);
-
-          studentRanks = students.map(st => {
-            const sId = String(st.student_id || st.id);
-            const myScores = (scData || []).filter(r => String(r.student_id) === sId);
-
-            const sem1Months = ['វិច្ឆិកា', 'ធ្នូ', 'មករា', 'កុម្ភៈ', 'មីនា', 'មេសា'];
-            const sem2Months = ['ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា'];
-
-            let s1Sum = 0, s1Count = 0, s2Sum = 0, s2Count = 0;
-            sem1Months.forEach(m => {
-              const r = myScores.find(sc => sc.score_type === 'monthly' && sc.period === m);
-              if (r && Number(r.average) > 0) { s1Sum += Number(r.average); s1Count++; }
-            });
-            const e1 = myScores.find(sc => sc.score_type === 'semester' && sc.period === 'ឆមាសទី១');
-            if (e1 && Number(e1.average) > 0) { s1Sum += Number(e1.average); s1Count++; }
-
-            sem2Months.forEach(m => {
-              const r = myScores.find(sc => sc.score_type === 'monthly' && sc.period === m);
-              if (r && Number(r.average) > 0) { s2Sum += Number(r.average); s2Count++; }
-            });
-            const e2 = myScores.find(sc => sc.score_type === 'semester' && sc.period === 'ឆមាសទី២');
-            if (e2 && Number(e2.average) > 0) { s2Sum += Number(e2.average); s2Count++; }
-
-            const avg1 = s1Count > 0 ? (s1Sum / s1Count) : 0;
-            const avg2 = s2Count > 0 ? (s2Sum / s2Count) : 0;
-
-            let yearlyAvg = 0;
-            if (avg1 > 0 && avg2 > 0) yearlyAvg = (avg1 + avg2) / 2;
-            else if (avg1 > 0) yearlyAvg = avg1;
-            else if (avg2 > 0) yearlyAvg = avg2;
-
-            return {
-              id: sId,
-              name: st.student_name || 'គ្មានឈ្មោះ',
-              imageUrl: st.photo_url || '',
-              avg: yearlyAvg
-            };
-          });
-
-        } else {
-          // ប្រចាំខែ ឬ ការប្រឡងឆមាស
-          const targetType = type === 'ការប្រឡងឆមាស' ? 'semester' : 'monthly';
-          const { data: scData } = await sb
-            .from('scores')
-            .select('student_id, average')
-            .eq('assigned_class', curPure)
-            .eq('score_type', targetType)
-            .eq('period', period)
-            .in('student_id', studentIds);
-
-          const scoreMap = {};
-          (scData || []).forEach(r => scoreMap[String(r.student_id)] = Number(r.average) || 0);
-
-          studentRanks = students.map(st => {
-            const sId = String(st.student_id || st.id);
-            return {
-              id: sId,
-              name: st.student_name || 'គ្មានឈ្មោះ',
-              imageUrl: st.photo_url || '',
-              avg: scoreMap[sId] || 0
-            };
-          });
-        }
-
-        // គ. តម្រៀបរកសិស្សកំពូលទាំង ៥ (Top 5)
-        studentRanks.sort((a, b) => Number(b.avg) - Number(a.avg));
-        const top5 = studentRanks.filter(s => s.avg > 0).slice(0, 5);
-
-        renderHonorRoll(top5);
-
-      } catch (err) {
-        console.error("loadHonorRoll error:", err);
-        renderHonorRoll([]);
-      }
+      renderActiveTemplate();
     }
 
-    function renderHonorRoll(topStudents) {
-      for (let i = 1; i <= 5; i++) {
-        document.getElementById(`name${i}`).innerText = "-";
-        document.getElementById(`img${i}`).src = PLACEHOLDER_IMG;
-        document.getElementById(`rank${i}`).style.display = "none";
+    function goBack() {
+      if (window.parent && window.parent !== window) {
+        try { window.parent.postMessage({ type: 'NAVIGATE', page: 'reportsHub' }, '*'); return; } catch(e) {}
       }
-
-      if (!topStudents || topStudents.length === 0) return;
-
-      topStudents.forEach((s, idx) => {
-        const num = idx + 1;
-        if (num > 5) return;
-
-        document.getElementById(`rank${num}`).style.display = "block";
-        document.getElementById(`name${num}`).innerText = s.name || '';
-
-        if (s.imageUrl && s.imageUrl.trim() !== '') {
-          document.getElementById(`img${num}`).src = s.imageUrl;
-        } else {
-          document.getElementById(`img${num}`).src = PLACEHOLDER_IMG;
-        }
-      });
-
-      alignFooterLabels();
+      if (window.history.length > 1) window.history.back();
     }
+
+    function downloadPDF() {
+      const element = document.getElementById('honorPaper');
+      const opt = {
+        margin: 0,
+        filename: `តារាងកិត្តិយស_ថ្នាក់ទី_${currentSelectedClass}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2.2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().from(element).set(opt).save();
+    }
+
+    function printReport() {
+      window.print();
+    }
+
+    window.addEventListener('DOMContentLoaded', initPage);
   </script>
-
 </body>
 </html>
