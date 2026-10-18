@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>សេចក្តីជូនដំណឹងអវត្តមានសិស្ស</title>
 
-  <!-- 🔤 Google Fonts Khmer -->
+  <!-- 🔤 Google Fonts Khmer (Battambang & Moul) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;800;900&family=Moul&display=swap" rel="stylesheet">
@@ -80,24 +80,34 @@
     .tb-btn {
       height: 38px; padding: 0 13px; border-radius: 11px; border: 1px solid rgba(255, 255, 255, 0.15);
       background: #1e293b; color: #f8fafc; font-size: 13px; font-weight: 700; cursor: pointer;
-      display: inline-flex; align-items: center; justify-content: space-between; gap: 7px;
+      display: inline-flex; align-items: center; justify-content: space-between; gap: 8px;
       transition: all .15s ease; outline: none; white-space: nowrap; user-select: none;
+      font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
     }
     .tb-btn:hover { background: #334155; border-color: rgba(255, 255, 255, 0.3); }
     .tb-btn.primary { background: #0284c7; border-color: transparent; }
     .tb-btn.primary:hover { background: #0369a1; }
 
-    /* Custom Dropdown / Select Boxes */
+    /* 🌟 Custom Dropdown (Font Battambang) */
     .dd-wrap { position: relative; display: inline-block; }
-    .tb-select-box {
-      height: 38px; border-radius: 11px; border: 1.5px solid #38bdf8;
-      background: #1e293b; color: #f8fafc; padding: 0 12px; font-size: 13px; font-weight: 700;
-      outline: none; cursor: pointer; display: flex; align-items: center; gap: 6px;
+    .dd-popup {
+      display: none; position: absolute; top: calc(100% + 6px); left: 0; min-width: 240px; max-height: 290px; overflow-y: auto;
+      background: #ffffff; border-radius: 16px; box-shadow: 0 14px 35px rgba(0, 0, 0, 0.35);
+      border: 1px solid #e2e8f0; padding: 6px; z-index: 1000; animation: ddIn .15s ease-out;
+    }
+    .dd-popup.show { display: block; }
+    @keyframes ddIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+    .dd-item {
+      padding: 10px 14px; border-radius: 12px; font-size: 13.5px; font-weight: 700;
+      color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; transition: all .12s; white-space: nowrap;
       font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
     }
-    .tb-select-box option {
-      background: #1e293b; color: #f8fafc; font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
-    }
+    .dd-item:hover { background: #f1f5f9; }
+    .dd-item.active { background: #e0f2fe; color: #0284c7; }
+    .dd-item-left { display: flex; align-items: center; gap: 8px; }
+    .dd-item i { font-size: 13px; }
 
     /* ══════════════ 📄 PAPER CONTAINER (A4 PORTRAIT) ══════════════ */
     .report-paper-wrap {
@@ -108,7 +118,7 @@
     .notice-paper {
       width: 210mm; min-height: 297mm; background: #ffffff; color: #000000;
       padding: 18mm 20mm 20mm; border-radius: 4px; box-shadow: 0 12px 45px rgba(0, 0, 0, 0.45);
-      position: relative; transform-origin: top left; font-size: 13.5px; line-height: 1.85;
+      position: relative; transform-origin: top left; font-size: 13.8px; line-height: 1.95;
     }
     .notice-paper * { color: #000000; }
 
@@ -127,29 +137,22 @@
       font-size: 19px; color: #dc2626 !important; font-weight: normal; letter-spacing: 0.5px;
     }
 
-    /* 📝 Content Styling */
+    /* 📝 Content Styling ដូចគំរូដើម */
     .doc-body-text {
-      text-align: justify; font-size: 13.8px; line-height: 1.95;
+      text-align: justify; font-size: 14px; line-height: 1.95;
     }
     .sub-greeting {
-      font-size: 14.5px; color: #2563eb !important; margin: 8px 0 6px;
+      font-size: 15px; color: #2563eb !important; margin: 10px 0 8px; text-align: center;
     }
     .indent-p {
-      text-indent: 36px; margin-bottom: 8px;
+      text-indent: 36px; margin-bottom: 10px;
     }
 
-    /* Highlight Values */
+    /* 🌟 ពណ៌ Highlight តាមគំរូរូបភាពដើម ១០០% */
     .val-blue { color: #1e3a8a !important; font-weight: 800; }
     .val-purple { color: #7c3aed !important; font-weight: 800; }
     .val-red { color: #dc2626 !important; font-weight: 800; }
     .val-green { color: #059669 !important; font-weight: 800; }
-
-    .inline-editable {
-      outline: none; border-bottom: 1px dashed #94a3b8; padding: 0 3px; display: inline-block;
-    }
-    .inline-editable:hover, .inline-editable:focus {
-      background: rgba(2, 132, 199, 0.08); border-radius: 4px;
-    }
 
     /* ✍️ Signatures */
     .sign-row {
@@ -297,25 +300,29 @@
         <i class="fa-solid fa-arrow-left"></i> <span>ត្រឡប់</span>
       </button>
 
-      <!-- 🏫 ថ្នាក់ Dropdown -->
+      <!-- 🏫 ថ្នាក់ Dropdown (Font Battambang) -->
       <div class="dd-wrap">
-        <select class="tb-select-box" id="classSelect" onchange="onClassChange(this.value)"></select>
+        <button type="button" class="tb-btn" id="btnClassSelect" onclick="toggleDropdown('ddClassSelect')">
+          <span style="display:flex; align-items:center; gap:7px;">
+            <i class="fa-solid fa-school" style="color:#38bdf8;"></i>
+            <span id="txtClassSelect">ថ្នាក់ទី ៤(ក)</span>
+          </span>
+          <i class="fa-solid fa-chevron-down" style="font-size:11px; margin-left:4px;"></i>
+        </button>
+        <div class="dd-popup" id="ddClassSelect"></div>
       </div>
 
-      <!-- 👤 ជ្រើសរើសសិស្ស -->
+      <!-- 👤 ជ្រើសរើសសិស្សដែលអវត្តមាន ៣ ថ្ងៃជាប់គ្នា (Font Battambang) -->
       <div class="dd-wrap">
-        <select class="tb-select-box" id="studentSelect" onchange="onStudentSelect(this.value)">
-          <option value="">-- ជ្រើសរើសសិស្ស --</option>
-        </select>
+        <button type="button" class="tb-btn" id="btnStudentSelect" onclick="toggleDropdown('ddStudentSelect')">
+          <span style="display:flex; align-items:center; gap:7px;">
+            <i class="fa-solid fa-user-xmark" style="color:#f43f5e;"></i>
+            <span id="txtStudentSelect">កំពុងពិនិត្យអវត្តមាន...</span>
+          </span>
+          <i class="fa-solid fa-chevron-down" style="font-size:11px; margin-left:4px;"></i>
+        </button>
+        <div class="dd-popup" id="ddStudentSelect" style="min-width:280px;"></div>
       </div>
-
-      <!-- 🕒 ចំនួនថ្ងៃឈប់ -->
-      <button type="button" class="tb-btn" onclick="editAbsentDays()">
-        <span style="color:#94a3b8; font-weight:normal;">ឈប់ចំនួន៖</span>
-        <span id="badgeAbsentDays" style="background:rgba(255,255,255,0.1); padding:2px 8px; border-radius:6px; color:#38bdf8;">
-          ៣ ថ្ងៃ
-        </span>
-      </button>
 
       <!-- 📅 ថ្ងៃចុះហត្ថលេខា (បើកប្រតិទិនខ្មែរ) -->
       <button type="button" class="tb-btn" onclick="openKhmerCalendar()">
@@ -341,7 +348,7 @@
       </button>
     </div>
 
-    <!-- 📄 PRINTABLE NOTICE PAPER (ដូចរូបភាពគំរូ ១០០%) -->
+    <!-- 📄 PRINTABLE NOTICE PAPER (រចនា Font & ពណ៌តាមគំរូដើម ១០០%) -->
     <div class="report-paper-wrap">
       <div id="paperScaler">
         <div class="notice-paper" id="printableNoticePaper">
@@ -364,30 +371,30 @@
             <h1 class="f-moul">សេចក្តីជូនដំណឹង</h1>
           </div>
 
-          <!-- 📝 Body Paragraph 1 -->
+          <!-- 📝 Body Paragraph 1 (កំណត់មកស្រាប់ មិនបាច់កែដៃ) -->
           <div class="doc-body-text">
             <div class="indent-p">
-              ខ្ញុំបាទ/នាងខ្ញុំឈ្មោះ <span class="val-blue inline-editable" id="valTeacherName" contenteditable="true">សេង សុភាស់</span>
-              ជាគ្រូប្រចាំ <span class="val-blue inline-editable" id="valClass" contenteditable="true">ថ្នាក់ទី ៤(ក)</span>
+              <span id="txtTeacherPronoun">ខ្ញុំបាទ</span>ឈ្មោះ <span class="val-blue" id="valTeacherName">សេង សុភាស់</span>
+              ជាគ្រូប្រចាំ <span class="val-blue" id="valClass">ថ្នាក់ទី ៤(ក)</span>
               នៃ <span class="val-blue">សាលាបឋមសិក្សា កំពង់ល្ពៅ</span>
-              ឃុំ/សង្កាត់ <span class="val-blue inline-editable" id="valCommune" contenteditable="true">កំពង់ល្ពៅ</span>
-              ស្រុក/ខណ្ឌ <span class="val-blue inline-editable" id="valDistrict" contenteditable="true">សំឡូត</span>
-              រាជធានី/ខេត្ត <span class="val-blue inline-editable" id="valProvince" contenteditable="true">បាត់ដំបង</span> ។
+              ឃុំ/សង្កាត់ <span class="val-blue" id="valCommune">កំពង់ល្ពៅ</span>
+              ស្រុក/ខណ្ឌ <span class="val-blue" id="valDistrict">សំឡូត</span>
+              រាជធានី/ខេត្ត <span class="val-blue" id="valProvince">បាត់ដំបង</span> ។
             </div>
 
-            <div class="f-moul sub-greeting" style="text-align:center;">សូមជម្រាបមក</div>
+            <div class="f-moul sub-greeting">សូមជម្រាបមក</div>
 
             <div class="indent-p">
               លោក លោកស្រីដែលជាអាណាព្យាបាលរបស់សិស្សឈ្មោះ
-              <span class="val-purple inline-editable" id="valStudentName" contenteditable="true">បូ សុវណ្ណបញ្ញា</span>
-              ជាសិស្ស <span class="val-blue inline-editable" id="valStudentClass" contenteditable="true">ថ្នាក់ទី ៤(ក)</span>
+              <span class="val-purple" id="valStudentName">បូ សុវណ្ណបញ្ញា</span>
+              ជាសិស្ស <span class="val-blue" id="valStudentClass">ថ្នាក់ទី ៤(ក)</span>
               បានជ្រាបថា៖ សិស្សមានឈ្មោះខាងលើនេះបានឈប់មិនឃើញមករៀនចំនួន
-              <span class="val-red inline-editable" id="valAbsentDays" contenteditable="true">៣</span> ថ្ងៃមកហើយ
+              <span class="val-red" id="valAbsentDays">៣</span> ថ្ងៃមកហើយ
               ដោយសាលាមិនបានដឹងមូលហេតុ ។
             </div>
 
             <div class="indent-p">
-              អាស្រ័យហេតុនេះ សូមលោក លោកស្រីជ្រាបជាព័ត៌មាន និងមេត្តាផ្តល់ដំណឹងតាមរយៈសៀវភៅនេះដល់ខ្ញុំបាទ/នាងខ្ញុំ ដោយក្តីអនុគ្រោះ ។
+              អាស្រ័យហេតុនេះ សូមលោក លោកស្រីជ្រាបជាព័ត៌មាន និងមេត្តាផ្តល់ដំណឹងតាមរយៈសៀវភៅនេះដល់<span id="txtTeacherPronounEnd">ខ្ញុំបាទ</span> ដោយក្តីអនុគ្រោះ ។
             </div>
           </div>
 
@@ -401,13 +408,13 @@
             </div>
 
             <div class="sign-col">
-              <div id="lblLunarDate" class="inline-editable" contenteditable="true" style="font-size:12px;">ថ្ងៃសៅរ៍ ៦កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០</div>
-              <div id="lblSolarDate" class="inline-editable" contenteditable="true" style="font-size:12px; margin-top:2px;">ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃសៅរ៍ ទី១៧ ខែតុលា ឆ្នាំ២០២៦</div>
+              <div id="lblLunarDate" style="font-size:12.5px;">ថ្ងៃសៅរ៍ ៦កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០</div>
+              <div id="lblSolarDate" style="font-size:12.5px; margin-top:2px;">ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃសៅរ៍ ទី១៧ ខែតុលា ឆ្នាំ២០២៦</div>
               <div class="f-moul sign-title" style="margin-top:5px;">គ្រូបន្ទុកថ្នាក់</div>
               <div class="sign-space"></div>
               <div class="sign-name" id="valTeacherSignName">សេង សុភាស់</div>
-              <div style="font-size:12.5px; margin-top:3px;">
-                លេខទូរស័ព្ទ៖ <span id="valTeacherPhone" class="inline-editable" contenteditable="true">០៨៧ ៣១ ៣១ ៦៦</span>
+              <div style="font-size:13px; margin-top:4px; font-weight:700;">
+                លេខទូរស័ព្ទ៖ <span id="valTeacherPhone" class="val-blue">០៨៧ ៣១ ៣១ ៦៦</span>
               </div>
             </div>
           </div>
@@ -545,119 +552,232 @@
     }
 
     const USER_CLASS = CURRENT_USER?.assigned_classes || CURRENT_USER?.assigned_class || "៤(ក)";
-    const TEACHER_NAME = CURRENT_USER?.teacher_name || "សេង សុភាស់";
-    const TEACHER_PHONE = CURRENT_USER?.phone || "០៨៧ ៣១ ៣១ ៦៦";
+    const IS_ADMIN = String(CURRENT_USER?.role || '').toLowerCase().trim() === 'admin';
 
     let currentSelectedClass = cleanGrade(USER_CLASS) || '៤(ក)';
-    let currentStudentsList = [];
+    let absentEligibleStudents = [];
 
     function cleanGrade(g) {
-      return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').trim();
+      return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').replace(/[()\-_\s]/g, '').trim();
     }
 
     /* =========================================================
-       2. LOAD CLASSES & STUDENTS DYNAMICALLY
+       2. CUSTOM DROPDOWN ENGINE (FONT BATTAMBANG)
     ========================================================= */
-    async function initClassesAndStudents() {
-      const clsSelect = document.getElementById('classSelect');
+    function toggleDropdown(id) {
+      const p = document.getElementById(id);
+      const isShow = p.classList.contains('show');
+      closeAllDropdowns();
+      if (!isShow) p.classList.add('show');
+    }
+
+    function closeAllDropdowns() {
+      document.querySelectorAll('.dd-popup').forEach(p => p.classList.remove('show'));
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.dd-wrap')) closeAllDropdowns();
+    });
+
+    /* =========================================================
+       3. LOAD CLASSES & TEACHER INFO DIRECTLY FROM DATABASE
+    ========================================================= */
+    async function initClassesDropdown() {
+      const dd = document.getElementById('ddClassSelect');
 
       try {
-        const { data: stList } = await sb.from('students').select('*').order('id', { ascending: true });
-        let classes = [...new Set((stList || []).map(s => cleanGrade(s.grade)).filter(Boolean))];
+        const { data: stList } = await sb.from('students').select('grade');
+        let rawClasses = [...new Set((stList || []).map(s => s.grade).filter(Boolean))];
+        if (!rawClasses.length) rawClasses = ['១', '២', '៣', '៤(ក)', '៤(ខ)', '៥', '៦'];
+        rawClasses.sort((a,b) => a.localeCompare(b, 'km'));
 
-        if (!classes.length) classes = ['១', '២', '៣', '៤(ក)', '៤(ខ)', '៥', '៦'];
-        classes.sort((a,b) => a.localeCompare(b, 'km'));
-
-        clsSelect.innerHTML = classes.map(c => `
-          <option value="${c}" ${c === currentSelectedClass ? 'selected' : ''}>ថ្នាក់ទី ${c}</option>
+        dd.innerHTML = rawClasses.map(c => `
+          <div class="dd-item ${cleanGrade(c) === currentSelectedClass ? 'active' : ''}" data-class="${c}" onclick="selectClass('${c}')">
+            <span class="dd-item-left"><i class="fa-solid fa-school" style="color:var(--primary);"></i> ថ្នាក់ទី ${c}</span>
+            <i class="fa-solid fa-check" style="${cleanGrade(c) === currentSelectedClass ? '' : 'display:none;'}"></i>
+          </div>
         `).join('');
 
-        if (!classes.includes(currentSelectedClass)) {
-          currentSelectedClass = classes[0];
-          clsSelect.value = currentSelectedClass;
-        }
-
-        onClassChange(currentSelectedClass);
+        const defaultClass = rawClasses.find(c => cleanGrade(c) === currentSelectedClass) || rawClasses[0];
+        selectClass(defaultClass);
       } catch(e) {
-        clsSelect.innerHTML = `
-          <option value="៤(ក)" selected>ថ្នាក់ទី ៤(ក)</option>
-          <option value="៥">ថ្នាក់ទី ៥</option>
-          <option value="៦">ថ្នាក់ទី ៦</option>
-        `;
-        onClassChange('៤(ក)');
+        selectClass('៤(ក)');
       }
     }
 
-    async function onClassChange(cls) {
-      currentSelectedClass = cleanGrade(cls);
-      document.getElementById('valClass').innerText = `ថ្នាក់ទី ${currentSelectedClass}`;
-      document.getElementById('valStudentClass').innerText = `ថ្នាក់ទី ${currentSelectedClass}`;
+    async function selectClass(rawClass) {
+      currentSelectedClass = cleanGrade(rawClass);
+      const displayClsText = rawClass.startsWith('ថ្នាក់') ? rawClass : `ថ្នាក់ទី ${rawClass}`;
+      document.getElementById('txtClassSelect').innerText = displayClsText;
+      document.getElementById('valClass').innerText = displayClsText;
+      document.getElementById('valStudentClass').innerText = displayClsText;
 
-      // ទាញយកឈ្មោះគ្រូតាមថ្នាក់
-      try {
-        const { data: uData } = await sb.from('users').select('teacher_name, phone').eq('assigned_classes', currentSelectedClass).maybeSingle();
-        if (uData && uData.teacher_name) {
-          document.getElementById('valTeacherName').innerText = uData.teacher_name;
-          document.getElementById('valTeacherSignName').innerText = uData.teacher_name;
-          if (uData.phone) document.getElementById('valTeacherPhone').innerText = toKhmerNum(uData.phone);
-        } else {
-          document.getElementById('valTeacherName').innerText = TEACHER_NAME;
-          document.getElementById('valTeacherSignName').innerText = TEACHER_NAME;
-          document.getElementById('valTeacherPhone').innerText = toKhmerNum(TEACHER_PHONE);
-        }
-      } catch(e) {
-        document.getElementById('valTeacherName').innerText = TEACHER_NAME;
-        document.getElementById('valTeacherSignName').innerText = TEACHER_NAME;
-      }
+      document.querySelectorAll('#ddClassSelect .dd-item').forEach(el => {
+        const itemClass = cleanGrade(el.getAttribute('data-class'));
+        const isActive = (itemClass === currentSelectedClass);
+        el.classList.toggle('active', isActive);
+        const icon = el.querySelector('.fa-check');
+        if (icon) icon.style.display = isActive ? 'inline' : 'none';
+      });
 
-      loadStudentsForClass(currentSelectedClass);
+      closeAllDropdowns();
+
+      // 🌟 ទាញយកឈ្មោះគ្រូ ភេទគ្រូ និងលេខទូរស័ព្ទពី Table users
+      await syncTeacherInfoFromDatabase(rawClass);
+
+      // 🌟 ពិនិត្យចាប់សិស្សដែលអវត្តមាន ៣ ថ្ងៃជាប់គ្នាក្នុងថ្នាក់នេះ
+      await load3ConsecutiveAbsentStudents();
     }
 
-    async function loadStudentsForClass(cls) {
-      const studentSelect = document.getElementById('studentSelect');
-      studentSelect.innerHTML = '<option value="">-- កំពុងទាញបញ្ជីសិស្ស... --</option>';
+    async function syncTeacherInfoFromDatabase(clsName) {
+      let teacherName = CURRENT_USER?.teacher_name || "សេង សុភាស់";
+      let teacherPhone = CURRENT_USER?.phone || "087313166";
+      let teacherGender = CURRENT_USER?.gender || "ប្រុស";
+      let teacherAddress = CURRENT_USER?.address || "ភូមិកំពង់ល្ពៅ ឃុំកំពង់ល្ពៅ ស្រុកសំឡូត ខេត្តបាត់ដំបង";
 
       try {
-        const { data: stList } = await sb.from('students')
-          .select('id, student_id, student_name, gender, grade')
-          .in('grade', [cls, `ថ្នាក់ទី${cls}`, `ថ្នាក់ទី ${cls}`])
-          .order('id', { ascending: true });
+        const pureCls = cleanGrade(clsName);
+        const { data: uData } = await sb.from('users').select('*');
+        const matched = (uData || []).find(u => cleanGrade(u.assigned_classes || u.assigned_class) === pureCls);
 
-        if (stList && stList.length > 0) {
-          currentStudentsList = stList;
-          studentSelect.innerHTML = '<option value="">-- ជ្រើសរើសសិស្ស --</option>' + 
-            stList.map((s, idx) => `<option value="${idx}">${idx + 1}. ${s.student_name} (${s.gender || 'ប្រុស'})</option>`).join('');
-
-          // ជ្រើសសិស្សដំបូងស្វ័យប្រវត្តិ
-          onStudentSelect(0);
-        } else {
-          studentSelect.innerHTML = '<option value="">-- គ្មានសិស្សក្នុងថ្នាក់នេះ --</option>';
-          document.getElementById('valStudentName').innerText = 'បូ សុវណ្ណបញ្ញា';
+        if (matched) {
+          teacherName = matched.teacher_name || teacherName;
+          teacherPhone = matched.phone || teacherPhone;
+          teacherGender = matched.gender || teacherGender;
+          teacherAddress = matched.address || teacherAddress;
         }
       } catch(e) {
-        studentSelect.innerHTML = '<option value="">-- ជ្រើសរើសសិស្ស --</option>';
-        document.getElementById('valStudentName').innerText = 'បូ សុវណ្ណបញ្ញា';
+        console.warn("Fetch teacher info issue:", e);
       }
-    }
 
-    function onStudentSelect(idx) {
-      if (idx === '' || !currentStudentsList[idx]) return;
-      const st = currentStudentsList[idx];
-      document.getElementById('valStudentName').innerText = st.student_name;
-    }
+      // កំណត់សព្វនាម ខ្ញុំបាទ (ប្រុស) ឬ នាងខ្ញុំ (ស្រី)
+      const isFemale = String(teacherGender).includes('ស្រី') || teacherGender === 'f' || teacherGender === 'female';
+      const pronoun = isFemale ? 'នាងខ្ញុំ' : 'ខ្ញុំបាទ';
 
-    function editAbsentDays() {
-      const current = document.getElementById('valAbsentDays').innerText;
-      const val = prompt('បញ្ចូលចំនួនថ្ងៃដែលសិស្សបានឈប់ (ឧ. ៣)៖', current);
-      if (val !== null && val.trim() !== '') {
-        const numKh = toKhmerNum(val.trim());
-        document.getElementById('valAbsentDays').innerText = numKh;
-        document.getElementById('badgeAbsentDays').innerText = `${numKh} ថ្ងៃ`;
+      document.getElementById('txtTeacherPronoun').innerText = pronoun;
+      document.getElementById('txtTeacherPronounEnd').innerText = pronoun;
+      document.getElementById('valTeacherName').innerText = teacherName;
+      document.getElementById('valTeacherSignName').innerText = teacherName;
+      document.getElementById('valTeacherPhone').innerText = toKhmerNum(teacherPhone);
+
+      // បំបែកអាសយដ្ឋាន (ឃុំ, ស្រុក, ខេត្ត)
+      if (teacherAddress) {
+        const parts = teacherAddress.split(/[,，\s]+/).filter(Boolean);
+        if (parts.length >= 3) {
+          document.getElementById('valCommune').innerText = parts[parts.length - 3].replace(/^(ឃុំ|សង្កាត់)/, '');
+          document.getElementById('valDistrict').innerText = parts[parts.length - 2].replace(/^(ស្រុក|ខណ្ឌ)/, '');
+          document.getElementById('valProvince').innerText = parts[parts.length - 1].replace(/^(ខេត្ត|រាជធានី)/, '');
+        }
       }
     }
 
     /* =========================================================
-       3. 📅 KHMER CALENDAR ENGINE
+       4. 🌟 LOGIC ចាប់សិស្សអវត្តមាន ៣ ថ្ងៃជាប់គ្នាពី ATTENDANCE
+    ========================================================= */
+    async function load3ConsecutiveAbsentStudents() {
+      const studentBtnText = document.getElementById('txtStudentSelect');
+      const studentDropdown = document.getElementById('ddStudentSelect');
+      studentBtnText.innerText = 'កំពុងពិនិត្យអវត្តមាន...';
+      studentDropdown.innerHTML = '';
+
+      try {
+        // ១. ទាញបញ្ជីសិស្សក្នុងថ្នាក់
+        const { data: students, error: sErr } = await sb.from('students').select('*');
+        if (sErr) throw sErr;
+
+        const classStudents = (students || []).filter(s => cleanGrade(s.grade) === currentSelectedClass);
+
+        // ២. ទាញយកកំណត់ត្រាវត្តមានទាំងអស់
+        const { data: attendance, error: aErr } = await sb.from('attendance')
+          .select('student_id, attendance_date, status, assigned_class')
+          .order('attendance_date', { ascending: true });
+
+        if (aErr) throw aErr;
+
+        // ៣. ស្វែងរកសិស្សណាដែលមាន status = 'A' ចំនួន ៣ ថ្ងៃជាប់គ្នា
+        absentEligibleStudents = [];
+
+        classStudents.forEach(st => {
+          const sid = String(st.student_id || st.id);
+          const stAtt = (attendance || [])
+            .filter(a => String(a.student_id) === sid)
+            .sort((a,b) => new Date(a.attendance_date) - new Date(b.attendance_date));
+
+          let streak = 0;
+          let maxStreak = 0;
+
+          stAtt.forEach(rec => {
+            const stVal = String(rec.status || '').toUpperCase().trim();
+            if (stVal === 'A') {
+              streak++;
+              if (streak > maxStreak) maxStreak = streak;
+            } else if (stVal === 'P' || stVal === 'C') {
+              streak = 0; // បើមានវត្តមាន ឬសុំច្បាប់ នោះ streak ត្រូវបានរាប់ឡើងវិញ
+            }
+          });
+
+          // 🌟 លក្ខខណ្ឌ៖ ត្រូវមានអវត្តមាន ៣ ថ្ងៃជាប់គ្នាឡើងទៅ
+          if (maxStreak >= 3 || streak >= 3) {
+            absentEligibleStudents.push({
+              student: st,
+              absentStreak: Math.max(maxStreak, streak, 3)
+            });
+          }
+        });
+
+        // ៤. បង្ហាញក្នុង Custom Dropdown
+        if (absentEligibleStudents.length > 0) {
+          studentDropdown.innerHTML = absentEligibleStudents.map((item, idx) => `
+            <div class="dd-item ${idx === 0 ? 'active' : ''}" onclick="selectAbsentStudent(${idx})">
+              <span class="dd-item-left">
+                <i class="fa-solid fa-user-xmark" style="color:#ef4444;"></i>
+                <span>${item.student.student_name} (${toKhmerNum(item.absentStreak)} ថ្ងៃជាប់គ្នា)</span>
+              </span>
+              <i class="fa-solid fa-check" style="${idx === 0 ? '' : 'display:none;'}"></i>
+            </div>
+          `).join('');
+
+          selectAbsentStudent(0);
+        } else {
+          studentBtnText.innerText = 'គ្មានសិស្សអវត្តមាន ៣ ថ្ងៃទេ';
+          studentDropdown.innerHTML = `
+            <div style="padding:14px; text-align:center; color:#64748b; font-size:12.5px;">
+              🎉 ក្នុងថ្នាក់នេះមិនមានសិស្សណាអវត្តមាន ៣ ថ្ងៃជាប់គ្នាឡើយ។
+            </div>
+          `;
+          // Fallback Sample ដើម្បីកុំឱ្យលិខិតទទេ
+          document.getElementById('valStudentName').innerText = classStudents[0]?.student_name || 'បូ សុវណ្ណបញ្ញា';
+          document.getElementById('valAbsentDays').innerText = toKhmerNum(3);
+        }
+
+      } catch(err) {
+        console.error('Check 3 consecutive absences error:', err);
+        studentBtnText.innerText = 'សិស្សគំរូ (បូ សុវណ្ណបញ្ញា)';
+        document.getElementById('valStudentName').innerText = 'បូ សុវណ្ណបញ្ញា';
+        document.getElementById('valAbsentDays').innerText = toKhmerNum(3);
+      }
+    }
+
+    function selectAbsentStudent(idx) {
+      if (!absentEligibleStudents[idx]) return;
+      const target = absentEligibleStudents[idx];
+
+      document.getElementById('txtStudentSelect').innerText = `${target.student.student_name} (អវត្តមាន ${toKhmerNum(target.absentStreak)} ថ្ងៃ)`;
+      document.getElementById('valStudentName').innerText = target.student.student_name;
+      document.getElementById('valAbsentDays').innerText = toKhmerNum(target.absentStreak);
+
+      document.querySelectorAll('#ddStudentSelect .dd-item').forEach((el, i) => {
+        const isActive = (i === idx);
+        el.classList.toggle('active', isActive);
+        const icon = el.querySelector('.fa-check');
+        if (icon) icon.style.display = isActive ? 'inline' : 'none';
+      });
+
+      closeAllDropdowns();
+    }
+
+    /* =========================================================
+       5. 📅 KHMER CALENDAR ENGINE
     ========================================================= */
     let calCurrentYear = 2026;
     let calCurrentMonth = 9; // October
@@ -750,7 +870,7 @@
     }
 
     /* =========================================================
-       4. PAGE SETUP & SCALER
+       6. PAGE SETUP & SCALER
     ========================================================= */
     const PX = 96 / 25.4;
     let currentPaper = 'A4';
@@ -778,14 +898,14 @@
     function stepFont(dir) {
       currentFontScale = Math.max(85, Math.min(125, currentFontScale + dir));
       document.getElementById('inFontScale').value = currentFontScale + '%';
-      document.getElementById('printableNoticePaper').style.fontSize = `${(13.5 * currentFontScale) / 100}px`;
+      document.getElementById('printableNoticePaper').style.fontSize = `${(13.8 * currentFontScale) / 100}px`;
     }
 
     function psReset() {
       setPaper('A4');
       currentFontScale = 100;
       document.getElementById('inFontScale').value = '100%';
-      document.getElementById('printableNoticePaper').style.fontSize = '13.5px';
+      document.getElementById('printableNoticePaper').style.fontSize = '13.8px';
     }
 
     function fitPaper() {
@@ -830,12 +950,13 @@
       window.print();
     }
 
+    /* 7. INITIALIZATION */
     window.addEventListener('DOMContentLoaded', async () => {
       const isAuth = await checkAuthentication();
       if (!isAuth) return;
 
       initCalendarDropdowns();
-      await initClassesAndStudents();
+      await initClassesDropdown();
       fitPaper();
     });
   </script>
