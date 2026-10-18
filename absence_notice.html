@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>សេចក្តីជូនដំណឹងអវត្តមានសិស្ស</title>
 
-  <!-- 🔤 Google Fonts Khmer (Siemreap សម្រាប់លិខិត, Moul សម្រាប់ក្បាលលិខិត, Battambang សម្រាប់ Toolbar/Dropdown) -->
+  <!-- 🔤 Google Fonts Khmer (Siemreap សម្រាប់លិខិត, Moul សម្រាប់ក្បាលលិខិត/ឈ្មោះគ្រូ, Battambang សម្រាប់ Toolbar/Dropdown) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;800;900&family=Moul&family=Siemreap&display=swap" rel="stylesheet">
@@ -60,7 +60,7 @@
       font-family: 'Khmer OS Siemreap', 'Siemreap', 'Khmer OS', sans-serif !important;
     }
 
-    /* ៣. ចំណងជើង និងក្បាលលិខិត ប្រើ FONT MOUL LIGHT (អក្សរមូល) */
+    /* ៣. ចំណងជើង ក្បាលលិខិត និងឈ្មោះគ្រូ ប្រើ FONT MOUL LIGHT (អក្សរមូល) */
     .f-moul, .f-muol {
       font-family: 'Khmer OS Muol Light', 'Khmer OS Muol', 'Moul', cursive !important;
       font-weight: normal !important;
@@ -168,7 +168,7 @@
     .val-purple { color: #7c3aed !important; font-weight: 700; }
     .val-red { color: #dc2626 !important; font-weight: 700; }
 
-    /* 🌟 ការពារសញ្ញាខណ្ឌ « ។ » មិនឱ្យធ្លាក់ជួរតែឯងដាច់ខាត */
+    /* 🌟 ការពារសញ្ញាខណ្ឌ « ។ » មិនឱ្យធ្លាក់ជួរតែឯង */
     .nowrap-punct {
       white-space: nowrap !important;
       display: inline !important;
@@ -181,7 +181,11 @@
     .sign-col { text-align: center; min-width: 240px; font-size: 13.5px; }
     .sign-col .sign-title { font-size: 14px; margin-top: 4px; }
     .sign-col .sign-space { height: 55px; }
-    .sign-col .sign-name { font-weight: normal; font-size: 14px; }
+    
+    /* 🌟 ឈ្មោះគ្រូប្រើ Font Muol (អក្សរមូល) តាមការណែនាំ */
+    .teacher-sign-name {
+      font-size: 14px; color: #000000 !important;
+    }
 
     /* 🌟 មតិឆ្លើយតបរបស់អាណាព្យាបាល */
     .parent-response-box {
@@ -313,13 +317,13 @@
   <!-- ══════════════ 🌟 MAIN CONTENT WRAPPER ══════════════ -->
   <div id="mainPageContent" style="display:none;">
 
-    <!-- 🛠️ TOP TOOLBAR (Font Battambang ១០០%) -->
+    <!-- 🛠️ TOP TOOLBAR (Font Battambang) -->
     <div class="top-toolbar">
       <button type="button" class="tb-btn" onclick="goBack()">
         <i class="fa-solid fa-arrow-left"></i> <span>ត្រឡប់</span>
       </button>
 
-      <!-- 🏫 ថ្នាក់ Dropdown (Font Battambang) -->
+      <!-- 🏫 ថ្នាក់ Dropdown -->
       <div class="dd-wrap">
         <button type="button" class="tb-btn" id="btnClassSelect" onclick="toggleDropdown('ddClassSelect')">
           <span style="display:flex; align-items:center; gap:7px;">
@@ -331,7 +335,7 @@
         <div class="dd-popup" id="ddClassSelect"></div>
       </div>
 
-      <!-- 👤 ជ្រើសរើសសិស្សដែលអវត្តមាន ៣ ថ្ងៃជាប់គ្នា (Font Battambang) -->
+      <!-- 👤 ជ្រើសរើសសិស្សដែលអវត្តមាន ៣ ថ្ងៃជាប់គ្នា -->
       <div class="dd-wrap">
         <button type="button" class="tb-btn" id="btnStudentSelect" onclick="toggleDropdown('ddStudentSelect')">
           <span style="display:flex; align-items:center; gap:7px;">
@@ -346,7 +350,7 @@
       <!-- 📅 ថ្ងៃចុះហត្ថលេខា (បើកប្រតិទិនខ្មែរ) -->
       <button type="button" class="tb-btn" onclick="openKhmerCalendar()">
         <span style="color:#94a3b8; font-weight:normal;">កាលបរិច្ឆេទ៖</span>
-        <span style="background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:5px;">
+        <span id="btnBadgeDate" style="background:rgba(255,255,255,0.08); padding:2px 8px; border-radius:6px; display:inline-flex; align-items:center; gap:5px;">
           <i class="fa-regular fa-calendar-days" style="color:#60a5fa;"></i> ជ្រើសថ្ងៃ
         </span>
       </button>
@@ -367,7 +371,7 @@
       </button>
     </div>
 
-    <!-- 📄 PRINTABLE NOTICE PAPER (រចនា Font & បន្ទាត់តាមគំរូ PDF ដើម ១០០%) -->
+    <!-- 📄 PRINTABLE NOTICE PAPER (រចនា Font & ពណ៌តាមគំរូ PDF ដើម ១០០%) -->
     <div class="report-paper-wrap">
       <div id="paperScaler">
         <div class="notice-paper" id="printableNoticePaper">
@@ -406,13 +410,13 @@
             <!-- សូមជម្រាបមក (Font Moul ពណ៌ខៀវ ចំកណ្តាល) -->
             <div class="f-moul sub-greeting">សូមជម្រាបមក</div>
 
-            <!-- ជួរទាំង៣ នៃកថាខណ្ឌទី២ (មិនធ្លាក់ « ។ » ទៅជួរទី៤ ឡើយ) -->
+            <!-- ជួរទាំង៣ នៃកថាខណ្ឌទី២ -->
             <div class="indent-p">
               លោក លោកស្រីដែលជាអាណាព្យាបាលរបស់សិស្សឈ្មោះ
-              <span class="val-purple" id="valStudentName">បូ សុវណ្ណបញ្ញា</span> ជាសិស្ស<br>
+              <span class="val-purple" id="valStudentName">........................</span> ជាសិស្ស<br>
               <span class="val-blue" id="valStudentClass">ថ្នាក់ទី ៤(ក)</span>
               បានជ្រាបថា៖ សិស្សមានឈ្មោះខាងលើនេះបានឈប់មិនឃើញមករៀនចំនួន
-              <span class="val-red" id="valAbsentDays">៣</span> ថ្ងៃមកហើយ<br>
+              <span class="val-red" id="valAbsentDays">...</span> ថ្ងៃមកហើយ<br>
               ដោយសាលាមិនបានដឹង<span class="nowrap-punct">មូលហេតុ&nbsp;។</span>
             </div>
 
@@ -433,11 +437,13 @@
             </div>
 
             <div class="sign-col">
+              <!-- 🌟 ថ្ងៃខែចន្ទគតិ និងសូរិយគតិទាញពី Table khmer_calendar -->
               <div id="lblLunarDate" style="font-size:13px;">ថ្ងៃសៅរ៍ ៦កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០</div>
               <div id="lblSolarDate" style="font-size:13px; margin-top:2px;">ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃសៅរ៍ ទី១៧ ខែតុលា ឆ្នាំ២០២៦</div>
               <div class="f-moul sign-title" style="color:#1e3a8a; margin-top:5px;">គ្រូបន្ទុកថ្នាក់</div>
               <div class="sign-space"></div>
-              <div class="sign-name" id="valTeacherSignName">សេង សុភាស់</div>
+              <!-- 🌟 ឈ្មោះគ្រូថ្នាក់ប្រើ Font Muol (អក្សរមូល) -->
+              <div class="f-moul teacher-sign-name" id="valTeacherSignName">សេង សុភាស់</div>
               <div style="font-size:13px; margin-top:4px;">
                 លេខទូរស័ព្ទ៖ <span id="valTeacherPhone">០៨៧ ៣១ ៣១ ៦៦</span>
               </div>
@@ -524,6 +530,7 @@
 
     const khmerDigits = ['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
     const KHMER_MONTHS = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+    const WEEKDAYS_LONG_KH = ['អាទិត្យ', 'ចន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
 
     function toKhmerNum(num) {
       if (num === null || num === undefined) return '';
@@ -647,10 +654,10 @@
 
       closeAllDropdowns();
 
-      // ទាញយកឈ្មោះគ្រូ ភេទគ្រូ និងលេខទូរស័ព្ទពី Table users
+      // 🌟 ទាញយកឈ្មោះគ្រូ ភេទគ្រូ និងលេខទូរស័ព្ទពី Table users
       await syncTeacherInfoFromDatabase(rawClass);
 
-      // ពិនិត្យចាប់សិស្សដែលអវត្តមាន ៣ ថ្ងៃជាប់គ្នាក្នុងថ្នាក់នេះ
+      // 🌟 ពិនិត្យចាប់សិស្សដែលអវត្តមាន ៣ ថ្ងៃជាប់គ្នាក្នុងថ្នាក់នេះ
       await load3ConsecutiveAbsentStudents();
     }
 
@@ -695,7 +702,7 @@
     }
 
     /* =========================================================
-       4. LOGIC ចាប់សិស្សអវត្តមាន ៣ ថ្ងៃជាប់គ្នាពី ATTENDANCE
+       4. 🌟 LOGIC ចាប់សិស្សអវត្តមាន ៣ ថ្ងៃជាប់គ្នាពី ATTENDANCE
     ========================================================= */
     async function load3ConsecutiveAbsentStudents() {
       const studentBtnText = document.getElementById('txtStudentSelect');
@@ -736,6 +743,7 @@
             }
           });
 
+          // 🌟 លក្ខខណ្ឌ៖ ត្រូវមានអវត្តមាន ៣ ថ្ងៃជាប់គ្នាឡើងទៅ
           if (maxStreak >= 3 || streak >= 3) {
             absentEligibleStudents.push({
               student: st,
@@ -744,6 +752,7 @@
           }
         });
 
+        // 🌟 បង្ហាញសិស្សពិតប្រាកដក្នុង Dropdown (គ្មានសរសេរគំរូក្លែងក្លាយឡើយ)
         if (absentEligibleStudents.length > 0) {
           studentDropdown.innerHTML = absentEligibleStudents.map((item, idx) => `
             <div class="dd-item ${idx === 0 ? 'active' : ''}" onclick="selectAbsentStudent(${idx})">
@@ -763,15 +772,15 @@
               🎉 ក្នុងថ្នាក់នេះមិនមានសិស្សណាអវត្តមាន ៣ ថ្ងៃជាប់គ្នាឡើយ។
             </div>
           `;
-          document.getElementById('valStudentName').innerText = classStudents[0]?.student_name || 'បូ សុវណ្ណបញ្ញា';
-          document.getElementById('valAbsentDays').innerText = toKhmerNum(3);
+          document.getElementById('valStudentName').innerText = '........................';
+          document.getElementById('valAbsentDays').innerText = '...';
         }
 
       } catch(err) {
         console.error('Check 3 consecutive absences error:', err);
-        studentBtnText.innerText = 'សិស្សគំរូ (បូ សុវណ្ណបញ្ញា)';
-        document.getElementById('valStudentName').innerText = 'បូ សុវណ្ណបញ្ញា';
-        document.getElementById('valAbsentDays').innerText = toKhmerNum(3);
+        studentBtnText.innerText = 'គ្មានសិស្សអវត្តមាន ៣ ថ្ងៃទេ';
+        document.getElementById('valStudentName').innerText = '........................';
+        document.getElementById('valAbsentDays').innerText = '...';
       }
     }
 
@@ -794,11 +803,37 @@
     }
 
     /* =========================================================
-       5. 📅 KHMER CALENDAR ENGINE
+       5. 📅 កាលបរិច្ឆេទចន្ទគតិ & សូរិយគតិពី TABLE KHMER_CALENDAR
     ========================================================= */
     let calCurrentYear = 2026;
-    let calCurrentMonth = 9; // October
+    let calCurrentMonth = 9; // October (0-indexed)
     let selectedCalendarDay = 17;
+
+    async function updateDatesFromDatabase(isoDate, d, m, y) {
+      // ១. បង្កើតកាលបរិច្ឆេទសូរិយគតិស្វ័យប្រវត្តិ
+      const dayOfWeekIdx = new Date(isoDate).getDay();
+      const dayNameKh = WEEKDAYS_LONG_KH[dayOfWeekIdx] || 'សៅរ៍';
+      const solarStr = `ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃ${dayNameKh} ទី${toKhmerNum(d)} ខែ${KHMER_MONTHS[m]} ឆ្នាំ${toKhmerNum(y)}`;
+      document.getElementById('lblSolarDate').innerText = solarStr;
+
+      // ២. ទាញយកកាលបរិច្ឆេទចន្ទគតិ (khmer_lunar_date) ពី Table khmer_calendar
+      try {
+        const { data, error } = await sb
+          .from('khmer_calendar')
+          .select('gregorian_date, khmer_lunar_date')
+          .eq('gregorian_date', isoDate)
+          .maybeSingle();
+
+        if (data && data.khmer_lunar_date) {
+          document.getElementById('lblLunarDate').innerText = data.khmer_lunar_date;
+        } else {
+          // Fallback បើគ្មានក្នុង Table
+          document.getElementById('lblLunarDate').innerText = `ថ្ងៃ${dayNameKh} ៦កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០`;
+        }
+      } catch (err) {
+        console.warn('Error querying khmer_calendar:', err);
+      }
+    }
 
     function initCalendarDropdowns() {
       const mSel = document.getElementById('calMonthSelect');
@@ -870,13 +905,16 @@
       document.getElementById('khmerCalPopup').classList.remove('show');
     }
 
-    function pickCalendarDate(y, m, d) {
+    async function pickCalendarDate(y, m, d) {
       selectedCalendarDay = d;
       calCurrentYear = y;
       calCurrentMonth = m;
 
-      const dateStrKh = `ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃទី${toKhmerNum(d)} ខែ${KHMER_MONTHS[m]} ឆ្នាំ${toKhmerNum(y)}`;
-      document.getElementById('lblSolarDate').innerText = dateStrKh;
+      const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      await updateDatesFromDatabase(iso, d, m, y);
+
+      const btnBadge = document.getElementById('btnBadgeDate');
+      if (btnBadge) btnBadge.innerHTML = `<i class="fa-regular fa-calendar-check" style="color:#10b981;"></i> ថ្ងៃទី${toKhmerNum(d)}`;
 
       closeCalendarPopup();
     }
@@ -974,6 +1012,12 @@
 
       initCalendarDropdowns();
       await initClassesDropdown();
+
+      // ទាញយកថ្ងៃខែបច្ចុប្បន្នទាំងសូរិយគតិ និងចន្ទគតិពី Table khmer_calendar
+      const now = new Date();
+      const todayIso = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+      await updateDatesFromDatabase(todayIso, now.getDate(), now.getMonth(), now.getFullYear());
+
       fitPaper();
     });
   </script>
