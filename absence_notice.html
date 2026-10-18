@@ -10,7 +10,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;800;900&family=Moul&family=Siemreap&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- 🌟 Font Awesome 6.5.1 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- ⚡ Supabase JS & html2pdf -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -44,14 +46,21 @@
       min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased;
     }
 
-    /* ══════════════ 🔤 កំណត់ FONT ដាច់ដោយឡែកពីគ្នា ══════════════ */
-    .top-toolbar, .top-toolbar *, 
-    .tb-btn, .dd-wrap, .dd-popup, .dd-item, .tb-select-box,
-    .ps-panel, .ps-panel *, 
-    .khmer-cal-popup, .khmer-cal-popup *,
-    .auth-wrapper, .auth-wrapper * {
-      font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
+    /* ══════════════ 🔤 កំណត់ FONT (មិនឱ្យជាន់លើ FONT AWESOME ICONS) ══════════════ */
+    .top-toolbar, .tb-btn, .dd-wrap, .dd-popup, .dd-item, .tb-select-box,
+    .ps-panel, .khmer-cal-popup, .auth-wrapper {
+      font-family: 'Khmer OS Battambang', 'Battambang', sans-serif;
     }
+
+    /* 🌟 ការពារ Font Awesome Icon មិនឱ្យបាត់ដាច់ខាត */
+    i[class*="fa-"], [class*="fa-"], .fa, .fas, .far, .fa-solid, .fa-regular {
+      font-family: "Font Awesome 6 Free" !important;
+      font-style: normal;
+      display: inline-block;
+      line-height: 1;
+    }
+    .fa-solid, .fas { font-weight: 900 !important; }
+    .fa-regular, .far { font-weight: 400 !important; }
 
     /* លើសន្លឹក A4 ប្រើ FONT SIEMREAP (អក្សរជ្រុងរដ្ឋបាល) */
     .notice-paper, .doc-body-text, .doc-left-meta, .sign-col, .parent-response-box, .parent-sign-col {
@@ -98,6 +107,7 @@
       display: inline-flex; align-items: center; justify-content: space-between; gap: 8px;
       transition: all .15s ease; outline: none; white-space: nowrap; user-select: none;
     }
+    .tb-btn i { font-size: 14px; }
     .tb-btn:hover { background: #334155; border-color: rgba(255, 255, 255, 0.3); }
     .tb-btn.primary { background: #0284c7; border-color: transparent; }
     .tb-btn.primary:hover { background: #0369a1; }
@@ -144,7 +154,7 @@
       text-align: left; font-size: 13.5px; line-height: 1.6; margin-top: 2px; margin-bottom: 8px;
     }
 
-    /* 🏷️ ចំណងជើង «សេចក្តីជូនដំណឹង» (ពណ៌ទឹកក្រូច-ក្រហម) */
+    /* 🏷️ ចំណងជើង «សេចក្តីជូនដំណឹង» */
     .doc-title-box { text-align: center; margin: 8px 0 14px; }
     .doc-title-box h1 {
       font-size: 20px; color: #e05638 !important; letter-spacing: 0.5px; font-weight: normal;
@@ -191,7 +201,6 @@
       font-size: 15.5px; color: #2b3990 !important; margin: 12px 0 10px; text-align: center; font-weight: normal;
     }
 
-    /* ការពារការដាច់ពាក្យ ខ្ញុំ + បាទ */
     .nowrap-phrase {
       white-space: nowrap !important;
       display: inline !important;
@@ -332,11 +341,11 @@
   <!-- 🔒 AUTH DENIED WRAPPER -->
   <div id="authDeniedWrap" class="auth-wrapper">
     <div class="auth-card">
-      <div class="auth-icon">🔒</div>
+      <div class="auth-icon"><i class="fa-solid fa-lock"></i></div>
       <h2>សូមចូលប្រើប្រាស់ជាមុនសិន!</h2>
       <p id="authDeniedMsg">លោកអ្នកមិនទាន់បាន Login ចូលក្នុងប្រព័ន្ធនៅឡើយទេ។ សូម Login គណនីរបស់អ្នកដើម្បីមើលលិខិតជូនដំណឹង។</p>
       <a href="index.html" target="_top" class="btn-login-redirect" onclick="goToIndex(event)">
-        <span>🔑</span> <span>ទៅកាន់ទំព័រដើម (Login)</span>
+        <i class="fa-solid fa-key"></i> <span>ទៅកាន់ទំព័រដើម (Login)</span>
       </a>
     </div>
   </div>
@@ -344,7 +353,7 @@
   <!-- 🌟 MAIN CONTENT WRAPPER -->
   <div id="mainPageContent" style="display:none;">
 
-    <!-- 🛠️ TOP TOOLBAR -->
+    <!-- 🛠️ TOP TOOLBAR (ICON ទាំងអស់បង្ហាញច្បាស់ ១០០%) -->
     <div class="top-toolbar">
       <button type="button" class="tb-btn" onclick="goBack()">
         <i class="fa-solid fa-arrow-left"></i> <span>ត្រឡប់</span>
@@ -362,7 +371,7 @@
         <div class="dd-popup" id="ddClassSelect"></div>
       </div>
 
-      <!-- 👤 ជ្រើសរើសសិស្សដែលអវត្តមាន ៣ ថ្ងៃជាប់គ្នា -->
+      <!-- 👤 ជ្រើសរើសសិស្ស -->
       <div class="dd-wrap">
         <button type="button" class="tb-btn" id="btnStudentSelect" onclick="toggleDropdown('ddStudentSelect')">
           <span style="display:flex; align-items:center; gap:7px;">
@@ -416,7 +425,7 @@
             <div>សាលាបឋមសិក្សា  កំពង់ល្ពៅ</div>
           </div>
 
-          <!-- 🏷️ ចំណងជើងលិខិត (Font Moul ពណ៌ទឹកក្រូច-ក្រហម) -->
+          <!-- 🏷️ ចំណងជើងលិខិត -->
           <div class="doc-title-box">
             <h1 class="f-moul">សេចក្តីជូនដំណឹង</h1>
           </div>
@@ -446,8 +455,7 @@
             <!-- សូមជម្រាបមក (Font Moul ពណ៌ខៀវ ចំកណ្តាល) -->
             <div class="f-moul sub-greeting">សូមជម្រាបមក</div>
 
-            <!-- 🌟 កថាខណ្ឌទី២៖ បង្ហាញត្រឹមតែ ២ ជួរគត់ តាមការណែនាំ -->
-            <!-- ជួរទី១ នៃកថាខណ្ឌទី២ -->
+            <!-- 🌟 កថាខណ្ឌទី២៖ បង្ហាញត្រឹមតែ ២ ជួរគត់ យ៉ាងស្អាត -->
             <div class="doc-row doc-row-indent">
               <span>លោក លោកស្រីដែលជាអាណាព្យាបាលរបស់សិស្សឈ្មោះ៖</span>
               <span class="val-muol-purple" id="valStudentName">................................</span>
@@ -456,7 +464,6 @@
               <span>បានជ្រាបថា៖</span>
             </div>
 
-            <!-- ជួរទី២ នៃកថាខណ្ឌទី២ -->
             <div class="doc-row">
               <span>សិស្សមានឈ្មោះខាងលើនេះបានឈប់មិនឃើញមករៀនចំនួន</span>
               <span class="val-red f-moul" id="valAbsentDays">...</span>
@@ -484,7 +491,6 @@
             </div>
 
             <div class="sign-col">
-              <!-- 🌟 ថ្ងៃខែចន្ទគតិ គណនាដោយក្បួន MomentKH ផ្ទាល់ក្នុងកូដ -->
               <div id="lblLunarDate" style="font-size:13.5px; font-weight:normal;"></div>
               <div id="lblSolarDate" style="font-size:13.5px; margin-top:2px;"></div>
               <div class="f-moul sign-title" style="color:#2b3990; margin-top:6px;">គ្រូបន្ទុកថ្នាក់</div>
@@ -526,11 +532,11 @@
     <div class="cal-header-row">
       <div class="cal-select-wrap">
         <select id="calMonthSelect" onchange="renderCalendarDays()"></select>
-        <span class="cal-chev">⌵</span>
+        <span class="cal-chev"><i class="fa-solid fa-chevron-down"></i></span>
       </div>
       <div class="cal-select-wrap">
         <select id="calYearSelect" onchange="renderCalendarDays()"></select>
-        <span class="cal-chev">⌵</span>
+        <span class="cal-chev"><i class="fa-solid fa-chevron-down"></i></span>
       </div>
     </div>
     <div class="cal-weekdays">
@@ -570,7 +576,7 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ EMBEDDED KHMER CALENDAR ENGINE (MOMENTKH STANDALONE គ្មានទាញពី DATABASE)
+       ⚡ MOMENTKH STANDALONE KHMER CALENDAR ENGINE
   ══════════════════════════════════════════════════════════════════════════ -->
   <script>
     (function (root, factory) {
@@ -615,9 +621,7 @@
         var year = 100 * b + d - 4800 + Math.floor(m / 10);
         return { year: year, month: month, day: day };
       }
-      function getDayOfWeek(y, m, d) {
-        return (gregorianToJulianDay(y, m, d) + 1) % 7;
-      }
+      function getDayOfWeek(y, m, d) { return (gregorianToJulianDay(y, m, d) + 1) % 7; }
       function getMaybeBEYear(y, m) { return m <= 4 ? y + 543 : y + 544; }
       function getAharkun(be) { return Math.floor((be * 292207 + 499) / 800) + 4; }
       function getAvoman(be) { return (getAharkun(be) * 11 + 25) % 692; }
@@ -672,7 +676,7 @@
       function fromGregorian(year, month, day) {
         var epochJdn = gregorianToJulianDay(1900, 1, 1);
         var targetJdn = gregorianToJulianDay(year, month, day);
-        var khmerMonth = 1; // បុស្ស
+        var khmerMonth = 1;
         var diffDays = targetJdn - epochJdn;
 
         if (diffDays > 0) {
@@ -724,7 +728,7 @@
   </script>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ MAIN APPLICATION LOGIC
+       ⚡ MAIN JAVASCRIPT LOGIC
   ══════════════════════════════════════════════════════════════════════════ -->
   <script>
     const SUPABASE_URL = "https://nggnuobnrxiqjtcwlvwk.supabase.co";
@@ -733,7 +737,6 @@
 
     const khmerDigits = ['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
     const KHMER_MONTHS = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
-    const WEEKDAYS_LONG_KH = ['អាទិត្យ', 'ចន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
 
     function toKhmerNum(num) {
       if (num === null || num === undefined) return '';
@@ -792,7 +795,7 @@
       return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').replace(/[()\-_\s]/g, '').trim();
     }
 
-    /* 📅 គណនាកាលបរិច្ឆេទចន្ទគតិ-សូរិយគតិ ដោយ MOMENTKH ផ្ទាល់ */
+    /* 📅 គណនាកាលបរិច្ឆេទចន្ទគតិ-សូរិយគតិ */
     function getKhmerCalendarStrings(y, m, d) {
       const res = momentkh.fromGregorian(y, m, d);
       const k = res.khmer;
@@ -806,7 +809,7 @@
     }
 
     let calCurrentYear = new Date().getFullYear();
-    let calCurrentMonth = new Date().getMonth() + 1; // 1-12
+    let calCurrentMonth = new Date().getMonth() + 1;
     let selectedCalendarDay = new Date().getDate();
 
     function applySelectedDate(y, m, d) {
