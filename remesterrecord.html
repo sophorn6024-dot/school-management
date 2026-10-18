@@ -409,8 +409,52 @@
     }
     .ps-num input { width: 44px; border: none; outline: none; background: transparent; color: var(--text-main); text-align: center; font-size: 15px; }
     .ps-num span { color: var(--text-muted); font-size: 13px; }
-    .ps-date { flex: 1 1 140px; min-width: 0; border: 1px solid var(--border-color, #d9d9d9); background: transparent; color: inherit; border-radius: 8px; padding: 6px 8px; font-family: inherit; min-height: 36px; }
-    .ps-chk { display: flex; align-items: center; gap: 6px; font-size: 13px; flex: 1 1 100%; cursor: pointer; }
+
+    /* =========================================================
+       📅 ប្រតិទិនជ្រើសថ្ងៃចុះហត្ថលេខា
+    ========================================================= */
+    .cal-popup {
+      display: none; position: fixed; z-index: 99999; width: 340px; max-width: calc(100vw - 16px);
+      background: var(--card-panel-bg); color: var(--text-main);
+      border: 1px solid var(--tb-border); border-radius: 20px; overflow: hidden;
+      box-shadow: 0 22px 60px rgba(15, 23, 42, 0.35);
+      max-height: calc(100vh - 20px); overflow-y: auto;
+    }
+    .cal-popup.show { display: block; }
+    .cal-hero { background: linear-gradient(135deg, #132d56 0%, #1e3a8a 60%, #7c1d3a 130%); color: #fff; padding: 14px 14px 12px; }
+    .cal-hero-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .cal-title { text-align: center; flex: 1; min-width: 0; }
+    .cal-month { font-size: 17px; line-height: 1.6; }
+    .cal-sub { font-size: 11.5px; opacity: .85; line-height: 1.4; }
+    .cal-nav { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,.28); background: rgba(255,255,255,.12); color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+    .cal-nav:hover { background: rgba(255,255,255,.25); }
+    .cal-sel { margin-top: 10px; background: rgba(255,255,255,.14); border-radius: 12px; padding: 8px 10px; font-size: 13px; line-height: 1.55; text-align: center; min-height: 40px; }
+    .cal-sel b { font-weight: 700; }
+    .cal-dow, .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+    .cal-dow { padding: 8px 8px 2px; }
+    .cal-dow div { text-align: center; font-size: 12px; color: var(--text-muted); padding: 2px 0; }
+    .cal-dow div:first-child { color: #dc2626; }
+    .cal-grid { padding: 2px 8px 8px; gap: 2px; }
+    .cal-day {
+      position: relative; border: none; background: transparent; color: var(--text-main); cursor: pointer;
+      border-radius: 12px; padding: 4px 0 3px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 46px; line-height: 1.15; transition: background .12s ease;
+    }
+    .cal-day .n { font-size: 15px; font-weight: 700; }
+    .cal-day .l { font-size: 9.5px; color: var(--text-muted); margin-top: 1px; white-space: nowrap; font-weight: 400 !important; }
+    .cal-day.sun .n { color: #dc2626; }
+    .cal-day.out { opacity: .38; }
+    .cal-day:hover { background: var(--ctrl-group-bg); }
+    .cal-day.holy .l { color: #b45309; font-weight: 700 !important; }
+    .cal-day.holy::after { content: ''; position: absolute; top: 4px; right: 7px; width: 5px; height: 5px; border-radius: 50%; background: #f59e0b; }
+    .cal-day.today { box-shadow: inset 0 0 0 1.5px var(--input-focus); }
+    .cal-day.sel { background: linear-gradient(135deg, #e11d48, #be123c); color: #fff; box-shadow: 0 4px 12px rgba(225, 29, 72, .35); }
+    .cal-day.sel .n, .cal-day.sel .l { color: #fff; }
+    .cal-day.sel::after { background: #fde68a; }
+    .cal-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 10px 12px 12px; border-top: 1px solid var(--tb-border); }
+    .cal-btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--tb-border); background: var(--ctrl-group-bg); color: var(--text-main); border-radius: 10px; padding: 7px 12px; cursor: pointer; font-size: 13px; }
+    .cal-btn:hover { border-color: var(--input-focus); }
+    .cal-blank { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; color: var(--text-muted); }
     .sd-lunar { font-size: .9em; }
     .ps-hint { flex: 1 1 100%; color: var(--text-muted); font-size: 12px; font-weight: 400 !important; }
 
@@ -637,6 +681,15 @@
         </button>
         <input type="hidden" id="sheetFilterSelect" value="3">
       </div>
+
+      <!-- 📅 ថ្ងៃខែចុះហត្ថលេខា (ចន្ទគតិ) -->
+      <div class="panel-pill-box">
+        <span class="toolbar-label"><i class="fa-solid fa-calendar-days" style="color:#e11d48;"></i> <span class="lbl">ថ្ងៃ៖</span></span>
+        <button type="button" class="custom-dd-btn" id="signBtn" onclick="toggleCalPopup(event)" style="min-width: 150px;">
+          <span class="custom-dd-label" id="signLabel">ថ្ងៃនេះ</span>
+          <i class="fa-solid fa-chevron-down custom-dd-chev"></i>
+        </button>
+      </div>
     </div>
 
     <!-- ផ្នែកខាងស្តាំ ៖ Action Buttons -->
@@ -657,6 +710,26 @@
   </div>
 
   <!-- ⚙️ POPUP ការរៀបចំទំព័រ -->
+  <div class="cal-popup no-print" id="calPopup" onclick="event.stopPropagation()" role="dialog" aria-label="ជ្រើសរើសថ្ងៃខែចុះហត្ថលេខា">
+    <div class="cal-hero">
+      <div class="cal-hero-top">
+        <button type="button" class="cal-nav" onclick="calShift(-1)" aria-label="ខែមុន"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="cal-title">
+          <div class="cal-month f-moul" id="calMonth"></div>
+          <div class="cal-sub" id="calSub"></div>
+        </div>
+        <button type="button" class="cal-nav" onclick="calShift(1)" aria-label="ខែបន្ទាប់"><i class="fa-solid fa-chevron-right"></i></button>
+      </div>
+      <div class="cal-sel" id="calSel"></div>
+    </div>
+    <div class="cal-dow" id="calDow"></div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-foot">
+      <button type="button" class="cal-btn" onclick="calToday()"><i class="fa-solid fa-crosshairs"></i> ថ្ងៃនេះ</button>
+      <label class="cal-blank"><input type="checkbox" id="signBlankIn" onchange="setSignBlank(this.checked)"> ទុកទទេ (សរសេរដោយដៃ)</label>
+    </div>
+  </div>
+
   <div class="ps-popup no-print" id="pagePopup">
     <div class="ps-head">
       <div class="ps-title">ការរៀបចំទំព័រ</div>
@@ -679,14 +752,7 @@
       <button type="button" class="ps-step" onclick="stepScale(5)" aria-label="បង្កើន">+</button>
       <span class="ps-hint">បន្ថយស្វ័យប្រវត្តិ បើខ្លឹមសារពេញសន្លឹក</span>
     </div>
-
-    <div class="ps-sec"><i class="fa-solid fa-calendar-days"></i> <span>ថ្ងៃខែចុះហត្ថលេខា</span></div>
-    <div class="ps-row">
-      <input type="date" id="signDateIn" class="ps-date" onchange="setSignDate(this.value)" aria-label="ថ្ងៃចុះហត្ថលេខា">
-      <button type="button" class="ps-step" style="width:auto;padding:0 10px" onclick="setSignDate('')">ថ្ងៃនេះ</button>
-      <label class="ps-chk"><input type="checkbox" id="signBlankIn" onchange="setSignBlank(this.checked)"> ទុកទទេ (សរសេរដោយដៃ)</label>
-      <span class="ps-hint" id="signPreview"></span>
-    </div>
+  </div>
   </div>
 
   <!-- =========================================================
@@ -1986,15 +2052,24 @@ exports.default = {
         return 'ថ្ងៃទី...... ខែ...... ឆ្នាំ' + toKhmerNum(y);
       }
     }
+    const SD_MONTH_SHORT = SD_GM;
+    function sdInfo(y, m, d) {
+      const r = momentkh.fromGregorian(y, m, d), k = r.khmer;
+      return { dow: r.gregorian.dayOfWeek, kd: k.day, ph: k.moonPhase, mi: k.monthIndex, mname: SD_LM[k.monthIndex] || k.monthName };
+    }
+    function sdIsHoly(y, m, d) {
+      const o = sdInfo(y, m, d);
+      if (o.kd === 8 || (o.ph === 0 && o.kd === 15)) return true;
+      const t = new Date(y, m - 1, d + 1), n = sdInfo(t.getFullYear(), t.getMonth() + 1, t.getDate());
+      return n.kd === 1 && n.ph === 0;
+    }
+    let calView = null;
     function syncSignUI() {
-      const di = document.getElementById('signDateIn'), bi = document.getElementById('signBlankIn'), pv = document.getElementById('signPreview');
-      if (di) {
-        const { y, m, d } = signParts();
-        di.value = y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0');
-        di.disabled = signDate.blank;
-      }
+      const lb = document.getElementById('signLabel'), bi = document.getElementById('signBlankIn');
+      const { y, m, d } = signParts();
+      if (lb) lb.textContent = signDate.blank ? 'ទុកទទេ' : (signDate.date ? toKhmerNum(d) + ' ' + SD_GM[m - 1] + ' ' + toKhmerNum(y) : 'ថ្ងៃនេះ · ' + toKhmerNum(d) + ' ' + SD_GM[m - 1]);
       if (bi) bi.checked = signDate.blank;
-      if (pv) pv.innerHTML = signDate.blank ? 'ចន្លោះទទេសម្រាប់សរសេរដោយដៃ' : signDateHTML().replace(/<\/div><div>/, ' · ').replace(/<[^>]+>/g, '');
+      if (document.getElementById('calPopup')?.classList.contains('show')) calRender();
     }
     function setSignDate(v) {
       signDate.date = /^\d{4}-\d{2}-\d{2}$/.test(v || '') ? v : '';
@@ -2002,6 +2077,62 @@ exports.default = {
       saveSignDate(); syncSignUI(); renderSemesterView();
     }
     function setSignBlank(b) { signDate.blank = !!b; saveSignDate(); syncSignUI(); renderSemesterView(); }
+
+    function calRender() {
+      if (typeof momentkh === 'undefined') return;
+      if (!calView) { const p = signParts(); calView = { y: p.y, m: p.m }; }
+      const { y, m } = calView, sel = signParts(), t = new Date();
+      const today = { y: t.getFullYear(), m: t.getMonth() + 1, d: t.getDate() };
+      const dowEl = document.getElementById('calDow');
+      if (dowEl && !dowEl.childElementCount) dowEl.innerHTML = ['អា','ច','អ','ព','ព្រ','សុ','ស'].map(x => '<div>' + x + '</div>').join('');
+      const first = new Date(y, m - 1, 1).getDay(), dim = new Date(y, m, 0).getDate();
+      const total = Math.ceil((first + dim) / 7) * 7;
+      const lm = [], be = [];
+      let html = '';
+      for (let i = 0; i < total; i++) {
+        const dt = new Date(y, m - 1, 1 + i - first), Y = dt.getFullYear(), M = dt.getMonth() + 1, D = dt.getDate();
+        const inM = (M === m && Y === y), o = sdInfo(Y, M, D);
+        if (inM) {
+          if (!lm.includes(o.mname)) lm.push(o.mname);
+          const bb = momentkh.fromGregorian(Y, M, D).khmer.beYear; if (!be.includes(bb)) be.push(bb);
+        }
+        const isSel = !signDate.blank && sel.y === Y && sel.m === M && sel.d === D;
+        const cls = 'cal-day' + (inM ? '' : ' out') + (o.dow === 0 ? ' sun' : '') + (sdIsHoly(Y, M, D) ? ' holy' : '')
+          + (today.y === Y && today.m === M && today.d === D ? ' today' : '') + (isSel ? ' sel' : '');
+        const lt = toKhmerNum(o.kd) + (o.ph === 0 ? 'កើត' : 'រោច');
+        html += '<button type="button" class="' + cls + '" onclick="calPick(' + Y + ',' + M + ',' + D + ')"><span class="n">' + toKhmerNum(D) + '</span><span class="l">' + lt + '</span></button>';
+      }
+      document.getElementById('calGrid').innerHTML = html;
+      document.getElementById('calMonth').textContent = SD_GM[m - 1] + ' ' + toKhmerNum(y);
+      document.getElementById('calSub').textContent = 'ខែ' + lm.join(' – ខែ') + ' · ព.ស. ' + be.map(toKhmerNum).join(' – ');
+      const selEl = document.getElementById('calSel');
+      selEl.innerHTML = signDate.blank ? 'ទុកទទេ សម្រាប់សរសេរដោយដៃ'
+        : signDateHTML().replace('<div class="sd-lunar">', '<div><b>').replace('</div><div>', '</b></div><div>');
+    }
+    function calShift(n) {
+      if (!calView) { const p = signParts(); calView = { y: p.y, m: p.m }; }
+      const t = new Date(calView.y, calView.m - 1 + n, 1); calView = { y: t.getFullYear(), m: t.getMonth() + 1 }; calRender();
+    }
+    function calPick(y, m, d) {
+      const v = y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+      setSignDate(v); calView = { y, m };
+    }
+    function calToday() { setSignDate(''); const p = signParts(); calView = { y: p.y, m: p.m }; calRender(); }
+    function toggleCalPopup(e) {
+      if (e) e.stopPropagation();
+      const pop = document.getElementById('calPopup'), btn = document.getElementById('signBtn');
+      const wasOpen = pop.classList.contains('show');
+      closeAllPopups();
+      if (wasOpen) return;
+      const p = signParts(); calView = { y: p.y, m: p.m };
+      calRender();
+      const r = btn.getBoundingClientRect(), w = Math.min(340, window.innerWidth - 16);
+      pop.style.width = w + 'px';
+      pop.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + 'px';
+      pop.style.top = (r.bottom + 6) + 'px';
+      pop.classList.add('show');
+      btn.classList.add('open');
+    }
 
     function loadPageSetup() {
       try {
@@ -2313,10 +2444,12 @@ exports.default = {
       document.getElementById('classBtn')?.classList.remove('open');
       document.getElementById('pagePopup')?.classList.remove('show');
       document.getElementById('pageSetupBtn')?.classList.remove('open');
+      document.getElementById('calPopup')?.classList.remove('show');
+      document.getElementById('signBtn')?.classList.remove('open');
     }
 
     document.addEventListener('click', (e) => {
-      if (!e.target.closest('#pagePopup') && !e.target.closest('#pageSetupBtn') && !e.target.closest('#classPopup') && !e.target.closest('#classBtn') &&
+      if (!e.target.closest('#calPopup') && !e.target.closest('#signBtn') && !e.target.closest('#pagePopup') && !e.target.closest('#pageSetupBtn') && !e.target.closest('#classPopup') && !e.target.closest('#classBtn') &&
           !e.target.closest('#spPopup') && !e.target.closest('#spBtn') &&
           !e.target.closest('#sheetPopup') && !e.target.closest('#sheetBtn')) {
         closeAllPopups();
