@@ -20,6 +20,8 @@
        🎨 DYNAMIC THEME SYSTEM (LIGHT & DARK MODE)
     ========================================================= */
     :root {
+      --sheet-w: 297mm;
+      --sheet-h: 210mm;
       --app-bg: #f8fafc;
       --tb-bg: rgba(255, 255, 255, 0.96);
       --tb-border: #e2e8f0;
@@ -64,7 +66,8 @@
     .sp-btn, .sp-popup, .sp-popup *,
     .custom-dd-btn, .custom-dd-popup, .custom-dd-popup *,
     .form-control, select, option, input, button,
-    .panel-pill-box, .toolbar-label, .btn {
+    .panel-pill-box, .toolbar-label, .btn,
+    .ps-popup, .ps-popup * {
       font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
       font-weight: 700 !important;
     }
@@ -147,28 +150,25 @@
       z-index: 1000;
       background: var(--tb-bg);
       backdrop-filter: blur(14px);
-      padding: 7px 14px;
+      padding: 8px 14px;
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 8px 12px;
       box-shadow: var(--shadow-sm);
       border-bottom: 1.5px solid var(--tb-border);
-      transition: all 0.25s ease;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      white-space: nowrap;
     }
-
-    .no-print-bar::-webkit-scrollbar { height: 3px; }
-    .no-print-bar::-webkit-scrollbar-thumb { background: rgba(2, 132, 199, 0.25); border-radius: 3px; }
 
     .tb-group {
-      display: inline-flex;
+      display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 6px;
-      flex-shrink: 0;
+      min-width: 0;
     }
+    .tb-filters { flex: 1 1 auto; }
+    .tb-actions { flex: 0 0 auto; margin-left: auto; }
 
     .panel-pill-box {
       background: var(--ctrl-group-bg);
@@ -178,6 +178,7 @@
       display: inline-flex;
       align-items: center;
       gap: 5px;
+      min-width: 0;
     }
 
     .toolbar-label {
@@ -235,36 +236,12 @@
       box-shadow: 0 2px 7px rgba(16, 185, 129, 0.25);
     }
 
-    .zoom-btn-group {
-      display: inline-flex;
-      align-items: center;
-      gap: 2px;
+    .btn-secondary {
       background: var(--ctrl-group-bg);
-      padding: 2px;
-      border-radius: 8px;
-      border: 1px solid var(--tb-border);
-      height: 30px;
+      color: var(--text-main);
+      border-color: var(--input-border);
     }
-    .zoom-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 2px 7px;
-      border-radius: 5px;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      height: 24px;
-      display: flex;
-      align-items: center;
-    }
-    .zoom-btn:hover { color: var(--text-main); }
-    .zoom-btn.active {
-      background: #0284c7 !important;
-      color: #ffffff !important;
-      box-shadow: 0 1px 5px rgba(2, 132, 199, 0.35);
-    }
+    .btn-secondary:hover, .btn-secondary.open { border-color: var(--input-focus); color: var(--input-focus); }
 
     /* =========================================================
        🌟 CUSTOM DROPDOWN SYSTEM (រចនាដូចរូបភាព ១០០% - BATTAMBANG)
@@ -384,28 +361,87 @@
     /* =========================================================
        📱 RESPONSIVE ADJUSTMENTS
     ========================================================= */
-    @media screen and (min-width: 769px) and (max-width: 1180px) {
-      .no-print-bar { padding: 8px 16px; gap: 8px; }
-      .panel-pill-box { padding: 3px 8px; }
-      .form-control, .btn, .custom-dd-btn { height: 32px; font-size: 12.5px; }
-      .zoom-btn-group { height: 32px; }
-      .zoom-btn { height: 26px; font-size: 11.5px; }
-      .preview-wrapper { padding: 14px 10px; gap: 18px; }
+    /* =========================================================
+       ⚙️ POPUP ការរៀបចំទំព័រ
+    ========================================================= */
+    .ps-popup {
+      display: none; position: fixed; z-index: 99999; width: 360px; max-width: calc(100vw - 16px);
+      background: var(--card-panel-bg); color: var(--text-main);
+      border: 1px solid var(--tb-border); border-radius: 18px; padding: 16px 16px 14px;
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+      max-height: calc(100vh - 80px); overflow-y: auto;
     }
+    .ps-popup.show { display: block; }
+    .ps-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .ps-title { font-size: 17px; }
+    .ps-reset {
+      display: inline-flex; align-items: center; gap: 6px; background: transparent; border: none;
+      color: var(--text-muted); font-size: 13px; cursor: pointer; padding: 4px 6px; border-radius: 8px;
+    }
+    .ps-reset:hover { color: var(--text-main); background: var(--ctrl-group-bg); }
+    .ps-sec { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 13px; margin: 12px 0 10px; }
+    .ps-sec::after { content: ''; flex: 1; height: 1px; background: var(--tb-border); }
+    .ps-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .ps-tile {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+      min-height: 62px; padding: 6px 4px; border-radius: 12px; cursor: pointer;
+      background: var(--ctrl-group-bg); color: var(--text-main); border: 1px solid var(--tb-border);
+      font-size: 14px; transition: all 0.15s ease;
+    }
+    .ps-tile small { font-size: 11px; color: var(--text-muted); font-weight: 400 !important; }
+    .ps-tile:hover { border-color: var(--input-focus); }
+    .ps-tile.active { background: #e11d48; border-color: #fb7185; color: #ffffff; }
+    .ps-tile.active small { color: rgba(255, 255, 255, 0.85); }
+    .ps-ico { display: block; border: 2px solid currentColor; border-radius: 3px; }
+    .ps-ico.p { width: 11px; height: 17px; }
+    .ps-ico.l { width: 17px; height: 11px; }
+    .ps-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .ps-row > span.ps-lbl { font-size: 14px; min-width: 40px; }
+    .ps-step {
+      width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--tb-border); cursor: pointer;
+      background: var(--ctrl-group-bg); color: var(--text-main); font-size: 18px; line-height: 1;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .ps-step:hover { border-color: var(--input-focus); }
+    .ps-num {
+      display: inline-flex; align-items: center; gap: 4px; height: 34px; padding: 0 10px; border-radius: 10px;
+      background: var(--input-bg); border: 1px solid var(--input-border);
+    }
+    .ps-num input { width: 44px; border: none; outline: none; background: transparent; color: var(--text-main); text-align: center; font-size: 15px; }
+    .ps-num span { color: var(--text-muted); font-size: 13px; }
+    .ps-hint { flex: 1 1 100%; color: var(--text-muted); font-size: 12px; font-weight: 400 !important; }
 
-    @media screen and (max-width: 768px) {
+    /* ធានាថាខ្លឹមសារក្នុងប្រអប់ទំព័រ មិនហៀរ (បង្រួមស្វ័យប្រវត្តិ) */
+    .fit-outer { flex: 1 1 auto; min-height: 0; position: relative; overflow: hidden; }
+    .fit-inner { position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; flex-direction: column; justify-content: space-between; }
+
+    /* ទិសបញ្ឈរ ៖ ទំព័រទាំងពីរត្រូវរៀបជាជួរលើ-ក្រោម */
+    .preview-wrapper.portrait .sheet-page { grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 5mm; }
+    .preview-wrapper.portrait .sheet-page > div:empty { display: none; }
+    .preview-wrapper.portrait .sheet-page.sheet1 { grid-template-rows: minmax(0, 1fr); }
+
+    /* =========================================================
+       📱 RESPONSIVE (មិនចាំបាច់អូស Toolbar ទៀតទេ)
+    ========================================================= */
+    @media screen and (max-width: 1100px) {
+      .tb-filters { flex: 1 1 100%; }
+      .tb-actions { flex: 1 1 100%; justify-content: flex-end; }
+    }
+    @media screen and (max-width: 720px) {
       body { padding-bottom: 40px; }
-      .no-print-bar { padding: 6px 10px; gap: 6px; }
-      .tb-group { gap: 4px; }
-      .panel-pill-box { padding: 2px 6px; }
-      .form-control, .btn { height: 28px; font-size: 11.5px; padding: 2px 6px; }
-      .custom-dd-btn { height: 28px; font-size: 11.5px; padding: 2px 8px; min-width: 110px; }
-      .zoom-btn-group { height: 28px; }
-      .zoom-btn { height: 22px; padding: 1px 5px; font-size: 10px; }
-      .preview-wrapper {
-        padding: 10px 4px; gap: 14px; width: 100%;
-        overflow-x: auto; -webkit-overflow-scrolling: touch;
-      }
+      .no-print-bar { padding: 6px 8px; gap: 6px; }
+      .tb-filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px; width: 100%; }
+      .tb-filters .panel-pill-box { display: flex; width: 100%; }
+      .tb-filters .panel-pill-box[style*="display:none"] { display: none !important; }
+      .tb-filters .custom-dd-btn { flex: 1 1 auto; min-width: 0 !important; width: 100%; }
+      .tb-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 100%; }
+      .tb-actions .btn { width: 100%; justify-content: center; padding: 2px 6px; }
+      .form-control, .btn, .custom-dd-btn { height: 34px; font-size: 12.5px; }
+      .preview-wrapper { padding: 10px 4px; gap: 14px; }
+    }
+    @media screen and (max-width: 420px) {
+      .toolbar-label .lbl { display: none; }
+      .btn .hide-xs { display: none; }
     }
 
     /* =========================================================
@@ -424,9 +460,9 @@
     .sheet-page {
       background: #ffffff !important; 
       color: var(--navy) !important;
-      width: 297mm; 
-      height: 210mm; 
-      max-height: 210mm;
+      width: var(--sheet-w); 
+      height: var(--sheet-h); 
+      max-height: var(--sheet-h);
       padding: 6mm 7.5mm; 
       display: grid; 
       grid-template-columns: 1fr 1fr; 
@@ -531,18 +567,17 @@
     .principal-name { font-weight: 700; min-height: 20px; font-size: 14px; }
 
     /* =========================================================
-       🖨️ PRINT RULES (A4 LANDSCAPE)
+       🖨️ PRINT RULES (ទំហំតាមការកំណត់ទំព័រ)
     ========================================================= */
     @media print {
-      html, body { background: none !important; padding: 0 !important; margin: 0 !important; width: 297mm; height: 210mm; }
-      .no-print-bar, .custom-dd-popup { display: none !important; }
+      html, body { background: none !important; padding: 0 !important; margin: 0 !important; width: var(--sheet-w); height: var(--sheet-h); }
+      .no-print-bar, .custom-dd-popup, .ps-popup { display: none !important; }
       .preview-wrapper { padding: 0 !important; gap: 0 !important; zoom: 1 !important; transform: none !important; }
       .sheet-page {
-        box-shadow: none !important; margin: 0 !important; width: 297mm !important; height: 210mm !important;
+        box-shadow: none !important; margin: 0 !important; width: var(--sheet-w) !important; height: var(--sheet-h) !important;
         padding: 6mm 7.5mm !important; page-break-after: always !important; break-after: page !important;
         page-break-inside: avoid !important; border-radius: 0 !important;
       }
-      @page { size: A4 landscape; margin: 0; }
     }
   </style>
 </head>
@@ -564,12 +599,12 @@
        🎛️ NEW SINGLE-ROW SLEEK TOOLBAR DESIGN
   ========================================================= -->
   <div class="no-print-bar" id="controlToolbar" style="display:none;">
-    
+
     <!-- ផ្នែកខាងឆ្វេង ៖ Filters -->
-    <div class="tb-group">
-      <!-- 🌟 ថ្នាក់៖ បង្ហាញតែសម្រាប់ ADMIN ប៉ុណ្ណោះ (គ្រូមិនបាច់បង្ហាញឡើយ) -->
+    <div class="tb-group tb-filters">
+      <!-- 🌟 ថ្នាក់៖ បង្ហាញតែសម្រាប់ ADMIN ប៉ុណ្ណោះ -->
       <div class="panel-pill-box" id="adminClassBox" style="display:none;">
-        <span class="toolbar-label"><i class="fa-solid fa-graduation-cap" style="color:#0284c7;"></i> ថ្នាក់៖</span>
+        <span class="toolbar-label"><i class="fa-solid fa-graduation-cap" style="color:#0284c7;"></i> <span class="lbl">ថ្នាក់៖</span></span>
         <button type="button" class="custom-dd-btn" id="classBtn" onclick="toggleClassPicker(event)" style="min-width: 120px;">
           <span class="custom-dd-label" id="classLabel">កំពុងទាញយក...</span>
           <i class="fa-solid fa-chevron-down custom-dd-chev" id="classChev"></i>
@@ -579,9 +614,8 @@
         </select>
       </div>
 
-      <!-- 🌟 សិស្ស៖ ប៊ូតុងរចនាថ្មីស្អាតបេះបិទតាមរូបភាព (Font Battambang) -->
       <div class="panel-pill-box">
-        <span class="toolbar-label"><i class="fa-solid fa-user" style="color:#10b981;"></i> សិស្ស៖</span>
+        <span class="toolbar-label"><i class="fa-solid fa-user" style="color:#10b981;"></i> <span class="lbl">សិស្ស៖</span></span>
         <button type="button" class="custom-dd-btn" id="spBtn" onclick="toggleStudentPicker(event)">
           <span class="custom-dd-label" id="spLabel">🏫 ទាំងថ្នាក់</span>
           <i class="fa-solid fa-chevron-down custom-dd-chev" id="spChev"></i>
@@ -591,9 +625,8 @@
         </select>
       </div>
 
-      <!-- 🌟 សន្លឹក៖ ប៊ូតុងរចនាថ្មីស្អាតបេះបិទតាមរូបភាព (Font Battambang) -->
       <div class="panel-pill-box">
-        <span class="toolbar-label"><i class="fa-solid fa-file-lines" style="color:#f59e0b;"></i> សន្លឹក៖</span>
+        <span class="toolbar-label"><i class="fa-solid fa-file-lines" style="color:#f59e0b;"></i> <span class="lbl">សន្លឹក៖</span></span>
         <button type="button" class="custom-dd-btn" id="sheetBtn" onclick="toggleSheetPicker(event)" style="min-width: 160px;">
           <span class="custom-dd-label" id="sheetLabel">សន្លឹកទី៣ (លទ្ធផលប្រឡង)</span>
           <i class="fa-solid fa-chevron-down custom-dd-chev" id="sheetChev"></i>
@@ -602,17 +635,14 @@
       </div>
     </div>
 
-    <!-- ផ្នែកខាងស្តាំ ៖ Zoom & Action Buttons -->
-    <div class="tb-group">
-      <!-- 🔍 Zoom Buttons -->
-      <div class="zoom-btn-group" title="ពង្រីក/បង្រួមទំហំ">
-        <button type="button" class="zoom-btn active" id="zFit" onclick="setFitZoom()">សម</button>
-        <button type="button" class="zoom-btn" id="z75" onclick="setZoom(0.75, 'z75')">75%</button>
-        <button type="button" class="zoom-btn" id="z100" onclick="setZoom(1, 'z100')">100%</button>
-      </div>
+    <!-- ផ្នែកខាងស្តាំ ៖ Action Buttons -->
+    <div class="tb-group tb-actions">
+      <button type="button" class="btn btn-secondary" id="pageSetupBtn" onclick="togglePagePopup(event)" title="ការរៀបចំទំព័រ">
+        <i class="fa-solid fa-sliders"></i> <span class="hide-xs">ការរៀបចំទំព័រ</span>
+      </button>
 
       <button class="btn btn-primary" onclick="loadSemesterData()" title="ទាញយកទិន្នន័យឡើងវិញ">
-        <i class="fa-solid fa-rotate"></i> <span>ផ្ទុកឡើងវិញ</span>
+        <i class="fa-solid fa-rotate"></i> <span class="hide-xs">ផ្ទុកឡើងវិញ</span>
       </button>
 
       <button class="btn btn-success" onclick="doPrint()" title="បោះពុម្ពសៀវភៅសិក្ខាគារិក">
@@ -620,6 +650,31 @@
       </button>
     </div>
 
+  </div>
+
+  <!-- ⚙️ POPUP ការរៀបចំទំព័រ -->
+  <div class="ps-popup no-print" id="pagePopup">
+    <div class="ps-head">
+      <div class="ps-title">ការរៀបចំទំព័រ</div>
+      <button type="button" class="ps-reset" onclick="resetPageSetup()"><i class="fa-solid fa-rotate-left"></i> ដើមវិញ</button>
+    </div>
+
+    <div class="ps-sec"><i class="fa-regular fa-file-lines"></i> <span>ក្រដាស</span></div>
+    <div class="ps-tiles">
+      <button type="button" class="ps-tile" id="psA4" onclick="setPaper('A4')"><b>A4</b><small>210×297</small></button>
+      <button type="button" class="ps-tile" id="psF4" onclick="setPaper('F4')"><b>F4</b><small>216×330</small></button>
+      <button type="button" class="ps-tile" id="psPortrait" onclick="setOrient('portrait')"><span class="ps-ico p"></span><span>បញ្ឈរ</span></button>
+      <button type="button" class="ps-tile" id="psLandscape" onclick="setOrient('landscape')"><span class="ps-ico l"></span><span>ផ្តេក</span></button>
+    </div>
+
+    <div class="ps-sec"><i class="fa-solid fa-layer-group"></i> <span>អក្សរ និងក្រឡា</span></div>
+    <div class="ps-row">
+      <span class="ps-lbl">អក្សរ</span>
+      <button type="button" class="ps-step" onclick="stepScale(-5)" aria-label="បន្ថយ">−</button>
+      <label class="ps-num"><input type="number" id="psScale" min="60" max="130" step="5" value="100" onchange="setScale(this.value)"><span>%</span></label>
+      <button type="button" class="ps-step" onclick="stepScale(5)" aria-label="បង្កើន">+</button>
+      <span class="ps-hint">បន្ថយស្វ័យប្រវត្តិ បើខ្លឹមសារពេញសន្លឹក</span>
+    </div>
   </div>
 
   <!-- =========================================================
@@ -745,26 +800,100 @@
 
     let bundleData = null;
 
-    function setZoom(scale, btnId) {
-      const container = document.getElementById('semesterContainer');
-      if (container) container.style.zoom = scale;
-      ['zFit', 'z75', 'z100'].forEach(id => document.getElementById(id)?.classList.remove('active'));
-      document.getElementById(btnId)?.classList.add('active');
+    /* =========================================================
+       ⚙️ ការរៀបចំទំព័រ (ក្រដាស / ទិស / ទំហំអក្សរ)
+    ========================================================= */
+    const PAGE_KEY = 'sk_page_setup_v1';
+    const PAPERS = { A4: { w: 210, h: 297 }, F4: { w: 216, h: 330 } };
+    const SCALE_MIN = 60, SCALE_MAX = 130;
+    const PAGE_DEFAULT = { paper: 'A4', orient: 'landscape', scale: 100 };
+    let pageSetup = Object.assign({}, PAGE_DEFAULT);
+
+    function loadPageSetup() {
+      try {
+        const o = JSON.parse(localStorage.getItem(PAGE_KEY) || 'null');
+        if (o && PAPERS[o.paper]) {
+          pageSetup.paper = o.paper;
+          pageSetup.orient = o.orient === 'portrait' ? 'portrait' : 'landscape';
+          const sc = Number(o.scale);
+          pageSetup.scale = (sc >= SCALE_MIN && sc <= SCALE_MAX) ? sc : 100;
+        }
+      } catch (e) {}
+    }
+    function savePageSetup() { try { localStorage.setItem(PAGE_KEY, JSON.stringify(pageSetup)); } catch (e) {} }
+
+    function sheetDims() {
+      const p = PAPERS[pageSetup.paper] || PAPERS.A4;
+      return pageSetup.orient === 'portrait' ? { w: p.w, h: p.h } : { w: p.h, h: p.w };
     }
 
-    function setFitZoom() {
-      const screenW = window.innerWidth;
-      const targetW = 1125;
-      let scale = (screenW - 20) / targetW;
-      if (scale > 1) scale = 1;
-      if (scale < 0.28) scale = 0.28;
-      setZoom(scale, 'zFit');
+    /* ធ្វើឱ្យទំព័រមើលជាមុនសមនឹងអេក្រង់ (ស្វ័យប្រវត្តិ គ្មានប៊ូតុងទេ) */
+    function applyPreviewScale() {
+      const c = document.getElementById('semesterContainer');
+      if (!c) return;
+      const px = sheetDims().w * 96 / 25.4;
+      let sc = window.innerWidth / (px + 24);
+      sc = Math.min(1, Math.max(0.25, sc));
+      c.style.zoom = sc >= 0.995 ? '' : sc;
     }
 
+    function applyPageSetup() {
+      const d = sheetDims();
+      const root = document.documentElement;
+      root.style.setProperty('--sheet-w', d.w + 'mm');
+      root.style.setProperty('--sheet-h', d.h + 'mm');
+
+      let st = document.getElementById('dynPageStyle');
+      if (!st) { st = document.createElement('style'); st.id = 'dynPageStyle'; document.head.appendChild(st); }
+      st.textContent = '@page { size: ' + d.w + 'mm ' + d.h + 'mm; margin: 0; }';
+
+      document.getElementById('semesterContainer')?.classList.toggle('portrait', pageSetup.orient === 'portrait');
+
+      document.getElementById('psA4')?.classList.toggle('active', pageSetup.paper === 'A4');
+      document.getElementById('psF4')?.classList.toggle('active', pageSetup.paper === 'F4');
+      document.getElementById('psPortrait')?.classList.toggle('active', pageSetup.orient === 'portrait');
+      document.getElementById('psLandscape')?.classList.toggle('active', pageSetup.orient === 'landscape');
+      const inp = document.getElementById('psScale');
+      if (inp && document.activeElement !== inp) inp.value = pageSetup.scale;
+
+      applyPreviewScale();
+      fitSheetPages();
+    }
+
+    function setPaper(k) { if (!PAPERS[k]) return; pageSetup.paper = k; savePageSetup(); applyPageSetup(); }
+    function setOrient(o) { pageSetup.orient = (o === 'portrait') ? 'portrait' : 'landscape'; savePageSetup(); applyPageSetup(); }
+    function setScale(v) {
+      v = Math.round(Number(v));
+      if (!Number.isFinite(v)) v = 100;
+      pageSetup.scale = Math.min(SCALE_MAX, Math.max(SCALE_MIN, v));
+      savePageSetup();
+      applyPageSetup();
+      const inp = document.getElementById('psScale'); if (inp) inp.value = pageSetup.scale;
+    }
+    function stepScale(delta) { setScale(pageSetup.scale + delta); }
+    function resetPageSetup() { pageSetup = Object.assign({}, PAGE_DEFAULT); savePageSetup(); applyPageSetup(); }
+
+    function togglePagePopup(e) {
+      if (e) e.stopPropagation();
+      const pop = document.getElementById('pagePopup');
+      const btn = document.getElementById('pageSetupBtn');
+      const wasOpen = pop.classList.contains('show');
+      closeAllPopups();
+      if (wasOpen) return;
+      applyPageSetup();
+      const r = btn.getBoundingClientRect();
+      const w = Math.min(360, window.innerWidth - 16);
+      pop.style.width = w + 'px';
+      pop.style.left = Math.max(8, Math.min(r.right - w, window.innerWidth - w - 8)) + 'px';
+      pop.style.top = (r.bottom + 6) + 'px';
+      pop.classList.add('show');
+      btn.classList.add('open');
+    }
+
+    let _rsT = null;
     window.addEventListener('resize', () => {
-      if (window.innerWidth <= 1180 && document.getElementById('zFit')?.classList.contains('active')) {
-        setFitZoom();
-      }
+      clearTimeout(_rsT);
+      _rsT = setTimeout(() => { applyPreviewScale(); fitSheetPages(); }, 120);
     });
 
     function doPrint() {
@@ -891,36 +1020,41 @@
 
     const dottedLines = n => '<div class="eval-dots"></div>'.repeat(n);
 
-    /* ធានាថាខ្លឹមសារសន្លឹកទី៣ មិនហៀរចេញក្រៅប្រអប់ (បង្រួមបន្តិចបើវែងពេក) */
-    function fitSheet3Pages() {
-      document.querySelectorAll('.sheet3 .page-box').forEach(box => {
+    /* ធានាថាខ្លឹមសារក្នុងទំព័រនីមួយៗ មិនហៀរចេញក្រៅប្រអប់ (ប្រើទំហំអក្សរតាមការកំណត់ ហើយបង្រួមបើវែងពេក) */
+    function fitSheetPages() {
+      const base = Math.min(SCALE_MAX, Math.max(SCALE_MIN, Number(pageSetup.scale) || 100)) / 100;
+      document.querySelectorAll('#semesterContainer .page-box').forEach(box => {
         let outer = box.querySelector(':scope > .fit-outer');
         if (!outer) {
-          const child = box.firstElementChild;
-          if (!child) return;
           outer = document.createElement('div');
           outer.className = 'fit-outer';
-          outer.style.cssText = 'flex:1 1 auto; min-height:0; overflow:hidden;';
-          child.classList.add('fit-inner');
-          box.insertBefore(outer, child);
-          outer.appendChild(child);
+          const inner = document.createElement('div');
+          inner.className = 'fit-inner';
+          while (box.firstChild) inner.appendChild(box.firstChild);
+          outer.appendChild(inner);
+          box.appendChild(outer);
         }
         const inner = outer.firstElementChild;
-        inner.style.zoom = 1;
-        const need = inner.offsetHeight, have = outer.clientHeight;
-        if (need > have && have > 0) inner.style.zoom = Math.max(0.6, (have / need) * 0.985);
+        let z = base;
+        inner.style.zoom = z;
+        for (let i = 0; i < 4; i++) {
+          const need = inner.scrollHeight, have = inner.clientHeight;
+          if (have <= 0 || need <= have + 1) break;
+          z = Math.max(0.4, z * (have / need) * 0.985);
+          inner.style.zoom = z;
+          if (z <= 0.4) break;
+        }
       });
     }
 
-    window.addEventListener('beforeprint', () => { try { fitSheet3Pages(); } catch(e) {} });
+    window.addEventListener('beforeprint', () => { try { fitSheetPages(); } catch(e) {} });
 
     /* 4. INITIALIZATION */
     window.addEventListener('DOMContentLoaded', async () => {
+      loadPageSetup();
+      applyPageSetup();
       if (!checkAuthentication()) return;
       await initClasses();
-      if (window.innerWidth <= 1180) {
-        setFitZoom();
-      }
     });
 
     /* =========================================================
@@ -981,10 +1115,12 @@
       document.getElementById('sheetBtn')?.classList.remove('open');
       document.getElementById('classPopup')?.classList.remove('show');
       document.getElementById('classBtn')?.classList.remove('open');
+      document.getElementById('pagePopup')?.classList.remove('show');
+      document.getElementById('pageSetupBtn')?.classList.remove('open');
     }
 
     document.addEventListener('click', (e) => {
-      if (!e.target.closest('#classPopup') && !e.target.closest('#classBtn') &&
+      if (!e.target.closest('#pagePopup') && !e.target.closest('#pageSetupBtn') && !e.target.closest('#classPopup') && !e.target.closest('#classBtn') &&
           !e.target.closest('#spPopup') && !e.target.closest('#spBtn') &&
           !e.target.closest('#sheetPopup') && !e.target.closest('#sheetBtn')) {
         closeAllPopups();
@@ -1403,7 +1539,7 @@
         // ================= SHEET 1: ក្របក្រៅ =================
         if (sheetFilter === 'ALL' || sheetFilter === '1') {
           const sheet1 = document.createElement('div');
-          sheet1.className = 'sheet-page';
+          sheet1.className = 'sheet-page sheet1';
           sheet1.innerHTML = `
             <div></div>
             <div class="page-box">
@@ -1753,8 +1889,8 @@
         }
       });
 
-      fitSheet3Pages();
-      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitSheet3Pages);
+      fitSheetPages();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitSheetPages);
     }
   </script>
 </body>
