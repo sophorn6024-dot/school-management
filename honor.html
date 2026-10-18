@@ -8,7 +8,7 @@
 
   <title>តារាងកិត្តិយស - សាលាបឋមសិក្សាកំពង់ល្ពៅ</title>
 
-  <!-- 🔤 Google Fonts Khmer (Battambang, Moul, Siemreap) & FontAwesome 6.5.1 -->
+  <!-- 🔤 Google Fonts Khmer & FontAwesome 6.5.1 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700;900&family=Moul&family=Siemreap&display=swap" rel="stylesheet">
@@ -22,19 +22,11 @@
     :root {
       --primary: #0284c7;
       --primary-hover: #0369a1;
-      --bg: #0f172a;
-      --surface: #1e293b;
-      --border: #334155;
+      --bg: #090e17;
+      --surface: #111e33;
+      --border: #1e293b;
       --text: #f8fafc;
       --text-muted: #94a3b8;
-    }
-
-    [data-theme="light"] {
-      --bg: #f1f5f9;
-      --surface: #ffffff;
-      --border: #cbd5e1;
-      --text: #0f172a;
-      --text-muted: #64748b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -45,10 +37,10 @@
       font-family: 'Battambang', 'Khmer OS Battambang', sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
-      padding-bottom: 50px;
+      padding-bottom: 40px;
     }
 
-    /* ══════════════ 🔤 DROPDOWN & TOOLBAR ប្រើ FONT BATTAMBANG ១០០% ══════════════ */
+    /* ══════════════ 🔤 DROPDOWN & UI ប្រើ FONT BATTAMBANG ១០០% ══════════════ */
     .top-toolbar, .top-toolbar *,
     .tb-btn, .dd-wrap, .dd-popup, .dd-item,
     .cal-popup, .cal-popup * {
@@ -58,14 +50,14 @@
     .font-moul { font-family: 'Khmer OS Muol Light', 'Moul', cursive !important; }
     .font-siemreap { font-family: 'Khmer OS Siemreap', 'Siemreap', sans-serif !important; }
 
-    /* ══════════════ 🛠️ CUSTOM TOP TOOLBAR ══════════════ */
+    /* ══════════════ 🛠️ TOP TOOLBAR ══════════════ */
     .top-toolbar {
       position: sticky;
       top: 0;
       z-index: 1000;
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.96);
+      backdrop-filter: blur(14px);
+      border-bottom: 1.5px solid var(--border);
       padding: 8px 14px;
       display: flex;
       align-items: center;
@@ -74,13 +66,13 @@
       overflow-x: auto;
       white-space: nowrap;
     }
-    .tb-group { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .tb-group { display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; }
     
     .tb-btn {
-      height: 38px; padding: 0 13px; border-radius: 10px;
+      height: 36px; padding: 0 12px; border-radius: 9px;
       border: 1px solid rgba(255, 255, 255, 0.15);
       background: #1e293b; color: #f8fafc; font-size: 13px; font-weight: 700;
-      cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
       transition: all .15s ease; white-space: nowrap; user-select: none;
     }
     .tb-btn:hover { background: #334155; border-color: rgba(255, 255, 255, 0.3); }
@@ -89,13 +81,13 @@
     .tb-btn.success { background: #059669; border-color: transparent; }
     .tb-btn.success:hover { background: #047857; }
 
-    /* 🌟 CUSTOM HTML DROPDOWN (ធានា Font Battambang ១០០% លើទូរស័ព្ទ និង Tablet) */
+    /* 🌟 CUSTOM DROPDOWN (FONT BATTAMBANG ១០០%) */
     .dd-wrap { position: relative; display: inline-block; }
     .dd-popup {
       display: none; position: absolute; top: calc(100% + 6px); left: 0;
-      min-width: 200px; max-height: 320px; overflow-y: auto;
-      background: #ffffff; border-radius: 14px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-      border: 1px solid #e2e8f0; padding: 6px; z-index: 1200;
+      min-width: 210px; max-height: 320px; overflow-y: auto;
+      background: #ffffff; border-radius: 14px; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
+      border: 1.5px solid #e2e8f0; padding: 6px; z-index: 2500;
     }
     .dd-popup.show { display: block; animation: ddIn .15s ease-out; }
     @keyframes ddIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
@@ -108,64 +100,66 @@
     .dd-item:hover { background: #f1f5f9; }
     .dd-item.active { background: #e0f2fe; color: #0284c7; }
 
-    /* ══════════════ 📄 A4 HONOR CARD CONTAINER (២១០មម x ២៩៧មម) ══════════════ */
+    /* ══════════════ 📄 RESPONSIVE A4 PAPER SCALER ══════════════ */
     .paper-wrapper {
-      width: 100%; display: flex; justify-content: center; padding: 15px 0; overflow-x: auto;
+      width: 100%; display: flex; justify-content: center; padding: 15px 0; overflow-x: hidden;
     }
+    
+    /* 🌟 Auto-fit Scaler បង្រួមតាមអេក្រង់ Tablet កុំឱ្យធ្លាយគែមស្តាំ */
     #paperScaler {
-      width: 210mm; min-width: 210mm; max-width: 210mm; height: 297mm; min-height: 297mm; max-height: 297mm;
-      position: relative; margin: 0 auto; box-sizing: border-box;
+      width: 794px; min-width: 794px; height: 1123px;
+      position: relative; margin: 0 auto; transform-origin: top center;
+      transition: transform 0.15s ease;
     }
 
     .honor-paper {
-      width: 210mm; height: 297mm; min-height: 297mm; max-height: 297mm;
+      width: 794px; height: 1123px; min-height: 1123px; max-height: 1123px;
       background: #ffffff; color: #000000; position: relative;
-      box-shadow: 0 15px 45px rgba(0,0,0,0.4);
-      /* 🌟 លើកគូទក្រោមឡើងលើ ដោយកំណត់ padding-bottom: 15mm */
-      padding: 8mm 12mm 15mm 12mm;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.45);
+      padding: 30px 42px 45px 42px;
       display: flex; flex-direction: column; justify-content: space-between;
       overflow: hidden; box-sizing: border-box;
     }
 
-    /* 🌸 ស៊ុមផ្កាភ្ញីជុំវិញសន្លឹក (Vector SVG ច្បាស់ម៉ត់ មិនធ្លាយទំព័រ) */
+    /* 🌸 ស៊ុមផ្កាភ្ញី Vector ម៉ត់ច្បាស់ */
     .floral-frame-svg {
-      position: absolute; inset: 5mm; width: calc(100% - 10mm); height: calc(100% - 10mm);
+      position: absolute; inset: 12px; width: calc(100% - 24px); height: calc(100% - 24px);
       pointer-events: none; z-index: 20;
     }
 
     /* 👑 Document Header */
-    .header-box { text-align: center; margin-top: 1mm; }
-    .header-box h2 { font-size: 15.5px; margin-bottom: 2px; }
-    .header-box h3 { font-size: 14px; margin-bottom: 2px; }
-    .header-divider { letter-spacing: 4px; font-size: 10px; color: #64748b; }
+    .header-box { text-align: center; margin-top: 6px; }
+    .header-box h2 { font-size: 16px; margin-bottom: 2px; }
+    .header-box h3 { font-size: 14.5px; margin-bottom: 2px; }
+    .header-divider { letter-spacing: 5px; font-size: 10px; color: #64748b; }
 
     .meta-left {
-      position: absolute; top: 25mm; left: 16mm; text-align: left;
-      font-size: 13px; line-height: 1.6; font-weight: bold;
+      position: absolute; top: 95px; left: 50px; text-align: left;
+      font-size: 13.5px; line-height: 1.6; font-weight: bold;
     }
 
-    .main-title-box { text-align: center; margin-top: 4mm; margin-bottom: 2mm; }
+    .main-title-box { text-align: center; margin-top: 25px; margin-bottom: 10px; }
     .main-title-text {
       font-size: 42px; color: #f59e0b;
-      text-shadow: 2.5px 2.5px 0 #581c87, -2.5px -2.5px 0 #581c87, 2.5px -2.5px 0 #581c87, -2.5px 2.5px 0 #581c87, 0 3px 8px rgba(0,0,0,0.3);
+      text-shadow: 2.5px 2.5px 0 #581c87, -2.5px -2.5px 0 #581c87, 2.5px -2.5px 0 #581c87, -2.5px 2.5px 0 #581c87, 0 4px 10px rgba(0,0,0,0.3);
       letter-spacing: 1.5px; display: inline-block;
     }
     .period-title {
-      font-size: 16.5px; margin-top: 2px; font-weight: bold;
+      font-size: 17px; margin-top: 3px; font-weight: bold;
       background: linear-gradient(135deg, #1d4ed8, #b91c1c);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    /* ══════════════ 🏆 PODIUM RANKS (ធំៗ ញ៉ែកពេញក្រដាស) ══════════════ */
+    /* ══════════════ 🏆 PODIUM RANKS (ធំៗ ញ៉ែកពេញក្រដាស A4) ══════════════ */
     .podium-container {
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;
-      margin: 2mm 0; position: relative; z-index: 10;
+      margin: 8px 0; position: relative; z-index: 10;
     }
     .podium-row-1 { display: flex; justify-content: center; width: 100%; }
     
-    /* 🌟 ញ៉ែកជួរទី២ និងទី៣ ឱ្យធំទូលាយពេញទទឹងក្រដាស A4 */
+    /* 🌟 ញ៉ែកជួរទី២ និងទី៣ ឱ្យធំទូលាយពេញទទឹងក្រដាស */
     .podium-row-2, .podium-row-3 {
-      display: flex; justify-content: center; gap: 40px; width: 100%;
+      display: flex; justify-content: center; gap: 45px; width: 100%;
     }
 
     .rank-card-slot {
@@ -184,22 +178,22 @@
 
     /* 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស) - រូបថតធំៗ ញ៉ែកស្អាត */
     .orig-photo-box {
-      border: 3px solid #d97706; border-radius: 12px; overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); background: #f8fafc;
+      border: 3.5px solid #d97706; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.18); background: #f8fafc;
     }
 
     /* ✍️ FOOTER DATES & SIGNATURES (លើកឡើងលើមិនកៀកបាតក្រោមពេក) */
     .footer-row {
       display: flex; justify-content: space-between; align-items: flex-end;
-      margin-bottom: 5mm; padding: 0 14mm; font-size: 13px;
+      margin-bottom: 12px; padding: 0 35px; font-size: 13.5px;
     }
-    .footer-col { text-align: center; min-width: 240px; }
-    .footer-col .sign-title { font-size: 13.5px; margin-top: 3px; }
+    .footer-col { text-align: center; min-width: 250px; }
+    .footer-col .sign-title { font-size: 14px; margin-top: 3px; }
     .footer-col .sign-space { height: 42px; }
 
     /* ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ */
     .cal-modal-backdrop {
-      display: none; position: fixed; inset: 0; z-index: 2900; background: rgba(0,0,0,0.6);
+      display: none; position: fixed; inset: 0; z-index: 2900; background: rgba(0,0,0,0.65);
     }
     .cal-modal-backdrop.show { display: block; }
     .cal-popup {
@@ -218,7 +212,7 @@
     .cal-day-cell.other { opacity: 0.35; }
 
     /* ══════════════════════════════════════════════════════════════════════════
-       🖨️ ក្បួន PRINT A4 ធានាត្រឹមតែ ១ ទំព័រគត់ (១/១ ដាច់ខាតមិនធ្លាក់ទំព័រទី ២)
+       🖨️ PRINT RULES (ធានា ១ ទំព័រគត់ ១/១ ពេញទំហឹង A4)
     ══════════════════════════════════════════════════════════════════════════ */
     @page {
       size: A4 portrait;
@@ -245,27 +239,18 @@
       .top-toolbar, .cal-modal-backdrop, .cal-popup, #authDeniedWrap {
         display: none !important;
       }
-      .paper-wrapper, #paperScaler {
-        width: 210mm !important;
-        height: 297mm !important;
-        max-height: 297mm !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        transform: none !important;
-        overflow: hidden !important;
+      .paper-wrapper {
+        padding: 0 !important; margin: 0 !important; width: 210mm !important; height: 297mm !important;
+      }
+      #paperScaler {
+        transform: none !important; width: 210mm !important; height: 297mm !important;
+        max-height: 297mm !important; margin: 0 !important; padding: 0 !important;
       }
       .honor-paper {
-        width: 210mm !important;
-        height: 297mm !important;
-        min-height: 297mm !important;
-        max-height: 297mm !important;
-        padding: 8mm 12mm 15mm 12mm !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-        page-break-before: avoid !important;
-        page-break-after: avoid !important;
-        page-break-inside: avoid !important;
-        break-inside: avoid !important;
+        width: 210mm !important; height: 297mm !important; min-height: 297mm !important;
+        max-height: 297mm !important; padding: 10mm 12mm 12mm 12mm !important;
+        box-shadow: none !important; border-radius: 0 !important;
+        page-break-after: avoid !important; page-break-inside: avoid !important;
         overflow: hidden !important;
       }
     }
@@ -287,7 +272,7 @@
   <!-- 🌟 MAIN CONTENT -->
   <div id="mainPageContent" style="display:none;">
 
-    <!-- 🛠️ TOP TOOLBAR (DROPDOWN ទាំងអស់ប្រើ FONT BATTAMBANG ១០០%) -->
+    <!-- 🛠️ TOP TOOLBAR (DROPDOWN ទាំងអស់ប្រើ FONT BATTAMBANG) -->
     <div class="top-toolbar">
       <div class="tb-group">
         <button type="button" class="tb-btn" onclick="goBack()">
@@ -304,7 +289,7 @@
           <div class="dd-popup" id="ddClassList"></div>
         </div>
 
-        <!-- ⏱️ រយៈពេល (Custom Dropdown Font Battambang) -->
+        <!-- ⏱️ រយៈពេល -->
         <div class="dd-wrap">
           <button type="button" class="tb-btn" onclick="toggleDropdown('ddPeriodList')">
             <span id="txtPeriodSelect">ប្រចាំឆ្នាំ</span>
@@ -318,7 +303,7 @@
           </div>
         </div>
 
-        <!-- Dropdown កូន (សម្រាប់ខែ ឬឆមាស) -->
+        <!-- Dropdown កូន (ខែ / ឆមាស) -->
         <div class="dd-wrap" id="childPeriodWrap" style="display:none;">
           <button type="button" class="tb-btn" onclick="toggleDropdown('ddChildPeriodList')">
             <span id="txtChildPeriodSelect">តុលា</span>
@@ -327,7 +312,7 @@
           <div class="dd-popup" id="ddChildPeriodList"></div>
         </div>
 
-        <!-- 🎨 ទម្រង់ទាំង ៦ + ទម្រង់ដើម (Custom Dropdown Font Battambang) -->
+        <!-- 🎨 ទម្រង់ទាំង ៦ + ទម្រង់ដើម -->
         <div class="dd-wrap">
           <button type="button" class="tb-btn" onclick="toggleDropdown('ddTemplateList')">
             <i class="fa-solid fa-palette" style="color:#c084fc;"></i>
@@ -368,11 +353,11 @@
       <div id="paperScaler">
         <div class="honor-paper" id="honorPaper">
           
-          <!-- 🌸 ស៊ុមផ្កាភ្ញីជុំវិញសន្លឹក Vector ច្បាស់ម៉ត់ មិនធ្លាយទំព័រ -->
-          <svg class="floral-frame-svg" viewBox="0 0 760 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect x="5" y="5" width="750" height="1070" rx="4" stroke="#b91c1c" stroke-width="4"/>
-            <rect x="11" y="11" width="738" height="1058" rx="3" stroke="#15803d" stroke-width="3"/>
-            <rect x="16" y="16" width="728" height="1048" rx="2" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6 4"/>
+          <!-- 🌸 ស៊ុមផ្កាភ្ញីជុំវិញសន្លឹក Vector ច្បាស់ម៉ត់ -->
+          <svg class="floral-frame-svg" viewBox="0 0 770 1099" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="5" width="760" height="1089" rx="4" stroke="#b91c1c" stroke-width="4.5"/>
+            <rect x="12" y="12" width="746" height="1075" rx="3" stroke="#15803d" stroke-width="3"/>
+            <rect x="18" y="18" width="734" height="1063" rx="2" stroke="#f59e0b" stroke-width="2" stroke-dasharray="8 5"/>
           </svg>
 
           <!-- 👑 ក្បាលលិខិតជាតិ -->
@@ -402,7 +387,7 @@
             <!-- Render ដោយ JavaScript -->
           </div>
 
-          <!-- ✍️ ហត្ថលេខា និងកាលបរិច្ឆេទចន្ទគតិ-សូរិយគតិ (លើកឡើងលើមិនកៀកបាតក្រោមពេក) -->
+          <!-- ✍️ ហត្ថលេខា និងកាលបរិច្ឆេទចន្ទគតិ-សូរិយគតិ -->
           <div class="footer-row font-siemreap">
             <div class="footer-col" style="margin-top: 15px;">
               <div class="font-moul sign-title">បានឃើញនិងឯកភាព</div>
@@ -412,11 +397,11 @@
             </div>
 
             <div class="footer-col">
-              <div id="lblLunarDate" style="font-size:12.5px;"></div>
-              <div id="lblSolarDate" style="font-size:12.5px; margin-top:2px;"></div>
+              <div id="lblLunarDate" style="font-size:13px;"></div>
+              <div id="lblSolarDate" style="font-size:13px; margin-top:2px;"></div>
               <div class="font-moul sign-title" style="color:#2b3990; margin-top:4px;">គ្រូបន្ទុកថ្នាក់</div>
               <div class="sign-space"></div>
-              <div id="lblTeacherName" class="font-moul" style="font-size:13px;"></div>
+              <div id="lblTeacherName" class="font-moul" style="font-size:13.5px;"></div>
             </div>
           </div>
 
@@ -430,8 +415,8 @@
   <div class="cal-modal-backdrop" id="calBackdrop" onclick="closeCalendarPopup()"></div>
   <div class="cal-popup" id="calPopup">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <select id="calMonthSelect" class="tb-select" style="background:#f1f5f9; color:#000; border:1px solid #cbd5e1;" onchange="renderCalendarDays()"></select>
-      <select id="calYearSelect" class="tb-select" style="background:#f1f5f9; color:#000; border:1px solid #cbd5e1;" onchange="renderCalendarDays()"></select>
+      <select id="calMonthSelect" class="tb-btn" style="background:#f1f5f9; color:#000; border:1px solid #cbd5e1;" onchange="renderCalendarDays()"></select>
+      <select id="calYearSelect" class="tb-btn" style="background:#f1f5f9; color:#000; border:1px solid #cbd5e1;" onchange="renderCalendarDays()"></select>
     </div>
     <div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:12px; font-weight:bold; color:#64748b;">
       <span>អា</span><span>ច</span><span>អ</span><span>ព</span><span>ព្រ</span><span>សុ</span><span>ស</span>
@@ -575,7 +560,7 @@
   </script>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ MAIN CONTROLLER & 6 VECTOR TEMPLATES (ធំៗ ស្រស់ស្អាត)
+       ⚡ MAIN CONTROLLER & 6 VECTOR TEMPLATES
   ══════════════════════════════════════════════════════════════════════════ -->
   <script>
     const SUPABASE_URL = "https://nggnuobnrxiqjtcwlvwk.supabase.co";
@@ -604,19 +589,41 @@
     );
 
     let currentSelectedClass = cleanGrade(USER_CLASS) || '៤(ក)';
-    let currentSelectedTemplate = 'arrow'; // លំនាំដើម គំរូព្រួញបៃតង
+    let currentSelectedTemplate = 'arrow';
     let currentPeriodType = 'yearly';
     let currentPeriodChild = 'តុលា';
 
     let currentTop5Students = [
-      { name: "សេសៈ សេសៈ", imageUrl: "" },
-      { name: "នា នា", imageUrl: "" },
-      { name: "មាន់ មាន់", imageUrl: "" },
       { name: "កូ កូ", imageUrl: "" },
-      { name: "កេះ លីណា", imageUrl: "" }
+      { name: "មាន់ មាន់", imageUrl: "" },
+      { name: "គក គក", imageUrl: "" },
+      { name: "ទា ទា", imageUrl: "" },
+      { name: "សេះ សេះ", imageUrl: "" }
     ];
 
-    /* ══════════════ 🎨 RENDER 6 VECTOR TEMPLATES (ធំៗ សមសួនពេញក្រដាស) ══════════════ */
+    /* ══════════════ 📱 AUTO-FIT RESPONSIVE SCALER FOR TABLET ══════════════ */
+    function fitPaper() {
+      const scaler = document.getElementById('paperScaler');
+      const wrapper = document.querySelector('.paper-wrapper');
+      if (!scaler || !wrapper) return;
+
+      // គណនាទំហំទទឹងដែលនៅសល់ក្នុង Iframe (ដក sidebar ចេញ)
+      const availW = wrapper.clientWidth - 24;
+      const targetW = 794;
+      let scale = availW / targetW;
+
+      if (scale > 1) scale = 1;
+      if (scale < 0.45) scale = 0.45;
+
+      scaler.style.transform = `scale(${scale})`;
+      scaler.style.width = `${targetW * scale}px`;
+      scaler.style.height = `${1123 * scale}px`;
+      scaler.style.marginBottom = `${-(1123 * (1 - scale))}px`;
+    }
+
+    window.addEventListener('resize', fitPaper);
+
+    /* ══════════════ 🎨 RENDER 6 TEMPLATES + ORIGINAL PHOTO MODE ══════════════ */
     function getCardSvg(template, rank, student) {
       const khRank = toKh(rank);
       const name = student?.name || '...';
@@ -624,7 +631,7 @@
       const nameColorClass = `r-color-${rank}`;
       const isTop1 = (rank === 1);
 
-      // 0. 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស - ធំៗ ញ៉ែកឆ្វេងស្តាំស្មើដៃ)
+      // 0. 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស - ធំៗ ញ៉ែកពេញទទឹង)
       if (template === 'original') {
         const w = isTop1 ? 160 : 142;
         const h = isTop1 ? 190 : 172;
@@ -649,24 +656,22 @@
         `;
       }
 
-      // 1. គំរូ ៖ ព្រួញបៃតង (Green Arrow - ធំទូលាយដូចរូបគំរូ)
+      // 1. គំរូ ៖ ព្រួញបៃតង (Green Arrow - ធំទូលាយដិតច្បាស់)
       if (template === 'arrow') {
         const boxW = isTop1 ? 350 : 320;
         const fontSize = isTop1 ? '25px' : '22px';
 
         return `
           <div style="position:relative; width:${boxW}px; height:110px; display:flex; flex-direction:column; align-items:center;">
-            <!-- មេដាយលេខរៀងខាងលើ -->
             <div style="position:relative; margin-bottom:-14px; z-index:3;">
-              <svg width="42" height="42" viewBox="0 0 34 34">
+              <svg width="44" height="44" viewBox="0 0 34 34">
                 <circle cx="17" cy="17" r="15" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
                 <circle cx="17" cy="17" r="12" fill="#ffffff"/>
               </svg>
               <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:15px; color:#b91c1c;">${khRank}</span>
             </div>
-            <!-- ផ្ទាំងព្រួញបៃតងធំរលោង -->
-            <div style="position:relative; width:100%; height:72px;">
-              <svg width="100%" height="72" viewBox="0 0 320 68" preserveAspectRatio="none">
+            <div style="position:relative; width:100%; height:74px;">
+              <svg width="100%" height="74" viewBox="0 0 320 68" preserveAspectRatio="none">
                 <path d="M12 6 L285 6 L312 34 L285 62 L12 62 L12 6 Z" fill="#15803d"/>
                 <path d="M18 12 L280 12 L302 34 L280 56 L18 56 Z" fill="#ffffff" stroke="#15803d" stroke-width="2"/>
                 <path d="M12 62 L0 62 L12 50 Z" fill="#14532d"/>
@@ -825,6 +830,8 @@
           <div class="rank-card-slot">${getCardSvg(currentSelectedTemplate, 5, s[4])}</div>
         </div>
       `;
+
+      fitPaper();
     }
 
     /* ══════════════ 🛠️ CUSTOM DROPDOWN ENGINE (FONT BATTAMBANG) ══════════════ */
@@ -1011,6 +1018,7 @@
 
       applySelectedDate(2026, 10, 18);
       await loadHonorRoll();
+      fitPaper();
     }
 
     function selectAdminClass(cls) {
