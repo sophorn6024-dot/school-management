@@ -444,18 +444,14 @@
        📱 RESPONSIVE ADJUSTMENTS
     ========================================================= */
     /* ទំហំកណ្តាល ៖ បង្រួមឱ្យនៅជួរតែមួយ (លាក់អក្សរ label រក្សាតែរូបតំណាង) */
-    @media screen and (max-width: 1320px) {
+    @media screen and (min-width: 721px) and (max-width: 1320px) {
       .no-print-bar { padding: 6px 10px; gap: 6px; }
       .toolbar-label .lbl { display: none; }
+      .tb-filters { flex: 1 1 auto; }
       .sp-btn { min-width: 120px; max-width: 170px; }
       .mp-btn { min-width: 72px; }
       .dt-btn { min-width: 100px; }
       .btn { padding: 4px 9px; }
-    }
-    @media screen and (max-width: 860px) {
-      .tb-filters { flex: 1 1 100%; }
-      .tb-actions { flex: 1 1 100%; justify-content: flex-end; margin-left: 0; }
-      .toolbar-label .lbl { display: inline; }
     }
     @media screen and (max-width: 720px) {
       body { padding-bottom: 40px; }
@@ -642,7 +638,11 @@
       <!-- 🌟 ថ្នាក់៖ បង្ហាញតែសម្រាប់ ADMIN ប៉ុណ្ណោះ (គ្រូមិនបាច់បង្ហាញឡើយ) -->
       <div class="panel-pill-box" id="adminClassBox" style="display:none;">
         <span class="toolbar-label"><i class="fa-solid fa-graduation-cap" style="color:#0284c7;"></i> <span class="lbl">ថ្នាក់៖</span></span>
-        <select id="classSelect" class="form-control" onchange="onClassChange()">
+        <button type="button" class="mp-btn" id="cpBtn" onclick="toggleClassPicker(event)" style="min-width:130px;">
+          <span class="mp-btn-label" id="cpLabel">កំពុងទាញយក...</span>
+          <i class="fa-solid fa-chevron-down mp-chev"></i>
+        </button>
+        <select id="classSelect" style="display:none;" onchange="onClassChange()">
           <option value="">កំពុងទាញយក...</option>
         </select>
       </div>
@@ -719,6 +719,11 @@
       <button type="button" class="cal-btn" onclick="calToday()"><i class="fa-solid fa-crosshairs"></i> ថ្ងៃនេះ</button>
       <label class="cal-blank"><input type="checkbox" id="signBlankIn" onchange="setSignBlank(this.checked)"> ទុកទទេ (សរសេរដោយដៃ)</label>
     </div>
+  </div>
+
+  <!-- 🎓 CUSTOM CLASS PICKER POPUP (Battambang) -->
+  <div class="mp-popup" id="cpPopup">
+    <div class="mp-list" id="cpList"></div>
   </div>
 
   <!-- 📅 CUSTOM MONTH PICKER POPUP (រចនាដូចរូបភាព ១០០%) -->
@@ -2136,7 +2141,7 @@ exports.default = {
       if (e) e.stopPropagation();
       const pop = document.getElementById('calPopup'), btn = document.getElementById(role === 'teacher' ? 'signBtnT' : 'signBtnD');
       const wasOpen = pop.classList.contains('show') && calRole === role;
-      closeCalPopup(); closeStudentPicker(); closeMonthPicker();
+      closeCalPopup(); closeStudentPicker(); closeMonthPicker(); closeClassPicker();
       if (wasOpen) return;
       calRole = role;
       document.getElementById('signBlankIn').checked = signDates[calRole].blank;
@@ -2162,6 +2167,52 @@ exports.default = {
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeCalPopup(); });
     window.addEventListener('resize', closeCalPopup);
 
+    /* 🎓 CUSTOM CLASS PICKER (ប្រើ Battambang ដូច dropdown ផ្សេង) */
+    function syncClassLabel() {
+      const sel = document.getElementById('classSelect');
+      const opt = sel && sel.options[sel.selectedIndex];
+      const lb = document.getElementById('cpLabel');
+      if (lb) lb.textContent = opt ? opt.textContent : 'ជ្រើសរើសថ្នាក់';
+    }
+    function closeClassPicker() {
+      document.getElementById('cpPopup')?.classList.remove('show');
+      document.getElementById('cpBtn')?.classList.remove('open');
+    }
+    function toggleClassPicker(e) {
+      if (e) e.stopPropagation();
+      closeStudentPicker(); closeMonthPicker(); closeCalPopup();
+      const pop = document.getElementById('cpPopup'), btn = document.getElementById('cpBtn');
+      if (pop.classList.contains('show')) { closeClassPicker(); return; }
+      const sel = document.getElementById('classSelect'), list = document.getElementById('cpList');
+      list.innerHTML = '';
+      Array.from(sel.options).forEach(opt => {
+        if (!opt.value) return;
+        const item = document.createElement('div');
+        item.className = 'mp-item' + (opt.value === sel.value ? ' active' : '');
+        item.innerHTML = '<span>' + opt.textContent + '</span><i class="fa-solid fa-check"></i>';
+        item.onclick = (ev) => {
+          ev.stopPropagation();
+          sel.value = opt.value;
+          syncClassLabel();
+          closeClassPicker();
+          sel.dispatchEvent(new Event('change'));
+        };
+        list.appendChild(item);
+      });
+      const r = btn.getBoundingClientRect(), w = Math.min(Math.max(r.width, 170), window.innerWidth - 16);
+      pop.style.width = w + 'px';
+      pop.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + 'px';
+      pop.style.top = (r.bottom + 6) + 'px';
+      pop.classList.add('show');
+      btn.classList.add('open');
+      const act = list.querySelector('.mp-item.active');
+      if (act) list.scrollTop = act.offsetTop - list.clientHeight / 2 + act.clientHeight / 2;
+    }
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#cpPopup') && !e.target.closest('#cpBtn')) closeClassPicker();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeClassPicker(); });
+
     /* =========================================================
        🌟 3.5 CUSTOM MONTH PICKER LOGIC (ដូចរូបភាព)
     ========================================================= */
@@ -2169,6 +2220,7 @@ exports.default = {
       if (e) e.stopPropagation();
       closeStudentPicker();
       closeCalPopup();
+      closeClassPicker();
       const pop = document.getElementById('mpPopup');
       if (pop.classList.contains('show')) { closeMonthPicker(); return; }
 
@@ -2272,6 +2324,7 @@ exports.default = {
       if (e) e.stopPropagation();
       closeMonthPicker();
       closeCalPopup();
+      closeClassPicker();
       const pop = document.getElementById('spPopup');
       if (pop.classList.contains('show')) { closeStudentPicker(); return; }
 
@@ -2326,6 +2379,7 @@ exports.default = {
         if (cleanCls) {
           select.innerHTML = `<option value="${cleanCls}">ថ្នាក់ទី ${cleanCls}</option>`;
           select.value = cleanCls;
+          syncClassLabel();
           currentClassName = cleanCls;
           onClassChange();
         } else {
@@ -2348,13 +2402,16 @@ exports.default = {
 
         select.innerHTML = classes.map(c => `<option value="${c}">ថ្នាក់ទី ${c}</option>`).join('');
         if (cleanCls && classes.includes(cleanCls)) select.value = cleanCls;
+        syncClassLabel();
         onClassChange();
       } catch (err) {
         select.innerHTML = '<option value="">កំហុសទាញយកថ្នាក់</option>';
+        syncClassLabel();
       }
     }
 
     function onClassChange() {
+      syncClassLabel();
       currentClassName = document.getElementById('classSelect').value || cleanGrade(USER_CLASS);
       if (!currentClassName) return;
       loadReportData();
