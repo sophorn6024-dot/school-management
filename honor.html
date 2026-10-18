@@ -101,7 +101,7 @@
       outline: none; cursor: pointer;
     }
 
-    /* ══════════════ 📄 A4 HONOR CARD CONTAINER (ស្តង់ដារ ២១០មម x ២៩៧មម) ══════════════ */
+    /* ══════════════ 📄 A4 HONOR CARD CONTAINER (២១០មម x ២៩៧មម) ══════════════ */
     .paper-wrapper {
       width: 100%; display: flex; justify-content: center; padding: 15px 0; overflow-x: auto;
     }
@@ -114,12 +114,13 @@
       width: 210mm; height: 297mm; min-height: 297mm; max-height: 297mm;
       background: #ffffff; color: #000000; position: relative;
       box-shadow: 0 15px 45px rgba(0,0,0,0.4);
-      padding: 10mm 12mm 8mm 12mm;
+      /* 🌟 លើកគូទក្រោមឡើងលើ ដោយកំណត់ padding-bottom: 16mm */
+      padding: 9mm 12mm 16mm 12mm;
       display: flex; flex-direction: column; justify-content: space-between;
       overflow: hidden; box-sizing: border-box;
     }
 
-    /* 🌸 ស៊ុមផ្កាភ្ញីជុំវិញសន្លឹក (Vector SVG មិនបែកព្រាល មិនជ្រុះទៅទំព័រទី២) */
+    /* 🌸 ស៊ុមផ្កាភ្ញីជុំវិញសន្លឹក (Vector SVG មិនធ្លាយទំព័រ) */
     .floral-frame-svg {
       position: absolute; inset: 5mm; width: calc(100% - 10mm); height: calc(100% - 10mm);
       pointer-events: none; z-index: 20;
@@ -148,40 +149,42 @@
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    /* ══════════════ 🏆 PODIUM RANKS (ញ៉ែកស្មើដៃ ពេញក្រដាស) ══════════════ */
+    /* ══════════════ 🏆 PODIUM RANKS (ញ៉ែកឆ្វេង-ស្តាំធំទូលាយ) ══════════════ */
     .podium-container {
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;
-      margin: 1mm 0; position: relative; z-index: 10;
+      margin: 2mm 0; position: relative; z-index: 10;
     }
     .podium-row-1 { display: flex; justify-content: center; width: 100%; }
+    
+    /* 🌟 ញ៉ែកជួរទី២ និងជួរទី៣ ឱ្យធំទូលាយឆ្វេង-ស្តាំស្មើដៃ */
     .podium-row-2, .podium-row-3 {
-      display: flex; justify-content: center; gap: 40px; width: 100%;
+      display: flex; justify-content: center; gap: 125px; width: 100%;
     }
 
     .rank-card-slot {
       position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
 
-    /* 🌟 ពណ៌ និងទំហំអក្សរឈ្មោះសិស្សធំៗ ស្រស់ស្អាត */
+    /* 🌟 ពណ៌ឈ្មោះសិស្ស */
     .student-name-text {
       font-weight: normal; text-align: center; white-space: nowrap; user-select: none;
     }
-    .r-color-1 { color: #b91c1c; } /* លេខ១ ក្រហម */
-    .r-color-2 { color: #1d4ed8; } /* លេខ២ ខៀវ */
-    .r-color-3 { color: #15803d; } /* លេខ៣ បៃតង */
-    .r-color-4 { color: #b91c1c; } /* លេខ៤ ក្រហម */
-    .r-color-5 { color: #7e22ce; } /* លេខ៥ ស្វាយ */
+    .r-color-1 { color: #b91c1c; }
+    .r-color-2 { color: #1d4ed8; }
+    .r-color-3 { color: #15803d; }
+    .r-color-4 { color: #b91c1c; }
+    .r-color-5 { color: #7e22ce; }
 
-    /* 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស) - រៀបចំញ៉ែកស្អាតសមនឹងក្រដាស */
+    /* 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស) - រូបថតធំៗ ញ៉ែកស្អាត */
     .orig-photo-box {
       border: 3px solid #d97706; border-radius: 12px; overflow: hidden;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); background: #f8fafc;
     }
 
-    /* ✍️ FOOTER DATES & SIGNATURES */
+    /* ✍️ FOOTER DATES & SIGNATURES (លើកឡើងលើ មិនកៀកបាតក្រោម) */
     .footer-row {
       display: flex; justify-content: space-between; align-items: flex-end;
-      margin-bottom: 2mm; padding: 0 12mm; font-size: 13px;
+      margin-bottom: 6mm; padding: 0 14mm; font-size: 13px;
     }
     .footer-col { text-align: center; min-width: 240px; }
     .footer-col .sign-title { font-size: 13.5px; margin-top: 3px; }
@@ -249,7 +252,7 @@
         height: 297mm !important;
         min-height: 297mm !important;
         max-height: 297mm !important;
-        padding: 10mm 12mm 8mm 12mm !important;
+        padding: 9mm 12mm 16mm 12mm !important;
         box-shadow: none !important;
         border-radius: 0 !important;
         page-break-before: avoid !important;
@@ -317,7 +320,7 @@
         <!-- 📅 ប្រតិទិនខ្មែរ -->
         <button type="button" class="tb-btn" onclick="openKhmerCalendar()">
           <i class="fa-regular fa-calendar-days" style="color:#60a5fa;"></i>
-          <span id="lblBtnDate">ថ្ងៃទី១៨ តុលា</span>
+          <span id="lblBtnDate">ជ្រើសកាលបរិច្ឆេទ</span>
         </button>
 
         <!-- 📥 ទាញយក PDF & បោះពុម្ព -->
@@ -335,7 +338,7 @@
       <div id="paperScaler">
         <div class="honor-paper" id="honorPaper">
           
-          <!-- 🌸 ស៊ុមផ្កាភ្ញីជុំវិញសន្លឹក Vector មិនបែកព្រាល មិនធ្លាយទំព័រ -->
+          <!-- 🌸 ស៊ុមផ្កាភ្ញីជុំវិញសន្លឹក Vector ច្បាស់ម៉ត់ -->
           <svg class="floral-frame-svg" viewBox="0 0 760 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="5" y="5" width="750" height="1070" rx="4" stroke="#b91c1c" stroke-width="4"/>
             <rect x="11" y="11" width="738" height="1058" rx="3" stroke="#15803d" stroke-width="3"/>
@@ -364,12 +367,12 @@
             </div>
           </div>
 
-          <!-- 🏆 កន្លែងបង្ហាញចំណាត់ថ្នាក់ទាំង ៥ (ញ៉ែកស្មើដៃ សមសួន មិនធ្លាក់ទំព័រ) -->
+          <!-- 🏆 កន្លែងបង្ហាញចំណាត់ថ្នាក់ទាំង ៥ (ញ៉ែកធំទូលាយឆ្វេង-ស្តាំ) -->
           <div class="podium-container" id="podiumArea">
             <!-- Render ដោយ JavaScript -->
           </div>
 
-          <!-- ✍️ ហត្ថលេខា និងកាលបរិច្ឆេទចន្ទគតិ-សូរិយគតិ -->
+          <!-- ✍️ ហត្ថលេខា និងកាលបរិច្ឆេទចន្ទគតិ-សូរិយគតិ (លើកឡើងលើមិនកៀកបាតក្រោម) -->
           <div class="footer-row font-siemreap">
             <div class="footer-col" style="margin-top: 15px;">
               <div class="font-moul sign-title">បានឃើញនិងឯកភាព</div>
@@ -379,8 +382,8 @@
             </div>
 
             <div class="footer-col">
-              <div id="lblLunarDate" style="font-size:12.5px;">ថ្ងៃអាទិត្យ ៧កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០</div>
-              <div id="lblSolarDate" style="font-size:12.5px; margin-top:2px;">កំពង់ល្ពៅ ថ្ងៃទី១៨ ខែតុលា ឆ្នាំ២០២៦</div>
+              <div id="lblLunarDate" style="font-size:12.5px;"></div>
+              <div id="lblSolarDate" style="font-size:12.5px; margin-top:2px;"></div>
               <div class="font-moul sign-title" style="color:#2b3990; margin-top:4px;">គ្រូបន្ទុកថ្នាក់</div>
               <div class="sign-space"></div>
               <div id="lblTeacherName" class="font-moul" style="font-size:13px;"></div>
@@ -412,7 +415,7 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ MOMENTKH CALENDAR ENGINE
+       ⚡ ម៉ាស៊ីនគណនាចន្ទគតិ MOMENTKH (ពេញលេញ ១០០% តាមតម្រាខ្មែរដូនតា)
   ══════════════════════════════════════════════════════════════════════════ -->
   <script>
     (function (root, factory) {
@@ -421,67 +424,132 @@
       else { root.momentkh = factory(); }
     }(typeof self !== 'undefined' ? self : this, function () {
       "use strict";
-      var MoonPhase = { Waxing: 0, Waning: 1 };
-      var MonthIndex = { Migasir: 0, Boss: 1, Meak: 2, Phalkun: 3, Cheit: 4, Pisakh: 5, Jesth: 6, Asadh: 7, Srap: 8, Phatrabot: 9, Assoch: 10, Kadeuk: 11, Pathamasadh: 12, Tutiyasadh: 13 };
+
       var LunarMonthNames = ['មិគសិរ','បុស្ស','មាឃ','ផល្គុន','ចេត្រ','ពិសាខ','ជេស្ឋ','អាសាឍ','ស្រាពណ៍','ភទ្របទ','អស្សុជ','កត្តិក','បឋមាសាឍ','ទុតិយាសាឍ'];
       var AnimalYearNames = ['ជូត','ឆ្លូវ','ខាល','ថោះ','រោង','ម្សាញ់','មមី','មមែ','វក','រកា','ច','កុរ'];
       var SakNames = ['សំរឹទ្ធិស័ក','ឯកស័ក','ទោស័ក','ត្រីស័ក','ចត្វាស័ក','បញ្ចស័ក','ឆស័ក','សប្តស័ក','អដ្ឋស័ក','នព្វស័ក'];
       var WeekdayNames = ['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
       var MoonPhaseNames = ['កើត','រោច'];
 
-      function g2j(y, m, d) {
-        var a = Math.floor((14 - m) / 12), y1 = y + 4800 - a, m1 = m + 12 * a - 3;
-        return d + Math.floor((153 * m1 + 2) / 5) + 365 * y1 + Math.floor(y1 / 4) - Math.floor(y1 / 100) + Math.floor(y1 / 400) - 32045;
+      function isGregorianLeap(y) { return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0); }
+      function gregorianToJulianDay(year, month, day) {
+        var a = Math.floor((14 - month) / 12);
+        var y = year + 4800 - a;
+        var m = month + 12 * a - 3;
+        return day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
       }
-      function j2g(jdn) {
+      function julianDayToGregorian(jdn) {
         var a = jdn + 32044, b = Math.floor((4 * a + 3) / 146097), c = a - Math.floor((146097 * b) / 4);
         var d = Math.floor((4 * c + 3) / 1461), e = c - Math.floor((1461 * d) / 4), m = Math.floor((5 * e + 2) / 153);
         var day = e - Math.floor((153 * m + 2) / 5) + 1, month = m + 3 - 12 * Math.floor(m / 10), year = 100 * b + d - 4800 + Math.floor(m / 10);
         return { year: year, month: month, day: day };
       }
-      function getDow(y, m, d) { return (g2j(y, m, d) + 1) % 7; }
+      function getDayOfWeek(y, m, d) { return (gregorianToJulianDay(y, m, d) + 1) % 7; }
       function getAharkun(be) { return Math.floor((be * 292207 + 499) / 800) + 4; }
       function getAvoman(be) { return (getAharkun(be) * 11 + 25) % 692; }
       function getBodithey(be) { var ah = getAharkun(be); return (Math.floor((ah * 11 + 25) / 692) + ah + 29) % 30; }
-      function isSolarLeap(be) { return (800 - ((be * 292207 + 499) % 800)) <= 207; }
-      function isLeapDay(be) { var av = getAvoman(be); if (av === 0 && getAvoman(be - 1) === 137) return true; if (isSolarLeap(be)) return av < 127; return av < 138; }
-      function isLeapMonth(be) { var b1 = getBodithey(be), b2 = getBodithey(be + 1); if (b1 === 25 && b2 === 5) return false; return (b1 === 24 && b2 === 6) || (b1 >= 25) || (b1 < 6); }
-      function getLeapType(be) { if (isLeapMonth(be)) return 1; if (isLeapDay(be)) return 2; return 0; }
-      function daysInKhMonth(mi, be) { var lt = getLeapType(be); if (mi === MonthIndex.Jesth && lt === 2) return 30; if (mi === MonthIndex.Pathamasadh || mi === MonthIndex.Tutiyasadh) return lt === 1 ? 30 : 0; return mi % 2 === 0 ? 29 : 30; }
-      function daysInKhYear(be) { var lt = getLeapType(be); return lt === 1 ? 384 : (lt === 2 ? 355 : 354); }
-      function nextKhMonth(mi, be) { var lt = getLeapType(be); if (mi === MonthIndex.Jesth && lt === 1) return MonthIndex.Pathamasadh; if (mi === MonthIndex.Kadeuk) return MonthIndex.Migasir; if (mi === MonthIndex.Pathamasadh) return MonthIndex.Tutiyasadh; if (mi === MonthIndex.Tutiyasadh) return MonthIndex.Srap; return mi + 1; }
+      function isKhmerSolarLeap(be) { return (800 - ((be * 292207 + 499) % 800)) <= 207; }
+      function isKhmerLeapDay(be) {
+        var av = getAvoman(be);
+        if (av === 0 && getAvoman(be - 1) === 137) return true;
+        if (isKhmerSolarLeap(be)) return av < 127;
+        if (av === 137 && getAvoman(be + 1) === 0) return false;
+        return av < 138;
+      }
+      function isKhmerLeapMonth(be) {
+        var b1 = getBodithey(be), b2 = getBodithey(be + 1);
+        if (b1 === 25 && b2 === 5) return false;
+        return (b1 === 24 && b2 === 6) || (b1 >= 25) || (b1 < 6);
+      }
+      function getLeapType(be) {
+        if (isKhmerLeapMonth(be)) return 1;
+        if (isKhmerLeapDay(be)) return 2;
+        if (isKhmerLeapMonth(be - 1)) {
+          var p = be - 1;
+          while (true) {
+            if (isKhmerLeapDay(p)) return 2;
+            p -= 1;
+            if (!isKhmerLeapMonth(p)) return 0;
+          }
+        }
+        return 0;
+      }
+      function getNumberOfDaysInKhmerMonth(mi, be) {
+        var lt = getLeapType(be);
+        if (mi === 6 && lt === 2) return 30; // ជេស្ឋ
+        if (mi === 12 || mi === 13) return lt === 1 ? 30 : 0; // បឋមាសាឍ, ទុតិយាសាឍ
+        return mi % 2 === 0 ? 29 : 30;
+      }
+      function getNumberOfDaysInKhmerYear(be) {
+        var lt = getLeapType(be);
+        return lt === 1 ? 384 : (lt === 2 ? 355 : 354);
+      }
+      function nextMonthOf(mi, be) {
+        var lt = getLeapType(be);
+        if (mi === 6 && lt === 1) return 12;
+        if (mi === 11) return 0;
+        if (mi === 12) return 13;
+        if (mi === 13) return 8;
+        return mi + 1;
+      }
 
       function fromGregorian(year, month, day) {
-        var epochJdn = g2j(1900, 1, 1), targetJdn = g2j(year, month, day), khMonth = 1, diffDays = targetJdn - epochJdn;
+        var epochJdn = gregorianToJulianDay(1900, 1, 1);
+        var targetJdn = gregorianToJulianDay(year, month, day);
+        var khmerMonth = 1; // បុស្ស
+        var diffDays = targetJdn - epochJdn;
+
         if (diffDays > 0) {
           while (true) {
-            var eg = j2g(epochJdn), nBE = eg.month <= 4 ? eg.year + 544 : eg.year + 545;
-            var dy = daysInKhYear(nBE);
-            if (diffDays > dy) { diffDays -= dy; epochJdn += dy; } else break;
+            var eg = julianDayToGregorian(epochJdn);
+            var nextYearBE = (eg.month <= 4 ? eg.year + 1 : eg.year + 2) + 543;
+            var dy = getNumberOfDaysInKhmerYear(nextYearBE);
+            if (diffDays > dy) {
+              diffDays -= dy;
+              epochJdn += dy;
+            } else break;
           }
         }
         while (diffDays > 0) {
-          var eg2 = j2g(epochJdn), cBE = eg2.month <= 4 ? eg2.year + 543 : eg2.year + 544;
-          var dm = daysInKhMonth(khMonth, cBE);
-          if (diffDays > dm) { diffDays -= dm; epochJdn += dm; khMonth = nextKhMonth(khMonth, cBE); } else break;
+          var eg2 = julianDayToGregorian(epochJdn);
+          var cBE = (eg2.month <= 4 ? eg2.year : eg2.year + 1) + 543;
+          var dm = getNumberOfDaysInKhmerMonth(khmerMonth, cBE);
+          if (diffDays > dm) {
+            diffDays -= dm;
+            epochJdn += dm;
+            khmerMonth = nextMonthOf(khmerMonth, cBE);
+          } else break;
         }
-        var finalBE = month <= 4 ? year + 543 : year + 544;
-        var totalDim = daysInKhMonth(khMonth, finalBE);
-        if (diffDays >= totalDim) { diffDays %= totalDim; khMonth = nextKhMonth(khMonth, finalBE); }
+
+        var finalBE = (month <= 4 ? year + 543 : year + 544);
+        var totalDim = getNumberOfDaysInKhmerMonth(khmerMonth, finalBE);
+        if (diffDays >= totalDim) {
+          diffDays %= totalDim;
+          khmerMonth = nextMonthOf(khmerMonth, finalBE);
+        }
+
         var dayInPhase = diffDays < 15 ? diffDays + 1 : (diffDays - 15) + 1;
-        var phase = diffDays < 15 ? MoonPhase.Waxing : MoonPhase.Waning;
-        var dow = getDow(year, month, day);
+        var moonPhase = diffDays < 15 ? 0 : 1;
+        var jsYear = finalBE - 1182;
+        var animalIndex = ((finalBE + 4) % 12 + 12) % 12;
+        var sakIndex = ((jsYear % 10) + 10) % 10;
+        var dow = getDayOfWeek(year, month, day);
+
         return {
           gregorian: { year: year, month: month, day: day, dayOfWeek: dow },
           khmer: {
-            day: dayInPhase, moonPhaseName: MoonPhaseNames[phase],
-            monthName: LunarMonthNames[khMonth], beYear: finalBE,
-            animalYearName: AnimalYearNames[((finalBE + 4) % 12 + 12) % 12],
-            sakName: SakNames[((finalBE - 1182) % 10 + 10) % 10],
+            day: dayInPhase,
+            moonPhase: moonPhase,
+            moonPhaseName: MoonPhaseNames[moonPhase],
+            monthName: LunarMonthNames[khmerMonth],
+            beYear: finalBE,
+            animalYearName: AnimalYearNames[animalIndex],
+            sakName: SakNames[sakIndex],
             dayOfWeekName: WeekdayNames[dow]
           }
         };
       }
+
       return { fromGregorian: fromGregorian };
     }));
   </script>
@@ -532,10 +600,10 @@
       const nameColorClass = `r-color-${rank}`;
       const isTop1 = (rank === 1);
 
-      // 0. 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស - ញ៉ែករូបធំៗ ស្មើដៃ ពេញក្រដាស)
+      // 0. 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស - រូបថតធំៗ ញ៉ែកឆ្វេងស្តាំស្មើដៃពេញក្រដាស)
       if (template === 'original') {
-        const w = isTop1 ? 140 : 126;
-        const h = isTop1 ? 168 : 152;
+        const w = isTop1 ? 155 : 138;
+        const h = isTop1 ? 185 : 168;
         const badgeBg = rank === 1 ? '#f59e0b' : (rank === 2 ? '#64748b' : (rank === 3 ? '#b45309' : '#e11d48'));
 
         return `
@@ -544,12 +612,12 @@
               <div class="orig-photo-box" style="width:${w}px; height:${h}px;">
                 <img src="${img}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src=PLACEHOLDER_IMG">
               </div>
-              <span style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:${badgeBg}; color:#fff; font-weight:bold; width:28px; height:28px; border-radius:50%; font-size:13.5px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 6px rgba(0,0,0,0.25); border:2px solid #fff; z-index:10;">
+              <span style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:${badgeBg}; color:#fff; font-weight:bold; width:30px; height:30px; border-radius:50%; font-size:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.25); border:2px solid #fff; z-index:10;">
                 ${khRank}
               </span>
             </div>
             <div style="margin-top:6px; display:flex; justify-content:center;">
-              <span class="font-moul ${nameColorClass}" style="white-space:nowrap; background:#fff; border:1.5px solid #fbbf24; padding:4px 16px; border-radius:8px; font-size:${isTop1 ? '16px' : '14.5px'}; box-shadow:0 2px 6px rgba(0,0,0,0.06);">
+              <span class="font-moul ${nameColorClass}" style="white-space:nowrap; background:#fff; border:1.5px solid #fbbf24; padding:5px 18px; border-radius:8px; font-size:${isTop1 ? '17px' : '15.5px'}; box-shadow:0 2px 6px rgba(0,0,0,0.06);">
                 ${name}
               </span>
             </div>
@@ -559,9 +627,9 @@
 
       // 1. គំរូ ៖ បដាកណ្ដាល (Banner)
       if (template === 'banner') {
-        const boxW = isTop1 ? 310 : 285;
+        const boxW = isTop1 ? 315 : 290;
         const boxH = isTop1 ? 105 : 95;
-        const fontSize = isTop1 ? '20.5px' : '18.5px';
+        const fontSize = isTop1 ? '21px' : '19px';
 
         return `
           <div style="position:relative; width:${boxW}px; height:${boxH}px; display:flex; align-items:center; justify-content:center;">
@@ -571,7 +639,7 @@
               <rect x="20" y="24" width="230" height="54" rx="27" fill="#ffffff" stroke="#f59e0b" stroke-width="3.5"/>
               <circle cx="135" cy="16" r="15" fill="#ffffff" stroke="#f59e0b" stroke-width="3"/>
             </svg>
-            <span class="font-moul" style="position:absolute; top:4px; font-size:13.5px; color:#b91c1c;">${khRank}</span>
+            <span class="font-moul" style="position:absolute; top:4px; font-size:14px; color:#b91c1c;">${khRank}</span>
             <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; top:44px; font-size:${fontSize}; width:${boxW - 40}px;">${name}</div>
           </div>
         `;
@@ -579,12 +647,12 @@
 
       // 2. គំរូ ៖ ឃ្មុំ (Cute Bee)
       if (template === 'bee') {
-        const boxW = isTop1 ? 290 : 270;
-        const fontSize = isTop1 ? '20.5px' : '18.5px';
+        const boxW = isTop1 ? 295 : 275;
+        const fontSize = isTop1 ? '21px' : '19px';
 
         return `
           <div style="position:relative; width:${boxW}px; height:120px; display:flex; flex-direction:column; align-items:center;">
-            <svg width="74" height="52" viewBox="0 0 70 50" fill="none" style="margin-bottom:-10px; z-index:2;">
+            <svg width="76" height="54" viewBox="0 0 70 50" fill="none" style="margin-bottom:-10px; z-index:2;">
               <ellipse cx="20" cy="18" rx="14" ry="8" fill="#bae6fd" opacity="0.8" transform="rotate(-25 20 18)"/>
               <ellipse cx="50" cy="18" rx="14" ry="8" fill="#bae6fd" opacity="0.8" transform="rotate(25 50 18)"/>
               <ellipse cx="35" cy="30" rx="20" ry="16" fill="#f59e0b"/>
@@ -594,7 +662,7 @@
               <path d="M31 35 Q35 39 39 35" stroke="#b91c1c" stroke-width="2" stroke-linecap="round"/>
               <path d="M28 16 Q24 8 20 10 M42 16 Q46 8 50 10" stroke="#000" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            <div style="position:relative; width:100%; height:54px; background:#fff; border:3.5px solid #f59e0b; border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
+            <div style="position:relative; width:100%; height:55px; background:#fff; border:3.5px solid #f59e0b; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
               <span class="font-moul" style="position:absolute; top:-15px; left:12px; font-size:20px; color:#1d4ed8;">${khRank}</span>
               <div class="student-name-text font-moul ${nameColorClass}" style="font-size:${fontSize}; width:90%;">${name}</div>
             </div>
@@ -604,11 +672,11 @@
 
       // 3. គំរូ ៖ ព្រួញបៃតង (Green Arrow)
       if (template === 'arrow') {
-        const boxW = isTop1 ? 300 : 280;
-        const fontSize = isTop1 ? '20px' : '18px';
+        const boxW = isTop1 ? 305 : 285;
+        const fontSize = isTop1 ? '20.5px' : '18.5px';
 
         return `
-          <div style="position:relative; width:${boxW}px; height:100px; display:flex; flex-direction:column; align-items:center;">
+          <div style="position:relative; width:${boxW}px; height:102px; display:flex; flex-direction:column; align-items:center;">
             <div style="position:relative; margin-bottom:-12px; z-index:3;">
               <svg width="36" height="36" viewBox="0 0 34 34">
                 <circle cx="17" cy="17" r="15" fill="#ffffff" stroke="#f59e0b" stroke-width="3"/>
@@ -630,8 +698,8 @@
 
       // 4. គំរូ ៖ បង្អួច (Window)
       if (template === 'window') {
-        const boxW = isTop1 ? 300 : 280;
-        const fontSize = isTop1 ? '20px' : '18px';
+        const boxW = isTop1 ? 305 : 285;
+        const fontSize = isTop1 ? '20.5px' : '18.5px';
 
         return `
           <div style="position:relative; width:${boxW}px; height:110px; display:flex; flex-direction:column; align-items:center;">
@@ -640,10 +708,10 @@
                 <path d="M10 14 Q55 0 100 14 L95 24 Q55 12 15 24 Z" fill="#b91c1c"/>
                 <circle cx="55" cy="14" r="11" fill="#fff" stroke="#f59e0b" stroke-width="2.5"/>
               </svg>
-              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:12.5px; color:#b91c1c;">${khRank}</span>
+              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13px; color:#b91c1c;">${khRank}</span>
             </div>
-            <div style="position:relative; width:100%; height:70px; display:flex; align-items:center; justify-content:center;">
-              <svg width="100%" height="70" viewBox="0 0 260 68" fill="none">
+            <div style="position:relative; width:100%; height:72px; display:flex; align-items:center; justify-content:center;">
+              <svg width="100%" height="72" viewBox="0 0 260 68" fill="none">
                 <rect x="48" y="6" width="164" height="56" rx="4" fill="#ffffff" stroke="#854d0e" stroke-width="4.5"/>
                 <path d="M14 2 L48 6 L48 62 L14 66 Z" fill="#854d0e"/>
                 <rect x="21" y="10" width="22" height="46" fill="#7dd3fc" stroke="#5b3408" stroke-width="2"/>
@@ -658,11 +726,11 @@
 
       // 5. គំរូ ៖ ឆ្មា (Cute Cats)
       if (template === 'cat') {
-        const boxW = isTop1 ? 285 : 265;
-        const fontSize = isTop1 ? '20.5px' : '18.5px';
+        const boxW = isTop1 ? 290 : 270;
+        const fontSize = isTop1 ? '21px' : '19px';
 
         return `
-          <div style="position:relative; width:${boxW}px; height:120px; display:flex; flex-direction:column; align-items:center;">
+          <div style="position:relative; width:${boxW}px; height:122px; display:flex; flex-direction:column; align-items:center;">
             <div style="display:flex; align-items:flex-end; gap:8px; margin-bottom:-14px; z-index:2;">
               <svg width="46" height="46" viewBox="0 0 45 45">
                 <circle cx="22" cy="25" r="17" fill="#fb923c"/>
@@ -680,7 +748,7 @@
                 <circle cx="22.5" cy="28" r="2" fill="#ec4899"/>
               </svg>
             </div>
-            <div style="position:relative; width:100%; height:52px; background:#fff; border:3.5px solid #b91c1c; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
+            <div style="position:relative; width:100%; height:54px; background:#fff; border:3.5px solid #b91c1c; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
               <div class="student-name-text font-moul ${nameColorClass}" style="font-size:${fontSize}; width:90%;">${name}</div>
             </div>
           </div>
@@ -689,20 +757,20 @@
 
       // 6. គំរូ ៖ ឆ្លាក់មាស (Kbach Gold)
       if (template === 'kbach') {
-        const boxW = isTop1 ? 300 : 280;
-        const fontSize = isTop1 ? '20px' : '18px';
+        const boxW = isTop1 ? 305 : 285;
+        const fontSize = isTop1 ? '20.5px' : '18.5px';
 
         return `
-          <div style="position:relative; width:${boxW}px; height:110px; display:flex; flex-direction:column; align-items:center;">
+          <div style="position:relative; width:${boxW}px; height:112px; display:flex; flex-direction:column; align-items:center;">
             <div style="position:relative; margin-bottom:-10px; z-index:3;">
-              <svg width="66" height="32" viewBox="0 0 60 30" fill="none">
+              <svg width="68" height="34" viewBox="0 0 60 30" fill="none">
                 <path d="M30 2 L38 14 L52 14 L42 22 L46 30 L30 24 L14 30 L18 22 L8 14 L22 14 Z" fill="#eab308" stroke="#a16207" stroke-width="1.2"/>
                 <circle cx="30" cy="18" r="9" fill="#ffffff" stroke="#ca8a04" stroke-width="2.5"/>
               </svg>
-              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13px; color:#b91c1c; padding-top:6px;">${khRank}</span>
+              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13.5px; color:#b91c1c; padding-top:6px;">${khRank}</span>
             </div>
-            <div style="position:relative; width:100%; height:65px; display:flex; align-items:center; justify-content:center;">
-              <svg width="100%" height="65" viewBox="0 0 260 60" fill="none">
+            <div style="position:relative; width:100%; height:68px; display:flex; align-items:center; justify-content:center;">
+              <svg width="100%" height="68" viewBox="0 0 260 60" fill="none">
                 <path d="M55 30 Q20 4 4 30 Q20 56 55 30 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="2.5"/>
                 <path d="M205 30 Q240 4 256 30 Q240 56 205 30 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="2.5"/>
                 <rect x="48" y="6" width="164" height="48" rx="4" fill="#ffffff" stroke="#eab308" stroke-width="3.5"/>
@@ -838,6 +906,8 @@
       }
 
       changePeriodType();
+      
+      // កំណត់ថ្ងៃទី១៨ ខែតុលា ឆ្នាំ២០២៦ ដូចគំរូរូបភាព
       applySelectedDate(2026, 10, 18);
       await loadHonorRoll();
     }
