@@ -276,6 +276,25 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .dob-btn-today:hover{background:rgba(37,99,235,.08)}
 .dob-btn-close{background:transparent;border:none;color:var(--text-muted);font-size:13px;font-weight:700;cursor:pointer;padding:4px 8px;border-radius:8px}
 .dob-btn-close:hover{color:var(--text)}
+.report-card-item.has-format{flex-direction:column;align-items:stretch;gap:14px;cursor:default}
+.report-card-item.has-format:hover{transform:none;border-color:var(--border)}
+.rf-row{display:flex;gap:10px;align-items:stretch}
+.rf-select{flex:1;min-width:0;display:flex;align-items:center;justify-content:space-between;gap:10px;height:46px;padding:0 16px;border-radius:15px;background:var(--surface-card);border:1.5px solid var(--border);color:var(--text);font-size:15px;font-weight:600;cursor:pointer;box-shadow:var(--card-shadow);transition:border-color .2s}
+.rf-select:hover,.rf-select.open{border-color:var(--primary)}
+.rf-chev{width:18px;height:18px;fill:none;stroke:var(--text-muted);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s;flex-shrink:0}
+.rf-select.open .rf-chev{transform:rotate(180deg)}
+.rf-open{display:flex;align-items:center;gap:8px;height:46px;padding:0 20px;border-radius:15px;border:0;background:rgba(5,150,105,.14);color:#059669;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s}
+.rf-open svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rf-open:hover{background:#059669;color:#fff}
+.rf-open:active{transform:scale(.96)}
+[data-theme="dark"] .rf-open{color:#34d399;background:rgba(52,211,153,.14)}
+[data-theme="dark"] .rf-open:hover{background:#059669;color:#fff}
+.rf-popup{position:fixed;z-index:10030;background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:6px;box-shadow:0 16px 44px rgba(0,0,0,.35);animation:rfIn .16s ease-out}
+.rf-item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;border-radius:16px;font-size:15px;font-weight:600;color:var(--text);cursor:pointer;white-space:nowrap}
+.rf-item:hover{background:var(--surface-elevated)}
+.rf-item.active{background:var(--primary-soft);color:var(--primary)}
+.rf-item svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+@keyframes rfIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
 @media (max-width:1024px){.reports-grid-clean{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:900px){.hero-banner-card{flex-direction:column;align-items:flex-start}.hero-banner-right{width:100%;justify-content:flex-start}.today-tasks-grid{grid-template-columns:1fr}.admin-classes-grid{grid-template-columns:repeat(2,1fr)}.pv-info-grid{grid-template-columns:1fr}}
 @media (max-width:768px){
@@ -425,7 +444,18 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
             <button class="btn-back-home" onclick="navigate('dashboard', null)"><span>🏠</span><span>ទំព័រដើម</span></button>
           </div>
           <div class="reports-grid-clean">
-            <div class="report-card-item" onclick="navigate('roster', null)"><div class="rci-left"><div class="rci-icon">🗒️</div><div class="rci-name">បញ្ជីរាយនាមសិស្ស</div></div><div class="rci-arrow">➔</div></div>
+            <div class="report-card-item has-format">
+              <div class="rci-left"><div class="rci-icon">🗒️</div><div class="rci-name">បញ្ជីរាយនាមសិស្ស</div></div>
+              <div class="rf-row">
+                <button type="button" class="rf-select" id="rfTrigger" onclick="toggleRosterFormatMenu(event)" aria-haspopup="listbox">
+                  <span id="rfLabel">ទម្រង់ 1</span>
+                  <svg class="rf-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+                <button type="button" class="rf-open" onclick="openRosterFormat()">
+                  <svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span>
+                </button>
+              </div>
+            </div>
             <div class="report-card-item" onclick="navigate('rank', null)"><div class="rci-left"><div class="rci-icon">🏆</div><div class="rci-name">តារាងចំណាត់ថ្នាក់</div></div><div class="rci-arrow">➔</div></div>
             <div class="report-card-item" onclick="navigate('honor', null)"><div class="rci-left"><div class="rci-icon">🌟</div><div class="rci-name">តារាងកិត្តិយស</div></div><div class="rci-arrow">➔</div></div>
             <div class="report-card-item" onclick="navigate('certificate', null)"><div class="rci-left"><div class="rci-icon">🎖️</div><div class="rci-name">ប័ណ្ណសរសើរ</div></div><div class="rci-arrow">➔</div></div>
@@ -827,7 +857,7 @@ function navigate(page, el) {
   try { history.replaceState(null, '', '#' + page); } catch(e) {}
 
   document.querySelectorAll('.nav-link-btn').forEach(n => n.classList.remove('active'));
-  const isReportChild = ['roster', 'rank', 'honor', 'certificate', 'report', 'remesterrecord'].includes(page);
+  const isReportChild = ['roster', 'roster2', 'rank', 'honor', 'certificate', 'report', 'remesterrecord'].includes(page);
   let target = el || document.querySelector(`[data-page="${page}"]`);
   if (!target && isReportChild) target = document.querySelector('[data-page="reportsHub"]');
   if (!target && page === 'subject') target = document.querySelector('[data-page="score"]');
@@ -1461,12 +1491,63 @@ async function saveMyProfile(ev) {
   return false;
 }
 
+/* ROSTER FORMAT PICKER (ទម្រង់ 1 → roster.html · ទម្រង់ 2 → roster2.html) */
+const ROSTER_FORMATS = [{ key: 'roster', label: 'ទម្រង់ 1' }, { key: 'roster2', label: 'ទម្រង់ 2' }];
+let rosterFormat = (() => { const s = localStorage.getItem('krou_roster_format'); return ROSTER_FORMATS.some(f => f.key === s) ? s : 'roster'; })();
+let rfPopup = null;
+function renderRosterFormat() {
+  const f = ROSTER_FORMATS.find(x => x.key === rosterFormat) || ROSTER_FORMATS[0];
+  const l = document.getElementById('rfLabel');
+  if (l) l.textContent = f.label;
+}
+function closeRosterFormatMenu() {
+  if (rfPopup) { rfPopup.remove(); rfPopup = null; }
+  document.getElementById('rfTrigger')?.classList.remove('open');
+}
+function toggleRosterFormatMenu(ev) {
+  if (ev) ev.stopPropagation();
+  if (rfPopup) { closeRosterFormatMenu(); return; }
+  const trg = document.getElementById('rfTrigger');
+  const pop = document.createElement('div');
+  pop.className = 'rf-popup';
+  pop.setAttribute('role', 'listbox');
+  pop.innerHTML = ROSTER_FORMATS.map(f => `<div class="rf-item${f.key === rosterFormat ? ' active' : ''}" role="option" data-k="${f.key}"><span>${f.label}</span>${f.key === rosterFormat ? '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>' : ''}</div>`).join('');
+  pop.style.visibility = 'hidden';
+  document.body.appendChild(pop);
+  rfPopup = pop;
+  const r = trg.getBoundingClientRect();
+  pop.style.minWidth = r.width + 'px';
+  const h = pop.offsetHeight;
+  let top = r.bottom + 6;
+  if (top + h > innerHeight - 10) top = Math.max(10, r.top - h - 6);
+  const left = Math.max(8, Math.min(r.left, innerWidth - pop.offsetWidth - 8));
+  pop.style.top = top + 'px';
+  pop.style.left = left + 'px';
+  pop.style.visibility = 'visible';
+  trg.classList.add('open');
+  pop.addEventListener('click', e => {
+    const it = e.target.closest('.rf-item');
+    if (!it) return;
+    e.stopPropagation();
+    rosterFormat = it.dataset.k;
+    try { localStorage.setItem('krou_roster_format', rosterFormat); } catch(_) {}
+    renderRosterFormat();
+    closeRosterFormatMenu();
+  });
+}
+function openRosterFormat() { closeRosterFormatMenu(); navigate(rosterFormat, null); }
+document.addEventListener('click', e => { if (rfPopup && !e.target.closest('.rf-popup')) closeRosterFormatMenu(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeRosterFormatMenu(); });
+window.addEventListener('resize', closeRosterFormatMenu);
+document.getElementById('reportsHubView').addEventListener('scroll', closeRosterFormatMenu, { passive: true });
+
 /* BOOTSTRAP */
 document.getElementById('loginYear').innerText = new Date().getFullYear();
 window.addEventListener('resize', updateMobileNavIndicator);
 window.addEventListener('DOMContentLoaded', async () => {
   applyTheme(localStorage.getItem('krou_theme_manual') === 'light' ? 'light' : 'dark');
   initDobCalendarSelectors();
+  renderRosterFormat();
   applyDayTheme();
   try {
     const inner = document.getElementById('mnavInner');
