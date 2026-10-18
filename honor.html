@@ -43,14 +43,14 @@
     /* ══════════════ 🔤 DROPDOWN & UI ប្រើ FONT BATTAMBANG ១០០% ══════════════ */
     .top-toolbar, .top-toolbar *,
     .tb-btn, .dd-wrap, .dd-popup, .dd-item,
-    .cal-popup, .cal-popup * {
+    .cal-modal, .cal-modal * {
       font-family: 'Battambang', 'Khmer OS Battambang', sans-serif !important;
     }
 
     .font-moul { font-family: 'Khmer OS Muol Light', 'Moul', cursive !important; }
     .font-siemreap { font-family: 'Khmer OS Siemreap', 'Siemreap', sans-serif !important; }
 
-    /* ══════════════ 🛠️ TOP TOOLBAR (កែសម្រួលមិនឱ្យ CLIPPED DROPDOWN) ══════════════ */
+    /* ══════════════ 🛠️ TOP TOOLBAR (មិន CLIPPED DROPDOWN) ══════════════ */
     .top-toolbar {
       position: sticky;
       top: 0;
@@ -63,7 +63,6 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      /* 🌟 ដក overflow-x: auto ចេញ ដើម្បីកុំឱ្យកាត់ផ្ទាំង Dropdown */
       overflow: visible !important;
       flex-wrap: wrap;
     }
@@ -105,7 +104,7 @@
       box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65);
       border: 1.5px solid #cbd5e1;
       padding: 6px;
-      z-index: 99999 !important; /* 🌟 បង្ហាញពីលើធាតុទាំងអស់ */
+      z-index: 99999 !important;
     }
     .dd-popup.show {
       display: block;
@@ -136,7 +135,7 @@
       width: 794px; height: 1123px; min-height: 1123px; max-height: 1123px;
       background: #ffffff; color: #000000; position: relative;
       box-shadow: 0 18px 50px rgba(0,0,0,0.45);
-      padding: 30px 42px 45px 42px;
+      padding: 30px 42px 48px 42px;
       display: flex; flex-direction: column; justify-content: space-between;
       overflow: hidden; box-sizing: border-box;
     }
@@ -210,25 +209,35 @@
     .footer-col .sign-title { font-size: 14px; margin-top: 3px; }
     .footer-col .sign-space { height: 42px; }
 
-    /* ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ */
+    /* ══════════════ 📅 KHMER CALENDAR MODAL (ចម្លងពីប្រតិទិនដែលផ្ញើមក) ══════════════ */
     .cal-modal-backdrop {
       display: none; position: fixed; inset: 0; z-index: 2900; background: rgba(0,0,0,0.65);
     }
     .cal-modal-backdrop.show { display: block; }
-    .cal-popup {
+    .cal-modal {
       display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      width: 340px; background: #ffffff; border-radius: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-      padding: 18px; z-index: 3000; color: #0f172a; user-select: none;
+      width: 380px; max-width: calc(100vw - 24px); background: #ffffff; border-radius: 20px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5); padding: 18px; z-index: 3000; color: #0f172a;
+      user-select: none;
     }
-    .cal-popup.show { display: block; }
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; margin-top: 10px; }
-    .cal-day-cell {
-      height: 36px; display: flex; align-items: center; justify-content: center;
-      border-radius: 50%; font-weight: bold; cursor: pointer; font-size: 13px;
+    .cal-modal.show { display: block; animation: ddIn .15s ease-out; }
+    .cal-modal-header { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .cal-dow { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 13px; font-weight: bold; color: #64748b; margin-bottom: 6px; }
+    .cal-dow div:first-child { color: #dc2626; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .cal-cell {
+      height: 48px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer; border: 1px solid #f1f5f9; background: #fff; transition: all .12s;
     }
-    .cal-day-cell:hover { background: #e0f2fe; color: #0284c7; }
-    .cal-day-cell.selected { background: #0284c7 !important; color: #fff !important; }
-    .cal-day-cell.other { opacity: 0.35; }
+    .cal-cell:hover { border-color: #0284c7; background: #f0f9ff; }
+    .cal-cell.today { background: #e0f2fe; border-color: #38bdf8; }
+    .cal-cell.sel { background: #0284c7 !important; color: #fff !important; }
+    .cal-cell.sel .lunar, .cal-cell.sel .greg { color: #fff !important; }
+    .cal-cell.sun .greg { color: #dc2626; }
+    .cal-cell.other { opacity: 0.35; }
+    .cal-cell .greg { font-size: 14px; font-weight: bold; line-height: 1; }
+    .cal-cell .lunar { font-size: 10px; color: #64748b; line-height: 1.1; margin-top: 2px; }
+    .cal-cell.sil .lunar { color: #d97706; font-weight: bold; }
 
     /* ══════════════════════════════════════════════════════════════════════════
        🖨️ PRINT RULES (ធានា ១ ទំព័រគត់ ១/១ ពេញទំហឹង A4)
@@ -255,7 +264,7 @@
         margin: 0 !important;
         overflow: hidden !important;
       }
-      .top-toolbar, .cal-modal-backdrop, .cal-popup, #authDeniedWrap {
+      .top-toolbar, .cal-modal-backdrop, .cal-modal, #authDeniedWrap {
         display: none !important;
       }
       .paper-wrapper {
@@ -267,7 +276,7 @@
       }
       .honor-paper {
         width: 210mm !important; height: 297mm !important; min-height: 297mm !important;
-        max-height: 297mm !important; padding: 10mm 12mm 12mm 12mm !important;
+        max-height: 297mm !important; padding: 10mm 12mm 14mm 12mm !important;
         box-shadow: none !important; border-radius: 0 !important;
         page-break-after: avoid !important; page-break-inside: avoid !important;
         overflow: hidden !important;
@@ -291,7 +300,7 @@
   <!-- 🌟 MAIN CONTENT -->
   <div id="mainPageContent" style="display:none;">
 
-    <!-- 🛠️ TOP TOOLBAR -->
+    <!-- 🛠️ TOP TOOLBAR (DROPDOWN ទាំងអស់ប្រើ FONT BATTAMBANG) -->
     <div class="top-toolbar">
       <div class="tb-group">
         <button type="button" class="tb-btn" onclick="goBack()">
@@ -308,7 +317,7 @@
           <div class="dd-popup" id="ddClassList"></div>
         </div>
 
-        <!-- ⏱️ រយៈពេល (Custom Dropdown) -->
+        <!-- ⏱️ រយៈពេល -->
         <div class="dd-wrap">
           <button type="button" class="tb-btn" onclick="toggleDropdown('ddPeriodList')">
             <span id="txtPeriodSelect">ប្រចាំឆ្នាំ</span>
@@ -351,10 +360,10 @@
       </div>
 
       <div class="tb-group">
-        <!-- 📅 ប្រតិទិនខ្មែរ -->
+        <!-- 📅 ប៊ូតុងបើកប្រតិទិនខ្មែរ -->
         <button type="button" class="tb-btn" onclick="openKhmerCalendar()">
           <i class="fa-regular fa-calendar-days" style="color:#60a5fa;"></i>
-          <span id="lblBtnDate">ថ្ងៃទី១៨ តុលា</span>
+          <span id="lblBtnDate">ថ្ងៃទី១៩ តុលា</span>
         </button>
 
         <!-- 📥 ទាញយក PDF & បោះពុម្ព -->
@@ -430,26 +439,25 @@
 
   </div> <!-- END #mainPageContent -->
 
-  <!-- ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ -->
+  <!-- ══════════════ 📅 KHMER CALENDAR MODAL (ចម្លងតាមប្រតិទិនដែលផ្ញើមក) ══════════════ -->
   <div class="cal-modal-backdrop" id="calBackdrop" onclick="closeCalendarPopup()"></div>
-  <div class="cal-popup" id="calPopup">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <select id="calMonthSelect" class="tb-btn" style="background:#f1f5f9; color:#000; border:1px solid #cbd5e1;" onchange="renderCalendarDays()"></select>
-      <select id="calYearSelect" class="tb-btn" style="background:#f1f5f9; color:#000; border:1px solid #cbd5e1;" onchange="renderCalendarDays()"></select>
+  <div class="cal-modal" id="calModal">
+    <div class="cal-modal-header">
+      <select id="calMonthSelect" class="tb-btn" style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; height:34px;" onchange="changeCalendarMonth()"></select>
+      <select id="calYearSelect" class="tb-btn" style="background:#f1f5f9; color:#0f172a; border:1px solid #cbd5e1; height:34px;" onchange="changeCalendarMonth()"></select>
     </div>
-    <div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:12px; font-weight:bold; color:#64748b;">
-      <span>អា</span><span>ច</span><span>អ</span><span>ព</span><span>ព្រ</span><span>សុ</span><span>ស</span>
+    <div class="cal-dow">
+      <div>អា</div><div>ច</div><div>អ</div><div>ព</div><div>ព្រ</div><div>សុ</div><div>ស</div>
     </div>
-    <div class="cal-grid" id="calDaysGrid"></div>
-    <div style="margin-top:12px; text-align:center; font-size:12px; color:#0284c7; font-weight:bold;" id="calLivePreview"></div>
-    <div style="display:flex; justify-content:space-between; margin-top:10px;">
-      <button type="button" class="tb-btn" style="background:#f1f5f9; color:#000;" onclick="selectCalendarToday()">ថ្ងៃនេះ</button>
-      <button type="button" class="tb-btn primary" onclick="closeCalendarPopup()">រួចរាល់</button>
+    <div class="cal-grid" id="calGrid"></div>
+    <div style="margin-top:14px; padding-top:10px; border-top:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center;">
+      <button type="button" class="tb-btn" style="background:#eff6ff; color:#0284c7; border:none; height:32px;" onclick="selectCalendarToday()">ថ្ងៃនេះ</button>
+      <button type="button" class="tb-btn primary" style="height:32px;" onclick="closeCalendarPopup()">បិទ</button>
     </div>
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ MOMENTKH KHMER CALENDAR ENGINE
+       ⚡ MOMENTKH ENGINE (ចម្លងពីឯកសារប្រតិទិនដែលអ្នកបានផ្ញើមក)
   ══════════════════════════════════════════════════════════════════════════ -->
   <script>
     (function (root, factory) {
@@ -458,13 +466,23 @@
       else { root.momentkh = factory(); }
     }(typeof self !== 'undefined' ? self : this, function () {
       "use strict";
+      var MoonPhase = { Waxing: 0, Waning: 1 };
+      var MonthIndex = {
+        Migasir: 0, Boss: 1, Meak: 2, Phalkun: 3, Cheit: 4, Pisakh: 5,
+        Jesth: 6, Asadh: 7, Srap: 8, Phatrabot: 9, Assoch: 10, Kadeuk: 11,
+        Pathamasadh: 12, Tutiyasadh: 13
+      };
+      var LunarMonthNames = [
+        'មិគសិរ', 'បុស្ស', 'មាឃ', 'ផល្គុន', 'ចេត្រ', 'ពិសាខ',
+        'ជេស្ឋ', 'អាសាឍ', 'ស្រាពណ៍', 'ភទ្របទ', 'អស្សុជ', 'កត្តិក',
+        'បឋមាសាឍ', 'ទុតិយាសាឍ'
+      ];
+      var AnimalYearNames = ['ជូត', 'ឆ្លូវ', 'ខាល', 'ថោះ', 'រោង', 'ម្សាញ់', 'មមី', 'មមែ', 'វក', 'រកា', 'ច', 'កុរ'];
+      var SakNames = ['សំរឹទ្ធិស័ក', 'ឯកស័ក', 'ទោស័ក', 'ត្រីស័ក', 'ចត្វាស័ក', 'បញ្ចស័ក', 'ឆស័ក', 'សប្តស័ក', 'អដ្ឋស័ក', 'នព្វស័ក'];
+      var WeekdayNames = ['អាទិត្យ', 'ចន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
+      var MoonPhaseNames = ['កើត', 'រោច'];
 
-      var LunarMonthNames = ['មិគសិរ','បុស្ស','មាឃ','ផល្គុន','ចេត្រ','ពិសាខ','ជេស្ឋ','អាសាឍ','ស្រាពណ៍','ភទ្របទ','អស្សុជ','កត្តិក','បឋមាសាឍ','ទុតិយាសាឍ'];
-      var AnimalYearNames = ['ជូត','ឆ្លូវ','ខាល','ថោះ','រោង','ម្សាញ់','មមី','មមែ','វក','រកា','ច','កុរ'];
-      var SakNames = ['សំរឹទ្ធិស័ក','ឯកស័ក','ទោស័ក','ត្រីស័ក','ចត្វាស័ក','បញ្ចស័ក','ឆស័ក','សប្តស័ក','អដ្ឋស័ក','នព្វស័ក'];
-      var WeekdayNames = ['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
-      var MoonPhaseNames = ['កើត','រោច'];
-
+      function isGregorianLeapYear(y) { return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0); }
       function gregorianToJulianDay(year, month, day) {
         var a = Math.floor((14 - month) / 12);
         var y = year + 4800 - a;
@@ -472,12 +490,19 @@
         return day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
       }
       function julianDayToGregorian(jdn) {
-        var a = jdn + 32044, b = Math.floor((4 * a + 3) / 146097), c = a - Math.floor((146097 * b) / 4);
-        var d = Math.floor((4 * c + 3) / 1461), e = c - Math.floor((1461 * d) / 4), m = Math.floor((5 * e + 2) / 153);
-        var day = e - Math.floor((153 * m + 2) / 5) + 1, month = m + 3 - 12 * Math.floor(m / 10), year = 100 * b + d - 4800 + Math.floor(m / 10);
+        var a = jdn + 32044;
+        var b = Math.floor((4 * a + 3) / 146097);
+        var c = a - Math.floor((146097 * b) / 4);
+        var d = Math.floor((4 * c + 3) / 1461);
+        var e = c - Math.floor((1461 * d) / 4);
+        var m = Math.floor((5 * e + 2) / 153);
+        var day = e - Math.floor((153 * m + 2) / 5) + 1;
+        var month = m + 3 - 12 * Math.floor(m / 10);
+        var year = 100 * b + d - 4800 + Math.floor(m / 10);
         return { year: year, month: month, day: day };
       }
       function getDayOfWeek(y, m, d) { return (gregorianToJulianDay(y, m, d) + 1) % 7; }
+      function getMaybeBEYear(y, m) { return m <= 4 ? y + 543 : y + 544; }
       function getAharkun(be) { return Math.floor((be * 292207 + 499) / 800) + 4; }
       function getAvoman(be) { return (getAharkun(be) * 11 + 25) % 692; }
       function getBodithey(be) { var ah = getAharkun(be); return (Math.floor((ah * 11 + 25) / 692) + ah + 29) % 30; }
@@ -500,8 +525,8 @@
       }
       function getNumberOfDaysInKhmerMonth(mi, be) {
         var lt = getLeapType(be);
-        if (mi === 6 && lt === 2) return 30;
-        if (mi === 12 || mi === 13) return lt === 1 ? 30 : 0;
+        if (mi === MonthIndex.Jesth && lt === 2) return 30;
+        if (mi === MonthIndex.Pathamasadh || mi === MonthIndex.Tutiyasadh) return lt === 1 ? 30 : 0;
         return mi % 2 === 0 ? 29 : 30;
       }
       function getNumberOfDaysInKhmerYear(be) {
@@ -510,10 +535,10 @@
       }
       function nextMonthOf(mi, be) {
         var lt = getLeapType(be);
-        if (mi === 6 && lt === 1) return 12;
-        if (mi === 11) return 0;
-        if (mi === 12) return 13;
-        if (mi === 13) return 8;
+        if (mi === MonthIndex.Jesth && lt === 1) return MonthIndex.Pathamasadh;
+        if (mi === MonthIndex.Kadeuk) return MonthIndex.Migasir;
+        if (mi === MonthIndex.Pathamasadh) return MonthIndex.Tutiyasadh;
+        if (mi === MonthIndex.Tutiyasadh) return MonthIndex.Srap;
         return mi + 1;
       }
 
@@ -526,7 +551,7 @@
         if (diffDays > 0) {
           while (true) {
             var eg = julianDayToGregorian(epochJdn);
-            var nextYearBE = (eg.month <= 4 ? eg.year + 1 : eg.year + 2) + 543;
+            var nextYearBE = getMaybeBEYear(eg.year + 1, eg.month);
             var dy = getNumberOfDaysInKhmerYear(nextYearBE);
             if (diffDays > dy) {
               diffDays -= dy;
@@ -536,7 +561,7 @@
         }
         while (diffDays > 0) {
           var eg2 = julianDayToGregorian(epochJdn);
-          var cBE = (eg2.month <= 4 ? eg2.year : eg2.year + 1) + 543;
+          var cBE = getMaybeBEYear(eg2.year, eg2.month);
           var dm = getNumberOfDaysInKhmerMonth(khMonth, cBE);
           if (diffDays > dm) {
             diffDays -= dm;
@@ -545,7 +570,7 @@
           } else break;
         }
 
-        var finalBE = (month <= 4 ? year + 543 : year + 544);
+        var finalBE = getMaybeBEYear(year, month);
         var totalDim = getNumberOfDaysInKhmerMonth(khMonth, finalBE);
         if (diffDays >= totalDim) {
           diffDays %= totalDim;
@@ -553,7 +578,7 @@
         }
 
         var dayInPhase = diffDays < 15 ? diffDays + 1 : (diffDays - 15) + 1;
-        var moonPhase = diffDays < 15 ? 0 : 1;
+        var moonPhase = diffDays < 15 ? MoonPhase.Waxing : MoonPhase.Waning;
         var jsYear = finalBE - 1182;
         var animalIndex = ((finalBE + 4) % 12 + 12) % 12;
         var sakIndex = ((jsYear % 10) + 10) % 10;
@@ -565,6 +590,7 @@
             day: dayInPhase,
             moonPhase: moonPhase,
             moonPhaseName: MoonPhaseNames[moonPhase],
+            monthIndex: khMonth,
             monthName: LunarMonthNames[khMonth],
             beYear: finalBE,
             animalYearName: AnimalYearNames[animalIndex],
@@ -579,6 +605,47 @@
   </script>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
+       ⚡ CALENDAR ENGINE HELPER FUNCTIONS (ចម្លងពីឯកសារប្រតិទិនដើម)
+  ══════════════════════════════════════════════════════════════════════════ -->
+  <script>
+    const KD = '០១២៣៤៥៦៧៨៩';
+    function kn(n) { return String(n).replace(/\d/g, c => KD[c]); }
+    const GM = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+    const DOW = ['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
+    const MN = {0:'មិគសិរ',1:'បុស្ស',2:'មាឃ',3:'ផល្គុន',4:'ចេត្រ',5:'ពិសាខ',6:'ជេស្ឋ',7:'អាសាឍ',8:'ស្រាពណ៍',9:'ភទ្របទ',10:'អស្សុជ',11:'កត្តិក',12:'បឋមាសាឍ',13:'ទុតិយាសាឍ'};
+
+    function getKhmerDateInfo(y, m, d) {
+      const r = momentkh.fromGregorian(y, m, d);
+      const k = r.khmer;
+      return {
+        y: y, m: m, d: d, dow: r.gregorian.dayOfWeek,
+        kd: k.day, ph: k.moonPhase, mi: k.monthIndex,
+        mname: MN[k.monthIndex] || k.monthName,
+        be: k.beYear, animal: k.animalYearName, sak: k.sakName
+      };
+    }
+
+    function lunarText(o) { return kn(o.kd) + (o.ph === 0 ? 'កើត' : 'រោច'); }
+    function fullText(o) {
+      return 'ថ្ងៃ' + DOW[o.dow] + ' ' + lunarText(o) + ' ខែ' + o.mname + ' ឆ្នាំ' + o.animal + ' ' + o.sak + ' ពុទ្ធសករាជ ' + kn(o.be);
+    }
+    function gText(o) { return 'ថ្ងៃ' + DOW[o.dow] + ' ទី' + kn(o.d) + ' ខែ' + GM[o.m - 1] + ' ឆ្នាំ' + kn(o.y); }
+    
+    function isHoly(o) {
+      if (o.ph === 0 && (o.kd === 8 || o.kd === 15)) return true;
+      if (o.ph === 1 && (o.kd === 8 || o.kd === 14 || o.kd === 15)) return true;
+      return false;
+    }
+    function moonIcon(o) {
+      if (o.ph === 0 && o.kd === 15) return '🌕';
+      if (o.ph === 0 && o.kd === 8) return '🌓';
+      if (o.ph === 1 && o.kd === 8) return '🌗';
+      if (o.ph === 1 && (o.kd === 14 || o.kd === 15)) return '🌑';
+      return '';
+    }
+  </script>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
        ⚡ MAIN CONTROLLER & 6 VECTOR TEMPLATES
   ══════════════════════════════════════════════════════════════════════════ -->
   <script>
@@ -586,10 +653,6 @@
     const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const khDigits = ['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
-    const KHMER_MONTHS = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
-
-    function toKh(n) { return (n === null || n === undefined) ? '' : String(n).replace(/\d/g, d => khDigits[d]); }
     function cleanGrade(g) { return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').replace(/[()\-_\s]/g, '').trim(); }
 
     function readSession() {
@@ -613,14 +676,14 @@
     let currentPeriodChild = 'តុលា';
 
     let currentTop5Students = [
-      { name: "កូ កូ", imageUrl: "" },
+      { name: "សេសៈ សេសៈ", imageUrl: "" },
+      { name: "នា នា", imageUrl: "" },
       { name: "មាន់ មាន់", imageUrl: "" },
-      { name: "គក គក", imageUrl: "" },
-      { name: "ទា ទា", imageUrl: "" },
-      { name: "សេះ សេះ", imageUrl: "" }
+      { name: "កូ កូ", imageUrl: "" },
+      { name: "កេះ លីណា", imageUrl: "" }
     ];
 
-    /* ══════════════ 📱 AUTO-FIT RESPONSIVE SCALER FOR TABLET ══════════════ */
+    /* ══════════════ 📱 AUTO-FIT RESPONSIVE SCALER ══════════════ */
     function fitPaper() {
       const scaler = document.getElementById('paperScaler');
       const wrapper = document.querySelector('.paper-wrapper');
@@ -643,7 +706,7 @@
 
     /* ══════════════ 🎨 RENDER 6 TEMPLATES + ORIGINAL PHOTO MODE ══════════════ */
     function getCardSvg(template, rank, student) {
-      const khRank = toKh(rank);
+      const khRank = kn(rank);
       const name = student?.name || '...';
       const img = student?.imageUrl || PLACEHOLDER_IMG;
       const nameColorClass = `r-color-${rank}`;
@@ -892,7 +955,7 @@
       if (type === 'monthly') {
         childWrap.style.display = 'inline-block';
         document.getElementById('txtChildPeriodSelect').innerText = currentPeriodChild;
-        childPopup.innerHTML = KHMER_MONTHS.map(m => `
+        childPopup.innerHTML = GM.map(m => `
           <div class="dd-item ${m === currentPeriodChild ? 'active' : ''}" onclick="selectChildPeriod('${m}')">${m}</div>
         `).join('');
       } else if (type === 'exam_semester') {
@@ -929,45 +992,46 @@
       loadHonorRoll();
     }
 
-    /* ══════════════ 📅 KHMER CALENDAR LOGIC ══════════════ */
-    let calY = 2026, calM = 10, calD = 18;
+    /* ══════════════ 📅 KHMER CALENDAR MODAL CONTROLLER ══════════════ */
+    let calY = 2026, calM = 10, calD = 19;
 
     function applySelectedDate(y, m, d) {
       calY = y; calM = m; calD = d;
-      const res = momentkh.fromGregorian(y, m, d);
-      const k = res.khmer;
+      const o = getKhmerDateInfo(y, m, d);
 
-      document.getElementById('lblLunarDate').innerText =
-        `ថ្ងៃ${k.dayOfWeekName} ${toKh(k.day)}${k.moonPhaseName} ខែ${k.monthName} ឆ្នាំ${k.animalYearName} ${k.sakName} ពុទ្ធសករាជ ${toKh(k.beYear)}`;
-      document.getElementById('lblSolarDate').innerText =
-        `កំពង់ល្ពៅ ថ្ងៃទី${toKh(d)} ខែ${KHMER_MONTHS[m - 1]} ឆ្នាំ${toKh(y)}`;
-      document.getElementById('lblBtnDate').innerText = `ថ្ងៃទី${toKh(d)} ${KHMER_MONTHS[m - 1]}`;
+      document.getElementById('lblLunarDate').innerText = fullText(o);
+      document.getElementById('lblSolarDate').innerText = 'កំពង់ល្ពៅ ' + gText(o);
+      document.getElementById('lblBtnDate').innerText = 'ថ្ងៃទី' + kn(d) + ' ' + GM[m - 1];
     }
 
     function openKhmerCalendar() {
       document.getElementById('calBackdrop').classList.add('show');
-      document.getElementById('calPopup').classList.add('show');
+      document.getElementById('calModal').classList.add('show');
       initCalendarPopup();
     }
     function closeCalendarPopup() {
       document.getElementById('calBackdrop').classList.remove('show');
-      document.getElementById('calPopup').classList.remove('show');
+      document.getElementById('calModal').classList.remove('show');
     }
 
     function initCalendarPopup() {
       const ms = document.getElementById('calMonthSelect');
       const ys = document.getElementById('calYearSelect');
-      ms.innerHTML = KHMER_MONTHS.map((m, i) => `<option value="${i+1}" ${i+1 === calM ? 'selected':''}>${m}</option>`).join('');
+      ms.innerHTML = GM.map((m, i) => `<option value="${i+1}" ${i+1 === calM ? 'selected':''}>${m}</option>`).join('');
       let yh = '';
-      for (let y = 2030; y >= 2022; y--) yh += `<option value="${y}" ${y === calY ? 'selected':''}>${toKh(y)}</option>`;
+      for (let y = 2030; y >= 2020; y--) yh += `<option value="${y}" ${y === calY ? 'selected':''}>${kn(y)}</option>`;
       ys.innerHTML = yh;
       renderCalendarDays();
     }
 
-    function renderCalendarDays() {
+    function changeCalendarMonth() {
       calM = parseInt(document.getElementById('calMonthSelect').value, 10);
       calY = parseInt(document.getElementById('calYearSelect').value, 10);
-      const grid = document.getElementById('calDaysGrid');
+      renderCalendarDays();
+    }
+
+    function renderCalendarDays() {
+      const grid = document.getElementById('calGrid');
       grid.innerHTML = '';
 
       const first = new Date(calY, calM - 1, 1).getDay();
@@ -975,26 +1039,30 @@
       const prevTotal = new Date(calY, calM - 1, 0).getDate();
 
       for (let p = first - 1; p >= 0; p--) {
+        const dNum = prevTotal - p;
         const cell = document.createElement('div');
-        cell.className = 'cal-day-cell other';
-        cell.innerText = toKh(prevTotal - p);
-        grid.appendChild(cell);
-      }
-      for (let d = 1; d <= total; d++) {
-        const cell = document.createElement('div');
-        cell.className = `cal-day-cell ${d === calD ? 'selected':''}`;
-        cell.innerText = toKh(d);
-        cell.onclick = () => {
-          calD = d;
-          applySelectedDate(calY, calM, calD);
-          renderCalendarDays();
-        };
+        cell.className = 'cal-cell other';
+        cell.innerHTML = `<span class="greg">${kn(dNum)}</span>`;
         grid.appendChild(cell);
       }
 
-      const res = momentkh.fromGregorian(calY, calM, calD);
-      document.getElementById('calLivePreview').innerText =
-        `${res.khmer.dayOfWeekName} ${toKh(res.khmer.day)}${res.khmer.moonPhaseName} ខែ${res.khmer.monthName}`;
+      for (let d = 1; d <= total; d++) {
+        const o = getKhmerDateInfo(calY, calM, d);
+        const cell = document.createElement('div');
+        const isSel = (d === calD);
+        const holy = isHoly(o);
+        const mIcon = moonIcon(o);
+        cell.className = `cal-cell${isSel ? ' sel' : ''}${o.dow === 0 ? ' sun' : ''}${holy ? ' sil' : ''}`;
+        cell.innerHTML = `
+          <span class="greg">${kn(d)}</span>
+          <span class="lunar">${mIcon ? mIcon : lunarText(o)}</span>
+        `;
+        cell.onclick = () => {
+          applySelectedDate(calY, calM, d);
+          closeCalendarPopup();
+        };
+        grid.appendChild(cell);
+      }
     }
 
     function selectCalendarToday() {
@@ -1034,7 +1102,7 @@
         currentSelectedClass = cleanGrade(USER_CLASS);
       }
 
-      applySelectedDate(2026, 10, 18);
+      applySelectedDate(2026, 10, 19);
       await loadHonorRoll();
       fitPaper();
     }
