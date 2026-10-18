@@ -45,7 +45,7 @@
       font-family: 'Khmer OS Battambang', 'Battambang', sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
-      padding-bottom: 60px;
+      padding-bottom: 50px;
     }
 
     /* ══════════════ 🔤 DROPDOWN ទាំងអស់ប្រើ FONT BATTAMBANG ១០០% ══════════════ */
@@ -69,7 +69,7 @@
       position: sticky;
       top: 0;
       z-index: 1000;
-      background: rgba(15, 23, 42, 0.94);
+      background: rgba(15, 23, 42, 0.95);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       padding: 8px 14px;
@@ -101,7 +101,7 @@
       outline: none; cursor: pointer;
     }
 
-    /* ══════════════ 📄 A4 HONOR CARD CONTAINER ══════════════ */
+    /* ══════════════ 📄 A4 HONOR CARD CONTAINER (ស្តង់ដារ ២១០មម x ២៩៧មម) ══════════════ */
     .paper-wrapper {
       width: 100%; display: flex; justify-content: center; padding: 15px 0; overflow-x: auto;
     }
@@ -114,35 +114,31 @@
       width: 210mm; height: 297mm; min-height: 297mm; max-height: 297mm;
       background: #ffffff; color: #000000; position: relative;
       box-shadow: 0 15px 45px rgba(0,0,0,0.4);
-      padding: 10mm 14mm 8mm 14mm;
+      padding: 10mm 12mm 8mm 12mm;
       display: flex; flex-direction: column; justify-content: space-between;
       overflow: hidden; box-sizing: border-box;
     }
 
-    /* 🌸 គែមស៊ុមមាស-ក្រហម រឹងមាំមិនបែកពេលបោះពុម្ព */
-    .page-decor-border {
-      position: absolute; inset: 8mm;
-      border: 4px solid #b91c1c;
-      outline: 2.5px solid #15803d;
-      outline-offset: -5px;
-      border-radius: 4px;
+    /* 🌸 ស៊ុមផ្កាភ្ញីជុំវិញសន្លឹក (Vector SVG មិនបែកព្រាល មិនជ្រុះទៅទំព័រទី២) */
+    .floral-frame-svg {
+      position: absolute; inset: 5mm; width: calc(100% - 10mm); height: calc(100% - 10mm);
       pointer-events: none; z-index: 20;
     }
 
     /* 👑 Document Header */
     .header-box { text-align: center; margin-top: 2mm; }
-    .header-box h2 { font-size: 15px; margin-bottom: 2px; }
-    .header-box h3 { font-size: 13.5px; margin-bottom: 2px; }
+    .header-box h2 { font-size: 15.5px; margin-bottom: 2px; }
+    .header-box h3 { font-size: 14px; margin-bottom: 2px; }
     .header-divider { letter-spacing: 4px; font-size: 10px; color: #64748b; }
 
     .meta-left {
-      position: absolute; top: 28mm; left: 16mm; text-align: left;
+      position: absolute; top: 25mm; left: 16mm; text-align: left;
       font-size: 13px; line-height: 1.6; font-weight: bold;
     }
 
-    .main-title-box { text-align: center; margin-top: 6mm; margin-bottom: 2mm; }
+    .main-title-box { text-align: center; margin-top: 5mm; margin-bottom: 2mm; }
     .main-title-text {
-      font-size: 38px; color: #f59e0b;
+      font-size: 40px; color: #f59e0b;
       text-shadow: 2.5px 2.5px 0 #581c87, -2.5px -2.5px 0 #581c87, 2.5px -2.5px 0 #581c87, -2.5px 2.5px 0 #581c87, 0 3px 8px rgba(0,0,0,0.3);
       letter-spacing: 1.5px; display: inline-block;
     }
@@ -152,21 +148,21 @@
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    /* ══════════════ 🏆 5 PODIUM RANKS ══════════════ */
+    /* ══════════════ 🏆 PODIUM RANKS (ញ៉ែកស្មើដៃ ពេញក្រដាស) ══════════════ */
     .podium-container {
-      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 10px; margin: 2mm 0; position: relative; z-index: 10;
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;
+      margin: 1mm 0; position: relative; z-index: 10;
     }
     .podium-row-1 { display: flex; justify-content: center; width: 100%; }
     .podium-row-2, .podium-row-3 {
-      display: flex; justify-content: center; gap: 30px; width: 100%;
+      display: flex; justify-content: center; gap: 40px; width: 100%;
     }
 
     .rank-card-slot {
       position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
 
-    /* 🌟 ពណ៌ឈ្មោះសិស្ស */
+    /* 🌟 ពណ៌ និងទំហំអក្សរឈ្មោះសិស្សធំៗ ស្រស់ស្អាត */
     .student-name-text {
       font-weight: normal; text-align: center; white-space: nowrap; user-select: none;
     }
@@ -176,16 +172,16 @@
     .r-color-4 { color: #b91c1c; } /* លេខ៤ ក្រហម */
     .r-color-5 { color: #7e22ce; } /* លេខ៥ ស្វាយ */
 
-    /* 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស) - បង្រួមសមាមាត្រកុំឱ្យធ្លាក់ទំព័រ */
+    /* 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស) - រៀបចំញ៉ែកស្អាតសមនឹងក្រដាស */
     .orig-photo-box {
-      border: 2.5px solid #d97706; border-radius: 10px; overflow: hidden;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); background: #f8fafc;
+      border: 3px solid #d97706; border-radius: 12px; overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); background: #f8fafc;
     }
 
     /* ✍️ FOOTER DATES & SIGNATURES */
     .footer-row {
       display: flex; justify-content: space-between; align-items: flex-end;
-      margin-bottom: 2mm; padding: 0 10mm; font-size: 13px;
+      margin-bottom: 2mm; padding: 0 12mm; font-size: 13px;
     }
     .footer-col { text-align: center; min-width: 240px; }
     .footer-col .sign-title { font-size: 13.5px; margin-top: 3px; }
@@ -253,7 +249,7 @@
         height: 297mm !important;
         min-height: 297mm !important;
         max-height: 297mm !important;
-        padding: 10mm 14mm 8mm 14mm !important;
+        padding: 10mm 12mm 8mm 12mm !important;
         box-shadow: none !important;
         border-radius: 0 !important;
         page-break-before: avoid !important;
@@ -339,8 +335,12 @@
       <div id="paperScaler">
         <div class="honor-paper" id="honorPaper">
           
-          <!-- ស៊ុមមាស-ក្រហម រឹងមាំមិនបែកពេលព្រីន -->
-          <div class="page-decor-border"></div>
+          <!-- 🌸 ស៊ុមផ្កាភ្ញីជុំវិញសន្លឹក Vector មិនបែកព្រាល មិនធ្លាយទំព័រ -->
+          <svg class="floral-frame-svg" viewBox="0 0 760 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="5" width="750" height="1070" rx="4" stroke="#b91c1c" stroke-width="4"/>
+            <rect x="11" y="11" width="738" height="1058" rx="3" stroke="#15803d" stroke-width="3"/>
+            <rect x="16" y="16" width="728" height="1048" rx="2" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6 4"/>
+          </svg>
 
           <!-- 👑 ក្បាលលិខិតជាតិ -->
           <div>
@@ -364,7 +364,7 @@
             </div>
           </div>
 
-          <!-- 🏆 កន្លែងបង្ហាញចំណាត់ថ្នាក់ទាំង ៥ (សមសួនមិនធ្លាក់ទំព័រ) -->
+          <!-- 🏆 កន្លែងបង្ហាញចំណាត់ថ្នាក់ទាំង ៥ (ញ៉ែកស្មើដៃ សមសួន មិនធ្លាក់ទំព័រ) -->
           <div class="podium-container" id="podiumArea">
             <!-- Render ដោយ JavaScript -->
           </div>
@@ -412,7 +412,7 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ STANDALONE MOMENTKH ENGINE
+       ⚡ MOMENTKH CALENDAR ENGINE
   ══════════════════════════════════════════════════════════════════════════ -->
   <script>
     (function (root, factory) {
@@ -524,7 +524,7 @@
       { name: "សេះ សេះ", imageUrl: "" }
     ];
 
-    /* ══════════════ 🎨 RENDER 6 TEMPLATES + ORIGINAL ══════════════ */
+    /* ══════════════ 🎨 RENDER 6 TEMPLATES + ORIGINAL PHOTO MODE ══════════════ */
     function getCardSvg(template, rank, student) {
       const khRank = toKh(rank);
       const name = student?.name || '...';
@@ -532,10 +532,10 @@
       const nameColorClass = `r-color-${rank}`;
       const isTop1 = (rank === 1);
 
-      // 0. 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស)
+      // 0. 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស - ញ៉ែករូបធំៗ ស្មើដៃ ពេញក្រដាស)
       if (template === 'original') {
-        const w = isTop1 ? 116 : 100;
-        const h = isTop1 ? 140 : 124;
+        const w = isTop1 ? 140 : 126;
+        const h = isTop1 ? 168 : 152;
         const badgeBg = rank === 1 ? '#f59e0b' : (rank === 2 ? '#64748b' : (rank === 3 ? '#b45309' : '#e11d48'));
 
         return `
@@ -544,12 +544,12 @@
               <div class="orig-photo-box" style="width:${w}px; height:${h}px;">
                 <img src="${img}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src=PLACEHOLDER_IMG">
               </div>
-              <span style="position:absolute; top:-8px; left:50%; transform:translateX(-50%); background:${badgeBg}; color:#fff; font-weight:bold; width:26px; height:26px; border-radius:50%; font-size:13px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 6px rgba(0,0,0,0.25); border:2px solid #fff; z-index:10;">
+              <span style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:${badgeBg}; color:#fff; font-weight:bold; width:28px; height:28px; border-radius:50%; font-size:13.5px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 6px rgba(0,0,0,0.25); border:2px solid #fff; z-index:10;">
                 ${khRank}
               </span>
             </div>
-            <div style="margin-top:5px; display:flex; justify-content:center;">
-              <span class="font-moul ${nameColorClass}" style="white-space:nowrap; background:#fff; border:1.5px solid #fbbf24; padding:3px 14px; border-radius:7px; font-size:${isTop1 ? '15px' : '13.5px'}; box-shadow:0 2px 5px rgba(0,0,0,0.06);">
+            <div style="margin-top:6px; display:flex; justify-content:center;">
+              <span class="font-moul ${nameColorClass}" style="white-space:nowrap; background:#fff; border:1.5px solid #fbbf24; padding:4px 16px; border-radius:8px; font-size:${isTop1 ? '16px' : '14.5px'}; box-shadow:0 2px 6px rgba(0,0,0,0.06);">
                 ${name}
               </span>
             </div>
@@ -559,9 +559,9 @@
 
       // 1. គំរូ ៖ បដាកណ្ដាល (Banner)
       if (template === 'banner') {
-        const boxW = isTop1 ? 275 : 255;
-        const boxH = isTop1 ? 95 : 88;
-        const fontSize = isTop1 ? '19px' : '17px';
+        const boxW = isTop1 ? 310 : 285;
+        const boxH = isTop1 ? 105 : 95;
+        const fontSize = isTop1 ? '20.5px' : '18.5px';
 
         return `
           <div style="position:relative; width:${boxW}px; height:${boxH}px; display:flex; align-items:center; justify-content:center;">
@@ -571,20 +571,20 @@
               <rect x="20" y="24" width="230" height="54" rx="27" fill="#ffffff" stroke="#f59e0b" stroke-width="3.5"/>
               <circle cx="135" cy="16" r="15" fill="#ffffff" stroke="#f59e0b" stroke-width="3"/>
             </svg>
-            <span class="font-moul" style="position:absolute; top:4px; font-size:13px; color:#b91c1c;">${khRank}</span>
-            <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; top:40px; font-size:${fontSize}; width:${boxW - 35}px;">${name}</div>
+            <span class="font-moul" style="position:absolute; top:4px; font-size:13.5px; color:#b91c1c;">${khRank}</span>
+            <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; top:44px; font-size:${fontSize}; width:${boxW - 40}px;">${name}</div>
           </div>
         `;
       }
 
       // 2. គំរូ ៖ ឃ្មុំ (Cute Bee)
       if (template === 'bee') {
-        const boxW = isTop1 ? 260 : 240;
-        const fontSize = isTop1 ? '19px' : '17px';
+        const boxW = isTop1 ? 290 : 270;
+        const fontSize = isTop1 ? '20.5px' : '18.5px';
 
         return `
-          <div style="position:relative; width:${boxW}px; height:110px; display:flex; flex-direction:column; align-items:center;">
-            <svg width="68" height="48" viewBox="0 0 70 50" fill="none" style="margin-bottom:-10px; z-index:2;">
+          <div style="position:relative; width:${boxW}px; height:120px; display:flex; flex-direction:column; align-items:center;">
+            <svg width="74" height="52" viewBox="0 0 70 50" fill="none" style="margin-bottom:-10px; z-index:2;">
               <ellipse cx="20" cy="18" rx="14" ry="8" fill="#bae6fd" opacity="0.8" transform="rotate(-25 20 18)"/>
               <ellipse cx="50" cy="18" rx="14" ry="8" fill="#bae6fd" opacity="0.8" transform="rotate(25 50 18)"/>
               <ellipse cx="35" cy="30" rx="20" ry="16" fill="#f59e0b"/>
@@ -594,8 +594,8 @@
               <path d="M31 35 Q35 39 39 35" stroke="#b91c1c" stroke-width="2" stroke-linecap="round"/>
               <path d="M28 16 Q24 8 20 10 M42 16 Q46 8 50 10" stroke="#000" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            <div style="position:relative; width:100%; height:50px; background:#fff; border:3px solid #f59e0b; border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
-              <span class="font-moul" style="position:absolute; top:-14px; left:10px; font-size:19px; color:#1d4ed8;">${khRank}</span>
+            <div style="position:relative; width:100%; height:54px; background:#fff; border:3.5px solid #f59e0b; border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
+              <span class="font-moul" style="position:absolute; top:-15px; left:12px; font-size:20px; color:#1d4ed8;">${khRank}</span>
               <div class="student-name-text font-moul ${nameColorClass}" style="font-size:${fontSize}; width:90%;">${name}</div>
             </div>
           </div>
@@ -604,25 +604,25 @@
 
       // 3. គំរូ ៖ ព្រួញបៃតង (Green Arrow)
       if (template === 'arrow') {
-        const boxW = isTop1 ? 270 : 250;
-        const fontSize = isTop1 ? '18.5px' : '16.5px';
+        const boxW = isTop1 ? 300 : 280;
+        const fontSize = isTop1 ? '20px' : '18px';
 
         return `
-          <div style="position:relative; width:${boxW}px; height:92px; display:flex; flex-direction:column; align-items:center;">
+          <div style="position:relative; width:${boxW}px; height:100px; display:flex; flex-direction:column; align-items:center;">
             <div style="position:relative; margin-bottom:-12px; z-index:3;">
-              <svg width="34" height="34" viewBox="0 0 34 34">
+              <svg width="36" height="36" viewBox="0 0 34 34">
                 <circle cx="17" cy="17" r="15" fill="#ffffff" stroke="#f59e0b" stroke-width="3"/>
                 <circle cx="17" cy="17" r="11" fill="#fef3c7"/>
               </svg>
-              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13px; color:#b91c1c;">${khRank}</span>
+              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13.5px; color:#b91c1c;">${khRank}</span>
             </div>
-            <div style="position:relative; width:100%; height:55px;">
-              <svg width="100%" height="55" viewBox="0 0 260 55" preserveAspectRatio="none">
+            <div style="position:relative; width:100%; height:60px;">
+              <svg width="100%" height="60" viewBox="0 0 260 55" preserveAspectRatio="none">
                 <path d="M10 4 L230 4 L252 27 L230 51 L10 51 L10 4 Z" fill="#15803d"/>
                 <path d="M15 9 L225 9 L244 27 L225 46 L15 46 Z" fill="#ffffff"/>
                 <path d="M10 51 L0 51 L10 41 Z" fill="#14532d"/>
               </svg>
-              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:${fontSize}; padding-right:18px;">${name}</div>
+              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:${fontSize}; padding-right:20px;">${name}</div>
             </div>
           </div>
         `;
@@ -630,27 +630,27 @@
 
       // 4. គំរូ ៖ បង្អួច (Window)
       if (template === 'window') {
-        const boxW = isTop1 ? 270 : 250;
-        const fontSize = isTop1 ? '18.5px' : '16.5px';
+        const boxW = isTop1 ? 300 : 280;
+        const fontSize = isTop1 ? '20px' : '18px';
 
         return `
-          <div style="position:relative; width:${boxW}px; height:100px; display:flex; flex-direction:column; align-items:center;">
+          <div style="position:relative; width:${boxW}px; height:110px; display:flex; flex-direction:column; align-items:center;">
             <div style="position:relative; margin-bottom:-10px; z-index:3;">
-              <svg width="105" height="26" viewBox="0 0 110 28" fill="none">
+              <svg width="110" height="28" viewBox="0 0 110 28" fill="none">
                 <path d="M10 14 Q55 0 100 14 L95 24 Q55 12 15 24 Z" fill="#b91c1c"/>
                 <circle cx="55" cy="14" r="11" fill="#fff" stroke="#f59e0b" stroke-width="2.5"/>
               </svg>
-              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:12px; color:#b91c1c;">${khRank}</span>
+              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:12.5px; color:#b91c1c;">${khRank}</span>
             </div>
-            <div style="position:relative; width:100%; height:65px; display:flex; align-items:center; justify-content:center;">
-              <svg width="100%" height="65" viewBox="0 0 260 68" fill="none">
+            <div style="position:relative; width:100%; height:70px; display:flex; align-items:center; justify-content:center;">
+              <svg width="100%" height="70" viewBox="0 0 260 68" fill="none">
                 <rect x="48" y="6" width="164" height="56" rx="4" fill="#ffffff" stroke="#854d0e" stroke-width="4.5"/>
                 <path d="M14 2 L48 6 L48 62 L14 66 Z" fill="#854d0e"/>
                 <rect x="21" y="10" width="22" height="46" fill="#7dd3fc" stroke="#5b3408" stroke-width="2"/>
                 <path d="M246 2 L212 6 L212 62 L246 66 Z" fill="#854d0e"/>
                 <rect x="217" y="10" width="22" height="46" fill="#7dd3fc" stroke="#5b3408" stroke-width="2"/>
               </svg>
-              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; font-size:${fontSize}; width:145px;">${name}</div>
+              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; font-size:${fontSize}; width:155px;">${name}</div>
             </div>
           </div>
         `;
@@ -658,21 +658,21 @@
 
       // 5. គំរូ ៖ ឆ្មា (Cute Cats)
       if (template === 'cat') {
-        const boxW = isTop1 ? 260 : 240;
-        const fontSize = isTop1 ? '19px' : '17px';
+        const boxW = isTop1 ? 285 : 265;
+        const fontSize = isTop1 ? '20.5px' : '18.5px';
 
         return `
-          <div style="position:relative; width:${boxW}px; height:110px; display:flex; flex-direction:column; align-items:center;">
-            <div style="display:flex; align-items:flex-end; gap:6px; margin-bottom:-12px; z-index:2;">
-              <svg width="42" height="42" viewBox="0 0 45 45">
+          <div style="position:relative; width:${boxW}px; height:120px; display:flex; flex-direction:column; align-items:center;">
+            <div style="display:flex; align-items:flex-end; gap:8px; margin-bottom:-14px; z-index:2;">
+              <svg width="46" height="46" viewBox="0 0 45 45">
                 <circle cx="22" cy="25" r="17" fill="#fb923c"/>
                 <polygon points="10,12 18,5 20,15" fill="#fb923c"/>
                 <polygon points="35,12 27,5 25,15" fill="#fb923c"/>
                 <circle cx="17" cy="23" r="3" fill="#000"/><circle cx="28" cy="23" r="3" fill="#000"/>
                 <circle cx="22.5" cy="28" r="2" fill="#b91c1c"/>
               </svg>
-              <span class="font-moul" style="font-size:18px; color:#f59e0b; margin-bottom:4px;">${khRank}</span>
-              <svg width="42" height="42" viewBox="0 0 45 45">
+              <span class="font-moul" style="font-size:20px; color:#f59e0b; margin-bottom:5px;">${khRank}</span>
+              <svg width="46" height="46" viewBox="0 0 45 45">
                 <circle cx="22" cy="25" r="17" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
                 <polygon points="10,12 18,5 20,15" fill="#f8fafc" stroke="#e2e8f0"/>
                 <polygon points="35,12 27,5 25,15" fill="#f8fafc" stroke="#e2e8f0"/>
@@ -680,7 +680,7 @@
                 <circle cx="22.5" cy="28" r="2" fill="#ec4899"/>
               </svg>
             </div>
-            <div style="position:relative; width:100%; height:48px; background:#fff; border:3px solid #b91c1c; border-radius:12px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.08);">
+            <div style="position:relative; width:100%; height:52px; background:#fff; border:3.5px solid #b91c1c; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
               <div class="student-name-text font-moul ${nameColorClass}" style="font-size:${fontSize}; width:90%;">${name}</div>
             </div>
           </div>
@@ -689,25 +689,25 @@
 
       // 6. គំរូ ៖ ឆ្លាក់មាស (Kbach Gold)
       if (template === 'kbach') {
-        const boxW = isTop1 ? 270 : 250;
-        const fontSize = isTop1 ? '18.5px' : '16.5px';
+        const boxW = isTop1 ? 300 : 280;
+        const fontSize = isTop1 ? '20px' : '18px';
 
         return `
-          <div style="position:relative; width:${boxW}px; height:100px; display:flex; flex-direction:column; align-items:center;">
+          <div style="position:relative; width:${boxW}px; height:110px; display:flex; flex-direction:column; align-items:center;">
             <div style="position:relative; margin-bottom:-10px; z-index:3;">
-              <svg width="60" height="30" viewBox="0 0 60 30" fill="none">
+              <svg width="66" height="32" viewBox="0 0 60 30" fill="none">
                 <path d="M30 2 L38 14 L52 14 L42 22 L46 30 L30 24 L14 30 L18 22 L8 14 L22 14 Z" fill="#eab308" stroke="#a16207" stroke-width="1.2"/>
-                <circle cx="30" cy="18" r="8" fill="#ffffff" stroke="#ca8a04" stroke-width="2.5"/>
+                <circle cx="30" cy="18" r="9" fill="#ffffff" stroke="#ca8a04" stroke-width="2.5"/>
               </svg>
-              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:12.5px; color:#b91c1c; padding-top:5px;">${khRank}</span>
+              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13px; color:#b91c1c; padding-top:6px;">${khRank}</span>
             </div>
-            <div style="position:relative; width:100%; height:60px; display:flex; align-items:center; justify-content:center;">
-              <svg width="100%" height="60" viewBox="0 0 260 60" fill="none">
+            <div style="position:relative; width:100%; height:65px; display:flex; align-items:center; justify-content:center;">
+              <svg width="100%" height="65" viewBox="0 0 260 60" fill="none">
                 <path d="M55 30 Q20 4 4 30 Q20 56 55 30 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="2.5"/>
                 <path d="M205 30 Q240 4 256 30 Q240 56 205 30 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="2.5"/>
                 <rect x="48" y="6" width="164" height="48" rx="4" fill="#ffffff" stroke="#eab308" stroke-width="3.5"/>
               </svg>
-              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; font-size:${fontSize}; width:145px;">${name}</div>
+              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; font-size:${fontSize}; width:155px;">${name}</div>
             </div>
           </div>
         `;
