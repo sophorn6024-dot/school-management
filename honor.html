@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700;900&family=Moul&family=Siemreap&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- ⚡ Supabase JS & html2pdf -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -40,12 +40,28 @@
       padding-bottom: 50px;
     }
 
-    /* ══════════════ 🔤 DROPDOWN & UI ប្រើ FONT BATTAMBANG ១០០% ══════════════ */
-    .top-toolbar, .top-toolbar *,
-    .tb-btn, .dd-wrap, .dd-popup, .dd-item,
-    .cal-modal, .cal-modal * {
+    /* ══════════════ 🔤 DROPDOWN & UI ប្រើ FONT BATTAMBANG ══════════════ */
+    .top-toolbar, .tb-btn, .dd-wrap, .dd-popup, .dd-item,
+    .cal-modal, select, option {
+      font-family: 'Battambang', 'Khmer OS Battambang', sans-serif;
+    }
+
+    .tb-btn span, .dd-item span, .dd-item, select, option {
       font-family: 'Battambang', 'Khmer OS Battambang', sans-serif !important;
     }
+
+    /* 🌟 ការពារ FONT AWESOME ICONS មិនឱ្យបាត់ដាច់ខាត */
+    i[class*="fa-"], .fa, .fas, .far, .fa-solid, .fa-regular {
+      font-family: "Font Awesome 6 Free" !important;
+      font-style: normal !important;
+      font-variant: normal !important;
+      text-rendering: auto !important;
+      -webkit-font-smoothing: antialiased !important;
+      display: inline-block !important;
+      line-height: 1 !important;
+    }
+    .fa-solid, .fas { font-weight: 900 !important; }
+    .fa-regular, .far { font-weight: 400 !important; }
 
     .font-moul { font-family: 'Khmer OS Muol Light', 'Moul', cursive !important; }
     .font-siemreap { font-family: 'Khmer OS Siemreap', 'Siemreap', sans-serif !important; }
@@ -80,13 +96,14 @@
       cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
       transition: all .15s ease; white-space: nowrap; user-select: none;
     }
+    .tb-btn i { font-size: 13.5px; }
     .tb-btn:hover { background: #334155; border-color: rgba(255, 255, 255, 0.3); }
     .tb-btn.primary { background: #0284c7; border-color: transparent; }
     .tb-btn.primary:hover { background: #0369a1; }
     .tb-btn.success { background: #059669; border-color: transparent; }
     .tb-btn.success:hover { background: #047857; }
 
-    /* 🌟 CUSTOM DROPDOWN (FONT BATTAMBANG) */
+    /* 🌟 CUSTOM DROPDOWN (លាតត្រដាងពេញ មិនកំបុត ជាមួយ Z-INDEX ខ្ពស់) */
     .dd-wrap {
       position: relative;
       display: inline-block;
@@ -135,7 +152,6 @@
       width: 794px; height: 1123px; min-height: 1123px; max-height: 1123px;
       background: #ffffff; color: #000000; position: relative;
       box-shadow: 0 18px 50px rgba(0,0,0,0.45);
-      /* 🌟 លើកគូទក្រោមឡើងលើ ដោយកំណត់ padding-bottom: 22mm */
       padding: 26px 42px 65px 42px;
       display: flex; flex-direction: column; justify-content: space-between;
       overflow: hidden; box-sizing: border-box;
@@ -184,7 +200,7 @@
       display: flex; justify-content: center; align-items: center; width: 100%;
     }
     .photo-center-spacer {
-      width: 175px; /* ស្មើនឹងទទឹងកាតសិស្សលេខ១ */
+      width: 175px;
       flex-shrink: 0;
     }
     .photo-col-left {
@@ -322,7 +338,7 @@
   <!-- 🌟 MAIN CONTENT -->
   <div id="mainPageContent" style="display:none;">
 
-    <!-- 🛠️ TOP TOOLBAR (DROPDOWN ទាំងអស់ប្រើ FONT BATTAMBANG) -->
+    <!-- 🛠️ TOP TOOLBAR (ICON ទាំងអស់បង្ហាញច្បាស់ ១០០%) -->
     <div class="top-toolbar">
       <div class="tb-group">
         <button type="button" class="tb-btn" onclick="goBack()">
@@ -342,6 +358,7 @@
         <!-- ⏱️ រយៈពេល (លំនាំដើម បង្ហាញ «ប្រចាំខែ») -->
         <div class="dd-wrap">
           <button type="button" class="tb-btn" onclick="toggleDropdown('ddPeriodList')">
+            <i class="fa-solid fa-clock" style="color:#f59e0b;"></i>
             <span id="txtPeriodSelect">ប្រចាំខែ</span>
             <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
           </button>
@@ -356,6 +373,7 @@
         <!-- Dropdown កូន (លំនាំដើម បង្ហាញ «ខែមុន») -->
         <div class="dd-wrap" id="childPeriodWrap">
           <button type="button" class="tb-btn" onclick="toggleDropdown('ddChildPeriodList')">
+            <i class="fa-solid fa-calendar-week" style="color:#38bdf8;"></i>
             <span id="txtChildPeriodSelect">កញ្ញា</span>
             <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
           </button>
@@ -461,7 +479,7 @@
 
   </div> <!-- END #mainPageContent -->
 
-  <!-- ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ -->
+  <!-- ══════════════ 📅 KHMER CALENDAR MODAL (ចម្លងពីឯកសារប្រតិទិនដើម) ══════════════ -->
   <div class="cal-modal-backdrop" id="calBackdrop" onclick="closeCalendarPopup()"></div>
   <div class="cal-modal" id="calModal">
     <div class="cal-modal-header">
@@ -573,7 +591,7 @@
         if (diffDays > 0) {
           while (true) {
             var eg = julianDayToGregorian(epochJdn);
-            var nextYearBE = getMaybeBEYear(eg.year + 1, eg.month);
+            var nextYearBE = (eg.month <= 4 ? eg.year + 1 : eg.year + 2) + 543;
             var dy = getNumberOfDaysInKhmerYear(nextYearBE);
             if (diffDays > dy) {
               diffDays -= dy;
@@ -583,7 +601,7 @@
         }
         while (diffDays > 0) {
           var eg2 = julianDayToGregorian(epochJdn);
-          var cBE = getMaybeBEYear(eg2.year, eg2.month);
+          var cBE = (eg2.month <= 4 ? eg2.year : eg2.year + 1) + 543;
           var dm = getNumberOfDaysInKhmerMonth(khMonth, cBE);
           if (diffDays > dm) {
             diffDays -= dm;
@@ -612,7 +630,6 @@
             day: dayInPhase,
             moonPhase: moonPhase,
             moonPhaseName: MoonPhaseNames[moonPhase],
-            monthIndex: khMonth,
             monthName: LunarMonthNames[khMonth],
             beYear: finalBE,
             animalYearName: AnimalYearNames[animalIndex],
@@ -694,10 +711,10 @@
 
     let currentSelectedClass = cleanGrade(USER_CLASS) || '៤(ក)';
 
-    // 🌟 1. បង្ហាញទម្រង់រូបថតមុនគេ (original)
+    // 🌟 1. បង្ហាញទម្រង់រូបថតមុនគេ (original) ជាលំនាំដើម
     let currentSelectedTemplate = 'original';
 
-    // 🌟 2. ពេលបើកដំបូង បង្ហាញ «ខែមុន» ជាលំនាំដើម
+    // 🌟 2. ពេលបើកដំបូង បង្ហាញ «ខែមុន» ជាលំនាំដើមស្វ័យប្រវត្តិ
     let currentPeriodType = 'monthly';
     const nowInit = new Date();
     const prevMonthIndex = (nowInit.getMonth() - 1 + 12) % 12;
