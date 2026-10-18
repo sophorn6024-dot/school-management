@@ -453,6 +453,16 @@
       .dt-btn { min-width: 100px; }
       .btn { padding: 4px 9px; }
     }
+    /* ទំហំតូចជាង ១០០០px ៖ ប៊ូតុងមុខងារបង្ហាញតែរូបតំណាង ដើម្បីឱ្យនៅជួរតែមួយ */
+    @media screen and (min-width: 721px) and (max-width: 1000px) {
+      .tb-actions .btn span { display: none; }
+      .tb-actions .btn { padding: 4px 10px; min-width: 34px; justify-content: center; }
+      .sp-btn { min-width: 100px; max-width: 130px; }
+      .mp-btn { min-width: 64px; }
+      .dt-btn { min-width: 88px; padding: 4px 7px; }
+      .tb-group { gap: 4px; }
+      .panel-pill-box { padding: 3px 5px; }
+    }
     @media screen and (max-width: 720px) {
       body { padding-bottom: 40px; }
       .no-print-bar { padding: 6px 8px; gap: 6px; }
