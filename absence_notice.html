@@ -6,10 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>សេចក្តីជូនដំណឹងអវត្តមានសិស្ស</title>
 
-  <!-- 🔤 Google Fonts Khmer (Battambang & Moul) -->
+  <!-- 🔤 Google Fonts Khmer (Siemreap សម្រាប់លិខិត, Moul សម្រាប់ក្បាលលិខិត, Battambang សម្រាប់ Toolbar/Dropdown) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;800;900&family=Moul&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;800;900&family=Moul&family=Siemreap&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- ⚡ Supabase JS & html2pdf -->
@@ -37,15 +37,33 @@
       --text-muted: #64748b;
     }
 
-    * {
-      box-sizing: border-box; margin: 0; padding: 0;
-      font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
-    }
-    .f-moul { font-family: 'Khmer OS Muol Light', 'Moul', cursive !important; font-weight: normal; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background: var(--bg); color: var(--text); padding: 14px 14px 70px;
       min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+    }
+
+    /* ══════════════ 🔤 កំណត់ FONT ដាច់ដោយឡែកពីគ្នា ══════════════ */
+
+    /* ១. លើ Toolbar, Dropdowns, Buttons, Modals ប្រើ FONT BATTAMBANG ១០០% */
+    .top-toolbar, .top-toolbar *, 
+    .tb-btn, .dd-wrap, .dd-popup, .dd-item, .tb-select-box,
+    .ps-panel, .ps-panel *, 
+    .khmer-cal-popup, .khmer-cal-popup *,
+    .auth-wrapper, .auth-wrapper * {
+      font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
+    }
+
+    /* ២. លើសន្លឹកកិច្ចការ (A4 Paper) ប្រើ FONT SIEMREAP (ដូចសន្លឹក PDF ដើម) */
+    .notice-paper, .doc-body-text, .doc-left-meta, .sign-col, .parent-response-box, .parent-sign-col {
+      font-family: 'Khmer OS Siemreap', 'Siemreap', 'Khmer OS', sans-serif !important;
+    }
+
+    /* ៣. ចំណងជើង និងក្បាលលិខិត ប្រើ FONT MOUL LIGHT (អក្សរមូល) */
+    .f-moul, .f-muol {
+      font-family: 'Khmer OS Muol Light', 'Khmer OS Muol', 'Moul', cursive !important;
+      font-weight: normal !important;
     }
 
     /* ══════════════ 🔒 AUTH DENIED WRAPPER ══════════════ */
@@ -71,7 +89,6 @@
       font-size: 13.5px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25); transition: all 0.2s; cursor: pointer; border: none;
     }
-    .btn-login-redirect:hover { transform: translateY(-2px); }
 
     /* ══════════════ 🛠️ TOP TOOLBAR ══════════════ */
     .top-toolbar {
@@ -82,16 +99,15 @@
       background: #1e293b; color: #f8fafc; font-size: 13px; font-weight: 700; cursor: pointer;
       display: inline-flex; align-items: center; justify-content: space-between; gap: 8px;
       transition: all .15s ease; outline: none; white-space: nowrap; user-select: none;
-      font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
     }
     .tb-btn:hover { background: #334155; border-color: rgba(255, 255, 255, 0.3); }
     .tb-btn.primary { background: #0284c7; border-color: transparent; }
     .tb-btn.primary:hover { background: #0369a1; }
 
-    /* 🌟 Custom Dropdown (Font Battambang) */
+    /* Custom Dropdown (Font Battambang) */
     .dd-wrap { position: relative; display: inline-block; }
     .dd-popup {
-      display: none; position: absolute; top: calc(100% + 6px); left: 0; min-width: 240px; max-height: 290px; overflow-y: auto;
+      display: none; position: absolute; top: calc(100% + 6px); left: 0; min-width: 250px; max-height: 290px; overflow-y: auto;
       background: #ffffff; border-radius: 16px; box-shadow: 0 14px 35px rgba(0, 0, 0, 0.35);
       border: 1px solid #e2e8f0; padding: 6px; z-index: 1000; animation: ddIn .15s ease-out;
     }
@@ -102,7 +118,6 @@
       padding: 10px 14px; border-radius: 12px; font-size: 13.5px; font-weight: 700;
       color: #1e293b; cursor: pointer; display: flex; align-items: center; justify-content: space-between;
       gap: 12px; transition: all .12s; white-space: nowrap;
-      font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
     }
     .dd-item:hover { background: #f1f5f9; }
     .dd-item.active { background: #e0f2fe; color: #0284c7; }
@@ -118,54 +133,59 @@
     .notice-paper {
       width: 210mm; min-height: 297mm; background: #ffffff; color: #000000;
       padding: 18mm 20mm 20mm; border-radius: 4px; box-shadow: 0 12px 45px rgba(0, 0, 0, 0.45);
-      position: relative; transform-origin: top left; font-size: 13.8px; line-height: 1.95;
+      position: relative; transform-origin: top left; font-size: 14.5px; line-height: 2.0;
     }
     .notice-paper * { color: #000000; }
 
     /* 👑 Document Headers */
-    .doc-national-header { text-align: center; margin-bottom: 4px; }
-    .doc-national-header h2 { font-size: 16px; margin-bottom: 2px; }
-    .doc-national-header h3 { font-size: 14.5px; margin-bottom: 2px; }
-    .doc-divider { letter-spacing: 4px; font-size: 11px; margin-top: 1px; }
+    .doc-national-header { text-align: center; margin-bottom: 2px; }
+    .doc-national-header h2 { font-size: 15px; margin-bottom: 2px; }
+    .doc-national-header h3 { font-size: 13.5px; margin-bottom: 2px; }
+    .doc-divider { letter-spacing: 4px; font-size: 11px; margin-top: 1px; color: #64748b !important; }
 
     .doc-left-meta {
-      text-align: left; font-size: 13px; font-weight: 700; line-height: 1.6; margin-top: 2px; margin-bottom: 12px;
+      text-align: left; font-size: 13.5px; font-weight: 700; line-height: 1.6; margin-top: 2px; margin-bottom: 10px;
     }
 
-    .doc-title-box { text-align: center; margin: 10px 0 16px; }
+    .doc-title-box { text-align: center; margin: 8px 0 14px; }
     .doc-title-box h1 {
-      font-size: 19px; color: #dc2626 !important; font-weight: normal; letter-spacing: 0.5px;
+      font-size: 18px; color: #dc2626 !important; letter-spacing: 0.5px;
     }
 
-    /* 📝 Content Styling ដូចគំរូដើម */
+    /* 📝 Content Styling (Khmer OS Siemreap) */
     .doc-body-text {
-      text-align: justify; font-size: 14px; line-height: 1.95;
+      text-align: justify; font-size: 14.5px; line-height: 2.0;
     }
     .sub-greeting {
-      font-size: 15px; color: #2563eb !important; margin: 10px 0 8px; text-align: center;
+      font-size: 15.5px; color: #1e3a8a !important; margin: 10px 0 8px; text-align: center;
     }
     .indent-p {
-      text-indent: 36px; margin-bottom: 10px;
+      text-indent: 36px; margin-bottom: 8px;
     }
 
     /* 🌟 ពណ៌ Highlight តាមគំរូរូបភាពដើម ១០០% */
-    .val-blue { color: #1e3a8a !important; font-weight: 800; }
-    .val-purple { color: #7c3aed !important; font-weight: 800; }
-    .val-red { color: #dc2626 !important; font-weight: 800; }
-    .val-green { color: #059669 !important; font-weight: 800; }
+    .val-blue { color: #1e3a8a !important; font-weight: 700; }
+    .val-purple { color: #7c3aed !important; font-weight: 700; }
+    .val-red { color: #dc2626 !important; font-weight: 700; }
+
+    /* ការពារសញ្ញាខណ្ឌ « ។ » មិនឱ្យធ្លាក់ជួរតែឯង */
+    .nowrap-punct {
+      white-space: nowrap !important;
+      display: inline-block;
+    }
 
     /* ✍️ Signatures */
     .sign-row {
       display: flex; justify-content: space-between; align-items: flex-start; margin-top: 18px; padding: 0 4px;
     }
-    .sign-col { text-align: center; min-width: 240px; font-size: 13px; }
-    .sign-col .sign-title { font-size: 13.5px; margin-top: 4px; }
+    .sign-col { text-align: center; min-width: 240px; font-size: 13.5px; }
+    .sign-col .sign-title { font-size: 14px; margin-top: 4px; }
     .sign-col .sign-space { height: 55px; } /* ចន្លោះទំនេរស្អាតសម្រាប់ចុះហត្ថលេខាផ្ទាល់ដៃ */
-    .sign-col .sign-name { font-weight: 700; font-size: 13.5px; }
+    .sign-col .sign-name { font-weight: normal; font-size: 14px; }
 
     /* 🌟 មតិឆ្លើយតបរបស់អាណាព្យាបាល (Dotted Lines Section) */
     .parent-response-box {
-      margin-top: 26px; border-top: 1.5px dashed #cbd5e1; padding-top: 16px;
+      margin-top: 24px; border-top: 1.5px dashed #cbd5e1; padding-top: 14px;
     }
     .parent-response-title {
       font-size: 14.5px; color: #15803d !important; margin-bottom: 12px;
@@ -177,13 +197,13 @@
       width: 100%; height: 1px; border-bottom: 1.5px dotted #64748b;
     }
     .parent-sign-col {
-      text-align: right; padding-right: 20px; font-size: 12.5px;
+      text-align: right; padding-right: 20px; font-size: 13px;
     }
     .parent-sign-title {
-      font-weight: 800; font-size: 13px; margin-top: 5px; margin-right: 28px;
+      font-size: 13.5px; margin-top: 6px; margin-right: 24px;
     }
 
-    /* ══════════════ 📅 BEAUTIFUL KHMER CALENDAR POPUP MODAL ══════════════ */
+    /* ══════════════ 📅 KHMER CALENDAR POPUP MODAL ══════════════ */
     .cal-popup-backdrop {
       display: none; position: fixed; inset: 0; z-index: 2900; background: rgba(0,0,0,0.5);
     }
@@ -204,7 +224,6 @@
       width: 100%; height: 38px; border-radius: 12px; border: 1px solid #cbd5e1;
       background: #f1f5f9; color: #0f172a; font-size: 13.5px; font-weight: 700;
       padding: 0 26px 0 12px; outline: none; cursor: pointer; appearance: none; -webkit-appearance: none;
-      font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
     }
     .cal-chev {
       position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
@@ -251,7 +270,7 @@
       box-shadow: 0 24px 60px rgba(0,0,0,.7); animation: psIn .18s ease-out;
     }
     .ps-panel.show { display: block; }
-    @keyframes psIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes psIn { from { opacity: 0; transform: translateY(-8px) scale(0.98); } to { opacity: 1; transform: translateY(0); } }
 
     .ps-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
     .ps-head h3 { font-size: 16.5px; font-weight: 800; color: #f8fafc; }
@@ -294,7 +313,7 @@
   <!-- ══════════════ 🌟 MAIN CONTENT WRAPPER ══════════════ -->
   <div id="mainPageContent" style="display:none;">
 
-    <!-- 🛠️ TOP TOOLBAR -->
+    <!-- 🛠️ TOP TOOLBAR (Font Battambang ១០០%) -->
     <div class="top-toolbar">
       <button type="button" class="tb-btn" onclick="goBack()">
         <i class="fa-solid fa-arrow-left"></i> <span>ត្រឡប់</span>
@@ -348,30 +367,30 @@
       </button>
     </div>
 
-    <!-- 📄 PRINTABLE NOTICE PAPER (រចនា Font & ពណ៌តាមគំរូដើម ១០០%) -->
+    <!-- 📄 PRINTABLE NOTICE PAPER (រចនា Font & ពណ៌តាមគំរូ PDF ដើម ១០០%) -->
     <div class="report-paper-wrap">
       <div id="paperScaler">
         <div class="notice-paper" id="printableNoticePaper">
 
-          <!-- 👑 National Header -->
+          <!-- 👑 National Header (Font Moul) -->
           <div class="doc-national-header">
             <h2 class="f-moul">ព្រះរាជាណាចក្រកម្ពុជា</h2>
             <h3 class="f-moul">ជាតិ សាសនា ព្រះមហាក្សត្រ</h3>
             <div class="doc-divider">────── ❖ ──────</div>
           </div>
 
-          <!-- 🏫 Administration Info -->
+          <!-- 🏫 Administration Info (Font Siemreap) -->
           <div class="doc-left-meta">
             <div>រដ្ឋបាល ស្រុកសំឡូត</div>
-            <div>សាលាបឋមសិក្សា កំពង់ល្ពៅ</div>
+            <div>សាលាបឋមសិក្សា  កំពង់ល្ពៅ</div>
           </div>
 
-          <!-- 🏷️ Title of Notice -->
+          <!-- 🏷️ Title of Notice (Font Moul ពណ៌ក្រហម) -->
           <div class="doc-title-box">
             <h1 class="f-moul">សេចក្តីជូនដំណឹង</h1>
           </div>
 
-          <!-- 📝 Body Paragraph 1 (កំណត់មកស្រាប់ មិនបាច់កែដៃ) -->
+          <!-- 📝 Body Paragraph 1 (Font Siemreap ពណ៌តាមគំរូដើម) -->
           <div class="doc-body-text">
             <div class="indent-p">
               <span id="txtTeacherPronoun">ខ្ញុំបាទ</span>ឈ្មោះ <span class="val-blue" id="valTeacherName">សេង សុភាស់</span>
@@ -379,9 +398,10 @@
               នៃ <span class="val-blue">សាលាបឋមសិក្សា កំពង់ល្ពៅ</span>
               ឃុំ/សង្កាត់ <span class="val-blue" id="valCommune">កំពង់ល្ពៅ</span>
               ស្រុក/ខណ្ឌ <span class="val-blue" id="valDistrict">សំឡូត</span>
-              រាជធានី/ខេត្ត <span class="val-blue" id="valProvince">បាត់ដំបង</span> ។
+              រាជធានី/ខេត្ត <span class="val-blue" id="valProvince">បាត់ដំបង</span> <span class="nowrap-punct">។</span>
             </div>
 
+            <!-- 🌟 សូមជម្រាបមក (Font Moul ពណ៌ខៀវ ដូចក្នុងរូបភាព PDF) -->
             <div class="f-moul sub-greeting">សូមជម្រាបមក</div>
 
             <div class="indent-p">
@@ -390,15 +410,15 @@
               ជាសិស្ស <span class="val-blue" id="valStudentClass">ថ្នាក់ទី ៤(ក)</span>
               បានជ្រាបថា៖ សិស្សមានឈ្មោះខាងលើនេះបានឈប់មិនឃើញមករៀនចំនួន
               <span class="val-red" id="valAbsentDays">៣</span> ថ្ងៃមកហើយ
-              ដោយសាលាមិនបានដឹងមូលហេតុ ។
+              ដោយសាលាមិនបានដឹងមូលហេតុ <span class="nowrap-punct">។</span>
             </div>
 
             <div class="indent-p">
-              អាស្រ័យហេតុនេះ សូមលោក លោកស្រីជ្រាបជាព័ត៌មាន និងមេត្តាផ្តល់ដំណឹងតាមរយៈសៀវភៅនេះដល់<span id="txtTeacherPronounEnd">ខ្ញុំបាទ</span> ដោយក្តីអនុគ្រោះ ។
+              អាស្រ័យហេតុនេះ សូមលោក លោកស្រីជ្រាបជាព័ត៌មាន និងមេត្តាផ្តល់ដំណឹងតាមរយៈសៀវភៅនេះដល់<span id="txtTeacherPronounEnd">ខ្ញុំបាទ</span> ដោយក្តីអនុគ្រោះ <span class="nowrap-punct">។</span>
             </div>
           </div>
 
-          <!-- ✍️ Signatures -->
+          <!-- ✍️ Signatures (Font Moul & Siemreap) -->
           <div class="sign-row">
             <div class="sign-col" style="margin-top: 48px;">
               <div class="f-moul sign-title">បានឃើញនិងឯកភាព</div>
@@ -408,18 +428,18 @@
             </div>
 
             <div class="sign-col">
-              <div id="lblLunarDate" style="font-size:12.5px;">ថ្ងៃសៅរ៍ ៦កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០</div>
-              <div id="lblSolarDate" style="font-size:12.5px; margin-top:2px;">ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃសៅរ៍ ទី១៧ ខែតុលា ឆ្នាំ២០២៦</div>
-              <div class="f-moul sign-title" style="margin-top:5px;">គ្រូបន្ទុកថ្នាក់</div>
+              <div id="lblLunarDate" style="font-size:13px;">ថ្ងៃសៅរ៍ ៦កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០</div>
+              <div id="lblSolarDate" style="font-size:13px; margin-top:2px;">ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃសៅរ៍ ទី១៧ ខែតុលា ឆ្នាំ២០២៦</div>
+              <div class="f-moul sign-title" style="color:#1e3a8a; margin-top:5px;">គ្រូបន្ទុកថ្នាក់</div>
               <div class="sign-space"></div>
               <div class="sign-name" id="valTeacherSignName">សេង សុភាស់</div>
-              <div style="font-size:13px; margin-top:4px; font-weight:700;">
-                លេខទូរស័ព្ទ៖ <span id="valTeacherPhone" class="val-blue">០៨៧ ៣១ ៣១ ៦៦</span>
+              <div style="font-size:13px; margin-top:4px;">
+                លេខទូរស័ព្ទ៖ <span id="valTeacherPhone">០៨៧ ៣១ ៣១ ៦៦</span>
               </div>
             </div>
           </div>
 
-          <!-- 🌟 Parent Feedback Response Section -->
+          <!-- 🌟 Parent Feedback Response Section (Font Moul & Dotted Lines) -->
           <div class="parent-response-box">
             <div class="f-moul parent-response-title">មតិឆ្លើយតបរបស់អាណាព្យាបាល</div>
             <div class="dotted-lines-group">
@@ -433,7 +453,7 @@
 
             <div class="parent-sign-col">
               <div>...................., ថ្ងៃទី.............ខែ..............ឆ្នាំ២០២៦</div>
-              <div class="parent-sign-title">អាណាព្យាបាលសិស្ស</div>
+              <div class="f-moul parent-sign-title">អាណាព្យាបាលសិស្ស</div>
             </div>
           </div>
 
@@ -443,7 +463,7 @@
 
   </div> <!-- END #mainPageContent -->
 
-  <!-- ══════════════ 📅 BEAUTIFUL KHMER CALENDAR POPUP MODAL ══════════════ -->
+  <!-- ══════════════ 📅 KHMER CALENDAR POPUP MODAL (Font Battambang) ══════════════ -->
   <div class="cal-popup-backdrop" id="calBackdrop" onclick="closeCalendarPopup()"></div>
   <div class="khmer-cal-popup" id="khmerCalPopup" onclick="event.stopPropagation()">
     <div class="cal-header-row">
@@ -650,7 +670,6 @@
         console.warn("Fetch teacher info issue:", e);
       }
 
-      // កំណត់សព្វនាម ខ្ញុំបាទ (ប្រុស) ឬ នាងខ្ញុំ (ស្រី)
       const isFemale = String(teacherGender).includes('ស្រី') || teacherGender === 'f' || teacherGender === 'female';
       const pronoun = isFemale ? 'នាងខ្ញុំ' : 'ខ្ញុំបាទ';
 
@@ -660,7 +679,6 @@
       document.getElementById('valTeacherSignName').innerText = teacherName;
       document.getElementById('valTeacherPhone').innerText = toKhmerNum(teacherPhone);
 
-      // បំបែកអាសយដ្ឋាន (ឃុំ, ស្រុក, ខេត្ត)
       if (teacherAddress) {
         const parts = teacherAddress.split(/[,，\s]+/).filter(Boolean);
         if (parts.length >= 3) {
@@ -681,20 +699,17 @@
       studentDropdown.innerHTML = '';
 
       try {
-        // ១. ទាញបញ្ជីសិស្សក្នុងថ្នាក់
         const { data: students, error: sErr } = await sb.from('students').select('*');
         if (sErr) throw sErr;
 
         const classStudents = (students || []).filter(s => cleanGrade(s.grade) === currentSelectedClass);
 
-        // ២. ទាញយកកំណត់ត្រាវត្តមានទាំងអស់
         const { data: attendance, error: aErr } = await sb.from('attendance')
           .select('student_id, attendance_date, status, assigned_class')
           .order('attendance_date', { ascending: true });
 
         if (aErr) throw aErr;
 
-        // ៣. ស្វែងរកសិស្សណាដែលមាន status = 'A' ចំនួន ៣ ថ្ងៃជាប់គ្នា
         absentEligibleStudents = [];
 
         classStudents.forEach(st => {
@@ -712,11 +727,10 @@
               streak++;
               if (streak > maxStreak) maxStreak = streak;
             } else if (stVal === 'P' || stVal === 'C') {
-              streak = 0; // បើមានវត្តមាន ឬសុំច្បាប់ នោះ streak ត្រូវបានរាប់ឡើងវិញ
+              streak = 0;
             }
           });
 
-          // 🌟 លក្ខខណ្ឌ៖ ត្រូវមានអវត្តមាន ៣ ថ្ងៃជាប់គ្នាឡើងទៅ
           if (maxStreak >= 3 || streak >= 3) {
             absentEligibleStudents.push({
               student: st,
@@ -725,7 +739,6 @@
           }
         });
 
-        // ៤. បង្ហាញក្នុង Custom Dropdown
         if (absentEligibleStudents.length > 0) {
           studentDropdown.innerHTML = absentEligibleStudents.map((item, idx) => `
             <div class="dd-item ${idx === 0 ? 'active' : ''}" onclick="selectAbsentStudent(${idx})">
@@ -745,7 +758,6 @@
               🎉 ក្នុងថ្នាក់នេះមិនមានសិស្សណាអវត្តមាន ៣ ថ្ងៃជាប់គ្នាឡើយ។
             </div>
           `;
-          // Fallback Sample ដើម្បីកុំឱ្យលិខិតទទេ
           document.getElementById('valStudentName').innerText = classStudents[0]?.student_name || 'បូ សុវណ្ណបញ្ញា';
           document.getElementById('valAbsentDays').innerText = toKhmerNum(3);
         }
@@ -898,14 +910,14 @@
     function stepFont(dir) {
       currentFontScale = Math.max(85, Math.min(125, currentFontScale + dir));
       document.getElementById('inFontScale').value = currentFontScale + '%';
-      document.getElementById('printableNoticePaper').style.fontSize = `${(13.8 * currentFontScale) / 100}px`;
+      document.getElementById('printableNoticePaper').style.fontSize = `${(14.5 * currentFontScale) / 100}px`;
     }
 
     function psReset() {
       setPaper('A4');
       currentFontScale = 100;
       document.getElementById('inFontScale').value = '100%';
-      document.getElementById('printableNoticePaper').style.fontSize = '13.8px';
+      document.getElementById('printableNoticePaper').style.fontSize = '14.5px';
     }
 
     function fitPaper() {
@@ -950,7 +962,6 @@
       window.print();
     }
 
-    /* 7. INITIALIZATION */
     window.addEventListener('DOMContentLoaded', async () => {
       const isAuth = await checkAuthentication();
       if (!isAuth) return;
