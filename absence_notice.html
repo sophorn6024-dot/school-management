@@ -128,8 +128,8 @@
 
     .notice-paper {
       width: 210mm; min-width: 210mm; max-width: 210mm; min-height: 297mm; background: #ffffff; color: #000000;
-      padding: 16mm 16mm 16mm; border-radius: 2px; box-shadow: 0 12px 45px rgba(0, 0, 0, 0.45);
-      position: relative; transform-origin: top left; font-size: 13.8px; line-height: 2.3;
+      padding: 16mm 15mm 16mm; border-radius: 2px; box-shadow: 0 12px 45px rgba(0, 0, 0, 0.45);
+      position: relative; transform-origin: top left; font-size: 13.5px; line-height: 2.3;
     }
     .notice-paper * { color: #000000; }
 
@@ -150,9 +150,9 @@
       font-size: 20px; color: #e05638 !important; letter-spacing: 0.5px; font-weight: normal;
     }
 
-    /* 📝 កថាខណ្ឌ និងបន្ទាត់អក្សរ (ការពារមិនឱ្យធ្លាក់ជួរដាច់ខាត) */
+    /* 📝 កថាខណ្ឌ និងបន្ទាត់អក្សរ */
     .doc-body-text {
-      font-size: 13.8px; line-height: 2.3;
+      font-size: 13.5px; line-height: 2.3;
     }
 
     .doc-row {
@@ -320,7 +320,7 @@
       .report-paper-wrap { padding: 0 !important; overflow: visible !important; }
       #paperScaler { transform: none !important; width: auto !important; height: auto !important; }
       .notice-paper {
-        width: 100% !important; min-height: 0 !important; padding: 14mm 16mm !important;
+        width: 100% !important; min-height: 0 !important; padding: 14mm 15mm !important;
         box-shadow: none !important; border-radius: 0 !important; page-break-inside: avoid;
       }
     }
@@ -421,10 +421,10 @@
             <h1 class="f-moul">សេចក្តីជូនដំណឹង</h1>
           </div>
 
-          <!-- 📝 តួសេចក្តីលិខិត (គ្មានគំរូក្លែងក្លាយ, ជាសិស្សថ្នាក់ទី នៅមួយជួរ, មិនធ្លាក់បន្ទាត់) -->
+          <!-- 📝 តួសេចក្តីលិខិត -->
           <div class="doc-body-text">
             
-            <!-- ជួរទី១ -->
+            <!-- កថាខណ្ឌទី១ -->
             <div class="doc-row doc-row-indent">
               <span><span id="txtTeacherPronoun">ខ្ញុំបាទ</span>ឈ្មោះ៖</span>
               <span class="val-muol-blue" id="valTeacherName">........................</span>
@@ -434,7 +434,6 @@
               <span class="val-muol-blue">សាលាបឋមសិក្សា កំពង់ល្ពៅ</span>
             </div>
 
-            <!-- ជួរទី២ -->
             <div class="doc-row" style="padding-left: 18px;">
               <span>ឃុំ/សង្កាត់</span>
               <span class="val-muol-blue" id="valCommune">កំពង់ល្ពៅ</span>
@@ -447,32 +446,28 @@
             <!-- សូមជម្រាបមក (Font Moul ពណ៌ខៀវ ចំកណ្តាល) -->
             <div class="f-moul sub-greeting">សូមជម្រាបមក</div>
 
-            <!-- ជួរទី៣ -->
+            <!-- 🌟 កថាខណ្ឌទី២៖ បង្ហាញត្រឹមតែ ២ ជួរគត់ តាមការណែនាំ -->
+            <!-- ជួរទី១ នៃកថាខណ្ឌទី២ -->
             <div class="doc-row doc-row-indent">
               <span>លោក លោកស្រីដែលជាអាណាព្យាបាលរបស់សិស្សឈ្មោះ៖</span>
               <span class="val-muol-purple" id="valStudentName">................................</span>
-            </div>
-
-            <!-- ជួរទី៤៖ «ជាសិស្សថ្នាក់ទី...» ដាក់មួយជួរជាមួយគ្នាយ៉ាងស្អាត -->
-            <div class="doc-row">
               <span>ជាសិស្ស</span>
               <span class="val-muol-blue" id="valStudentClass">ថ្នាក់ទី ៤ ( ក )</span>
-              <span>បានជ្រាបថា៖ សិស្សមានឈ្មោះខាងលើនេះបានឈប់មិនឃើញមករៀនចំនួន</span>
-              <span class="val-red f-moul" id="valAbsentDays">...</span>
-              <span>ថ្ងៃមកហើយ</span>
+              <span>បានជ្រាបថា៖</span>
             </div>
 
-            <!-- ជួរទី៥ -->
+            <!-- ជួរទី២ នៃកថាខណ្ឌទី២ -->
             <div class="doc-row">
-              <span>ដោយសាលាមិនបានដឹងមូលហេតុ ។</span>
+              <span>សិស្សមានឈ្មោះខាងលើនេះបានឈប់មិនឃើញមករៀនចំនួន</span>
+              <span class="val-red f-moul" id="valAbsentDays">...</span>
+              <span>ថ្ងៃមកហើយ ដោយសាលាមិនបានដឹងមូលហេតុ ។</span>
             </div>
 
-            <!-- ជួរទី៦ (ការពារមិនឱ្យដាច់ ខ្ញុំ + បាទ ជាដាច់ខាត) -->
+            <!-- កថាខណ្ឌទី៣ -->
             <div class="doc-row doc-row-indent" style="margin-top: 10px;">
               <span>អាស្រ័យហេតុនេះ សូមលោក លោកស្រីជ្រាបជាព័ត៌មាន ហ្នឹងមេត្តាផ្តល់ដំណឹងតាមរយៈសៀវភៅនេះ<span class="nowrap-phrase">ដល់<span id="txtTeacherPronounEnd">ខ្ញុំបាទ</span></span></span>
             </div>
 
-            <!-- ជួរទី៧ -->
             <div class="doc-row">
               <span>ដោយក្តីអនុគ្រោះ ៕</span>
             </div>
@@ -602,11 +597,6 @@
       var MoonPhaseNames = ['កើត', 'រោច'];
 
       function isGregorianLeapYear(y) { return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0); }
-      function getDaysInGregorianMonth(y, m) {
-        var d = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-        if (m === 2 && isGregorianLeapYear(y)) return 29;
-        return d[m - 1];
-      }
       function gregorianToJulianDay(y, m, d) {
         var a = Math.floor((14 - m) / 12);
         var y1 = y + 4800 - a;
@@ -802,13 +792,10 @@
       return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').replace(/[()\-_\s]/g, '').trim();
     }
 
-    /* =========================================================
-       1. 📅 គណនាកាលបរិច្ឆេទចន្ទគតិ-សូរិយគតិ ដោយ MOMENTKH ផ្ទាល់ (លែងទាញពី DATABASE)
-    ========================================================= */
+    /* 📅 គណនាកាលបរិច្ឆេទចន្ទគតិ-សូរិយគតិ ដោយ MOMENTKH ផ្ទាល់ */
     function getKhmerCalendarStrings(y, m, d) {
       const res = momentkh.fromGregorian(y, m, d);
       const k = res.khmer;
-      const g = res.gregorian;
 
       const lunarDayStr = toKhmerNum(k.day) + k.moonPhaseName;
       const fullLunar = `ថ្ងៃ${k.dayOfWeekName} ${lunarDayStr} ខែ${k.monthName} ឆ្នាំ${k.animalYearName} ${k.sakName} ព.ស.${toKhmerNum(k.beYear)}`;
@@ -918,9 +905,7 @@
       pickCalendarDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
     }
 
-    /* =========================================================
-       2. DROPDOWNS & CLASS SELECTION
-    ========================================================= */
+    /* 2. DROPDOWNS & CLASS SELECTION */
     function toggleDropdown(id) {
       const p = document.getElementById(id);
       const isShow = p.classList.contains('show');
@@ -1021,9 +1006,7 @@
       }
     }
 
-    /* =========================================================
-       3. 🌟 ចាប់សិស្សអវត្តមាន ៣ ថ្ងៃជាប់គ្នាពី ATTENDANCE
-    ========================================================= */
+    /* 3. ចាប់សិស្សអវត្តមាន ៣ ថ្ងៃជាប់គ្នា */
     async function load3ConsecutiveAbsentStudents() {
       const studentBtnText = document.getElementById('txtStudentSelect');
       const studentDropdown = document.getElementById('ddStudentSelect');
@@ -1090,7 +1073,6 @@
               🎉 ក្នុងថ្នាក់នេះមិនមានសិស្សណាអវត្តមាន ៣ ថ្ងៃជាប់គ្នាឡើយ។
             </div>
           `;
-          // គ្មានគំរូក្លែងក្លាយទេ បង្ហាញបន្ទាត់ចុចៗធម្មតា
           document.getElementById('valStudentName').innerText = '................................';
           document.getElementById('valAbsentDays').innerText = '...';
         }
@@ -1121,9 +1103,7 @@
       closeAllDropdowns();
     }
 
-    /* =========================================================
-       4. PAGE SETUP & EXPORT
-    ========================================================= */
+    /* 4. PAGE SETUP & EXPORT */
     const PX = 96 / 25.4;
     let currentPaper = 'A4';
     let currentFontScale = 100;
@@ -1150,14 +1130,14 @@
     function stepFont(dir) {
       currentFontScale = Math.max(85, Math.min(125, currentFontScale + dir));
       document.getElementById('inFontScale').value = currentFontScale + '%';
-      document.getElementById('printableNoticePaper').style.fontSize = `${(13.8 * currentFontScale) / 100}px`;
+      document.getElementById('printableNoticePaper').style.fontSize = `${(13.5 * currentFontScale) / 100}px`;
     }
 
     function psReset() {
       setPaper('A4');
       currentFontScale = 100;
       document.getElementById('inFontScale').value = '100%';
-      document.getElementById('printableNoticePaper').style.fontSize = '13.8px';
+      document.getElementById('printableNoticePaper').style.fontSize = '13.5px';
     }
 
     function fitPaper() {
@@ -1202,9 +1182,7 @@
       window.print();
     }
 
-    /* =========================================================
-       5. INITIALIZATION
-    ========================================================= */
+    /* 5. INITIALIZATION */
     window.addEventListener('DOMContentLoaded', async () => {
       const isAuth = await checkAuthentication();
       if (!isAuth) return;
@@ -1212,7 +1190,6 @@
       initCalendarDropdowns();
       await initClassesDropdown();
 
-      // កំណត់ថ្ងៃបច្ចុប្បន្នស្វ័យប្រវត្តិតាមប្រតិទិនខ្មែរ MomentKH
       const now = new Date();
       calCurrentYear = now.getFullYear();
       calCurrentMonth = now.getMonth() + 1;
