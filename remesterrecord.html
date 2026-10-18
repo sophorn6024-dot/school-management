@@ -430,6 +430,7 @@
       padding: 6mm 7.5mm; 
       display: grid; 
       grid-template-columns: 1fr 1fr; 
+      grid-template-rows: minmax(0, 1fr);
       gap: 7mm;
       box-shadow: 0 10px 28px rgba(0,0,0,0.35); 
       page-break-after: always; 
@@ -514,15 +515,20 @@
     .sheet3 .custom-table { font-size: 13.5px; }
     .sheet3 .custom-table td.eval-cell { text-align: left; vertical-align: top; padding: 6px 9px; font-size: 14px; line-height: 1.65; height: auto; white-space: normal; }
     .eval-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .eval-box { border: 1.35px solid var(--navy); padding: 6px 10px 8px; font-size: 14px; line-height: 1.65; min-height: 84px; background: #ffffff !important; color: var(--navy) !important; }
+    .eval-box { border: 1.35px solid var(--navy); padding: 6px 10px 8px; font-size: 14px; line-height: 1.65; min-height: 64px; background: #ffffff !important; color: var(--navy) !important; }
     .eval-box-title { font-size: 14.5px; margin-bottom: 2px; }
-    .eval-dots { border-bottom: 1.2px dotted var(--navy); height: 24px; }
+    .eval-dots { border-bottom: 1.2px dotted var(--navy); height: 20px; }
     .custom-table td.red-bold, .custom-table th.red-bold, .custom-table .red-bold { color: #dc2626 !important; }
     /* ពាក្យ "ចំណាត់ថ្នាក់" ពណ៌ក្រហម (ទុកទំហំអក្សរតាមតួដើម) */
     .red-text { color: #dc2626 !important; font-weight: bold; }
 
     .sig-block { display: flex; justify-content: flex-end; margin-top: 6px; }
     .sig-inner { text-align: center; min-width: 180px; }
+    /* ទីតាំងនាយកសាលាចុះហត្ថលេខា និងបោះត្រា */
+    .sig-inner.principal { min-width: 230px; }
+    .sign-space { height: 72px; }
+    .sheet3 .sign-space { height: 64px; }
+    .principal-name { font-weight: 700; min-height: 20px; font-size: 14px; }
 
     /* =========================================================
        🖨️ PRINT RULES (A4 LANDSCAPE)
@@ -692,6 +698,7 @@
     const USER_CLASS   = CURRENT_USER?.assigned_classes || CURRENT_USER?.assigned_class || "";
     const TEACHER_NAME = CURRENT_USER?.teacher_name || "";
     const IS_ADMIN     = String(USER_ROLE).toLowerCase().trim() === 'admin';
+    const PRINCIPAL_NAME = '';   // ដាក់ឈ្មោះនាយកសាលានៅទីនេះ បើចង់ឱ្យបោះពុម្ពស្រាប់ (ទុកទទេ បើចង់ឱ្យចុះហត្ថលេខាផ្ទាល់)
 
     const KHMER_DIGITS = ['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
     function cleanGrade(g) { return String(g || '').replace(/^ថ្នាក់ទី\s*/, '').trim(); }
@@ -901,9 +908,11 @@
         const inner = outer.firstElementChild;
         inner.style.zoom = 1;
         const need = inner.offsetHeight, have = outer.clientHeight;
-        if (need > have && have > 0) inner.style.zoom = Math.max(0.7, (have / need) * 0.985);
+        if (need > have && have > 0) inner.style.zoom = Math.max(0.6, (have / need) * 0.985);
       });
     }
+
+    window.addEventListener('beforeprint', () => { try { fitSheet3Pages(); } catch(e) {} });
 
     /* 4. INITIALIZATION */
     window.addEventListener('DOMContentLoaded', async () => {
@@ -1514,9 +1523,11 @@
                 </div>
 
                 <div class="sig-block" style="margin-top: 8px; font-size: 12.5px;">
-                  <div class="sig-inner">
+                  <div class="sig-inner principal">
                     <div>ថ្ងៃទី...... ខែ...... ឆ្នាំ២០២៦</div>
                     <div class="f-bold" style="margin-top: 3px;">នាយកសាលា</div>
+                    <div class="sign-space"></div>
+                    <div class="principal-name">${PRINCIPAL_NAME}</div>
                   </div>
                 </div>
               </div>
@@ -1697,7 +1708,7 @@
                 </table>
 
                 <div class="f-moul" style="margin: 10px 0 4px 0; font-size: 14.5px;">ឃ. លទ្ធផលប្រចាំឆ្នាំ</div>
-                <div style="font-size: 14px; line-height: 1.95; margin-left: 2px;">
+                <div style="font-size: 14px; line-height: 1.7; margin-left: 2px;">
                   <div>ត្រូវបានឡើងថ្នាក់ទី ៖ <strong class="f-bold">${getNextGrade(cls)}</strong></div>
                   <div>ត្រូវប្រឡងឡើងថ្នាក់ ៖ ................. មុខវិជ្ជាដែលត្រូវប្រឡង ៖ .................</div>
                   <div>ត្រូវរៀនត្រួតថ្នាក់ ៖ ................. ត្រូវរៀនឡើងថ្នាក់ទី ៖ .................</div>
@@ -1719,18 +1730,20 @@
                   <div class="sig-inner">
                     <div>ថ្ងៃទី...... ខែ...... ឆ្នាំ២០២៦</div>
                     <div class="f-bold" style="margin-top: 2px;">គ្រូទទួលបន្ទុកថ្នាក់</div>
-                    <div style="font-weight: bold; margin-top: 30px; font-size: 14px;">${TEACHER_NAME || ''}</div>
+                    <div style="font-weight: bold; margin-top: 22px; font-size: 14px;">${TEACHER_NAME || ''}</div>
                   </div>
                 </div>
 
-                <div class="f-bold" style="margin-top: 18px; font-size: 14px;">ច. មូលវិចាររបស់នាយកសាលា</div>
-                <div style="border-bottom: 1.2px dotted var(--navy); min-height: 30px;"></div>
-                <div style="border-bottom: 1.2px dotted var(--navy); min-height: 30px;"></div>
+                <div class="f-bold" style="margin-top: 8px; font-size: 14px;">ច. មូលវិចាររបស់នាយកសាលា</div>
+                <div style="border-bottom: 1.2px dotted var(--navy); min-height: 22px;"></div>
+                <div style="border-bottom: 1.2px dotted var(--navy); min-height: 22px;"></div>
                 
-                <div class="sig-block" style="margin-top: 12px; font-size: 13.5px;">
-                  <div class="sig-inner">
+                <div class="sig-block" style="margin-top: 10px; font-size: 13.5px;">
+                  <div class="sig-inner principal">
                     <div>ថ្ងៃទី...... ខែ...... ឆ្នាំ២០២៦</div>
                     <div class="f-bold" style="margin-top: 2px;">នាយកសាលា</div>
+                    <div class="sign-space"></div>
+                    <div class="principal-name">${PRINCIPAL_NAME}</div>
                   </div>
                 </div>
               </div>
