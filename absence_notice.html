@@ -55,7 +55,7 @@
       font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
     }
 
-    /* ២. លើសន្លឹកកិច្ចការ (A4 Paper) ប្រើ FONT SIEMREAP (ដូចសន្លឹក PDF ដើម) */
+    /* ២. លើសន្លឹកលិខិត (A4 Paper) ប្រើ FONT SIEMREAP (ដូចសន្លឹក PDF ដើម) */
     .notice-paper, .doc-body-text, .doc-left-meta, .sign-col, .parent-response-box, .parent-sign-col {
       font-family: 'Khmer OS Siemreap', 'Siemreap', 'Khmer OS', sans-serif !important;
     }
@@ -132,35 +132,35 @@
 
     .notice-paper {
       width: 210mm; min-height: 297mm; background: #ffffff; color: #000000;
-      padding: 18mm 20mm 20mm; border-radius: 4px; box-shadow: 0 12px 45px rgba(0, 0, 0, 0.45);
-      position: relative; transform-origin: top left; font-size: 14.5px; line-height: 2.0;
+      padding: 18mm 22mm 20mm; border-radius: 4px; box-shadow: 0 12px 45px rgba(0, 0, 0, 0.45);
+      position: relative; transform-origin: top left; font-size: 14.5px; line-height: 2.1;
     }
     .notice-paper * { color: #000000; }
 
     /* 👑 Document Headers */
     .doc-national-header { text-align: center; margin-bottom: 2px; }
-    .doc-national-header h2 { font-size: 15px; margin-bottom: 2px; }
-    .doc-national-header h3 { font-size: 13.5px; margin-bottom: 2px; }
+    .doc-national-header h2 { font-size: 15.5px; margin-bottom: 2px; }
+    .doc-national-header h3 { font-size: 14px; margin-bottom: 2px; }
     .doc-divider { letter-spacing: 4px; font-size: 11px; margin-top: 1px; color: #64748b !important; }
 
     .doc-left-meta {
-      text-align: left; font-size: 13.5px; font-weight: 700; line-height: 1.6; margin-top: 2px; margin-bottom: 10px;
+      text-align: left; font-size: 13.5px; font-weight: 700; line-height: 1.6; margin-top: 2px; margin-bottom: 12px;
     }
 
-    .doc-title-box { text-align: center; margin: 8px 0 14px; }
+    .doc-title-box { text-align: center; margin: 8px 0 16px; }
     .doc-title-box h1 {
-      font-size: 18px; color: #dc2626 !important; letter-spacing: 0.5px;
+      font-size: 19px; color: #dc2626 !important; letter-spacing: 0.5px;
     }
 
-    /* 📝 Content Styling (Khmer OS Siemreap) */
+    /* 📝 Content Styling (Khmer OS Siemreap ត្រឹមត្រូវតាមលិខិតផ្លូវការ) */
     .doc-body-text {
-      text-align: justify; font-size: 14.5px; line-height: 2.0;
+      font-size: 14.5px; line-height: 2.15; text-align: left; text-align-last: left;
     }
     .sub-greeting {
-      font-size: 15.5px; color: #1e3a8a !important; margin: 10px 0 8px; text-align: center;
+      font-size: 15.5px; color: #1e3a8a !important; margin: 12px 0 10px; text-align: center;
     }
     .indent-p {
-      text-indent: 36px; margin-bottom: 8px;
+      text-indent: 40px; margin-bottom: 8px;
     }
 
     /* 🌟 ពណ៌ Highlight តាមគំរូរូបភាពដើម ១០០% */
@@ -168,22 +168,22 @@
     .val-purple { color: #7c3aed !important; font-weight: 700; }
     .val-red { color: #dc2626 !important; font-weight: 700; }
 
-    /* ការពារសញ្ញាខណ្ឌ « ។ » មិនឱ្យធ្លាក់ជួរតែឯង */
+    /* 🌟 ការពារសញ្ញាខណ្ឌ « ។ » មិនឱ្យធ្លាក់ជួរតែឯងដាច់ខាត */
     .nowrap-punct {
       white-space: nowrap !important;
-      display: inline-block;
+      display: inline !important;
     }
 
     /* ✍️ Signatures */
     .sign-row {
-      display: flex; justify-content: space-between; align-items: flex-start; margin-top: 18px; padding: 0 4px;
+      display: flex; justify-content: space-between; align-items: flex-start; margin-top: 20px; padding: 0 4px;
     }
     .sign-col { text-align: center; min-width: 240px; font-size: 13.5px; }
     .sign-col .sign-title { font-size: 14px; margin-top: 4px; }
-    .sign-col .sign-space { height: 55px; } /* ចន្លោះទំនេរស្អាតសម្រាប់ចុះហត្ថលេខាផ្ទាល់ដៃ */
+    .sign-col .sign-space { height: 55px; }
     .sign-col .sign-name { font-weight: normal; font-size: 14px; }
 
-    /* 🌟 មតិឆ្លើយតបរបស់អាណាព្យាបាល (Dotted Lines Section) */
+    /* 🌟 មតិឆ្លើយតបរបស់អាណាព្យាបាល */
     .parent-response-box {
       margin-top: 24px; border-top: 1.5px dashed #cbd5e1; padding-top: 14px;
     }
@@ -367,7 +367,7 @@
       </button>
     </div>
 
-    <!-- 📄 PRINTABLE NOTICE PAPER (រចនា Font & ពណ៌តាមគំរូ PDF ដើម ១០០%) -->
+    <!-- 📄 PRINTABLE NOTICE PAPER (រចនា Font & បន្ទាត់តាមគំរូ PDF ដើម ១០០%) -->
     <div class="report-paper-wrap">
       <div id="paperScaler">
         <div class="notice-paper" id="printableNoticePaper">
@@ -390,31 +390,36 @@
             <h1 class="f-moul">សេចក្តីជូនដំណឹង</h1>
           </div>
 
-          <!-- 📝 Body Paragraph 1 (Font Siemreap ពណ៌តាមគំរូដើម) -->
+          <!-- 📝 Body Paragraph (រៀបចំបន្ទាត់ស្អាត គ្មានចន្លោះប្រហោង គ្មានធ្លាក់សញ្ញា « ។ » តែឯង) -->
           <div class="doc-body-text">
+            
+            <!-- ជួរទី១ និងទី២ នៃកថាខណ្ឌទី១ -->
             <div class="indent-p">
               <span id="txtTeacherPronoun">ខ្ញុំបាទ</span>ឈ្មោះ <span class="val-blue" id="valTeacherName">សេង សុភាស់</span>
               ជាគ្រូប្រចាំ <span class="val-blue" id="valClass">ថ្នាក់ទី ៤(ក)</span>
-              នៃ <span class="val-blue">សាលាបឋមសិក្សា កំពង់ល្ពៅ</span>
+              នៃ <span class="val-blue">សាលាបឋមសិក្សា កំពង់ល្ពៅ</span><br>
               ឃុំ/សង្កាត់ <span class="val-blue" id="valCommune">កំពង់ល្ពៅ</span>
               ស្រុក/ខណ្ឌ <span class="val-blue" id="valDistrict">សំឡូត</span>
-              រាជធានី/ខេត្ត <span class="val-blue" id="valProvince">បាត់ដំបង</span> <span class="nowrap-punct">។</span>
+              រាជធានី/ខេត្ត <span class="val-blue" id="valProvince">បាត់ដំបង</span><span class="nowrap-punct">&nbsp;។</span>
             </div>
 
-            <!-- 🌟 សូមជម្រាបមក (Font Moul ពណ៌ខៀវ ដូចក្នុងរូបភាព PDF) -->
+            <!-- សូមជម្រាបមក (Font Moul ពណ៌ខៀវ ចំកណ្តាល) -->
             <div class="f-moul sub-greeting">សូមជម្រាបមក</div>
 
+            <!-- ជួរទាំង៣ នៃកថាខណ្ឌទី២ (មិនធ្លាក់ « ។ » ទៅជួរទី៤ ឡើយ) -->
             <div class="indent-p">
               លោក លោកស្រីដែលជាអាណាព្យាបាលរបស់សិស្សឈ្មោះ
-              <span class="val-purple" id="valStudentName">បូ សុវណ្ណបញ្ញា</span>
-              ជាសិស្ស <span class="val-blue" id="valStudentClass">ថ្នាក់ទី ៤(ក)</span>
+              <span class="val-purple" id="valStudentName">បូ សុវណ្ណបញ្ញា</span> ជាសិស្ស<br>
+              <span class="val-blue" id="valStudentClass">ថ្នាក់ទី ៤(ក)</span>
               បានជ្រាបថា៖ សិស្សមានឈ្មោះខាងលើនេះបានឈប់មិនឃើញមករៀនចំនួន
-              <span class="val-red" id="valAbsentDays">៣</span> ថ្ងៃមកហើយ
-              ដោយសាលាមិនបានដឹងមូលហេតុ <span class="nowrap-punct">។</span>
+              <span class="val-red" id="valAbsentDays">៣</span> ថ្ងៃមកហើយ<br>
+              ដោយសាលាមិនបានដឹង<span class="nowrap-punct">មូលហេតុ&nbsp;។</span>
             </div>
 
+            <!-- កថាខណ្ឌទី៣ -->
             <div class="indent-p">
-              អាស្រ័យហេតុនេះ សូមលោក លោកស្រីជ្រាបជាព័ត៌មាន និងមេត្តាផ្តល់ដំណឹងតាមរយៈសៀវភៅនេះដល់<span id="txtTeacherPronounEnd">ខ្ញុំបាទ</span> ដោយក្តីអនុគ្រោះ <span class="nowrap-punct">។</span>
+              អាស្រ័យហេតុនេះ សូមលោក លោកស្រីជ្រាបជាព័ត៌មាន និងមេត្តាផ្តល់ដំណឹងតាមរយៈសៀវភៅនេះដល់<span id="txtTeacherPronounEnd">ខ្ញុំបាទ</span><br>
+              ដោយក្តី<span class="nowrap-punct">អនុគ្រោះ&nbsp;។</span>
             </div>
           </div>
 
@@ -439,7 +444,7 @@
             </div>
           </div>
 
-          <!-- 🌟 Parent Feedback Response Section (Font Moul & Dotted Lines) -->
+          <!-- 🌟 Parent Feedback Response Section -->
           <div class="parent-response-box">
             <div class="f-moul parent-response-title">មតិឆ្លើយតបរបស់អាណាព្យាបាល</div>
             <div class="dotted-lines-group">
@@ -642,10 +647,10 @@
 
       closeAllDropdowns();
 
-      // 🌟 ទាញយកឈ្មោះគ្រូ ភេទគ្រូ និងលេខទូរស័ព្ទពី Table users
+      // ទាញយកឈ្មោះគ្រូ ភេទគ្រូ និងលេខទូរស័ព្ទពី Table users
       await syncTeacherInfoFromDatabase(rawClass);
 
-      // 🌟 ពិនិត្យចាប់សិស្សដែលអវត្តមាន ៣ ថ្ងៃជាប់គ្នាក្នុងថ្នាក់នេះ
+      // ពិនិត្យចាប់សិស្សដែលអវត្តមាន ៣ ថ្ងៃជាប់គ្នាក្នុងថ្នាក់នេះ
       await load3ConsecutiveAbsentStudents();
     }
 
@@ -690,7 +695,7 @@
     }
 
     /* =========================================================
-       4. 🌟 LOGIC ចាប់សិស្សអវត្តមាន ៣ ថ្ងៃជាប់គ្នាពី ATTENDANCE
+       4. LOGIC ចាប់សិស្សអវត្តមាន ៣ ថ្ងៃជាប់គ្នាពី ATTENDANCE
     ========================================================= */
     async function load3ConsecutiveAbsentStudents() {
       const studentBtnText = document.getElementById('txtStudentSelect');
@@ -962,6 +967,7 @@
       window.print();
     }
 
+    /* 7. INITIALIZATION */
     window.addEventListener('DOMContentLoaded', async () => {
       const isAuth = await checkAuthentication();
       if (!isAuth) return;
