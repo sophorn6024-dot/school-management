@@ -443,9 +443,19 @@
     /* =========================================================
        📱 RESPONSIVE ADJUSTMENTS
     ========================================================= */
-    @media screen and (max-width: 1100px) {
+    /* ទំហំកណ្តាល ៖ បង្រួមឱ្យនៅជួរតែមួយ (លាក់អក្សរ label រក្សាតែរូបតំណាង) */
+    @media screen and (max-width: 1320px) {
+      .no-print-bar { padding: 6px 10px; gap: 6px; }
+      .toolbar-label .lbl { display: none; }
+      .sp-btn { min-width: 120px; max-width: 170px; }
+      .mp-btn { min-width: 72px; }
+      .dt-btn { min-width: 100px; }
+      .btn { padding: 4px 9px; }
+    }
+    @media screen and (max-width: 860px) {
       .tb-filters { flex: 1 1 100%; }
       .tb-actions { flex: 1 1 100%; justify-content: flex-end; margin-left: 0; }
+      .toolbar-label .lbl { display: inline; }
     }
     @media screen and (max-width: 720px) {
       body { padding-bottom: 40px; }
