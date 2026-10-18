@@ -37,7 +37,7 @@
       font-family: 'Battambang', 'Khmer OS Battambang', sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
-      padding-bottom: 40px;
+      padding-bottom: 50px;
     }
 
     /* ══════════════ 🔤 DROPDOWN & UI ប្រើ FONT BATTAMBANG ១០០% ══════════════ */
@@ -50,11 +50,11 @@
     .font-moul { font-family: 'Khmer OS Muol Light', 'Moul', cursive !important; }
     .font-siemreap { font-family: 'Khmer OS Siemreap', 'Siemreap', sans-serif !important; }
 
-    /* ══════════════ 🛠️ TOP TOOLBAR ══════════════ */
+    /* ══════════════ 🛠️ TOP TOOLBAR (កែសម្រួលមិនឱ្យ CLIPPED DROPDOWN) ══════════════ */
     .top-toolbar {
       position: sticky;
       top: 0;
-      z-index: 1000;
+      z-index: 2000;
       background: rgba(15, 23, 42, 0.96);
       backdrop-filter: blur(14px);
       border-bottom: 1.5px solid var(--border);
@@ -63,16 +63,22 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      overflow-x: auto;
-      white-space: nowrap;
+      /* 🌟 ដក overflow-x: auto ចេញ ដើម្បីកុំឱ្យកាត់ផ្ទាំង Dropdown */
+      overflow: visible !important;
+      flex-wrap: wrap;
     }
-    .tb-group { display: inline-flex; align-items: center; gap: 7px; flex-shrink: 0; }
+    .tb-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
     
     .tb-btn {
-      height: 36px; padding: 0 12px; border-radius: 9px;
+      height: 38px; padding: 0 13px; border-radius: 10px;
       border: 1px solid rgba(255, 255, 255, 0.15);
       background: #1e293b; color: #f8fafc; font-size: 13px; font-weight: 700;
-      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
       transition: all .15s ease; white-space: nowrap; user-select: none;
     }
     .tb-btn:hover { background: #334155; border-color: rgba(255, 255, 255, 0.3); }
@@ -81,15 +87,30 @@
     .tb-btn.success { background: #059669; border-color: transparent; }
     .tb-btn.success:hover { background: #047857; }
 
-    /* 🌟 CUSTOM DROPDOWN (FONT BATTAMBANG ១០០%) */
-    .dd-wrap { position: relative; display: inline-block; }
-    .dd-popup {
-      display: none; position: absolute; top: calc(100% + 6px); left: 0;
-      min-width: 210px; max-height: 320px; overflow-y: auto;
-      background: #ffffff; border-radius: 14px; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5);
-      border: 1.5px solid #e2e8f0; padding: 6px; z-index: 2500;
+    /* 🌟 CUSTOM DROPDOWN (លាតត្រដាងពេញ មិនកំបុត ជាមួយ Z-INDEX ខ្ពស់) */
+    .dd-wrap {
+      position: relative;
+      display: inline-block;
     }
-    .dd-popup.show { display: block; animation: ddIn .15s ease-out; }
+    .dd-popup {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      min-width: 210px;
+      max-height: 360px;
+      overflow-y: auto;
+      background: #ffffff;
+      border-radius: 14px;
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65);
+      border: 1.5px solid #cbd5e1;
+      padding: 6px;
+      z-index: 99999 !important; /* 🌟 បង្ហាញពីលើធាតុទាំងអស់ */
+    }
+    .dd-popup.show {
+      display: block;
+      animation: ddIn .15s ease-out;
+    }
     @keyframes ddIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
     .dd-item {
@@ -105,7 +126,6 @@
       width: 100%; display: flex; justify-content: center; padding: 15px 0; overflow-x: hidden;
     }
     
-    /* 🌟 Auto-fit Scaler បង្រួមតាមអេក្រង់ Tablet កុំឱ្យធ្លាយគែមស្តាំ */
     #paperScaler {
       width: 794px; min-width: 794px; height: 1123px;
       position: relative; margin: 0 auto; transform-origin: top center;
@@ -157,7 +177,6 @@
     }
     .podium-row-1 { display: flex; justify-content: center; width: 100%; }
     
-    /* 🌟 ញ៉ែកជួរទី២ និងទី៣ ឱ្យធំទូលាយពេញទទឹងក្រដាស */
     .podium-row-2, .podium-row-3 {
       display: flex; justify-content: center; gap: 45px; width: 100%;
     }
@@ -176,13 +195,13 @@
     .r-color-4 { color: #b91c1c; } /* លេខ៤ ក្រហម */
     .r-color-5 { color: #7e22ce; } /* លេខ៥ ស្វាយ */
 
-    /* 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស) - រូបថតធំៗ ញ៉ែកស្អាត */
+    /* 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស) */
     .orig-photo-box {
       border: 3.5px solid #d97706; border-radius: 12px; overflow: hidden;
       box-shadow: 0 5px 14px rgba(0, 0, 0, 0.18); background: #f8fafc;
     }
 
-    /* ✍️ FOOTER DATES & SIGNATURES (លើកឡើងលើមិនកៀកបាតក្រោមពេក) */
+    /* ✍️ FOOTER DATES & SIGNATURES */
     .footer-row {
       display: flex; justify-content: space-between; align-items: flex-end;
       margin-bottom: 12px; padding: 0 35px; font-size: 13.5px;
@@ -272,7 +291,7 @@
   <!-- 🌟 MAIN CONTENT -->
   <div id="mainPageContent" style="display:none;">
 
-    <!-- 🛠️ TOP TOOLBAR (DROPDOWN ទាំងអស់ប្រើ FONT BATTAMBANG) -->
+    <!-- 🛠️ TOP TOOLBAR -->
     <div class="top-toolbar">
       <div class="tb-group">
         <button type="button" class="tb-btn" onclick="goBack()">
@@ -289,7 +308,7 @@
           <div class="dd-popup" id="ddClassList"></div>
         </div>
 
-        <!-- ⏱️ រយៈពេល -->
+        <!-- ⏱️ រយៈពេល (Custom Dropdown) -->
         <div class="dd-wrap">
           <button type="button" class="tb-btn" onclick="toggleDropdown('ddPeriodList')">
             <span id="txtPeriodSelect">ប្រចាំឆ្នាំ</span>
@@ -607,13 +626,12 @@
       const wrapper = document.querySelector('.paper-wrapper');
       if (!scaler || !wrapper) return;
 
-      // គណនាទំហំទទឹងដែលនៅសល់ក្នុង Iframe (ដក sidebar ចេញ)
-      const availW = wrapper.clientWidth - 24;
+      const availW = wrapper.clientWidth - 20;
       const targetW = 794;
       let scale = availW / targetW;
 
       if (scale > 1) scale = 1;
-      if (scale < 0.45) scale = 0.45;
+      if (scale < 0.4) scale = 0.4;
 
       scaler.style.transform = `scale(${scale})`;
       scaler.style.width = `${targetW * scale}px`;
@@ -834,7 +852,7 @@
       fitPaper();
     }
 
-    /* ══════════════ 🛠️ CUSTOM DROPDOWN ENGINE (FONT BATTAMBANG) ══════════════ */
+    /* ══════════════ 🛠️ CUSTOM DROPDOWN ENGINE ══════════════ */
     function toggleDropdown(id) {
       const p = document.getElementById(id);
       const isShow = p.classList.contains('show');
