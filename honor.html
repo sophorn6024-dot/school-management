@@ -8,10 +8,10 @@
 
   <title>តារាងកិត្តិយស - សាលាបឋមសិក្សាកំពង់ល្ពៅ</title>
 
-  <!-- 🔤 Google Fonts Khmer & FontAwesome 6.5.1 -->
+  <!-- 🔤 Google Fonts Khmer (Battambang, Moul, Siemreap) & FontAwesome 6.5.1 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;800;900&family=Moul&family=Siemreap&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700;900&family=Moul&family=Siemreap&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <!-- ⚡ Supabase JS & html2pdf -->
@@ -42,29 +42,23 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Khmer OS Battambang', 'Battambang', sans-serif;
+      font-family: 'Battambang', 'Khmer OS Battambang', sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
       padding-bottom: 50px;
     }
 
-    /* ══════════════ 🔤 DROPDOWN ទាំងអស់ប្រើ FONT BATTAMBANG ១០០% ══════════════ */
-    select,
-    option,
-    optgroup,
-    .tb-select,
-    .tb-btn,
-    .cal-popup select,
-    .cal-popup option {
-      font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
-      font-size: 13px !important;
-      font-weight: 700 !important;
+    /* ══════════════ 🔤 DROPDOWN & TOOLBAR ប្រើ FONT BATTAMBANG ១០០% ══════════════ */
+    .top-toolbar, .top-toolbar *,
+    .tb-btn, .dd-wrap, .dd-popup, .dd-item,
+    .cal-popup, .cal-popup * {
+      font-family: 'Battambang', 'Khmer OS Battambang', sans-serif !important;
     }
 
     .font-moul { font-family: 'Khmer OS Muol Light', 'Moul', cursive !important; }
     .font-siemreap { font-family: 'Khmer OS Siemreap', 'Siemreap', sans-serif !important; }
 
-    /* ══════════════ 🛠️ TOP TOOLBAR ══════════════ */
+    /* ══════════════ 🛠️ CUSTOM TOP TOOLBAR ══════════════ */
     .top-toolbar {
       position: sticky;
       top: 0;
@@ -80,13 +74,13 @@
       overflow-x: auto;
       white-space: nowrap;
     }
-    .tb-group { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .tb-group { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; }
     
     .tb-btn {
-      height: 36px; padding: 0 12px; border-radius: 9px;
+      height: 38px; padding: 0 13px; border-radius: 10px;
       border: 1px solid rgba(255, 255, 255, 0.15);
-      background: #1e293b; color: #f8fafc; font-size: 12.5px; font-weight: 700;
-      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      background: #1e293b; color: #f8fafc; font-size: 13px; font-weight: 700;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
       transition: all .15s ease; white-space: nowrap; user-select: none;
     }
     .tb-btn:hover { background: #334155; border-color: rgba(255, 255, 255, 0.3); }
@@ -95,11 +89,24 @@
     .tb-btn.success { background: #059669; border-color: transparent; }
     .tb-btn.success:hover { background: #047857; }
 
-    .tb-select {
-      height: 36px; padding: 0 10px; border-radius: 9px;
-      background: #1e293b; color: #f8fafc; border: 1px solid rgba(255, 255, 255, 0.15);
-      outline: none; cursor: pointer;
+    /* 🌟 CUSTOM HTML DROPDOWN (ធានា Font Battambang ១០០% លើទូរស័ព្ទ និង Tablet) */
+    .dd-wrap { position: relative; display: inline-block; }
+    .dd-popup {
+      display: none; position: absolute; top: calc(100% + 6px); left: 0;
+      min-width: 200px; max-height: 320px; overflow-y: auto;
+      background: #ffffff; border-radius: 14px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+      border: 1px solid #e2e8f0; padding: 6px; z-index: 1200;
     }
+    .dd-popup.show { display: block; animation: ddIn .15s ease-out; }
+    @keyframes ddIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .dd-item {
+      padding: 10px 14px; border-radius: 10px; font-size: 13.5px; font-weight: 700;
+      color: #0f172a; cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; transition: all .12s; white-space: nowrap;
+    }
+    .dd-item:hover { background: #f1f5f9; }
+    .dd-item.active { background: #e0f2fe; color: #0284c7; }
 
     /* ══════════════ 📄 A4 HONOR CARD CONTAINER (២១០មម x ២៩៧មម) ══════════════ */
     .paper-wrapper {
@@ -114,20 +121,20 @@
       width: 210mm; height: 297mm; min-height: 297mm; max-height: 297mm;
       background: #ffffff; color: #000000; position: relative;
       box-shadow: 0 15px 45px rgba(0,0,0,0.4);
-      /* 🌟 លើកគូទក្រោមឡើងលើ ដោយកំណត់ padding-bottom: 16mm */
-      padding: 9mm 12mm 16mm 12mm;
+      /* 🌟 លើកគូទក្រោមឡើងលើ ដោយកំណត់ padding-bottom: 15mm */
+      padding: 8mm 12mm 15mm 12mm;
       display: flex; flex-direction: column; justify-content: space-between;
       overflow: hidden; box-sizing: border-box;
     }
 
-    /* 🌸 ស៊ុមផ្កាភ្ញីជុំវិញសន្លឹក (Vector SVG មិនធ្លាយទំព័រ) */
+    /* 🌸 ស៊ុមផ្កាភ្ញីជុំវិញសន្លឹក (Vector SVG ច្បាស់ម៉ត់ មិនធ្លាយទំព័រ) */
     .floral-frame-svg {
       position: absolute; inset: 5mm; width: calc(100% - 10mm); height: calc(100% - 10mm);
       pointer-events: none; z-index: 20;
     }
 
     /* 👑 Document Header */
-    .header-box { text-align: center; margin-top: 2mm; }
+    .header-box { text-align: center; margin-top: 1mm; }
     .header-box h2 { font-size: 15.5px; margin-bottom: 2px; }
     .header-box h3 { font-size: 14px; margin-bottom: 2px; }
     .header-divider { letter-spacing: 4px; font-size: 10px; color: #64748b; }
@@ -137,43 +144,43 @@
       font-size: 13px; line-height: 1.6; font-weight: bold;
     }
 
-    .main-title-box { text-align: center; margin-top: 5mm; margin-bottom: 2mm; }
+    .main-title-box { text-align: center; margin-top: 4mm; margin-bottom: 2mm; }
     .main-title-text {
-      font-size: 40px; color: #f59e0b;
+      font-size: 42px; color: #f59e0b;
       text-shadow: 2.5px 2.5px 0 #581c87, -2.5px -2.5px 0 #581c87, 2.5px -2.5px 0 #581c87, -2.5px 2.5px 0 #581c87, 0 3px 8px rgba(0,0,0,0.3);
       letter-spacing: 1.5px; display: inline-block;
     }
     .period-title {
-      font-size: 16px; margin-top: 2px; font-weight: bold;
+      font-size: 16.5px; margin-top: 2px; font-weight: bold;
       background: linear-gradient(135deg, #1d4ed8, #b91c1c);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    /* ══════════════ 🏆 PODIUM RANKS (ញ៉ែកឆ្វេង-ស្តាំធំទូលាយ) ══════════════ */
+    /* ══════════════ 🏆 PODIUM RANKS (ធំៗ ញ៉ែកពេញក្រដាស) ══════════════ */
     .podium-container {
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: space-evenly;
       margin: 2mm 0; position: relative; z-index: 10;
     }
     .podium-row-1 { display: flex; justify-content: center; width: 100%; }
     
-    /* 🌟 ញ៉ែកជួរទី២ និងជួរទី៣ ឱ្យធំទូលាយឆ្វេង-ស្តាំស្មើដៃ */
+    /* 🌟 ញ៉ែកជួរទី២ និងទី៣ ឱ្យធំទូលាយពេញទទឹងក្រដាស A4 */
     .podium-row-2, .podium-row-3 {
-      display: flex; justify-content: center; gap: 125px; width: 100%;
+      display: flex; justify-content: center; gap: 40px; width: 100%;
     }
 
     .rank-card-slot {
       position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
 
-    /* 🌟 ពណ៌ឈ្មោះសិស្ស */
+    /* 🌟 អក្សរឈ្មោះសិស្សធំៗដិតច្បាស់ */
     .student-name-text {
       font-weight: normal; text-align: center; white-space: nowrap; user-select: none;
     }
-    .r-color-1 { color: #b91c1c; }
-    .r-color-2 { color: #1d4ed8; }
-    .r-color-3 { color: #15803d; }
-    .r-color-4 { color: #b91c1c; }
-    .r-color-5 { color: #7e22ce; }
+    .r-color-1 { color: #b91c1c; } /* លេខ១ ក្រហម */
+    .r-color-2 { color: #1d4ed8; } /* លេខ២ ខៀវ */
+    .r-color-3 { color: #15803d; } /* លេខ៣ បៃតង */
+    .r-color-4 { color: #b91c1c; } /* លេខ៤ ក្រហម */
+    .r-color-5 { color: #7e22ce; } /* លេខ៥ ស្វាយ */
 
     /* 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស) - រូបថតធំៗ ញ៉ែកស្អាត */
     .orig-photo-box {
@@ -181,10 +188,10 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); background: #f8fafc;
     }
 
-    /* ✍️ FOOTER DATES & SIGNATURES (លើកឡើងលើ មិនកៀកបាតក្រោម) */
+    /* ✍️ FOOTER DATES & SIGNATURES (លើកឡើងលើមិនកៀកបាតក្រោមពេក) */
     .footer-row {
       display: flex; justify-content: space-between; align-items: flex-end;
-      margin-bottom: 6mm; padding: 0 14mm; font-size: 13px;
+      margin-bottom: 5mm; padding: 0 14mm; font-size: 13px;
     }
     .footer-col { text-align: center; min-width: 240px; }
     .footer-col .sign-title { font-size: 13.5px; margin-top: 3px; }
@@ -252,7 +259,7 @@
         height: 297mm !important;
         min-height: 297mm !important;
         max-height: 297mm !important;
-        padding: 9mm 12mm 16mm 12mm !important;
+        padding: 8mm 12mm 15mm 12mm !important;
         box-shadow: none !important;
         border-radius: 0 !important;
         page-break-before: avoid !important;
@@ -280,7 +287,7 @@
   <!-- 🌟 MAIN CONTENT -->
   <div id="mainPageContent" style="display:none;">
 
-    <!-- 🛠️ TOP TOOLBAR -->
+    <!-- 🛠️ TOP TOOLBAR (DROPDOWN ទាំងអស់ប្រើ FONT BATTAMBANG ១០០%) -->
     <div class="top-toolbar">
       <div class="tb-group">
         <button type="button" class="tb-btn" onclick="goBack()">
@@ -288,39 +295,62 @@
         </button>
 
         <!-- 🏫 ថ្នាក់ទី (បង្ហាញសម្រាប់តែ ADMIN ប៉ុណ្ណោះ តាមការណែនាំ) -->
-        <div id="adminClassBox" style="display:none; align-items:center; gap:5px;">
-          <span style="font-size:12.5px; color:#94a3b8; font-weight:bold;"><i class="fa-solid fa-school" style="color:#38bdf8;"></i> ថ្នាក់៖</span>
-          <select id="selClass" class="tb-select" onchange="loadHonorRoll()"></select>
+        <div class="dd-wrap" id="adminClassBox" style="display:none;">
+          <button type="button" class="tb-btn" onclick="toggleDropdown('ddClassList')">
+            <i class="fa-solid fa-school" style="color:#38bdf8;"></i>
+            <span id="txtClassSelect">ថ្នាក់ទី ៤(ក)</span>
+            <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
+          </button>
+          <div class="dd-popup" id="ddClassList"></div>
         </div>
 
-        <!-- ⏱️ រយៈពេល -->
-        <select id="selPeriodType" class="tb-select" onchange="changePeriodType()">
-          <option value="monthly">ប្រចាំខែ</option>
-          <option value="exam_semester">ការប្រឡងឆមាស</option>
-          <option value="semester_total">ប្រចាំឆមាស (សរុប)</option>
-          <option value="yearly" selected>ប្រចាំឆ្នាំ</option>
-        </select>
+        <!-- ⏱️ រយៈពេល (Custom Dropdown Font Battambang) -->
+        <div class="dd-wrap">
+          <button type="button" class="tb-btn" onclick="toggleDropdown('ddPeriodList')">
+            <span id="txtPeriodSelect">ប្រចាំឆ្នាំ</span>
+            <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
+          </button>
+          <div class="dd-popup" id="ddPeriodList">
+            <div class="dd-item" data-val="monthly" onclick="selectPeriodType('monthly', 'ប្រចាំខែ')">ប្រចាំខែ</div>
+            <div class="dd-item" data-val="exam_semester" onclick="selectPeriodType('exam_semester', 'ការប្រឡងឆមាស')">ការប្រឡងឆមាស</div>
+            <div class="dd-item" data-val="semester_total" onclick="selectPeriodType('semester_total', 'ប្រចាំឆមាស (សរុប)')">ប្រចាំឆមាស (សរុប)</div>
+            <div class="dd-item active" data-val="yearly" onclick="selectPeriodType('yearly', 'ប្រចាំឆ្នាំ')">ប្រចាំឆ្នាំ</div>
+          </div>
+        </div>
 
-        <span id="periodChildContainer"></span>
+        <!-- Dropdown កូន (សម្រាប់ខែ ឬឆមាស) -->
+        <div class="dd-wrap" id="childPeriodWrap" style="display:none;">
+          <button type="button" class="tb-btn" onclick="toggleDropdown('ddChildPeriodList')">
+            <span id="txtChildPeriodSelect">តុលា</span>
+            <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
+          </button>
+          <div class="dd-popup" id="ddChildPeriodList"></div>
+        </div>
 
-        <!-- 🎨 ទម្រង់ដើម + គំរូទាំង ៦ -->
-        <span style="font-size:12.5px; color:#94a3b8; font-weight:bold; margin-left:4px;"><i class="fa-solid fa-palette" style="color:#c084fc;"></i> ទម្រង់៖</span>
-        <select id="selTemplate" class="tb-select" onchange="renderActiveTemplate()">
-          <option value="original" selected>គំរូ ៖ ទម្រង់ដើម (មានរូបថត)</option>
-          <option value="banner">គំរូ ៖ បដាកណ្ដាល</option>
-          <option value="bee">គំរូ ៖ ឃ្មុំ</option>
-          <option value="arrow">គំរូ ៖ ព្រួញបៃតង</option>
-          <option value="window">គំរូ ៖ បង្អួច</option>
-          <option value="cat">គំរូ ៖ ឆ្មា</option>
-          <option value="kbach">គំរូ ៖ ឆ្លាក់មាស</option>
-        </select>
+        <!-- 🎨 ទម្រង់ទាំង ៦ + ទម្រង់ដើម (Custom Dropdown Font Battambang) -->
+        <div class="dd-wrap">
+          <button type="button" class="tb-btn" onclick="toggleDropdown('ddTemplateList')">
+            <i class="fa-solid fa-palette" style="color:#c084fc;"></i>
+            <span id="txtTemplateSelect">គំរូ ៖ ព្រួញបៃតង</span>
+            <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
+          </button>
+          <div class="dd-popup" id="ddTemplateList">
+            <div class="dd-item" onclick="selectTemplate('original', 'គំរូ ៖ ទម្រង់ដើម (មានរូបថត)')">គំរូ ៖ ទម្រង់ដើម (មានរូបថត)</div>
+            <div class="dd-item" onclick="selectTemplate('banner', 'គំរូ ៖ បដាកណ្ដាល')">គំរូ ៖ បដាកណ្ដាល</div>
+            <div class="dd-item" onclick="selectTemplate('bee', 'គំរូ ៖ ឃ្មុំ')">គំរូ ៖ ឃ្មុំ</div>
+            <div class="dd-item active" onclick="selectTemplate('arrow', 'គំរូ ៖ ព្រួញបៃតង')">គំរូ ៖ ព្រួញបៃតង</div>
+            <div class="dd-item" onclick="selectTemplate('window', 'គំរូ ៖ បង្អួច')">គំរូ ៖ បង្អួច</div>
+            <div class="dd-item" onclick="selectTemplate('cat', 'គំរូ ៖ ឆ្មា')">គំរូ ៖ ឆ្មា</div>
+            <div class="dd-item" onclick="selectTemplate('kbach', 'គំរូ ៖ ឆ្លាក់មាស')">គំរូ ៖ ឆ្លាក់មាស</div>
+          </div>
+        </div>
       </div>
 
       <div class="tb-group">
         <!-- 📅 ប្រតិទិនខ្មែរ -->
         <button type="button" class="tb-btn" onclick="openKhmerCalendar()">
           <i class="fa-regular fa-calendar-days" style="color:#60a5fa;"></i>
-          <span id="lblBtnDate">ជ្រើសកាលបរិច្ឆេទ</span>
+          <span id="lblBtnDate">ថ្ងៃទី១៨ តុលា</span>
         </button>
 
         <!-- 📥 ទាញយក PDF & បោះពុម្ព -->
@@ -338,7 +368,7 @@
       <div id="paperScaler">
         <div class="honor-paper" id="honorPaper">
           
-          <!-- 🌸 ស៊ុមផ្កាភ្ញីជុំវិញសន្លឹក Vector ច្បាស់ម៉ត់ -->
+          <!-- 🌸 ស៊ុមផ្កាភ្ញីជុំវិញសន្លឹក Vector ច្បាស់ម៉ត់ មិនធ្លាយទំព័រ -->
           <svg class="floral-frame-svg" viewBox="0 0 760 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect x="5" y="5" width="750" height="1070" rx="4" stroke="#b91c1c" stroke-width="4"/>
             <rect x="11" y="11" width="738" height="1058" rx="3" stroke="#15803d" stroke-width="3"/>
@@ -367,12 +397,12 @@
             </div>
           </div>
 
-          <!-- 🏆 កន្លែងបង្ហាញចំណាត់ថ្នាក់ទាំង ៥ (ញ៉ែកធំទូលាយឆ្វេង-ស្តាំ) -->
+          <!-- 🏆 កន្លែងបង្ហាញចំណាត់ថ្នាក់ទាំង ៥ (ធំៗ ញ៉ែកពេញក្រដាស A4) -->
           <div class="podium-container" id="podiumArea">
             <!-- Render ដោយ JavaScript -->
           </div>
 
-          <!-- ✍️ ហត្ថលេខា និងកាលបរិច្ឆេទចន្ទគតិ-សូរិយគតិ (លើកឡើងលើមិនកៀកបាតក្រោម) -->
+          <!-- ✍️ ហត្ថលេខា និងកាលបរិច្ឆេទចន្ទគតិ-សូរិយគតិ (លើកឡើងលើមិនកៀកបាតក្រោមពេក) -->
           <div class="footer-row font-siemreap">
             <div class="footer-col" style="margin-top: 15px;">
               <div class="font-moul sign-title">បានឃើញនិងឯកភាព</div>
@@ -415,7 +445,7 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ ម៉ាស៊ីនគណនាចន្ទគតិ MOMENTKH (ពេញលេញ ១០០% តាមតម្រាខ្មែរដូនតា)
+       ⚡ MOMENTKH KHMER CALENDAR ENGINE
   ══════════════════════════════════════════════════════════════════════════ -->
   <script>
     (function (root, factory) {
@@ -431,7 +461,6 @@
       var WeekdayNames = ['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
       var MoonPhaseNames = ['កើត','រោច'];
 
-      function isGregorianLeap(y) { return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0); }
       function gregorianToJulianDay(year, month, day) {
         var a = Math.floor((14 - month) / 12);
         var y = year + 4800 - a;
@@ -453,7 +482,6 @@
         var av = getAvoman(be);
         if (av === 0 && getAvoman(be - 1) === 137) return true;
         if (isKhmerSolarLeap(be)) return av < 127;
-        if (av === 137 && getAvoman(be + 1) === 0) return false;
         return av < 138;
       }
       function isKhmerLeapMonth(be) {
@@ -464,20 +492,12 @@
       function getLeapType(be) {
         if (isKhmerLeapMonth(be)) return 1;
         if (isKhmerLeapDay(be)) return 2;
-        if (isKhmerLeapMonth(be - 1)) {
-          var p = be - 1;
-          while (true) {
-            if (isKhmerLeapDay(p)) return 2;
-            p -= 1;
-            if (!isKhmerLeapMonth(p)) return 0;
-          }
-        }
         return 0;
       }
       function getNumberOfDaysInKhmerMonth(mi, be) {
         var lt = getLeapType(be);
-        if (mi === 6 && lt === 2) return 30; // ជេស្ឋ
-        if (mi === 12 || mi === 13) return lt === 1 ? 30 : 0; // បឋមាសាឍ, ទុតិយាសាឍ
+        if (mi === 6 && lt === 2) return 30;
+        if (mi === 12 || mi === 13) return lt === 1 ? 30 : 0;
         return mi % 2 === 0 ? 29 : 30;
       }
       function getNumberOfDaysInKhmerYear(be) {
@@ -496,7 +516,7 @@
       function fromGregorian(year, month, day) {
         var epochJdn = gregorianToJulianDay(1900, 1, 1);
         var targetJdn = gregorianToJulianDay(year, month, day);
-        var khmerMonth = 1; // បុស្ស
+        var khMonth = 1;
         var diffDays = targetJdn - epochJdn;
 
         if (diffDays > 0) {
@@ -513,19 +533,19 @@
         while (diffDays > 0) {
           var eg2 = julianDayToGregorian(epochJdn);
           var cBE = (eg2.month <= 4 ? eg2.year : eg2.year + 1) + 543;
-          var dm = getNumberOfDaysInKhmerMonth(khmerMonth, cBE);
+          var dm = getNumberOfDaysInKhmerMonth(khMonth, cBE);
           if (diffDays > dm) {
             diffDays -= dm;
             epochJdn += dm;
-            khmerMonth = nextMonthOf(khmerMonth, cBE);
+            khMonth = nextMonthOf(khMonth, cBE);
           } else break;
         }
 
         var finalBE = (month <= 4 ? year + 543 : year + 544);
-        var totalDim = getNumberOfDaysInKhmerMonth(khmerMonth, finalBE);
+        var totalDim = getNumberOfDaysInKhmerMonth(khMonth, finalBE);
         if (diffDays >= totalDim) {
           diffDays %= totalDim;
-          khmerMonth = nextMonthOf(khmerMonth, finalBE);
+          khMonth = nextMonthOf(khMonth, finalBE);
         }
 
         var dayInPhase = diffDays < 15 ? diffDays + 1 : (diffDays - 15) + 1;
@@ -541,7 +561,7 @@
             day: dayInPhase,
             moonPhase: moonPhase,
             moonPhaseName: MoonPhaseNames[moonPhase],
-            monthName: LunarMonthNames[khmerMonth],
+            monthName: LunarMonthNames[khMonth],
             beYear: finalBE,
             animalYearName: AnimalYearNames[animalIndex],
             sakName: SakNames[sakIndex],
@@ -555,7 +575,7 @@
   </script>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ MAIN CONTROLLER & TEMPLATES ENGINE
+       ⚡ MAIN CONTROLLER & 6 VECTOR TEMPLATES (ធំៗ ស្រស់ស្អាត)
   ══════════════════════════════════════════════════════════════════════════ -->
   <script>
     const SUPABASE_URL = "https://nggnuobnrxiqjtcwlvwk.supabase.co";
@@ -584,15 +604,19 @@
     );
 
     let currentSelectedClass = cleanGrade(USER_CLASS) || '៤(ក)';
+    let currentSelectedTemplate = 'arrow'; // លំនាំដើម គំរូព្រួញបៃតង
+    let currentPeriodType = 'yearly';
+    let currentPeriodChild = 'តុលា';
+
     let currentTop5Students = [
-      { name: "កូ កូ", imageUrl: "" },
+      { name: "សេសៈ សេសៈ", imageUrl: "" },
+      { name: "នា នា", imageUrl: "" },
       { name: "មាន់ មាន់", imageUrl: "" },
-      { name: "គក គក", imageUrl: "" },
-      { name: "ទា ទា", imageUrl: "" },
-      { name: "សេះ សេះ", imageUrl: "" }
+      { name: "កូ កូ", imageUrl: "" },
+      { name: "កេះ លីណា", imageUrl: "" }
     ];
 
-    /* ══════════════ 🎨 RENDER 6 TEMPLATES + ORIGINAL PHOTO MODE ══════════════ */
+    /* ══════════════ 🎨 RENDER 6 VECTOR TEMPLATES (ធំៗ សមសួនពេញក្រដាស) ══════════════ */
     function getCardSvg(template, rank, student) {
       const khRank = toKh(rank);
       const name = student?.name || '...';
@@ -600,10 +624,10 @@
       const nameColorClass = `r-color-${rank}`;
       const isTop1 = (rank === 1);
 
-      // 0. 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស - រូបថតធំៗ ញ៉ែកឆ្វេងស្តាំស្មើដៃពេញក្រដាស)
+      // 0. 🖼️ ទម្រង់ដើម (មានរូបថតសិស្ស - ធំៗ ញ៉ែកឆ្វេងស្តាំស្មើដៃ)
       if (template === 'original') {
-        const w = isTop1 ? 155 : 138;
-        const h = isTop1 ? 185 : 168;
+        const w = isTop1 ? 160 : 142;
+        const h = isTop1 ? 190 : 172;
         const badgeBg = rank === 1 ? '#f59e0b' : (rank === 2 ? '#64748b' : (rank === 3 ? '#b45309' : '#e11d48'));
 
         return `
@@ -612,12 +636,12 @@
               <div class="orig-photo-box" style="width:${w}px; height:${h}px;">
                 <img src="${img}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src=PLACEHOLDER_IMG">
               </div>
-              <span style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:${badgeBg}; color:#fff; font-weight:bold; width:30px; height:30px; border-radius:50%; font-size:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.25); border:2px solid #fff; z-index:10;">
+              <span style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:${badgeBg}; color:#fff; font-weight:bold; width:32px; height:32px; border-radius:50%; font-size:14.5px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.25); border:2px solid #fff; z-index:10;">
                 ${khRank}
               </span>
             </div>
             <div style="margin-top:6px; display:flex; justify-content:center;">
-              <span class="font-moul ${nameColorClass}" style="white-space:nowrap; background:#fff; border:1.5px solid #fbbf24; padding:5px 18px; border-radius:8px; font-size:${isTop1 ? '17px' : '15.5px'}; box-shadow:0 2px 6px rgba(0,0,0,0.06);">
+              <span class="font-moul ${nameColorClass}" style="white-space:nowrap; background:#fff; border:1.5px solid #fbbf24; padding:5px 18px; border-radius:8px; font-size:${isTop1 ? '18px' : '16px'}; box-shadow:0 2px 6px rgba(0,0,0,0.06);">
                 ${name}
               </span>
             </div>
@@ -625,34 +649,62 @@
         `;
       }
 
-      // 1. គំរូ ៖ បដាកណ្ដាល (Banner)
-      if (template === 'banner') {
-        const boxW = isTop1 ? 315 : 290;
-        const boxH = isTop1 ? 105 : 95;
-        const fontSize = isTop1 ? '21px' : '19px';
+      // 1. គំរូ ៖ ព្រួញបៃតង (Green Arrow - ធំទូលាយដូចរូបគំរូ)
+      if (template === 'arrow') {
+        const boxW = isTop1 ? 350 : 320;
+        const fontSize = isTop1 ? '25px' : '22px';
 
         return `
-          <div style="position:relative; width:${boxW}px; height:${boxH}px; display:flex; align-items:center; justify-content:center;">
-            <svg width="${boxW}" height="${boxH}" viewBox="0 0 270 95" fill="none">
-              <path d="M70 18 L200 18 L185 87 L85 87 Z" fill="#1e3a8a"/>
-              <path d="M100 87 L170 87 L180 95 L90 95 Z" fill="#15803d"/>
-              <rect x="20" y="24" width="230" height="54" rx="27" fill="#ffffff" stroke="#f59e0b" stroke-width="3.5"/>
-              <circle cx="135" cy="16" r="15" fill="#ffffff" stroke="#f59e0b" stroke-width="3"/>
-            </svg>
-            <span class="font-moul" style="position:absolute; top:4px; font-size:14px; color:#b91c1c;">${khRank}</span>
-            <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; top:44px; font-size:${fontSize}; width:${boxW - 40}px;">${name}</div>
+          <div style="position:relative; width:${boxW}px; height:110px; display:flex; flex-direction:column; align-items:center;">
+            <!-- មេដាយលេខរៀងខាងលើ -->
+            <div style="position:relative; margin-bottom:-14px; z-index:3;">
+              <svg width="42" height="42" viewBox="0 0 34 34">
+                <circle cx="17" cy="17" r="15" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
+                <circle cx="17" cy="17" r="12" fill="#ffffff"/>
+              </svg>
+              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:15px; color:#b91c1c;">${khRank}</span>
+            </div>
+            <!-- ផ្ទាំងព្រួញបៃតងធំរលោង -->
+            <div style="position:relative; width:100%; height:72px;">
+              <svg width="100%" height="72" viewBox="0 0 320 68" preserveAspectRatio="none">
+                <path d="M12 6 L285 6 L312 34 L285 62 L12 62 L12 6 Z" fill="#15803d"/>
+                <path d="M18 12 L280 12 L302 34 L280 56 L18 56 Z" fill="#ffffff" stroke="#15803d" stroke-width="2"/>
+                <path d="M12 62 L0 62 L12 50 Z" fill="#14532d"/>
+              </svg>
+              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:${fontSize}; padding-right:24px;">${name}</div>
+            </div>
           </div>
         `;
       }
 
-      // 2. គំរូ ៖ ឃ្មុំ (Cute Bee)
-      if (template === 'bee') {
-        const boxW = isTop1 ? 295 : 275;
-        const fontSize = isTop1 ? '21px' : '19px';
+      // 2. គំរូ ៖ បដាកណ្ដាល (Banner - ធំទូលាយ)
+      if (template === 'banner') {
+        const boxW = isTop1 ? 350 : 320;
+        const boxH = isTop1 ? 120 : 110;
+        const fontSize = isTop1 ? '25px' : '22px';
 
         return `
-          <div style="position:relative; width:${boxW}px; height:120px; display:flex; flex-direction:column; align-items:center;">
-            <svg width="76" height="54" viewBox="0 0 70 50" fill="none" style="margin-bottom:-10px; z-index:2;">
+          <div style="position:relative; width:${boxW}px; height:${boxH}px; display:flex; align-items:center; justify-content:center;">
+            <svg width="${boxW}" height="${boxH}" viewBox="0 0 270 95" fill="none">
+              <path d="M70 16 L200 16 L185 88 L85 88 Z" fill="#1e3a8a"/>
+              <path d="M100 88 L170 88 L180 96 L90 96 Z" fill="#15803d"/>
+              <rect x="18" y="22" width="234" height="58" rx="29" fill="#ffffff" stroke="#f59e0b" stroke-width="3.5"/>
+              <circle cx="135" cy="14" r="16" fill="#ffffff" stroke="#f59e0b" stroke-width="3"/>
+            </svg>
+            <span class="font-moul" style="position:absolute; top:3px; font-size:15px; color:#b91c1c;">${khRank}</span>
+            <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; top:48px; font-size:${fontSize}; width:${boxW - 40}px;">${name}</div>
+          </div>
+        `;
+      }
+
+      // 3. គំរូ ៖ ឃ្មុំ (Cute Bee - ធំច្បាស់)
+      if (template === 'bee') {
+        const boxW = isTop1 ? 330 : 305;
+        const fontSize = isTop1 ? '24px' : '21.5px';
+
+        return `
+          <div style="position:relative; width:${boxW}px; height:130px; display:flex; flex-direction:column; align-items:center;">
+            <svg width="84" height="58" viewBox="0 0 70 50" fill="none" style="margin-bottom:-12px; z-index:2;">
               <ellipse cx="20" cy="18" rx="14" ry="8" fill="#bae6fd" opacity="0.8" transform="rotate(-25 20 18)"/>
               <ellipse cx="50" cy="18" rx="14" ry="8" fill="#bae6fd" opacity="0.8" transform="rotate(25 50 18)"/>
               <ellipse cx="35" cy="30" rx="20" ry="16" fill="#f59e0b"/>
@@ -662,85 +714,59 @@
               <path d="M31 35 Q35 39 39 35" stroke="#b91c1c" stroke-width="2" stroke-linecap="round"/>
               <path d="M28 16 Q24 8 20 10 M42 16 Q46 8 50 10" stroke="#000" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            <div style="position:relative; width:100%; height:55px; background:#fff; border:3.5px solid #f59e0b; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
-              <span class="font-moul" style="position:absolute; top:-15px; left:12px; font-size:20px; color:#1d4ed8;">${khRank}</span>
+            <div style="position:relative; width:100%; height:62px; background:#fff; border:3.5px solid #f59e0b; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
+              <span class="font-moul" style="position:absolute; top:-16px; left:14px; font-size:22px; color:#1d4ed8;">${khRank}</span>
               <div class="student-name-text font-moul ${nameColorClass}" style="font-size:${fontSize}; width:90%;">${name}</div>
             </div>
           </div>
         `;
       }
 
-      // 3. គំរូ ៖ ព្រួញបៃតង (Green Arrow)
-      if (template === 'arrow') {
-        const boxW = isTop1 ? 305 : 285;
-        const fontSize = isTop1 ? '20.5px' : '18.5px';
-
-        return `
-          <div style="position:relative; width:${boxW}px; height:102px; display:flex; flex-direction:column; align-items:center;">
-            <div style="position:relative; margin-bottom:-12px; z-index:3;">
-              <svg width="36" height="36" viewBox="0 0 34 34">
-                <circle cx="17" cy="17" r="15" fill="#ffffff" stroke="#f59e0b" stroke-width="3"/>
-                <circle cx="17" cy="17" r="11" fill="#fef3c7"/>
-              </svg>
-              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13.5px; color:#b91c1c;">${khRank}</span>
-            </div>
-            <div style="position:relative; width:100%; height:60px;">
-              <svg width="100%" height="60" viewBox="0 0 260 55" preserveAspectRatio="none">
-                <path d="M10 4 L230 4 L252 27 L230 51 L10 51 L10 4 Z" fill="#15803d"/>
-                <path d="M15 9 L225 9 L244 27 L225 46 L15 46 Z" fill="#ffffff"/>
-                <path d="M10 51 L0 51 L10 41 Z" fill="#14532d"/>
-              </svg>
-              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:${fontSize}; padding-right:20px;">${name}</div>
-            </div>
-          </div>
-        `;
-      }
-
-      // 4. គំរូ ៖ បង្អួច (Window)
+      // 4. គំរូ ៖ បង្អួច (Wooden Window - ធំច្បាស់)
       if (template === 'window') {
-        const boxW = isTop1 ? 305 : 285;
-        const fontSize = isTop1 ? '20.5px' : '18.5px';
+        const boxW = isTop1 ? 340 : 315;
+        const fontSize = isTop1 ? '24px' : '21.5px';
 
         return `
-          <div style="position:relative; width:${boxW}px; height:110px; display:flex; flex-direction:column; align-items:center;">
-            <div style="position:relative; margin-bottom:-10px; z-index:3;">
-              <svg width="110" height="28" viewBox="0 0 110 28" fill="none">
+          <div style="position:relative; width:${boxW}px; height:120px; display:flex; flex-direction:column; align-items:center;">
+            <div style="position:relative; margin-bottom:-12px; z-index:3;">
+              <svg width="120" height="30" viewBox="0 0 110 28" fill="none">
                 <path d="M10 14 Q55 0 100 14 L95 24 Q55 12 15 24 Z" fill="#b91c1c"/>
-                <circle cx="55" cy="14" r="11" fill="#fff" stroke="#f59e0b" stroke-width="2.5"/>
+                <circle cx="55" cy="14" r="12" fill="#fff" stroke="#f59e0b" stroke-width="2.5"/>
               </svg>
-              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13px; color:#b91c1c;">${khRank}</span>
+              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:14px; color:#b91c1c;">${khRank}</span>
             </div>
-            <div style="position:relative; width:100%; height:72px; display:flex; align-items:center; justify-content:center;">
-              <svg width="100%" height="72" viewBox="0 0 260 68" fill="none">
+            <div style="position:relative; width:100%; height:78px; display:flex; align-items:center; justify-content:center;">
+              <svg width="100%" height="78" viewBox="0 0 260 68" fill="none">
                 <rect x="48" y="6" width="164" height="56" rx="4" fill="#ffffff" stroke="#854d0e" stroke-width="4.5"/>
                 <path d="M14 2 L48 6 L48 62 L14 66 Z" fill="#854d0e"/>
                 <rect x="21" y="10" width="22" height="46" fill="#7dd3fc" stroke="#5b3408" stroke-width="2"/>
                 <path d="M246 2 L212 6 L212 62 L246 66 Z" fill="#854d0e"/>
                 <rect x="217" y="10" width="22" height="46" fill="#7dd3fc" stroke="#5b3408" stroke-width="2"/>
               </svg>
-              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; font-size:${fontSize}; width:155px;">${name}</div>
+              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; font-size:${fontSize}; width:160px;">${name}</div>
             </div>
           </div>
         `;
       }
 
-      // 5. គំរូ ៖ ឆ្មា (Cute Cats)
+      // 5. គំរូ ៖ ឆ្មា (Cute Cats - ធំច្បាស់)
       if (template === 'cat') {
-        const boxW = isTop1 ? 290 : 270;
-        const fontSize = isTop1 ? '21px' : '19px';
+        const boxW = isTop1 ? 320 : 295;
+        const fontSize = isTop1 ? '24px' : '21.5px';
 
         return `
-          <div style="position:relative; width:${boxW}px; height:122px; display:flex; flex-direction:column; align-items:center;">
+          <div style="position:relative; width:${boxW}px; height:130px; display:flex; flex-direction:column; align-items:center;">
             <div style="display:flex; align-items:flex-end; gap:8px; margin-bottom:-14px; z-index:2;">
-              <svg width="46" height="46" viewBox="0 0 45 45">
+              <svg width="50" height="50" viewBox="0 0 45 45">
                 <circle cx="22" cy="25" r="17" fill="#fb923c"/>
                 <polygon points="10,12 18,5 20,15" fill="#fb923c"/>
                 <polygon points="35,12 27,5 25,15" fill="#fb923c"/>
                 <circle cx="17" cy="23" r="3" fill="#000"/><circle cx="28" cy="23" r="3" fill="#000"/>
                 <circle cx="22.5" cy="28" r="2" fill="#b91c1c"/>
               </svg>
-              <span class="font-moul" style="font-size:20px; color:#f59e0b; margin-bottom:5px;">${khRank}</span>
-              <svg width="46" height="46" viewBox="0 0 45 45">
+              <span class="font-moul" style="font-size:22px; color:#f59e0b; margin-bottom:5px;">${khRank}</span>
+              <svg width="50" height="50" viewBox="0 0 45 45">
                 <circle cx="22" cy="25" r="17" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
                 <polygon points="10,12 18,5 20,15" fill="#f8fafc" stroke="#e2e8f0"/>
                 <polygon points="35,12 27,5 25,15" fill="#f8fafc" stroke="#e2e8f0"/>
@@ -748,34 +774,34 @@
                 <circle cx="22.5" cy="28" r="2" fill="#ec4899"/>
               </svg>
             </div>
-            <div style="position:relative; width:100%; height:54px; background:#fff; border:3.5px solid #b91c1c; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
+            <div style="position:relative; width:100%; height:60px; background:#fff; border:3.5px solid #b91c1c; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
               <div class="student-name-text font-moul ${nameColorClass}" style="font-size:${fontSize}; width:90%;">${name}</div>
             </div>
           </div>
         `;
       }
 
-      // 6. គំរូ ៖ ឆ្លាក់មាស (Kbach Gold)
+      // 6. គំរូ ៖ ឆ្លាក់មាស (Kbach Gold - ធំច្បាស់)
       if (template === 'kbach') {
-        const boxW = isTop1 ? 305 : 285;
-        const fontSize = isTop1 ? '20.5px' : '18.5px';
+        const boxW = isTop1 ? 340 : 315;
+        const fontSize = isTop1 ? '24px' : '21.5px';
 
         return `
-          <div style="position:relative; width:${boxW}px; height:112px; display:flex; flex-direction:column; align-items:center;">
+          <div style="position:relative; width:${boxW}px; height:125px; display:flex; flex-direction:column; align-items:center;">
             <div style="position:relative; margin-bottom:-10px; z-index:3;">
-              <svg width="68" height="34" viewBox="0 0 60 30" fill="none">
+              <svg width="74" height="36" viewBox="0 0 60 30" fill="none">
                 <path d="M30 2 L38 14 L52 14 L42 22 L46 30 L30 24 L14 30 L18 22 L8 14 L22 14 Z" fill="#eab308" stroke="#a16207" stroke-width="1.2"/>
                 <circle cx="30" cy="18" r="9" fill="#ffffff" stroke="#ca8a04" stroke-width="2.5"/>
               </svg>
-              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:13.5px; color:#b91c1c; padding-top:6px;">${khRank}</span>
+              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:14px; color:#b91c1c; padding-top:6px;">${khRank}</span>
             </div>
-            <div style="position:relative; width:100%; height:68px; display:flex; align-items:center; justify-content:center;">
-              <svg width="100%" height="68" viewBox="0 0 260 60" fill="none">
+            <div style="position:relative; width:100%; height:75px; display:flex; align-items:center; justify-content:center;">
+              <svg width="100%" height="75" viewBox="0 0 260 60" fill="none">
                 <path d="M55 30 Q20 4 4 30 Q20 56 55 30 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="2.5"/>
                 <path d="M205 30 Q240 4 256 30 Q240 56 205 30 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="2.5"/>
                 <rect x="48" y="6" width="164" height="48" rx="4" fill="#ffffff" stroke="#eab308" stroke-width="3.5"/>
               </svg>
-              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; font-size:${fontSize}; width:155px;">${name}</div>
+              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; font-size:${fontSize}; width:160px;">${name}</div>
             </div>
           </div>
         `;
@@ -783,23 +809,99 @@
     }
 
     function renderActiveTemplate() {
-      const template = document.getElementById('selTemplate').value;
       const area = document.getElementById('podiumArea');
       const s = currentTop5Students;
 
       area.innerHTML = `
         <div class="podium-row-1">
-          <div class="rank-card-slot">${getCardSvg(template, 1, s[0])}</div>
+          <div class="rank-card-slot">${getCardSvg(currentSelectedTemplate, 1, s[0])}</div>
         </div>
         <div class="podium-row-2">
-          <div class="rank-card-slot">${getCardSvg(template, 2, s[1])}</div>
-          <div class="rank-card-slot">${getCardSvg(template, 3, s[2])}</div>
+          <div class="rank-card-slot">${getCardSvg(currentSelectedTemplate, 2, s[1])}</div>
+          <div class="rank-card-slot">${getCardSvg(currentSelectedTemplate, 3, s[2])}</div>
         </div>
         <div class="podium-row-3">
-          <div class="rank-card-slot">${getCardSvg(template, 4, s[3])}</div>
-          <div class="rank-card-slot">${getCardSvg(template, 5, s[4])}</div>
+          <div class="rank-card-slot">${getCardSvg(currentSelectedTemplate, 4, s[3])}</div>
+          <div class="rank-card-slot">${getCardSvg(currentSelectedTemplate, 5, s[4])}</div>
         </div>
       `;
+    }
+
+    /* ══════════════ 🛠️ CUSTOM DROPDOWN ENGINE (FONT BATTAMBANG) ══════════════ */
+    function toggleDropdown(id) {
+      const p = document.getElementById(id);
+      const isShow = p.classList.contains('show');
+      closeAllDropdowns();
+      if (!isShow) p.classList.add('show');
+    }
+
+    function closeAllDropdowns() {
+      document.querySelectorAll('.dd-popup').forEach(p => p.classList.remove('show'));
+    }
+
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.dd-wrap')) closeAllDropdowns();
+    });
+
+    function selectTemplate(val, label) {
+      currentSelectedTemplate = val;
+      document.getElementById('txtTemplateSelect').innerText = label;
+      document.querySelectorAll('#ddTemplateList .dd-item').forEach(el => {
+        el.classList.toggle('active', el.innerText === label);
+      });
+      closeAllDropdowns();
+      renderActiveTemplate();
+    }
+
+    function selectPeriodType(type, label) {
+      currentPeriodType = type;
+      document.getElementById('txtPeriodSelect').innerText = label;
+      document.querySelectorAll('#ddPeriodList .dd-item').forEach(el => {
+        el.classList.toggle('active', el.getAttribute('data-val') === type);
+      });
+
+      const childWrap = document.getElementById('childPeriodWrap');
+      const childPopup = document.getElementById('ddChildPeriodList');
+      closeAllDropdowns();
+
+      if (type === 'monthly') {
+        childWrap.style.display = 'inline-block';
+        document.getElementById('txtChildPeriodSelect').innerText = currentPeriodChild;
+        childPopup.innerHTML = KHMER_MONTHS.map(m => `
+          <div class="dd-item ${m === currentPeriodChild ? 'active' : ''}" onclick="selectChildPeriod('${m}')">${m}</div>
+        `).join('');
+      } else if (type === 'exam_semester') {
+        childWrap.style.display = 'inline-block';
+        currentPeriodChild = 'ឆមាសទី១';
+        document.getElementById('txtChildPeriodSelect').innerText = currentPeriodChild;
+        childPopup.innerHTML = `
+          <div class="dd-item active" onclick="selectChildPeriod('ឆមាសទី១')">ឆមាសទី១</div>
+          <div class="dd-item" onclick="selectChildPeriod('ឆមាសទី២')">ឆមាសទី២</div>
+        `;
+      } else if (type === 'semester_total') {
+        childWrap.style.display = 'inline-block';
+        currentPeriodChild = 'ប្រចាំឆមាសទី១';
+        document.getElementById('txtChildPeriodSelect').innerText = currentPeriodChild;
+        childPopup.innerHTML = `
+          <div class="dd-item active" onclick="selectChildPeriod('ប្រចាំឆមាសទី១')">ប្រចាំឆមាសទី១</div>
+          <div class="dd-item" onclick="selectChildPeriod('ប្រចាំឆមាសទី២')">ប្រចាំឆមាសទី២</div>
+        `;
+      } else {
+        childWrap.style.display = 'none';
+        currentPeriodChild = '';
+      }
+
+      loadHonorRoll();
+    }
+
+    function selectChildPeriod(val) {
+      currentPeriodChild = val;
+      document.getElementById('txtChildPeriodSelect').innerText = val;
+      document.querySelectorAll('#ddChildPeriodList .dd-item').forEach(el => {
+        el.classList.toggle('active', el.innerText === val);
+      });
+      closeAllDropdowns();
+      loadHonorRoll();
     }
 
     /* ══════════════ 📅 KHMER CALENDAR LOGIC ══════════════ */
@@ -886,84 +988,58 @@
 
       // 🌟 បង្ហាញ Dropdown ថ្នាក់សម្រាប់តែ ADMIN ប៉ុណ្ណោះ
       const adminBox = document.getElementById('adminClassBox');
-      const selClass = document.getElementById('selClass');
+      const ddClassList = document.getElementById('ddClassList');
 
       if (IS_ADMIN) {
-        adminBox.style.display = 'inline-flex';
+        adminBox.style.display = 'inline-block';
         try {
           const { data } = await sb.from('students').select('grade');
           let classes = [...new Set((data || []).map(d => cleanGrade(d.grade)).filter(Boolean))];
           if (!classes.length) classes = ['១', '២', '៣', '៤(ក)', '៤(ខ)', '៥', '៦'];
           classes.sort((a,b) => a.localeCompare(b, 'km'));
-          selClass.innerHTML = classes.map(c => `<option value="${c}">ថ្នាក់ទី ${c}</option>`).join('');
-          currentSelectedClass = cleanGrade(selClass.value) || '៤(ក)';
-        } catch(e) {
-          selClass.innerHTML = '<option value="៤(ក)">ថ្នាក់ទី ៤(ក)</option>';
-        }
+          
+          ddClassList.innerHTML = classes.map(c => `
+            <div class="dd-item ${c === currentSelectedClass ? 'active' : ''}" onclick="selectAdminClass('${c}')">ថ្នាក់ទី ${c}</div>
+          `).join('');
+          
+          document.getElementById('txtClassSelect').innerText = `ថ្នាក់ទី ${currentSelectedClass}`;
+        } catch(e) {}
       } else {
         adminBox.style.display = 'none';
         currentSelectedClass = cleanGrade(USER_CLASS);
       }
 
-      changePeriodType();
-      
-      // កំណត់ថ្ងៃទី១៨ ខែតុលា ឆ្នាំ២០២៦ ដូចគំរូរូបភាព
       applySelectedDate(2026, 10, 18);
       await loadHonorRoll();
     }
 
-    function changePeriodType() {
-      const type = document.getElementById('selPeriodType').value;
-      const box = document.getElementById('periodChildContainer');
-
-      if (type === 'monthly') {
-        box.innerHTML = `<select id="selPeriodChild" class="tb-select" onchange="loadHonorRoll()">
-          ${KHMER_MONTHS.map(m => `<option value="${m}" ${m==='តុលា'?'selected':''}>${m}</option>`).join('')}
-        </select>`;
-      } else if (type === 'exam_semester') {
-        box.innerHTML = `<select id="selPeriodChild" class="tb-select" onchange="loadHonorRoll()">
-          <option value="ឆមាសទី១">ឆមាសទី១</option>
-          <option value="ឆមាសទី២">ឆមាសទី២</option>
-        </select>`;
-      } else if (type === 'semester_total') {
-        box.innerHTML = `<select id="selPeriodChild" class="tb-select" onchange="loadHonorRoll()">
-          <option value="ប្រចាំឆមាសទី១">ប្រចាំឆមាសទី១</option>
-          <option value="ប្រចាំឆមាសទី២">ប្រចាំឆមាសទី២</option>
-        </select>`;
-      } else {
-        box.innerHTML = '';
-      }
+    function selectAdminClass(cls) {
+      currentSelectedClass = cleanGrade(cls);
+      document.getElementById('txtClassSelect').innerText = `ថ្នាក់ទី ${cls}`;
+      document.querySelectorAll('#ddClassList .dd-item').forEach(el => {
+        el.classList.toggle('active', el.innerText.includes(cls));
+      });
+      closeAllDropdowns();
       loadHonorRoll();
     }
 
     async function loadHonorRoll() {
-      if (IS_ADMIN) {
-        const sc = document.getElementById('selClass');
-        if (sc && sc.value) currentSelectedClass = cleanGrade(sc.value);
-      } else {
-        currentSelectedClass = cleanGrade(USER_CLASS);
-      }
-
       document.getElementById('lblDocumentClass').innerText = `ថ្នាក់ទី${currentSelectedClass}`;
 
-      const type = document.getElementById('selPeriodType').value;
-      const childEl = document.getElementById('selPeriodChild');
-      const periodVal = childEl ? childEl.value : '';
-
       let pLabel = "ប្រចាំឆ្នាំ";
-      if (type === 'monthly') pLabel = `ប្រចាំខែ ${periodVal}`;
-      else if (type === 'exam_semester') pLabel = `ការប្រឡង ${periodVal}`;
-      else if (type === 'semester_total') pLabel = periodVal;
+      if (currentPeriodType === 'monthly') pLabel = `ប្រចាំខែ ${currentPeriodChild}`;
+      else if (currentPeriodType === 'exam_semester') pLabel = `ការប្រឡង ${currentPeriodChild}`;
+      else if (currentPeriodType === 'semester_total') pLabel = currentPeriodChild;
       document.getElementById('lblPeriodTitle').innerText = pLabel;
 
-      // ទាញយកគ្រូថ្នាក់
+      // ទាញយកឈ្មោះគ្រូថ្នាក់
       try {
         const { data: users } = await sb.from('users').select('*');
         const teacher = (users || []).find(u => cleanGrade(u.assigned_classes || u.assigned_class) === currentSelectedClass);
         if (teacher) document.getElementById('lblTeacherName').innerText = teacher.teacher_name || '';
       } catch(e) {}
 
-      // ទាញយកសិស្ស និងពិន្ទុ Top 5 ព្រមទាំងរូបថត
+      // ទាញយកសិស្ស Top 5
       try {
         const { data: students } = await sb.from('students').select('id, student_id, student_name, grade, photo_url');
         const classStudents = (students || []).filter(s => cleanGrade(s.grade) === currentSelectedClass);
