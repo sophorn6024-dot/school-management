@@ -12,10 +12,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;800;900&family=Moul&family=Siemreap&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- ⚡ Supabase JS, html2pdf & MomentKH CDN -->
+  <!-- ⚡ Supabase JS & html2pdf -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/ThyrithSor/momentkh@3.0.3/momentkh.js"></script>
 
   <style>
     :root {
@@ -399,7 +398,7 @@
       </button>
     </div>
 
-    <!-- 📄 PRINTABLE NOTICE PAPER (ដូចគំរូ PDF ដើម ១០០%) -->
+    <!-- 📄 PRINTABLE NOTICE PAPER -->
     <div class="report-paper-wrap">
       <div id="paperScaler">
         <div class="notice-paper" id="printableNoticePaper">
@@ -422,13 +421,13 @@
             <h1 class="f-moul">សេចក្តីជូនដំណឹង</h1>
           </div>
 
-          <!-- 📝 តួសេចក្តីលិខិត (រៀបចំជួរអក្សរត្រឹមត្រូវ គ្មានធ្លាក់បន្ទាត់) -->
+          <!-- 📝 តួសេចក្តីលិខិត (គ្មានគំរូក្លែងក្លាយ, ជាសិស្សថ្នាក់ទី នៅមួយជួរ, មិនធ្លាក់បន្ទាត់) -->
           <div class="doc-body-text">
             
             <!-- ជួរទី១ -->
             <div class="doc-row doc-row-indent">
               <span><span id="txtTeacherPronoun">ខ្ញុំបាទ</span>ឈ្មោះ៖</span>
-              <span class="val-muol-blue" id="valTeacherName">សេង សុភាន់</span>
+              <span class="val-muol-blue" id="valTeacherName">........................</span>
               <span>ជាគ្រូប្រចាំ</span>
               <span class="val-muol-blue" id="valClass">ថ្នាក់ទី ៤ ( ក )</span>
               <span>នៃ</span>
@@ -451,15 +450,15 @@
             <!-- ជួរទី៣ -->
             <div class="doc-row doc-row-indent">
               <span>លោក លោកស្រីដែលជាអាណាព្យាបាលរបស់សិស្សឈ្មោះ៖</span>
-              <span class="val-muol-purple" id="valStudentName">កូ កូ</span>
-              <span>ជាសិស្ស</span>
+              <span class="val-muol-purple" id="valStudentName">................................</span>
             </div>
 
-            <!-- ជួរទី៤ -->
+            <!-- ជួរទី៤៖ «ជាសិស្សថ្នាក់ទី...» ដាក់មួយជួរជាមួយគ្នាយ៉ាងស្អាត -->
             <div class="doc-row">
+              <span>ជាសិស្ស</span>
               <span class="val-muol-blue" id="valStudentClass">ថ្នាក់ទី ៤ ( ក )</span>
               <span>បានជ្រាបថា៖ សិស្សមានឈ្មោះខាងលើនេះបានឈប់មិនឃើញមករៀនចំនួន</span>
-              <span class="val-red f-moul" id="valAbsentDays">៣</span>
+              <span class="val-red f-moul" id="valAbsentDays">...</span>
               <span>ថ្ងៃមកហើយ</span>
             </div>
 
@@ -490,14 +489,14 @@
             </div>
 
             <div class="sign-col">
-              <!-- 🌟 ថ្ងៃខែចន្ទគតិ គណនាតាមក្បួន danhhong/khmer_lunar_date -->
-              <div id="lblLunarDate" style="font-size:13.5px; font-weight:normal;">ថ្ងៃសៅរ៍ ៦កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០</div>
-              <div id="lblSolarDate" style="font-size:13.5px; margin-top:2px;">ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃសៅរ៍ ទី១៧ ខែតុលា ឆ្នាំ២០២៦</div>
+              <!-- 🌟 ថ្ងៃខែចន្ទគតិ គណនាដោយក្បួន MomentKH ផ្ទាល់ក្នុងកូដ -->
+              <div id="lblLunarDate" style="font-size:13.5px; font-weight:normal;"></div>
+              <div id="lblSolarDate" style="font-size:13.5px; margin-top:2px;"></div>
               <div class="f-moul sign-title" style="color:#2b3990; margin-top:6px;">គ្រូបន្ទុកថ្នាក់</div>
               <div class="sign-space"></div>
-              <div class="teacher-sign-name" id="valTeacherSignName">សេង សុភាន់</div>
+              <div class="teacher-sign-name" id="valTeacherSignName"></div>
               <div style="font-size:13.5px; margin-top:6px;">
-                លេខទូរស័ព្ទ៖ <span id="valTeacherPhone">០៨៧ ៣១ ៣១ ៦៦</span>
+                លេខទូរស័ព្ទ៖ <span id="valTeacherPhone"></span>
               </div>
             </div>
           </div>
@@ -515,7 +514,7 @@
             </div>
 
             <div class="parent-sign-col">
-              <div>..................., ថ្ងៃទី.............ខែ..............ឆ្នាំ២០២៦</div>
+              <div id="lblParentDateLine">..................., ថ្ងៃទី.............ខែ..............ឆ្នាំ២០២...</div>
               <div class="f-moul parent-sign-title">អាណាព្យាបាលសិស្ស</div>
             </div>
           </div>
@@ -575,10 +574,169 @@
     </div>
   </div>
 
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       ⚡ EMBEDDED KHMER CALENDAR ENGINE (MOMENTKH STANDALONE គ្មានទាញពី DATABASE)
+  ══════════════════════════════════════════════════════════════════════════ -->
   <script>
-    /* =========================================================
-       1. SUPABASE CLIENT & AUTH
-    ========================================================= */
+    (function (root, factory) {
+      if (typeof define === 'function' && define.amd) { define([], factory); }
+      else if (typeof module === 'object' && module.exports) { module.exports = factory(); }
+      else { root.momentkh = factory(); }
+    }(typeof self !== 'undefined' ? self : this, function () {
+      "use strict";
+      var MoonPhase = { Waxing: 0, Waning: 1 };
+      var MonthIndex = {
+        Migasir: 0, Boss: 1, Meak: 2, Phalkun: 3, Cheit: 4, Pisakh: 5,
+        Jesth: 6, Asadh: 7, Srap: 8, Phatrabot: 9, Assoch: 10, Kadeuk: 11,
+        Pathamasadh: 12, Tutiyasadh: 13
+      };
+      var LunarMonthNames = [
+        'មិគសិរ', 'បុស្ស', 'មាឃ', 'ផល្គុន', 'ចេត្រ', 'ពិសាខ',
+        'ជេស្ឋ', 'អាសាឍ', 'ស្រាពណ៍', 'ភទ្របទ', 'អស្សុជ', 'កត្តិក',
+        'បឋមាសាឍ', 'ទុតិយាសាឍ'
+      ];
+      var SolarMonthNames = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
+      var AnimalYearNames = ['ជូត', 'ឆ្លូវ', 'ខាល', 'ថោះ', 'រោង', 'ម្សាញ់', 'មមី', 'មមែ', 'វក', 'រកា', 'ច', 'កុរ'];
+      var SakNames = ['សំរឹទ្ធិស័ក', 'ឯកស័ក', 'ទោស័ក', 'ត្រីស័ក', 'ចត្វាស័ក', 'បញ្ចស័ក', 'ឆស័ក', 'សប្តស័ក', 'អដ្ឋស័ក', 'នព្វស័ក'];
+      var WeekdayNames = ['អាទិត្យ', 'ចន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
+      var MoonPhaseNames = ['កើត', 'រោច'];
+
+      function isGregorianLeapYear(y) { return (y % 4 === 0 && y % 100 !== 0) || (y % 400 === 0); }
+      function getDaysInGregorianMonth(y, m) {
+        var d = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        if (m === 2 && isGregorianLeapYear(y)) return 29;
+        return d[m - 1];
+      }
+      function gregorianToJulianDay(y, m, d) {
+        var a = Math.floor((14 - m) / 12);
+        var y1 = y + 4800 - a;
+        var m1 = m + 12 * a - 3;
+        return d + Math.floor((153 * m1 + 2) / 5) + 365 * y1 + Math.floor(y1 / 4) - Math.floor(y1 / 100) + Math.floor(y1 / 400) - 32045;
+      }
+      function julianDayToGregorian(jdn) {
+        var a = jdn + 32044;
+        var b = Math.floor((4 * a + 3) / 146097);
+        var c = a - Math.floor((146097 * b) / 4);
+        var d = Math.floor((4 * c + 3) / 1461);
+        var e = c - Math.floor((1461 * d) / 4);
+        var m = Math.floor((5 * e + 2) / 153);
+        var day = e - Math.floor((153 * m + 2) / 5) + 1;
+        var month = m + 3 - 12 * Math.floor(m / 10);
+        var year = 100 * b + d - 4800 + Math.floor(m / 10);
+        return { year: year, month: month, day: day };
+      }
+      function getDayOfWeek(y, m, d) {
+        return (gregorianToJulianDay(y, m, d) + 1) % 7;
+      }
+      function getMaybeBEYear(y, m) { return m <= 4 ? y + 543 : y + 544; }
+      function getAharkun(be) { return Math.floor((be * 292207 + 499) / 800) + 4; }
+      function getAvoman(be) { return (getAharkun(be) * 11 + 25) % 692; }
+      function getBodithey(be) { var ah = getAharkun(be); return (Math.floor((ah * 11 + 25) / 692) + ah + 29) % 30; }
+      function isKhmerSolarLeap(be) { return (800 - ((be * 292207 + 499) % 800)) <= 207; }
+      function isKhmerLeapDayByCalculation(be) {
+        var av = getAvoman(be);
+        if (av === 0 && getAvoman(be - 1) === 137) return true;
+        if (isKhmerSolarLeap(be)) return av < 127;
+        if (av === 137 && getAvoman(be + 1) === 0) return false;
+        return av < 138;
+      }
+      function isKhmerLeapMonth(be) {
+        var b1 = getBodithey(be), b2 = getBodithey(be + 1);
+        if (b1 === 25 && b2 === 5) return false;
+        return (b1 === 24 && b2 === 6) || (b1 >= 25) || (b1 < 6);
+      }
+      function getLeapType(be) {
+        if (isKhmerLeapMonth(be)) return 1;
+        if (isKhmerLeapDayByCalculation(be)) return 2;
+        if (isKhmerLeapMonth(be - 1)) {
+          var prev = be - 1;
+          while (true) {
+            if (isKhmerLeapDayByCalculation(prev)) return 2;
+            prev -= 1;
+            if (!isKhmerLeapMonth(prev)) return 0;
+          }
+        }
+        return 0;
+      }
+      function getNumberOfDaysInKhmerMonth(mi, be) {
+        var lt = getLeapType(be);
+        if (mi === MonthIndex.Jesth && lt === 2) return 30;
+        if (mi === MonthIndex.Pathamasadh || mi === MonthIndex.Tutiyasadh) return lt === 1 ? 30 : 0;
+        return mi % 2 === 0 ? 29 : 30;
+      }
+      function getNumberOfDaysInKhmerYear(be) {
+        var lt = getLeapType(be);
+        if (lt === 1) return 384;
+        if (lt === 2) return 355;
+        return 354;
+      }
+      function nextMonthOf(mi, be) {
+        var lt = getLeapType(be);
+        if (mi === MonthIndex.Jesth && lt === 1) return MonthIndex.Pathamasadh;
+        if (mi === MonthIndex.Kadeuk) return MonthIndex.Migasir;
+        if (mi === MonthIndex.Pathamasadh) return MonthIndex.Tutiyasadh;
+        if (mi === MonthIndex.Tutiyasadh) return MonthIndex.Srap;
+        return mi + 1;
+      }
+
+      function fromGregorian(year, month, day) {
+        var epochJdn = gregorianToJulianDay(1900, 1, 1);
+        var targetJdn = gregorianToJulianDay(year, month, day);
+        var khmerMonth = 1; // បុស្ស
+        var diffDays = targetJdn - epochJdn;
+
+        if (diffDays > 0) {
+          while (true) {
+            var epochGreg = julianDayToGregorian(epochJdn);
+            var nextYearBE = getMaybeBEYear(epochGreg.year + 1, epochGreg.month);
+            var daysInNextYear = getNumberOfDaysInKhmerYear(nextYearBE);
+            if (diffDays > daysInNextYear) { diffDays -= daysInNextYear; epochJdn += daysInNextYear; } else { break; }
+          }
+        }
+        while (diffDays > 0) {
+          var eg = julianDayToGregorian(epochJdn);
+          var cBE = getMaybeBEYear(eg.year, eg.month);
+          var dim = getNumberOfDaysInKhmerMonth(khmerMonth, cBE);
+          if (diffDays > dim) { diffDays -= dim; epochJdn += dim; khmerMonth = nextMonthOf(khmerMonth, cBE); } else { break; }
+        }
+
+        var khmerDayNumber = diffDays;
+        var finalBE = getMaybeBEYear(year, month);
+        var totalDim = getNumberOfDaysInKhmerMonth(khmerMonth, finalBE);
+        if (khmerDayNumber >= totalDim) { khmerDayNumber = khmerDayNumber % totalDim; khmerMonth = nextMonthOf(khmerMonth, finalBE); }
+
+        var dayInPhase = khmerDayNumber < 15 ? khmerDayNumber + 1 : (khmerDayNumber - 15) + 1;
+        var moonPhase = khmerDayNumber < 15 ? MoonPhase.Waxing : MoonPhase.Waning;
+        var beYear = month <= 4 ? year + 543 : year + 544;
+        var jsYear = beYear - 1182;
+        var animalIndex = ((beYear + 4) % 12 + 12) % 12;
+        var sakIndex = ((jsYear % 10) + 10) % 10;
+        var dow = getDayOfWeek(year, month, day);
+
+        return {
+          gregorian: { year: year, month: month, day: day, dayOfWeek: dow },
+          khmer: {
+            day: dayInPhase,
+            moonPhase: moonPhase,
+            moonPhaseName: MoonPhaseNames[moonPhase],
+            monthIndex: khmerMonth,
+            monthName: LunarMonthNames[khmerMonth],
+            beYear: beYear,
+            animalYearName: AnimalYearNames[animalIndex],
+            sakName: SakNames[sakIndex],
+            dayOfWeekName: WeekdayNames[dow]
+          }
+        };
+      }
+
+      return { fromGregorian: fromGregorian };
+    }));
+  </script>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       ⚡ MAIN APPLICATION LOGIC
+  ══════════════════════════════════════════════════════════════════════════ -->
+  <script>
     const SUPABASE_URL = "https://nggnuobnrxiqjtcwlvwk.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -603,7 +761,6 @@
         document.getElementById('authDeniedWrap').style.display = 'flex';
         return false;
       }
-
       if (CURRENT_USER.id) {
         try {
           const { data, error } = await sb.from('users').select('id').eq('id', CURRENT_USER.id).maybeSingle();
@@ -617,7 +774,6 @@
           }
         } catch(err) {}
       }
-
       document.getElementById('authDeniedWrap').style.display = 'none';
       document.getElementById('mainPageContent').style.display = 'block';
       return true;
@@ -647,62 +803,123 @@
     }
 
     /* =========================================================
-       2. KHMER LUNAR CALENDAR ENGINE (តាម danhhong/khmer_lunar_date)
+       1. 📅 គណនាកាលបរិច្ឆេទចន្ទគតិ-សូរិយគតិ ដោយ MOMENTKH ផ្ទាល់ (លែងទាញពី DATABASE)
     ========================================================= */
-    const ZODIAC_ANIMALS = ['ជូត', 'ឆ្លូវ', 'ខាល', 'ថោះ', 'រោង', 'ម្សាញ់', 'មមី', 'មមែ', 'វក', 'រកា', 'ច', 'កុរ'];
-    const SAK_NAMES = ['សំរឹទ្ធិស័ក', 'ឯកស័ក', 'ទោស័ក', 'ត្រីស័ក', 'ចត្វាស័ក', 'បញ្ចស័ក', 'ឆស័ក', 'សប្តស័ក', 'អដ្ឋស័ក', 'នព្វស័ក'];
-    const LUNAR_MONTHS_KH = ['មិគសិរ', 'បុស្ស', 'មាឃ', 'ផល្គុន', 'ចេត្រ', 'ពិសាខ', 'ជេស្ឋ', 'អាសាឍ', 'ស្រាពណ៍', 'ភទ្របទ', 'អស្សុជ', 'កត្តិក'];
+    function getKhmerCalendarStrings(y, m, d) {
+      const res = momentkh.fromGregorian(y, m, d);
+      const k = res.khmer;
+      const g = res.gregorian;
 
-    function calculateKhmerLunar(dateObj) {
-      const y = dateObj.getFullYear();
-      const m = dateObj.getMonth();
-      const d = dateObj.getDate();
-      const dayOfWeekIdx = dateObj.getDay();
-      const dayKh = WEEKDAYS_LONG_KH[dayOfWeekIdx];
+      const lunarDayStr = toKhmerNum(k.day) + k.moonPhaseName;
+      const fullLunar = `ថ្ងៃ${k.dayOfWeekName} ${lunarDayStr} ខែ${k.monthName} ឆ្នាំ${k.animalYearName} ${k.sakName} ព.ស.${toKhmerNum(k.beYear)}`;
+      const solarText = `ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃ${k.dayOfWeekName} ទី${toKhmerNum(d)} ខែ${KHMER_MONTHS[m - 1]} ឆ្នាំ${toKhmerNum(y)}`;
+      const parentDateText = `..................., ថ្ងៃទី.............ខែ..............ឆ្នាំ${toKhmerNum(y)}`;
 
-      // ១. ប្រើប្រាស់ MomentKH Library (UMD) បើដំណើរការ
-      if (typeof momentkh !== 'undefined' && momentkh.fromDate) {
-        try {
-          const khmer = momentkh.fromDate(dateObj);
-          let fullStr = momentkh.format(khmer);
-          fullStr = fullStr.replace(/ពុទ្ធសករាជ\s*/g, 'ព.ស.');
-          return {
-            fullLunar: fullStr,
-            solarText: `ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃ${dayKh} ទី${toKhmerNum(d)} ខែ${KHMER_MONTHS[m]} ឆ្នាំ${toKhmerNum(y)}`
-          };
-        } catch(err) {
-          console.warn("MomentKH parsing fallback:", err);
-        }
+      return { fullLunar, solarText, parentDateText };
+    }
+
+    let calCurrentYear = new Date().getFullYear();
+    let calCurrentMonth = new Date().getMonth() + 1; // 1-12
+    let selectedCalendarDay = new Date().getDate();
+
+    function applySelectedDate(y, m, d) {
+      const dates = getKhmerCalendarStrings(y, m, d);
+      document.getElementById('lblLunarDate').innerText = dates.fullLunar;
+      document.getElementById('lblSolarDate').innerText = dates.solarText;
+      document.getElementById('lblParentDateLine').innerText = dates.parentDateText;
+
+      const btnBadge = document.getElementById('btnBadgeDate');
+      if (btnBadge) btnBadge.innerHTML = `<i class="fa-regular fa-calendar-check" style="color:#10b981;"></i> ថ្ងៃទី${toKhmerNum(d)}`;
+    }
+
+    function initCalendarDropdowns() {
+      const mSel = document.getElementById('calMonthSelect');
+      const ySel = document.getElementById('calYearSelect');
+      if (!mSel || !ySel) return;
+
+      mSel.innerHTML = KHMER_MONTHS.map((m, i) => `<option value="${i + 1}">${m}</option>`).join('');
+
+      let yHtml = '';
+      const thisYr = new Date().getFullYear();
+      for (let y = thisYr + 5; y >= 2020; y--) {
+        yHtml += `<option value="${y}">${toKhmerNum(y)}</option>`;
+      }
+      ySel.innerHTML = yHtml;
+    }
+
+    function renderCalendarDays() {
+      const mSel = document.getElementById('calMonthSelect');
+      const ySel = document.getElementById('calYearSelect');
+      const grid = document.getElementById('calDaysGrid');
+      if (!mSel || !ySel || !grid) return;
+
+      calCurrentMonth = parseInt(mSel.value, 10);
+      calCurrentYear = parseInt(ySel.value, 10);
+      grid.innerHTML = '';
+
+      const firstDay = new Date(calCurrentYear, calCurrentMonth - 1, 1).getDay();
+      const totalDays = new Date(calCurrentYear, calCurrentMonth, 0).getDate();
+      const prevTotal = new Date(calCurrentYear, calCurrentMonth - 1, 0).getDate();
+
+      for (let p = firstDay - 1; p >= 0; p--) {
+        const dNum = prevTotal - p;
+        const cell = document.createElement('div');
+        cell.className = 'cal-cell other-month';
+        cell.innerText = toKhmerNum(dNum);
+        cell.onclick = () => {
+          let prevM = calCurrentMonth - 1;
+          let prevY = calCurrentYear;
+          if (prevM < 1) { prevM = 12; prevY--; }
+          pickCalendarDate(prevY, prevM, dNum);
+        };
+        grid.appendChild(cell);
       }
 
-      // ២. Fallback Algorithm តាម danhhong/khmer_lunar_date
-      // គំរូជាក់លាក់សម្រាប់ឆ្នាំ ២០២៦ (ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០)
-      const zodiacYear = ZODIAC_ANIMALS[(y - 4) % 12];
-      const sak = SAK_NAMES[y % 10];
-      const beYear = toKhmerNum(y + 544);
-
-      // ប៉ាន់ស្មានដំណាក់ព្រះចន្ទ (១-១៥ កើត/រោច)
-      const baseNewMoon = new Date(2026, 9, 11); // New Moon ថ្ងៃទី១១ ខែតុលា ឆ្នាំ២០២៦
-      const diffTime = dateObj.getTime() - baseNewMoon.getTime();
-      const diffDays = Math.round(diffTime / (1000 * 3600 * 24));
-      
-      let lunarDayText = "៦កើត";
-      if (diffDays >= 0 && diffDays < 15) {
-        lunarDayText = toKhmerNum(diffDays + 1) + "កើត";
-      } else if (diffDays >= 15 && diffDays < 30) {
-        lunarDayText = toKhmerNum(diffDays - 14) + "រោច";
+      for (let d = 1; d <= totalDays; d++) {
+        const cell = document.createElement('div');
+        const isSelected = (d === selectedCalendarDay);
+        cell.className = `cal-cell ${isSelected ? 'selected' : ''}`;
+        cell.innerText = toKhmerNum(d);
+        cell.onclick = () => pickCalendarDate(calCurrentYear, calCurrentMonth, d);
+        grid.appendChild(cell);
       }
 
-      const lunarMonthName = "អស្សុជ";
+      const previewDates = getKhmerCalendarStrings(calCurrentYear, calCurrentMonth, selectedCalendarDay);
+      document.getElementById('calLiveLunar').innerText = previewDates.fullLunar;
+    }
 
-      return {
-        fullLunar: `ថ្ងៃ${dayKh} ${lunarDayText} ខែ${lunarMonthName} ឆ្នាំ${zodiacYear} ${sak} ព.ស.${beYear}`,
-        solarText: `ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃ${dayKh} ទី${toKhmerNum(d)} ខែ${KHMER_MONTHS[m]} ឆ្នាំ${toKhmerNum(y)}`
-      };
+    function openKhmerCalendar() {
+      const popup = document.getElementById('khmerCalPopup');
+      const backdrop = document.getElementById('calBackdrop');
+
+      document.getElementById('calMonthSelect').value = calCurrentMonth;
+      document.getElementById('calYearSelect').value = calCurrentYear;
+      renderCalendarDays();
+
+      backdrop.classList.add('show');
+      popup.classList.add('show');
+    }
+
+    function closeCalendarPopup() {
+      document.getElementById('calBackdrop').classList.remove('show');
+      document.getElementById('khmerCalPopup').classList.remove('show');
+    }
+
+    function pickCalendarDate(y, m, d) {
+      selectedCalendarDay = d;
+      calCurrentYear = y;
+      calCurrentMonth = m;
+      applySelectedDate(y, m, d);
+      closeCalendarPopup();
+    }
+
+    function selectCalendarToday() {
+      const now = new Date();
+      pickCalendarDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
     }
 
     /* =========================================================
-       3. DROPDOWNS & CLASS SELECTION
+       2. DROPDOWNS & CLASS SELECTION
     ========================================================= */
     function toggleDropdown(id) {
       const p = document.getElementById(id);
@@ -744,10 +961,12 @@
 
     async function selectClass(rawClass) {
       currentSelectedClass = cleanGrade(rawClass);
-      const displayClsText = `ថ្នាក់ទី ${rawClass.replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '')}`;
+      const cleanClassNum = rawClass.replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '');
+      const displayClsText = `ថ្នាក់ទី ${cleanClassNum}`;
+
       document.getElementById('txtClassSelect').innerText = displayClsText;
-      document.getElementById('valClass').innerText = `ថ្នាក់ទី ៤ ( ក )`;
-      document.getElementById('valStudentClass').innerText = `ថ្នាក់ទី ៤ ( ក )`;
+      document.getElementById('valClass').innerText = `ថ្នាក់ទី ${cleanClassNum}`;
+      document.getElementById('valStudentClass').innerText = `ថ្នាក់ទី ${cleanClassNum}`;
 
       document.querySelectorAll('#ddClassSelect .dd-item').forEach(el => {
         const itemClass = cleanGrade(el.getAttribute('data-class'));
@@ -763,8 +982,8 @@
     }
 
     async function syncTeacherInfoFromDatabase(clsName) {
-      let teacherName = CURRENT_USER?.teacher_name || "សេង សុភាន់";
-      let teacherPhone = CURRENT_USER?.phone || "087313166";
+      let teacherName = CURRENT_USER?.teacher_name || "";
+      let teacherPhone = CURRENT_USER?.phone || "";
       let teacherGender = CURRENT_USER?.gender || "ប្រុស";
       let teacherAddress = CURRENT_USER?.address || "ភូមិកំពង់ល្ពៅ ឃុំកំពង់ល្ពៅ ស្រុកសំឡូត ខេត្តបាត់ដំបង";
 
@@ -788,7 +1007,7 @@
 
       document.getElementById('txtTeacherPronoun').innerText = pronoun;
       document.getElementById('txtTeacherPronounEnd').innerText = pronoun;
-      document.getElementById('valTeacherName').innerText = teacherName;
+      document.getElementById('valTeacherName').innerText = teacherName || '........................';
       document.getElementById('valTeacherSignName').innerText = teacherName;
       document.getElementById('valTeacherPhone').innerText = toKhmerNum(teacherPhone);
 
@@ -803,7 +1022,7 @@
     }
 
     /* =========================================================
-       4. 🌟 ចាប់សិស្សអវត្តមាន ៣ ថ្ងៃជាប់គ្នាពី ATTENDANCE
+       3. 🌟 ចាប់សិស្សអវត្តមាន ៣ ថ្ងៃជាប់គ្នាពី ATTENDANCE
     ========================================================= */
     async function load3ConsecutiveAbsentStudents() {
       const studentBtnText = document.getElementById('txtStudentSelect');
@@ -871,15 +1090,16 @@
               🎉 ក្នុងថ្នាក់នេះមិនមានសិស្សណាអវត្តមាន ៣ ថ្ងៃជាប់គ្នាឡើយ។
             </div>
           `;
-          document.getElementById('valStudentName').innerText = 'កូ កូ';
-          document.getElementById('valAbsentDays').innerText = '៣';
+          // គ្មានគំរូក្លែងក្លាយទេ បង្ហាញបន្ទាត់ចុចៗធម្មតា
+          document.getElementById('valStudentName').innerText = '................................';
+          document.getElementById('valAbsentDays').innerText = '...';
         }
 
       } catch(err) {
         console.error('Check 3 consecutive absences error:', err);
         studentBtnText.innerText = 'គ្មានសិស្សអវត្តមាន ៣ ថ្ងៃទេ';
-        document.getElementById('valStudentName').innerText = 'កូ កូ';
-        document.getElementById('valAbsentDays').innerText = '៣';
+        document.getElementById('valStudentName').innerText = '................................';
+        document.getElementById('valAbsentDays').innerText = '...';
       }
     }
 
@@ -902,122 +1122,7 @@
     }
 
     /* =========================================================
-       5. 📅 កាលបរិច្ឆេទប្រតិទិនខ្មែរ
-    ========================================================= */
-    let calCurrentYear = 2026;
-    let calCurrentMonth = 9; // October (0-indexed: 9 = តុលា)
-    let selectedCalendarDay = 17;
-
-    async function applySelectedDate(y, m, d) {
-      const dObj = new Date(y, m, d);
-      const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-
-      // គណនាតាមក្បួន Danhhong / MomentKH
-      const lunarResult = calculateKhmerLunar(dObj);
-      document.getElementById('lblSolarDate').innerText = lunarResult.solarText;
-      document.getElementById('lblLunarDate').innerText = lunarResult.fullLunar;
-
-      // ពិនិត្យ Table khmer_calendar ក្នុង Supabase បន្ថែម
-      try {
-        const { data } = await sb.from('khmer_calendar').select('khmer_lunar_date').eq('gregorian_date', iso).maybeSingle();
-        if (data && data.khmer_lunar_date) {
-          document.getElementById('lblLunarDate').innerText = data.khmer_lunar_date;
-        }
-      } catch (err) {}
-
-      const btnBadge = document.getElementById('btnBadgeDate');
-      if (btnBadge) btnBadge.innerHTML = `<i class="fa-regular fa-calendar-check" style="color:#10b981;"></i> ថ្ងៃទី${toKhmerNum(d)}`;
-    }
-
-    function initCalendarDropdowns() {
-      const mSel = document.getElementById('calMonthSelect');
-      const ySel = document.getElementById('calYearSelect');
-      if (!mSel || !ySel) return;
-
-      mSel.innerHTML = KHMER_MONTHS.map((m, i) => `<option value="${i}">${m}</option>`).join('');
-
-      let yHtml = '';
-      const thisYr = new Date().getFullYear();
-      for (let y = thisYr + 5; y >= 2020; y--) {
-        yHtml += `<option value="${y}">${y}</option>`;
-      }
-      ySel.innerHTML = yHtml;
-    }
-
-    function renderCalendarDays() {
-      const mSel = document.getElementById('calMonthSelect');
-      const ySel = document.getElementById('calYearSelect');
-      const grid = document.getElementById('calDaysGrid');
-      if (!mSel || !ySel || !grid) return;
-
-      calCurrentMonth = parseInt(mSel.value, 10);
-      calCurrentYear = parseInt(ySel.value, 10);
-      grid.innerHTML = '';
-
-      const firstDay = new Date(calCurrentYear, calCurrentMonth, 1).getDay();
-      const totalDays = new Date(calCurrentYear, calCurrentMonth + 1, 0).getDate();
-      const prevTotal = new Date(calCurrentYear, calCurrentMonth, 0).getDate();
-
-      for (let p = firstDay - 1; p >= 0; p--) {
-        const dNum = prevTotal - p;
-        const cell = document.createElement('div');
-        cell.className = 'cal-cell other-month';
-        cell.innerText = dNum;
-        cell.onclick = () => {
-          let prevM = calCurrentMonth - 1;
-          let prevY = calCurrentYear;
-          if (prevM < 0) { prevM = 11; prevY--; }
-          pickCalendarDate(prevY, prevM, dNum);
-        };
-        grid.appendChild(cell);
-      }
-
-      for (let d = 1; d <= totalDays; d++) {
-        const cell = document.createElement('div');
-        const isSelected = (d === selectedCalendarDay);
-        cell.className = `cal-cell ${isSelected ? 'selected' : ''}`;
-        cell.innerText = d;
-        cell.onclick = () => pickCalendarDate(calCurrentYear, calCurrentMonth, d);
-        grid.appendChild(cell);
-      }
-
-      const previewLunar = calculateKhmerLunar(new Date(calCurrentYear, calCurrentMonth, selectedCalendarDay));
-      document.getElementById('calLiveLunar').innerText = previewLunar.fullLunar;
-    }
-
-    function openKhmerCalendar() {
-      const popup = document.getElementById('khmerCalPopup');
-      const backdrop = document.getElementById('calBackdrop');
-
-      document.getElementById('calMonthSelect').value = calCurrentMonth;
-      document.getElementById('calYearSelect').value = calCurrentYear;
-      renderCalendarDays();
-
-      backdrop.classList.add('show');
-      popup.classList.add('show');
-    }
-
-    function closeCalendarPopup() {
-      document.getElementById('calBackdrop').classList.remove('show');
-      document.getElementById('khmerCalPopup').classList.remove('show');
-    }
-
-    async function pickCalendarDate(y, m, d) {
-      selectedCalendarDay = d;
-      calCurrentYear = y;
-      calCurrentMonth = m;
-
-      await applySelectedDate(y, m, d);
-      closeCalendarPopup();
-    }
-
-    function selectCalendarToday() {
-      const now = new Date();
-      pickCalendarDate(now.getFullYear(), now.getMonth(), now.getDate());
-    }
-
-    /* =========================================================
-       6. PAGE SETUP & EXPORT
+       4. PAGE SETUP & EXPORT
     ========================================================= */
     const PX = 96 / 25.4;
     let currentPaper = 'A4';
@@ -1084,7 +1189,7 @@
       const stName = document.getElementById('valStudentName').innerText.replace(/[.\s]/g, '') || 'សិស្ស';
       const opt = {
         margin: [5, 5, 5, 5],
-        filename: `លិខិតជូនដំណឹងអវត្តមាន_${stName}_ថ្នាក់ទី៤(ក).pdf`,
+        filename: `លិខិតជូនដំណឹងអវត្តមាន_${stName}_ថ្នាក់ទី_${currentSelectedClass}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2.5, useCORS: true },
         jsPDF: { unit: 'mm', format: currentPaper.toLowerCase(), orientation: 'portrait' }
@@ -1098,7 +1203,7 @@
     }
 
     /* =========================================================
-       7. INITIALIZATION
+       5. INITIALIZATION
     ========================================================= */
     window.addEventListener('DOMContentLoaded', async () => {
       const isAuth = await checkAuthentication();
@@ -1107,8 +1212,12 @@
       initCalendarDropdowns();
       await initClassesDropdown();
 
-      // កំណត់ថ្ងៃទី១៧ ខែតុលា ឆ្នាំ២០២៦ (ថ្ងៃសៅរ៍ ៦កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០)
-      await applySelectedDate(2026, 9, 17);
+      // កំណត់ថ្ងៃបច្ចុប្បន្នស្វ័យប្រវត្តិតាមប្រតិទិនខ្មែរ MomentKH
+      const now = new Date();
+      calCurrentYear = now.getFullYear();
+      calCurrentMonth = now.getMonth() + 1;
+      selectedCalendarDay = now.getDate();
+      applySelectedDate(calCurrentYear, calCurrentMonth, selectedCalendarDay);
 
       fitPaper();
     });
