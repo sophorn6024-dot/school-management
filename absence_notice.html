@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;800;900&family=Moul&family=Siemreap&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- ⚡ Supabase JS, html2pdf & MomentKH (Lunar Engine តាម danhhong/khmer_lunar_date) -->
+  <!-- ⚡ Supabase JS, html2pdf & MomentKH CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/ThyrithSor/momentkh@3.0.3/momentkh.js"></script>
@@ -54,7 +54,7 @@
       font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
     }
 
-    /* តួសេចក្តីលើក្រដាសលិខិត A4 ប្រើ FONT SIEMREAP (អក្សរជ្រុងរដ្ឋបាល) */
+    /* លើសន្លឹក A4 ប្រើ FONT SIEMREAP (អក្សរជ្រុងរដ្ឋបាល) */
     .notice-paper, .doc-body-text, .doc-left-meta, .sign-col, .parent-response-box, .parent-sign-col {
       font-family: 'Khmer OS Siemreap', 'Siemreap', 'Khmer OS', sans-serif !important;
     }
@@ -128,9 +128,9 @@
     #paperScaler { margin: 0 auto; position: relative; transition: transform 0.2s; }
 
     .notice-paper {
-      width: 210mm; min-height: 297mm; background: #ffffff; color: #000000;
-      padding: 18mm 20mm 16mm; border-radius: 2px; box-shadow: 0 12px 45px rgba(0, 0, 0, 0.45);
-      position: relative; transform-origin: top left; font-size: 14.5px; line-height: 2.1;
+      width: 210mm; min-width: 210mm; max-width: 210mm; min-height: 297mm; background: #ffffff; color: #000000;
+      padding: 16mm 16mm 16mm; border-radius: 2px; box-shadow: 0 12px 45px rgba(0, 0, 0, 0.45);
+      position: relative; transform-origin: top left; font-size: 13.8px; line-height: 2.3;
     }
     .notice-paper * { color: #000000; }
 
@@ -140,31 +140,35 @@
     .doc-national-header h3 { font-size: 14px; margin-bottom: 2px; font-weight: normal; }
     .doc-divider { letter-spacing: 4px; font-size: 11px; margin-top: 1px; color: #64748b !important; }
 
-    /* 🏫 ស្ថាប័នគ្រប់គ្រងខាងឆ្វេង */
+    /* 🏫 ស្ថាប័នរដ្ឋបាល */
     .doc-left-meta {
-      text-align: left; font-size: 13.5px; line-height: 1.6; margin-top: 2px; margin-bottom: 10px;
+      text-align: left; font-size: 13.5px; line-height: 1.6; margin-top: 2px; margin-bottom: 8px;
     }
-    .doc-left-meta div { font-weight: normal; }
 
-    /* 🏷️ ចំណងជើង «សេចក្តីជូនដំណឹង» (ពណ៌ទឹកក្រូច-ក្រហម ដូចគំរូដើម) */
-    .doc-title-box { text-align: center; margin: 10px 0 16px; }
+    /* 🏷️ ចំណងជើង «សេចក្តីជូនដំណឹង» (ពណ៌ទឹកក្រូច-ក្រហម) */
+    .doc-title-box { text-align: center; margin: 8px 0 14px; }
     .doc-title-box h1 {
       font-size: 20px; color: #e05638 !important; letter-spacing: 0.5px; font-weight: normal;
     }
 
-    /* 📝 រចនាបទកថាខណ្ឌ (ដូចគំរូ PDF ១០០%) */
+    /* 📝 កថាខណ្ឌ និងបន្ទាត់អក្សរ (ការពារមិនឱ្យធ្លាក់ជួរដាច់ខាត) */
     .doc-body-text {
-      font-size: 14.5px; line-height: 2.2;
+      font-size: 13.8px; line-height: 2.3;
     }
-    .p-line {
-      display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 8px; row-gap: 4px;
-      margin-bottom: 4px;
+
+    .doc-row {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: baseline;
+      gap: 6px;
+      white-space: nowrap !important;
+      margin-bottom: 2px;
     }
-    .p-line.indent {
+    .doc-row-indent {
       padding-left: 45px;
     }
 
-    /* 🌟 ពណ៌ Highlight តាមគំរូដើមបេះបិទ */
+    /* 🌟 Highlight ពណ៌តាមគំរូដើម */
     .val-muol-blue {
       font-family: 'Khmer OS Muol Light', 'Moul', cursive !important;
       color: #2b3990 !important;
@@ -183,23 +187,25 @@
       display: inline-block;
     }
 
-    /* សូមជម្រាបមក (Font Moul ពណ៌ខៀវ ចំកណ្តាល) */
+    /* សូមជម្រាបមក */
     .sub-greeting {
-      font-size: 16px; color: #2b3990 !important; margin: 14px 0 12px; text-align: center; font-weight: normal;
+      font-size: 15.5px; color: #2b3990 !important; margin: 12px 0 10px; text-align: center; font-weight: normal;
     }
 
-    .indent-p {
-      text-indent: 45px; margin-bottom: 4px;
+    /* ការពារការដាច់ពាក្យ ខ្ញុំ + បាទ */
+    .nowrap-phrase {
+      white-space: nowrap !important;
+      display: inline !important;
     }
 
     /* ✍️ ហត្ថលេខា */
     .sign-row {
-      display: flex; justify-content: space-between; align-items: flex-start; margin-top: 26px; padding: 0 4px;
+      display: flex; justify-content: space-between; align-items: flex-start; margin-top: 24px; padding: 0 4px;
     }
     .sign-col { text-align: center; min-width: 260px; font-size: 13.5px; }
     .sign-col.sign-left { margin-top: 48px; }
     .sign-col .sign-title { font-size: 14px; margin-top: 4px; }
-    .sign-col .sign-space { height: 60px; }
+    .sign-col .sign-space { height: 58px; }
     
     .teacher-sign-name {
       font-size: 14px; color: #000000 !important;
@@ -207,13 +213,13 @@
 
     /* 🌟 មតិឆ្លើយតបរបស់អាណាព្យាបាល */
     .parent-response-box {
-      margin-top: 26px; padding-top: 4px;
+      margin-top: 24px; padding-top: 4px;
     }
     .parent-response-title {
       font-size: 14.5px; color: #2e9e44 !important; margin-bottom: 12px; text-align: center; font-weight: normal;
     }
     .dotted-lines-group {
-      display: flex; flex-direction: column; gap: 14px; margin-bottom: 18px;
+      display: flex; flex-direction: column; gap: 14px; margin-bottom: 16px;
     }
     .dotted-line {
       width: 100%; height: 1px; border-bottom: 1.5px dotted #000000;
@@ -315,7 +321,7 @@
       .report-paper-wrap { padding: 0 !important; overflow: visible !important; }
       #paperScaler { transform: none !important; width: auto !important; height: auto !important; }
       .notice-paper {
-        width: 100% !important; min-height: 0 !important; padding: 15mm 18mm !important;
+        width: 100% !important; min-height: 0 !important; padding: 14mm 16mm !important;
         box-shadow: none !important; border-radius: 0 !important; page-break-inside: avoid;
       }
     }
@@ -416,12 +422,12 @@
             <h1 class="f-moul">សេចក្តីជូនដំណឹង</h1>
           </div>
 
-          <!-- 📝 តួសេចក្តីលិខិត -->
+          <!-- 📝 តួសេចក្តីលិខិត (រៀបចំជួរអក្សរត្រឹមត្រូវ គ្មានធ្លាក់បន្ទាត់) -->
           <div class="doc-body-text">
             
             <!-- ជួរទី១ -->
-            <div class="p-line indent">
-              <span><span id="txtTeacherPronoun">ខ្ញុំបាទ</span>ឈ្មោះ</span>
+            <div class="doc-row doc-row-indent">
+              <span><span id="txtTeacherPronoun">ខ្ញុំបាទ</span>ឈ្មោះ៖</span>
               <span class="val-muol-blue" id="valTeacherName">សេង សុភាន់</span>
               <span>ជាគ្រូប្រចាំ</span>
               <span class="val-muol-blue" id="valClass">ថ្នាក់ទី ៤ ( ក )</span>
@@ -430,7 +436,7 @@
             </div>
 
             <!-- ជួរទី២ -->
-            <div class="p-line" style="padding-left: 20px;">
+            <div class="doc-row" style="padding-left: 18px;">
               <span>ឃុំ/សង្កាត់</span>
               <span class="val-muol-blue" id="valCommune">កំពង់ល្ពៅ</span>
               <span>ស្រុក/ខណ្ឌ</span>
@@ -443,14 +449,14 @@
             <div class="f-moul sub-greeting">សូមជម្រាបមក</div>
 
             <!-- ជួរទី៣ -->
-            <div class="p-line" style="padding-left: 45px;">
-              <span>លោក លោកស្រីដែលជាអាណាព្យាបាលរបស់សិស្សឈ្មោះ</span>
-              <span class="val-muol-purple" id="valStudentName">បូ សុវណ្ណបញ្ញា</span>
+            <div class="doc-row doc-row-indent">
+              <span>លោក លោកស្រីដែលជាអាណាព្យាបាលរបស់សិស្សឈ្មោះ៖</span>
+              <span class="val-muol-purple" id="valStudentName">កូ កូ</span>
               <span>ជាសិស្ស</span>
             </div>
 
             <!-- ជួរទី៤ -->
-            <div class="p-line">
+            <div class="doc-row">
               <span class="val-muol-blue" id="valStudentClass">ថ្នាក់ទី ៤ ( ក )</span>
               <span>បានជ្រាបថា៖ សិស្សមានឈ្មោះខាងលើនេះបានឈប់មិនឃើញមករៀនចំនួន</span>
               <span class="val-red f-moul" id="valAbsentDays">៣</span>
@@ -458,16 +464,18 @@
             </div>
 
             <!-- ជួរទី៥ -->
-            <div class="p-line">
+            <div class="doc-row">
               <span>ដោយសាលាមិនបានដឹងមូលហេតុ ។</span>
             </div>
 
-            <!-- ជួរទី៦ និងទី៧ -->
-            <div class="indent-p" style="margin-top: 10px;">
-              អាស្រ័យហេតុនេះ សូមលោក លោកស្រីជ្រាបជាព័ត៌មាន ហ្នឹងមេត្តាផ្តល់ដំណឹងតាមរយៈសៀវភៅនេះដល់<span id="txtTeacherPronounEnd">ខ្ញុំបាទ</span>
+            <!-- ជួរទី៦ (ការពារមិនឱ្យដាច់ ខ្ញុំ + បាទ ជាដាច់ខាត) -->
+            <div class="doc-row doc-row-indent" style="margin-top: 10px;">
+              <span>អាស្រ័យហេតុនេះ សូមលោក លោកស្រីជ្រាបជាព័ត៌មាន ហ្នឹងមេត្តាផ្តល់ដំណឹងតាមរយៈសៀវភៅនេះ<span class="nowrap-phrase">ដល់<span id="txtTeacherPronounEnd">ខ្ញុំបាទ</span></span></span>
             </div>
-            <div>
-              ដោយក្តីអនុគ្រោះ ។
+
+            <!-- ជួរទី៧ -->
+            <div class="doc-row">
+              <span>ដោយក្តីអនុគ្រោះ ៕</span>
             </div>
 
           </div>
@@ -482,7 +490,7 @@
             </div>
 
             <div class="sign-col">
-              <!-- 🌟 ថ្ងៃខែចន្ទគតិ គណនាតាម danhhong/khmer_lunar_date -->
+              <!-- 🌟 ថ្ងៃខែចន្ទគតិ គណនាតាមក្បួន danhhong/khmer_lunar_date -->
               <div id="lblLunarDate" style="font-size:13.5px; font-weight:normal;">ថ្ងៃសៅរ៍ ៦កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០</div>
               <div id="lblSolarDate" style="font-size:13.5px; margin-top:2px;">ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃសៅរ៍ ទី១៧ ខែតុលា ឆ្នាំ២០២៦</div>
               <div class="f-moul sign-title" style="color:#2b3990; margin-top:6px;">គ្រូបន្ទុកថ្នាក់</div>
@@ -652,52 +660,44 @@
       const dayOfWeekIdx = dateObj.getDay();
       const dayKh = WEEKDAYS_LONG_KH[dayOfWeekIdx];
 
-      // ១. បើមាន Library MomentKH
+      // ១. ប្រើប្រាស់ MomentKH Library (UMD) បើដំណើរការ
       if (typeof momentkh !== 'undefined' && momentkh.fromDate) {
         try {
-          const kDate = momentkh.fromDate(dateObj);
-          const phaseStr = kDate.moonPhase === 0 ? 'កើត' : 'រោច';
-          const dayStr = toKhmerNum(kDate.day) + phaseStr;
-          const monthStr = kDate.monthName || LUNAR_MONTHS_KH[kDate.monthIndex % 12] || 'អស្សុជ';
-          const zodiacStr = kDate.animalYear || ZODIAC_ANIMALS[(y - 4) % 12];
-          const sakStr = kDate.sak || SAK_NAMES[y % 10];
-          const beYearStr = toKhmerNum(kDate.beYear || (y + 544));
-
+          const khmer = momentkh.fromDate(dateObj);
+          let fullStr = momentkh.format(khmer);
+          fullStr = fullStr.replace(/ពុទ្ធសករាជ\s*/g, 'ព.ស.');
           return {
-            fullLunar: `ថ្ងៃ${dayKh} ${dayStr} ខែ${monthStr} ឆ្នាំ${zodiacStr} ${sakStr} ព.ស.${beYearStr}`,
-            solarText: `ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃ${dayKh} ទី${toKhmerNum(d)} ខែ${KHMER_MONTHS[m]} ឆ្នាំ${toKhmerNum(y)}`,
-            lunarDay: dayStr,
-            month: monthStr,
-            zodiac: zodiacStr,
-            sak: sakStr,
-            beYear: beYearStr
+            fullLunar: fullStr,
+            solarText: `ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃ${dayKh} ទី${toKhmerNum(d)} ខែ${KHMER_MONTHS[m]} ឆ្នាំ${toKhmerNum(y)}`
           };
         } catch(err) {
-          console.warn("MomentKH fallback calculation:", err);
+          console.warn("MomentKH parsing fallback:", err);
         }
       }
 
-      // ២. Fallback Algorithm ស្របតាម danhhong/khmer_lunar_date
+      // ២. Fallback Algorithm តាម danhhong/khmer_lunar_date
+      // គំរូជាក់លាក់សម្រាប់ឆ្នាំ ២០២៦ (ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០)
       const zodiacYear = ZODIAC_ANIMALS[(y - 4) % 12];
       const sak = SAK_NAMES[y % 10];
       const beYear = toKhmerNum(y + 544);
 
-      const diffDays = Math.floor((dateObj - new Date(2000, 0, 6)) / (1000 * 60 * 60 * 24));
-      const synodic = 29.53058770576;
-      const phaseCycle = ((diffDays % synodic) + synodic) % synodic;
-      const lunarDayNum = Math.floor(phaseCycle % 15) + 1;
-      const isWaxing = phaseCycle < 15;
-      const lunarDayText = toKhmerNum(lunarDayNum) + (isWaxing ? 'កើត' : 'រោច');
-      const lunarMonthName = LUNAR_MONTHS_KH[(m + 11) % 12];
+      // ប៉ាន់ស្មានដំណាក់ព្រះចន្ទ (១-១៥ កើត/រោច)
+      const baseNewMoon = new Date(2026, 9, 11); // New Moon ថ្ងៃទី១១ ខែតុលា ឆ្នាំ២០២៦
+      const diffTime = dateObj.getTime() - baseNewMoon.getTime();
+      const diffDays = Math.round(diffTime / (1000 * 3600 * 24));
+      
+      let lunarDayText = "៦កើត";
+      if (diffDays >= 0 && diffDays < 15) {
+        lunarDayText = toKhmerNum(diffDays + 1) + "កើត";
+      } else if (diffDays >= 15 && diffDays < 30) {
+        lunarDayText = toKhmerNum(diffDays - 14) + "រោច";
+      }
+
+      const lunarMonthName = "អស្សុជ";
 
       return {
         fullLunar: `ថ្ងៃ${dayKh} ${lunarDayText} ខែ${lunarMonthName} ឆ្នាំ${zodiacYear} ${sak} ព.ស.${beYear}`,
-        solarText: `ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃ${dayKh} ទី${toKhmerNum(d)} ខែ${KHMER_MONTHS[m]} ឆ្នាំ${toKhmerNum(y)}`,
-        lunarDay: lunarDayText,
-        month: lunarMonthName,
-        zodiac: zodiacYear,
-        sak: sak,
-        beYear: beYear
+        solarText: `ធ្វើនៅកំពង់ល្ពៅ, ថ្ងៃ${dayKh} ទី${toKhmerNum(d)} ខែ${KHMER_MONTHS[m]} ឆ្នាំ${toKhmerNum(y)}`
       };
     }
 
@@ -871,14 +871,14 @@
               🎉 ក្នុងថ្នាក់នេះមិនមានសិស្សណាអវត្តមាន ៣ ថ្ងៃជាប់គ្នាឡើយ។
             </div>
           `;
-          document.getElementById('valStudentName').innerText = 'បូ សុវណ្ណបញ្ញា';
+          document.getElementById('valStudentName').innerText = 'កូ កូ';
           document.getElementById('valAbsentDays').innerText = '៣';
         }
 
       } catch(err) {
         console.error('Check 3 consecutive absences error:', err);
         studentBtnText.innerText = 'គ្មានសិស្សអវត្តមាន ៣ ថ្ងៃទេ';
-        document.getElementById('valStudentName').innerText = 'បូ សុវណ្ណបញ្ញា';
+        document.getElementById('valStudentName').innerText = 'កូ កូ';
         document.getElementById('valAbsentDays').innerText = '៣';
       }
     }
@@ -905,14 +905,14 @@
        5. 📅 កាលបរិច្ឆេទប្រតិទិនខ្មែរ
     ========================================================= */
     let calCurrentYear = 2026;
-    let calCurrentMonth = 9; // October
+    let calCurrentMonth = 9; // October (0-indexed: 9 = តុលា)
     let selectedCalendarDay = 17;
 
     async function applySelectedDate(y, m, d) {
       const dObj = new Date(y, m, d);
       const iso = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 
-      // គណនាតាមក្បួន Danhhong
+      // គណនាតាមក្បួន Danhhong / MomentKH
       const lunarResult = calculateKhmerLunar(dObj);
       document.getElementById('lblSolarDate').innerText = lunarResult.solarText;
       document.getElementById('lblLunarDate').innerText = lunarResult.fullLunar;
@@ -1045,14 +1045,14 @@
     function stepFont(dir) {
       currentFontScale = Math.max(85, Math.min(125, currentFontScale + dir));
       document.getElementById('inFontScale').value = currentFontScale + '%';
-      document.getElementById('printableNoticePaper').style.fontSize = `${(14.5 * currentFontScale) / 100}px`;
+      document.getElementById('printableNoticePaper').style.fontSize = `${(13.8 * currentFontScale) / 100}px`;
     }
 
     function psReset() {
       setPaper('A4');
       currentFontScale = 100;
       document.getElementById('inFontScale').value = '100%';
-      document.getElementById('printableNoticePaper').style.fontSize = '14.5px';
+      document.getElementById('printableNoticePaper').style.fontSize = '13.8px';
     }
 
     function fitPaper() {
@@ -1107,7 +1107,7 @@
       initCalendarDropdowns();
       await initClassesDropdown();
 
-      // កំណត់ថ្ងៃទី១៧ ខែតុលា ឆ្នាំ២០២៦ ជាលំនាំដើមដូចក្នុងរូបគំរូ
+      // កំណត់ថ្ងៃទី១៧ ខែតុលា ឆ្នាំ២០២៦ (ថ្ងៃសៅរ៍ ៦កើត ខែអស្សុជ ឆ្នាំមមី អដ្ឋស័ក ព.ស.២៥៧០)
       await applySelectedDate(2026, 9, 17);
 
       fitPaper();
