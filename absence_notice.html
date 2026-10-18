@@ -46,13 +46,13 @@
       min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased;
     }
 
-    /* ══════════════ 🔤 កំណត់ FONT (មិនឱ្យជាន់លើ FONT AWESOME ICONS) ══════════════ */
+    /* ══════════════ 🔤 កំណត់ FONT (ការពារមិនឱ្យបាត់ ICON) ══════════════ */
     .top-toolbar, .tb-btn, .dd-wrap, .dd-popup, .dd-item, .tb-select-box,
     .ps-panel, .khmer-cal-popup, .auth-wrapper {
       font-family: 'Khmer OS Battambang', 'Battambang', sans-serif;
     }
 
-    /* 🌟 ការពារ Font Awesome Icon មិនឱ្យបាត់ដាច់ខាត */
+    /* 🌟 ការពារ Font Awesome Icon ឱ្យបង្ហាញច្បាស់ */
     i[class*="fa-"], [class*="fa-"], .fa, .fas, .far, .fa-solid, .fa-regular {
       font-family: "Font Awesome 6 Free" !important;
       font-style: normal;
@@ -353,7 +353,7 @@
   <!-- 🌟 MAIN CONTENT WRAPPER -->
   <div id="mainPageContent" style="display:none;">
 
-    <!-- 🛠️ TOP TOOLBAR (ICON ទាំងអស់បង្ហាញច្បាស់ ១០០%) -->
+    <!-- 🛠️ TOP TOOLBAR -->
     <div class="top-toolbar">
       <button type="button" class="tb-btn" onclick="goBack()">
         <i class="fa-solid fa-arrow-left"></i> <span>ត្រឡប់</span>
@@ -438,7 +438,7 @@
               <span><span id="txtTeacherPronoun">ខ្ញុំបាទ</span>ឈ្មោះ៖</span>
               <span class="val-muol-blue" id="valTeacherName">........................</span>
               <span>ជាគ្រូប្រចាំ</span>
-              <span class="val-muol-blue" id="valClass">ថ្នាក់ទី ៤ ( ក )</span>
+              <span class="val-muol-blue" id="valClass">ថ្នាក់ទី ៤(ក)</span>
               <span>នៃ</span>
               <span class="val-muol-blue">សាលាបឋមសិក្សា កំពង់ល្ពៅ</span>
             </div>
@@ -460,7 +460,7 @@
               <span>លោក លោកស្រីដែលជាអាណាព្យាបាលរបស់សិស្សឈ្មោះ៖</span>
               <span class="val-muol-purple" id="valStudentName">................................</span>
               <span>ជាសិស្ស</span>
-              <span class="val-muol-blue" id="valStudentClass">ថ្នាក់ទី ៤ ( ក )</span>
+              <span class="val-muol-blue" id="valStudentClass">ថ្នាក់ទី ៤(ក)</span>
               <span>បានជ្រាបថា៖</span>
             </div>
 
@@ -791,8 +791,14 @@
     let currentSelectedClass = cleanGrade(USER_CLASS) || '៤(ក)';
     let absentEligibleStudents = [];
 
+    /* 🌟 Helper Function សម្អាតឈ្មោះថ្នាក់កុំឱ្យជាន់ពាក្យ «ថ្នាក់ទី» */
     function cleanGrade(g) {
       return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').replace(/[()\-_\s]/g, '').trim();
+    }
+
+    function formatGradeLabel(g) {
+      const pure = String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').trim();
+      return `ថ្នាក់ទី ${pure}`;
     }
 
     /* 📅 គណនាកាលបរិច្ឆេទចន្ទគតិ-សូរិយគតិ */
@@ -908,7 +914,7 @@
       pickCalendarDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
     }
 
-    /* 2. DROPDOWNS & CLASS SELECTION */
+    /* 2. 🏫 DROPDOWNS & CLASS SELECTION (កែសម្រួលកុំឱ្យចេញពាក្យ «ថ្នាក់ទី» ត្រួតគ្នា) */
     function toggleDropdown(id) {
       const p = document.getElementById(id);
       const isShow = p.classList.contains('show');
@@ -933,9 +939,10 @@
         if (!rawClasses.length) rawClasses = ['១', '២', '៣', '៤(ក)', '៤(ខ)', '៥', '៦'];
         rawClasses.sort((a,b) => a.localeCompare(b, 'km'));
 
+        // 🌟 ប្រើ formatGradeLabel កុំឱ្យចេញ «ថ្នាក់ទី ថ្នាក់ទី...»
         dd.innerHTML = rawClasses.map(c => `
           <div class="dd-item ${cleanGrade(c) === currentSelectedClass ? 'active' : ''}" data-class="${c}" onclick="selectClass('${c}')">
-            <span class="dd-item-left"><i class="fa-solid fa-school" style="color:var(--primary);"></i> ថ្នាក់ទី ${c}</span>
+            <span class="dd-item-left"><i class="fa-solid fa-school" style="color:var(--primary);"></i> ${formatGradeLabel(c)}</span>
             <i class="fa-solid fa-check" style="${cleanGrade(c) === currentSelectedClass ? '' : 'display:none;'}"></i>
           </div>
         `).join('');
@@ -949,12 +956,11 @@
 
     async function selectClass(rawClass) {
       currentSelectedClass = cleanGrade(rawClass);
-      const cleanClassNum = rawClass.replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '');
-      const displayClsText = `ថ្នាក់ទី ${cleanClassNum}`;
+      const displayClsText = formatGradeLabel(rawClass);
 
       document.getElementById('txtClassSelect').innerText = displayClsText;
-      document.getElementById('valClass').innerText = `ថ្នាក់ទី ${cleanClassNum}`;
-      document.getElementById('valStudentClass').innerText = `ថ្នាក់ទី ${cleanClassNum}`;
+      document.getElementById('valClass').innerText = displayClsText;
+      document.getElementById('valStudentClass').innerText = displayClsText;
 
       document.querySelectorAll('#ddClassSelect .dd-item').forEach(el => {
         const itemClass = cleanGrade(el.getAttribute('data-class'));
