@@ -512,6 +512,11 @@
     .red-bold { color: #dc2626 !important; font-weight: bold; font-size: 13.5px; }
     .sheet3 .custom-table th, .sheet3 .custom-table td { height: 25px; padding: 3px 2px; }
     .sheet3 .custom-table { font-size: 13.5px; }
+    .sheet3 .custom-table td.eval-cell { text-align: left; vertical-align: top; padding: 6px 9px; font-size: 14px; line-height: 1.65; height: auto; white-space: normal; }
+    .eval-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .eval-box { border: 1.35px solid var(--navy); padding: 6px 10px 8px; font-size: 14px; line-height: 1.65; min-height: 84px; background: #ffffff !important; color: var(--navy) !important; }
+    .eval-box-title { font-size: 14.5px; margin-bottom: 2px; }
+    .eval-dots { border-bottom: 1.2px dotted var(--navy); height: 24px; }
     .custom-table td.red-bold, .custom-table th.red-bold, .custom-table .red-bold { color: #dc2626 !important; }
     /* ពាក្យ "ចំណាត់ថ្នាក់" ពណ៌ក្រហម (ទុកទំហំអក្សរតាមតួដើម) */
     .red-text { color: #dc2626 !important; font-weight: bold; }
@@ -785,6 +790,119 @@
       if (n >= 6.00) return 'D';
       if (n >= 5.00) return 'E';
       return 'F';
+    }
+
+    /* =========================================================
+       📝 ការវាយតម្លៃ (គ. វាយតម្លៃសិស្សលើការសិក្សា / ង. ការសរសើរ និងកំណែលម្អ)
+       ប្តូរលេខកំណត់ទាំងនេះបានតាមចិត្ត
+    ========================================================= */
+    const EVAL_STRONG_MIN  = 8;    // មុខវិជ្ជា "ពូកែ" ពេលពិន្ទុ ≥ លេខនេះ
+    const EVAL_WEAK_MAX    = 5;    // មុខវិជ្ជា "គួរពង្រឹង" ពេលពិន្ទុ < លេខនេះ
+    const EVAL_TREND_DELTA = 0.5;  // ឆមាសទី២ ខុសពីឆមាសទី១ ចាប់ពីប៉ុន្មានពិន្ទុ ទើបនិយាយថា ថយចុះ/រីកចម្រើន
+
+    const GRADE_TEXT = {
+      A: 'លទ្ធផលសិក្សាល្អឥតខ្ចោះ សូមរក្សាការខិតខំនេះបន្តទៀត។',
+      B: 'លទ្ធផលសិក្សាល្អ បើខិតខំបន្ថែមទៀតនឹងកាន់តែប្រសើរ។',
+      C: 'លទ្ធផលសិក្សាមធ្យម គួរខិតខំរៀនបន្ថែមទៀត។',
+      D: 'លទ្ធផលសិក្សានៅខ្សោយបន្តិច ត្រូវប្រឹងប្រែងបន្ថែមទៀត។',
+      E: 'លទ្ធផលសិក្សានៅខ្សោយ ត្រូវយកចិត្តទុកដាក់រៀន និងត្រូវការការជួយបន្ថែម។',
+      F: 'លទ្ធផលសិក្សាមិនទាន់គ្រប់គ្រាន់ ត្រូវការតាមដានជួយពង្រឹងជាបន្ទាន់។'
+    };
+
+    /* បញ្ជីមុខវិជ្ជា + ពិន្ទុ (មួយឆមាស ឬមធ្យមនៃពីរឆមាស) */
+    function subjectList(obj1, obj2) {
+      const get = (o, key) => {
+        const v = o ? o[key] : '';
+        return (v !== '' && v !== undefined && v !== null && !isNaN(Number(v))) ? Number(v) : null;
+      };
+      return SEMESTER_SUBJECTS.map(sub => {
+        const a = get(obj1, sub.key);
+        if (obj2 === undefined) return a === null ? null : { label: sub.label, val: a };
+        const b = get(obj2, sub.key);
+        if (a === null && b === null) return null;
+        return { label: sub.label, val: a === null ? b : (b === null ? a : (a + b) / 2) };
+      }).filter(Boolean);
+    }
+    const joinLabels = list => list.map(x => x.label).join(' និង');
+
+    function trendOf(sem1, sem2) {
+      if (sem1 > 0 && sem2 > 0) {
+        const d = sem2 - sem1;
+        if (d <= -EVAL_TREND_DELTA) return 'down';
+        if (d >= EVAL_TREND_DELTA) return 'up';
+      }
+      return '';
+    }
+
+    /* ឆមាសនីមួយៗ */
+    function semesterEvalText(scoreObj, semAvg) {
+      if (!(semAvg > 0)) return '';
+      const g = getGradeFromAverage(semAvg);
+      let t = GRADE_TEXT[g] || '';
+      const subs = subjectList(scoreObj);
+      if (!subs.length) return t;
+      if (g === 'A' || g === 'B') {
+        const best = subs.slice().sort((x, y) => y.val - x.val)[0];
+        t += ' ពូកែខាង' + best.label + '។';
+      } else {
+        const worst = subs.slice().sort((x, y) => x.val - y.val)[0];
+        if (worst.val < EVAL_WEAK_MAX) t += ' គួរពង្រឹងមុខវិជ្ជា' + worst.label + '។';
+      }
+      return t;
+    }
+
+    /* ប្រចាំឆ្នាំ */
+    function yearEvalText(yAvg, sem1, sem2) {
+      if (!(yAvg > 0)) return '';
+      const g = getGradeFromAverage(yAvg);
+      let t = 'និទ្ទេសប្រចាំឆ្នាំ ' + g + '។ ' + (GRADE_TEXT[g] || '');
+      const tr = trendOf(sem1, sem2);
+      if (tr === 'down') t += ' លទ្ធផលថយចុះនៅឆមាសទី២ គួរប្រុងប្រយ័ត្ន។';
+      if (tr === 'up')   t += ' មានការរីកចម្រើនពីឆមាសទី១ ដល់ឆមាសទី២។';
+      t += (yAvg >= 5) ? ' សមនឹងឡើងថ្នាក់បាន។' : ' មិនទាន់សមនឹងឡើងថ្នាក់ ត្រូវជួយពង្រឹងបន្ថែម។';
+      return t;
+    }
+
+    /* ការសរសើរ */
+    function praiseText(rank, s1Obj, s2Obj, sem1, sem2) {
+      const parts = [];
+      if (Number(rank) > 0 && Number(rank) <= 5) parts.push('បានចំណាត់ថ្នាក់ទី ' + toKhmerNum(rank) + ' ក្នុងថ្នាក់។');
+      const strong = subjectList(s1Obj, s2Obj).filter(x => x.val >= EVAL_STRONG_MIN).sort((a, b) => b.val - a.val).slice(0, 2);
+      if (strong.length) parts.push('ពូកែខាង' + joinLabels(strong) + '។');
+      if (trendOf(sem1, sem2) === 'up') parts.push('មានការខិតខំរីកចម្រើនជាងឆមាសទី១។');
+      return parts.join(' ');
+    }
+
+    /* កំណែលម្អ */
+    function improveText(s1Obj, s2Obj, sem1, sem2) {
+      const parts = [];
+      const weak = subjectList(s1Obj, s2Obj).filter(x => x.val < EVAL_WEAK_MAX).sort((a, b) => a.val - b.val).slice(0, 2);
+      if (weak.length) parts.push('គួរពង្រឹងមុខវិជ្ជា' + joinLabels(weak) + '។');
+      if (trendOf(sem1, sem2) === 'down') parts.push('គួរខិតខំឡើងវិញ លទ្ធផលថយចុះនៅឆមាសទី២។');
+      return parts.join(' ');
+    }
+
+    const dottedLines = n => '<div class="eval-dots"></div>'.repeat(n);
+
+    /* ធានាថាខ្លឹមសារសន្លឹកទី៣ មិនហៀរចេញក្រៅប្រអប់ (បង្រួមបន្តិចបើវែងពេក) */
+    function fitSheet3Pages() {
+      document.querySelectorAll('.sheet3 .page-box').forEach(box => {
+        let outer = box.querySelector(':scope > .fit-outer');
+        if (!outer) {
+          const child = box.firstElementChild;
+          if (!child) return;
+          outer = document.createElement('div');
+          outer.className = 'fit-outer';
+          outer.style.cssText = 'flex:1 1 auto; min-height:0; overflow:hidden;';
+          child.classList.add('fit-inner');
+          box.insertBefore(outer, child);
+          outer.appendChild(child);
+        }
+        const inner = outer.firstElementChild;
+        inner.style.zoom = 1;
+        const need = inner.offsetHeight, have = outer.clientHeight;
+        if (need > have && have > 0) inner.style.zoom = Math.max(0.7, (have / need) * 0.985);
+      });
     }
 
     /* 4. INITIALIZATION */
@@ -1267,6 +1385,12 @@
         const s1MonthlyVal = cm.month1 > 0 ? cm.month1.toFixed(2) : '';
         const s2MonthlyVal = cm.month2 > 0 ? cm.month2.toFixed(2) : '';
 
+        const evS1      = semesterEvalText(s1Score, s1SemVal);
+        const evS2      = semesterEvalText(s2Score, s2SemVal);
+        const evYear    = yearEvalText(cm.year, s1SemVal, s2SemVal);
+        const evPraise  = praiseText(yRankNum, s1Score, s2Score, s1SemVal, s2SemVal);
+        const evImprove = improveText(s1Score, s2Score, s1SemVal, s2SemVal);
+
         // ================= SHEET 1: ក្របក្រៅ =================
         if (sheetFilter === 'ALL' || sheetFilter === '1') {
           const sheet1 = document.createElement('div');
@@ -1554,52 +1678,48 @@
                   <div>ឆ្នាំសិក្សា ៖ ២០២៦-២០២៧</div>
                 </div>
 
-                <div class="f-bold" style="margin-bottom: 6px; font-size: 14px;">គ. វាយតម្លៃសិស្សលើការសិក្សា</div>
-                <table class="custom-table" style="height: 95px;">
+                <div class="f-moul" style="margin-bottom: 6px; font-size: 14.5px;">គ. វាយតម្លៃសិស្សលើការសិក្សា</div>
+                <table class="custom-table">
                   <thead>
                     <tr>
-                      <th style="width: 25%;">ឆមាសទី១</th>
-                      <th style="width: 35%;">ឆមាសទី២</th>
-                      <th style="width: 40%;">ប្រចាំឆ្នាំ</th>
+                      <th style="width: 31%;">ឆមាសទី១</th>
+                      <th style="width: 31%;">ឆមាសទី២</th>
+                      <th style="width: 38%;">ប្រចាំឆ្នាំ</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr style="font-size: 13.5px; text-align: left; vertical-align: top; padding: 4px;">
-                      <td>${s1SemVal >= 5 ? 'លទ្ធផលសិក្សាមធ្យម' : ''}</td>
-                      <td>${s2SemVal >= 5 ? 'លទ្ធផលសិក្សាមធ្យម គួរខិតខំរៀនបន្ថែម' : ''}</td>
-                      <td>និទ្ទេសប្រចាំឆ្នាំ ${yGradeVal} លទ្ធផលសិក្សាមធ្យម គួរខិតខំរៀនបន្ថែមទៀត។ សមនឹងឡើងថ្នាក់បាន។</td>
+                    <tr>
+                      <td class="eval-cell">${evS1}</td>
+                      <td class="eval-cell">${evS2}</td>
+                      <td class="eval-cell">${evYear}</td>
                     </tr>
                   </tbody>
                 </table>
 
-                <div class="f-bold" style="margin: 13px 0 6px 0; font-size: 14px;">ឃ. លទ្ធផលប្រចាំឆ្នាំ</div>
-                <div style="font-size: 14px; line-height: 2.1; margin-left: 6px;">
+                <div class="f-moul" style="margin: 10px 0 4px 0; font-size: 14.5px;">ឃ. លទ្ធផលប្រចាំឆ្នាំ</div>
+                <div style="font-size: 14px; line-height: 1.95; margin-left: 2px;">
                   <div>ត្រូវបានឡើងថ្នាក់ទី ៖ <strong class="f-bold">${getNextGrade(cls)}</strong></div>
                   <div>ត្រូវប្រឡងឡើងថ្នាក់ ៖ ................. មុខវិជ្ជាដែលត្រូវប្រឡង ៖ .................</div>
                   <div>ត្រូវរៀនត្រួតថ្នាក់ ៖ ................. ត្រូវរៀនឡើងថ្នាក់ទី ៖ .................</div>
                 </div>
 
-                <div class="f-bold" style="margin: 13px 0 6px 0; font-size: 14px;">ង. ការសរសើរ និងកំណែទម្រង់</div>
-                <table class="custom-table" style="height: 80px;">
-                  <thead>
-                    <tr>
-                      <th style="width: 50%;">ការសរសើរ</th>
-                      <th style="width: 50%;">កំណែទម្រង់</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr style="font-size: 13.5px; text-align: left; vertical-align: top; padding: 4px;">
-                      <td>${Number(yRankNum) <= 5 && Number(yRankNum) > 0 ? 'បានចំណាត់ថ្នាក់ទី ' + toKhmerNum(yRankNum) + ' ក្នុងថ្នាក់ ។ ពូកែខាងសិក្សាសង្គម ។' : 'ខិតខំរៀនសូត្រ'}</td>
-                      <td>គួរពង្រឹងមុខវិជ្ជាសរសេរតាមអាន ។</td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div class="f-moul" style="margin: 10px 0 6px 0; font-size: 14.5px;">ង. ការសរសើរ និងកំណែលម្អ</div>
+                <div class="eval-boxes">
+                  <div class="eval-box">
+                    <div class="f-bold eval-box-title">ការសរសើរ</div>
+                    ${evPraise || dottedLines(3)}
+                  </div>
+                  <div class="eval-box">
+                    <div class="f-bold eval-box-title">កំណែលម្អ</div>
+                    ${evImprove || dottedLines(3)}
+                  </div>
+                </div>
 
-                <div class="sig-block" style="margin-top: 12px; font-size: 13.5px;">
+                <div class="sig-block" style="margin-top: 8px; font-size: 13.5px;">
                   <div class="sig-inner">
                     <div>ថ្ងៃទី...... ខែ...... ឆ្នាំ២០២៦</div>
                     <div class="f-bold" style="margin-top: 2px;">គ្រូទទួលបន្ទុកថ្នាក់</div>
-                    <div style="font-weight: bold; margin-top: 34px; font-size: 14px;">${TEACHER_NAME || ''}</div>
+                    <div style="font-weight: bold; margin-top: 30px; font-size: 14px;">${TEACHER_NAME || ''}</div>
                   </div>
                 </div>
 
@@ -1619,6 +1739,9 @@
           container.appendChild(sheet3);
         }
       });
+
+      fitSheet3Pages();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitSheet3Pages);
     }
   </script>
 </body>
