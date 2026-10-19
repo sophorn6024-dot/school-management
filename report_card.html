@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>ព្រឹត្តិបត្រពិន្ទុ - សាលាបឋមសិក្សាកំពង់ល្ពៅ</title>
 
-  <!-- 🔤 Google Fonts Khmer -->
+  <!-- 🔤 Google Fonts Khmer & FontAwesome 6.5.1 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;900&family=Moul&family=Siemreap&display=swap" rel="stylesheet">
@@ -804,7 +804,7 @@
       <button class="cal-btn-ico" type="button" onclick="shiftCalendarMonth(1)">›</button>
     </div>
     <div class="cal-monthhead">
-      <div class="m" id="calMTitle"></div>
+      <div class="m font-moul" id="calMTitle"></div>
       <div class="s" id="calMSub"></div>
     </div>
     <div class="cal-dow">
@@ -823,888 +823,14 @@
   </div>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ MOMENTKH KHMER CALENDAR LIBRARY (ចម្លងពីឯកសារដែលអ្នកផ្ញើមក ១០០%)
+       ⚡ MAIN CONTROLLER & APPLICATION LOGIC
   ══════════════════════════════════════════════════════════════════════════ -->
   <script>
-(function (root, factory) {
-  if (typeof define === 'function' && define.amd) {
-    define([], factory);
-  } else if (typeof module === 'object' && module.exports) {
-    module.exports = factory();
-  } else {
-    var exp = factory();
-    root.momentkh = exp;
-    root.MoonPhase = exp.MoonPhase;
-    root.MonthIndex = exp.MonthIndex;
-    root.AnimalYear = exp.AnimalYear;
-    root.AnimalYearEmojis = exp.AnimalYearEmojis;
-    root.Sak = exp.Sak;
-    root.DayOfWeek = exp.DayOfWeek;
-  }
-}(typeof self !== 'undefined' ? self : this, function () {
-  var module = { exports: {} };
-  var exports = module.exports;
-  "use strict";
-
-  var MoonPhase;
-  (function (MoonPhase) {
-      MoonPhase[MoonPhase["Waxing"] = 0] = "Waxing";
-      MoonPhase[MoonPhase["Waning"] = 1] = "Waning";
-  })(MoonPhase || (exports.MoonPhase = MoonPhase = {}));
-
-  var MonthIndex;
-  (function (MonthIndex) {
-      MonthIndex[MonthIndex["Migasir"] = 0] = "Migasir";
-      MonthIndex[MonthIndex["Boss"] = 1] = "Boss";
-      MonthIndex[MonthIndex["Meak"] = 2] = "Meak";
-      MonthIndex[MonthIndex["Phalkun"] = 3] = "Phalkun";
-      MonthIndex[MonthIndex["Cheit"] = 4] = "Cheit";
-      MonthIndex[MonthIndex["Pisakh"] = 5] = "Pisakh";
-      MonthIndex[MonthIndex["Jesth"] = 6] = "Jesth";
-      MonthIndex[MonthIndex["Asadh"] = 7] = "Asadh";
-      MonthIndex[MonthIndex["Srap"] = 8] = "Srap";
-      MonthIndex[MonthIndex["Phatrabot"] = 9] = "Phatrabot";
-      MonthIndex[MonthIndex["Assoch"] = 10] = "Assoch";
-      MonthIndex[MonthIndex["Kadeuk"] = 11] = "Kadeuk";
-      MonthIndex[MonthIndex["Pathamasadh"] = 12] = "Pathamasadh";
-      MonthIndex[MonthIndex["Tutiyasadh"] = 13] = "Tutiyasadh";
-  })(MonthIndex || (exports.MonthIndex = MonthIndex = {}));
-
-  var AnimalYear;
-  (function (AnimalYear) {
-      AnimalYear[AnimalYear["Chhut"] = 0] = "Chhut";
-      AnimalYear[AnimalYear["Chlov"] = 1] = "Chlov";
-      AnimalYear[AnimalYear["Khal"] = 2] = "Khal";
-      AnimalYear[AnimalYear["Thos"] = 3] = "Thos";
-      AnimalYear[AnimalYear["Rong"] = 4] = "Rong";
-      AnimalYear[AnimalYear["Masagn"] = 5] = "Masagn";
-      AnimalYear[AnimalYear["Momee"] = 6] = "Momee";
-      AnimalYear[AnimalYear["Momae"] = 7] = "Momae";
-      AnimalYear[AnimalYear["Vok"] = 8] = "Vok";
-      AnimalYear[AnimalYear["Roka"] = 9] = "Roka";
-      AnimalYear[AnimalYear["Cho"] = 10] = "Cho";
-      AnimalYear[AnimalYear["Kor"] = 11] = "Kor";
-  })(AnimalYear || (exports.AnimalYear = AnimalYear = {}));
-
-  var Sak;
-  (function (Sak) {
-      Sak[Sak["SamridhiSak"] = 0] = "SamridhiSak";
-      Sak[Sak["AekSak"] = 1] = "AekSak";
-      Sak[Sak["ToSak"] = 2] = "ToSak";
-      Sak[Sak["TreiSak"] = 3] = "TreiSak";
-      Sak[Sak["ChattvaSak"] = 4] = "ChattvaSak";
-      Sak[Sak["PanchaSak"] = 5] = "PanchaSak";
-      Sak[Sak["ChhaSak"] = 6] = "ChhaSak";
-      Sak[Sak["SappaSak"] = 7] = "SappaSak";
-      Sak[Sak["AtthaSak"] = 8] = "AtthaSak";
-      Sak[Sak["NappaSak"] = 9] = "NappaSak";
-  })(Sak || (exports.Sak = Sak = {}));
-
-  var DayOfWeek;
-  (function (DayOfWeek) {
-      DayOfWeek[DayOfWeek["Sunday"] = 0] = "Sunday";
-      DayOfWeek[DayOfWeek["Monday"] = 1] = "Monday";
-      DayOfWeek[DayOfWeek["Tuesday"] = 2] = "Tuesday";
-      DayOfWeek[DayOfWeek["Wednesday"] = 3] = "Wednesday";
-      DayOfWeek[DayOfWeek["Thursday"] = 4] = "Thursday";
-      DayOfWeek[DayOfWeek["Friday"] = 5] = "Friday";
-      DayOfWeek[DayOfWeek["Saturday"] = 6] = "Saturday";
-  })(DayOfWeek || (exports.DayOfWeek = DayOfWeek = {}));
-
-  const LunarMonthNames = [
-      'មិគសិរ', 'បុស្ស', 'មាឃ', 'ផល្គុន', 'ចេត្រ', 'ពិសាខ',
-      'ជេស្ឋ', 'អាសាឍ', 'ស្រាពណ៍', 'ភទ្របទ', 'អស្សុជ', 'កត្ដិក',
-      'បឋមាសាឍ', 'ទុតិយាសាឍ'
-  ];
-  const AnimalYearNames = [
-      'ជូត', 'ឆ្លូវ', 'ខាល', 'ថោះ', 'រោង', 'ម្សាញ់',
-      'មមី', 'មមែ', 'វក', 'រកា', 'ច', 'កុរ'
-  ];
-  const SakNames = [
-      'សំរឹទ្ធិស័ក', 'ឯកស័ក', 'ទោស័ក', 'ត្រីស័ក', 'ចត្វាស័ក',
-      'បញ្ចស័ក', 'ឆស័ក', 'សប្តស័ក', 'អដ្ឋស័ក', 'នព្វស័ក'
-  ];
-  const WeekdayNames = [
-      'អាទិត្យ', 'ចន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'
-  ];
-  const MoonPhaseNames = ['កើត', 'រោច'];
-
-  function isGregorianLeapYear(year) {
-      return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-  }
-  function getDaysInGregorianMonth(year, month) {
-      const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-      if (month === 2 && isGregorianLeapYear(year)) return 29;
-      return daysInMonth[month - 1];
-  }
-  function gregorianToJulianDay(year, month, day) {
-      const a = Math.floor((14 - month) / 12);
-      const y = year + 4800 - a;
-      const m = month + 12 * a - 3;
-      return day + Math.floor((153 * m + 2) / 5) + 365 * y +
-          Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
-  }
-  function julianDayToGregorian(jdn) {
-      const a = jdn + 32044;
-      const b = Math.floor((4 * a + 3) / 146097);
-      const c = a - Math.floor((146097 * b) / 4);
-      const d = Math.floor((4 * c + 3) / 1461);
-      const e = c - Math.floor((1461 * d) / 4);
-      const m = Math.floor((5 * e + 2) / 153);
-      const day = e - Math.floor((153 * m + 2) / 5) + 1;
-      const month = m + 3 - 12 * Math.floor(m / 10);
-      const year = 100 * b + d - 4800 + Math.floor(m / 10);
-      return { year, month, day };
-  }
-  function getDayOfWeek(year, month, day) {
-      const jdn = gregorianToJulianDay(year, month, day);
-      return (jdn + 1) % 7;
-  }
-  function adToJs(adYear) { return adYear - 638; }
-  function beToJs(beYear) { return beYear - 1182; }
-
-  function getAharkun(beYear) { return Math.floor((beYear * 292207 + 499) / 800) + 4; }
-  function getAharkunMod(beYear) { return (beYear * 292207 + 499) % 800; }
-  function getKromthupul(beYear) { return 800 - getAharkunMod(beYear); }
-  function getAvoman(beYear) { return (getAharkun(beYear) * 11 + 25) % 692; }
-  function getBodithey(beYear) {
-      const aharkun = getAharkun(beYear);
-      return (Math.floor((aharkun * 11 + 25) / 692) + aharkun + 29) % 30;
-  }
-  function isKhmerSolarLeap(beYear) { return getKromthupul(beYear) <= 207; }
-  function isKhmerLeapDayByCalculation(beYear) {
-      const avoman = getAvoman(beYear);
-      const isSolarLeap = isKhmerSolarLeap(beYear);
-      if (avoman === 0 && getAvoman(beYear - 1) === 137) return true;
-      else if (isSolarLeap) return avoman < 127;
-      else if (avoman === 137 && getAvoman(beYear + 1) === 0) return false;
-      else if (avoman < 138) return true;
-      return false;
-  }
-  function isKhmerLeapMonth(beYear) {
-      const bodithey = getBodithey(beYear);
-      const boditheyNextYear = getBodithey(beYear + 1);
-      if (bodithey === 25 && boditheyNextYear === 5) return false;
-      return (bodithey === 24 && boditheyNextYear === 6) || (bodithey >= 25) || (bodithey < 6);
-  }
-  function getLeapType(beYear) {
-      if (isKhmerLeapMonth(beYear)) return 1;
-      else if (isKhmerLeapDayByCalculation(beYear)) return 2;
-      else if (isKhmerLeapMonth(beYear - 1)) {
-          let previousYear = beYear - 1;
-          while (true) {
-              if (isKhmerLeapDayByCalculation(previousYear)) return 2;
-              previousYear -= 1;
-              if (!isKhmerLeapMonth(previousYear)) return 0;
-          }
-      }
-      return 0;
-  }
-  function getNumberOfDaysInKhmerMonth(monthIndex, beYear) {
-      const leapType = getLeapType(beYear);
-      if (monthIndex === MonthIndex.Jesth && leapType === 2) return 30;
-      if (monthIndex === MonthIndex.Pathamasadh || monthIndex === MonthIndex.Tutiyasadh) return leapType === 1 ? 30 : 0;
-      return monthIndex % 2 === 0 ? 29 : 30;
-  }
-  function getNumberOfDaysInKhmerYear(beYear) {
-      const leapType = getLeapType(beYear);
-      if (leapType === 1) return 384;
-      if (leapType === 2) return 355;
-      return 354;
-  }
-  function nextMonthOf(monthIndex, beYear) {
-      const leapType = getLeapType(beYear);
-      if (monthIndex === MonthIndex.Jesth && leapType === 1) return MonthIndex.Pathamasadh;
-      if (monthIndex === MonthIndex.Kadeuk) return MonthIndex.Migasir;
-      if (monthIndex === MonthIndex.Pathamasadh) return MonthIndex.Tutiyasadh;
-      if (monthIndex === MonthIndex.Tutiyasadh) return MonthIndex.Srap;
-      return (monthIndex + 1);
-  }
-
-  function getAharkunJs(jsYear) { return Math.floor((jsYear * 292207 + 373) / 800) + 1; }
-  function getAvomanJs(jsYear) { return (getAharkunJs(jsYear) * 11 + 650) % 692; }
-  function getKromthupulJs(jsYear) { return 800 - ((292207 * jsYear + 373) % 800); }
-  function getBoditheyJs(jsYear) {
-      const aharkun = getAharkunJs(jsYear);
-      return (aharkun + Math.floor((11 * aharkun + 650) / 692)) % 30;
-  }
-  function isAdhikameas(jsYear) {
-      const bodithey = getBoditheyJs(jsYear);
-      const boditheyNext = getBoditheyJs(jsYear + 1);
-      if (bodithey === 24 && boditheyNext === 6) return true;
-      if (bodithey === 25 && boditheyNext === 5) return false;
-      return bodithey > 24 || bodithey < 6;
-  }
-  function isChantrathimeas(jsYear) {
-      const avoman = getAvomanJs(jsYear);
-      const avomanNext = getAvomanJs(jsYear + 1);
-      const avomanPrev = getAvomanJs(jsYear - 1);
-      const isSolarLeap = getKromthupulJs(jsYear) <= 207;
-      if (avoman === 0 && avomanPrev === 137) return true;
-      if (isSolarLeap) return avoman < 127;
-      if (avoman === 137 && avomanNext === 0) return false;
-      if (!isSolarLeap && avoman < 138) return true;
-      if (avomanPrev === 137 && avoman === 0) return true;
-      return false;
-  }
-  function has366Days(jsYear) { return getKromthupulJs(jsYear) <= 207; }
-  function getSunInfo(jsYear, sotin) {
-      const infoOfPrevYear = { kromathopol: getKromthupulJs(jsYear - 1) };
-      const r2 = 800 * sotin + infoOfPrevYear.kromathopol;
-      const reasey = Math.floor(r2 / 24350);
-      const r3 = r2 % 24350;
-      const angsar = Math.floor(r3 / 811);
-      const r4 = r3 % 811;
-      const l1 = Math.floor(r4 / 14);
-      const libda = l1 - 3;
-      const sunAverageAsLibda = (30 * 60 * reasey) + (60 * angsar) + libda;
-      const s1 = ((30 * 60 * 2) + (60 * 20));
-      let leftOver = sunAverageAsLibda - s1;
-      if (sunAverageAsLibda < s1) leftOver += (30 * 60 * 12);
-      const kaen = Math.floor(leftOver / (30 * 60));
-      let rs = -1;
-      if ([0, 1, 2].includes(kaen)) rs = kaen;
-      else if ([3, 4, 5].includes(kaen)) rs = (30 * 60 * 6) - leftOver;
-      else if ([6, 7, 8].includes(kaen)) rs = leftOver - (30 * 60 * 6);
-      else if ([9, 10, 11].includes(kaen)) rs = ((30 * 60 * 11) + (60 * 29) + 60) - leftOver;
-      const lastLeftOver = {
-          reasey: Math.floor(rs / (30 * 60)),
-          angsar: Math.floor((rs % (30 * 60)) / 60),
-          libda: rs % 60
-      };
-      let khan, pouichalip;
-      if (lastLeftOver.angsar >= 15) {
-          khan = 2 * lastLeftOver.reasey + 1;
-          pouichalip = 60 * (lastLeftOver.angsar - 15) + lastLeftOver.libda;
-      } else {
-          khan = 2 * lastLeftOver.reasey;
-          pouichalip = 60 * lastLeftOver.angsar + lastLeftOver.libda;
-      }
-      const chhayaSunMap = [
-          { multiplicity: 35, chhaya: 0 }, { multiplicity: 32, chhaya: 35 },
-          { multiplicity: 27, chhaya: 67 }, { multiplicity: 22, chhaya: 94 },
-          { multiplicity: 13, chhaya: 116 }, { multiplicity: 5, chhaya: 129 }
-      ];
-      const chhayaSun = khan <= 5 ? chhayaSunMap[khan] : { multiplicity: 0, chhaya: 134 };
-      const q = Math.floor((pouichalip * chhayaSun.multiplicity) / 900);
-      const pholAsLibda = q + chhayaSun.chhaya;
-      const sunInaugurationAsLibda = kaen <= 5 ? sunAverageAsLibda - pholAsLibda : sunAverageAsLibda + pholAsLibda;
-      return {
-          sunInaugurationAsLibda,
-          reasey: Math.floor(sunInaugurationAsLibda / (30 * 60)),
-          angsar: Math.floor((sunInaugurationAsLibda % (30 * 60)) / 60),
-          libda: sunInaugurationAsLibda % 60
-      };
-  }
-  function getNewYearInfo(jsYear) {
-      const sotins = has366Days(jsYear - 1) ? [363, 364, 365, 366] : [362, 363, 364, 365];
-      const newYearsDaySotins = sotins.map(sotin => getSunInfo(jsYear, sotin));
-      let timeOfNewYear = { hour: 0, minute: 0 };
-      for (const sotin of newYearsDaySotins) {
-          if (sotin.angsar === 0) {
-              const minutes = (24 * 60) - (sotin.libda * 24);
-              timeOfNewYear = { hour: Math.floor(minutes / 60) % 24, minute: minutes % 60 };
-              break;
-          }
-      }
-      const numberOfVanabatDays = (newYearsDaySotins[0].angsar === 0) ? 2 : 1;
-      return { timeOfNewYear, numberOfVanabatDays, newYearsDaySotins };
-  }
-
-  class KhmerDate {
-      constructor(day, moonPhase, monthIndex, beYear) {
-          this.day = day; this.moonPhase = moonPhase; this.monthIndex = monthIndex; this.beYear = beYear;
-      }
-      getDayNumber() {
-          return this.moonPhase === MoonPhase.Waxing ? this.day - 1 : 15 + (this.day - 1);
-      }
-      static fromDayNumber(dayNum) {
-          return dayNum < 15 ? { day: dayNum + 1, moonPhase: MoonPhase.Waxing } : { day: (dayNum - 15) + 1, moonPhase: MoonPhase.Waning };
-      }
-  }
-
-  function getMaybeBEYear(year, month) { return month <= 4 ? year + 543 : year + 544; }
-  const visakhaBocheaCache = {};
-  const newYearInfoCache = {};
-
-  function getPisakhaBochea(year, isSearching = false) {
-      if (visakhaBocheaCache[year]) return visakhaBocheaCache[year];
-      for (let searchMonth = 4; searchMonth <= 6; searchMonth++) {
-          const daysInMonth = new Date(year, searchMonth, 0).getDate();
-          for (let searchDay = 1; searchDay <= daysInMonth; searchDay++) {
-              const result = gregorianToKhmerInternal(year, searchMonth, searchDay, 12, 0, 0, true);
-              if (result.khmer.monthIndex === MonthIndex.Pisakh && result._khmerDateObj.getDayNumber() === 15) {
-                  const timestamp = new Date(year, searchMonth - 1, searchDay, 0, 0, 0, 0).getTime();
-                  visakhaBocheaCache[year] = timestamp;
-                  return timestamp;
-              }
-          }
-      }
-      const fallback = new Date(year, 3, 15, 0, 0, 0, 0).getTime();
-      visakhaBocheaCache[year] = fallback;
-      return fallback;
-  }
-
-  function gregorianToKhmerInternal(year, month, day, hour = 0, minute = 0, second = 0, isSearching = false) {
-      let epochJdn = gregorianToJulianDay(1900, 1, 1);
-      const targetJdn = gregorianToJulianDay(year, month, day);
-      let khmerMonth = 1;
-      let khmerDayNumber = 0;
-      let diffDays = targetJdn - epochJdn;
-
-      if (diffDays > 0) {
-          while (true) {
-              const epochGreg = julianDayToGregorian(epochJdn);
-              const nextYearBE = getMaybeBEYear(epochGreg.year + 1, epochGreg.month);
-              const daysInNextYear = getNumberOfDaysInKhmerYear(nextYearBE);
-              if (diffDays > daysInNextYear) { diffDays -= daysInNextYear; epochJdn += daysInNextYear; } else break;
-          }
-      } else if (diffDays < 0) {
-          while (diffDays < 0) {
-              const epochGreg = julianDayToGregorian(epochJdn);
-              const currentYearBE = getMaybeBEYear(epochGreg.year, epochGreg.month);
-              const daysInCurrentYear = getNumberOfDaysInKhmerYear(currentYearBE);
-              diffDays += daysInCurrentYear; epochJdn -= daysInCurrentYear;
-          }
-      }
-      while (diffDays > 0) {
-          const epochGreg = julianDayToGregorian(epochJdn);
-          const currentBE = getMaybeBEYear(epochGreg.year, epochGreg.month);
-          const daysInMonth = getNumberOfDaysInKhmerMonth(khmerMonth, currentBE);
-          if (diffDays > daysInMonth) { diffDays -= daysInMonth; epochJdn += daysInMonth; } else break;
-      }
-      khmerDayNumber = diffDays;
-      const finalBE = getMaybeBEYear(year, month);
-      const totalDaysInMonth = getNumberOfDaysInKhmerMonth(khmerMonth, finalBE);
-      if (khmerDayNumber >= totalDaysInMonth) {
-          khmerDayNumber = khmerDayNumber % totalDaysInMonth;
-          khmerMonth = nextMonthOf(khmerMonth, finalBE);
-      }
-      const khmerDayInfo = KhmerDate.fromDayNumber(khmerDayNumber);
-      let beYear;
-      if (isSearching) {
-          beYear = month <= 4 ? year + 543 : year + 544;
-      } else {
-          const inputTimestamp = new Date(year, month - 1, day, hour, minute, second).getTime();
-          const beYearTransitionTimestamp = getPisakhaBochea(year);
-          beYear = inputTimestamp >= beYearTransitionTimestamp ? year + 544 : year + 543;
-      }
-      let jsYear = beToJs(beYear);
-      let animalYearIndex = ((beYear + 4) % 12 + 12) % 12;
-      if (!isSearching) {
-          const newYearInfo = getNewYearFullInfo(year);
-          const inputTimestamp = new Date(year, month - 1, day, hour, minute, second).getTime();
-          const visakhaBocheaTimestamp = getPisakhaBochea(year);
-          if (inputTimestamp >= newYearInfo.newYearMoment.getTime() && inputTimestamp <= visakhaBocheaTimestamp) animalYearIndex = (animalYearIndex + 1) % 12;
-          if (inputTimestamp >= newYearInfo.lerngSakMoment.getTime() && inputTimestamp <= visakhaBocheaTimestamp) jsYear++;
-      }
-      const sakIndex = ((jsYear % 10) + 10) % 10;
-      const dayOfWeek = getDayOfWeek(year, month, day);
-      const khmerDate = new KhmerDate(khmerDayInfo.day, khmerDayInfo.moonPhase, khmerMonth, beYear);
-      return {
-          gregorian: { year, month, day, hour, minute, second, dayOfWeek },
-          khmer: {
-              day: khmerDayInfo.day,
-              moonPhase: khmerDayInfo.moonPhase,
-              moonPhaseName: MoonPhaseNames[khmerDayInfo.moonPhase],
-              monthIndex: khmerMonth,
-              monthName: LunarMonthNames[khmerMonth],
-              beYear: beYear,
-              animalYearName: AnimalYearNames[animalYearIndex],
-              sakName: SakNames[sakIndex],
-              dayOfWeekName: WeekdayNames[dayOfWeek]
-          },
-          _khmerDateObj: khmerDate
-      };
-  }
-
-  function getNewYearFullInfo(ceYear) {
-      if (newYearInfoCache[ceYear]) return newYearInfoCache[ceYear];
-      const jsYear = adToJs(ceYear);
-      let newYearInfo = getNewYearInfo(jsYear);
-      let bodithey = getBoditheyJs(jsYear);
-      if (isAdhikameas(jsYear - 1) && isChantrathimeas(jsYear - 1)) bodithey = (bodithey + 1) % 30;
-      const lunarDateLerngSak = { day: bodithey >= 6 ? bodithey - 1 : bodithey, month: bodithey >= 6 ? 4 : 5 };
-      const numberNewYearDay = newYearInfo.newYearsDaySotins[0].angsar === 0 ? 4 : 3;
-      const epochLerngSakGreg = { year: ceYear, month: 4, day: 17 };
-      const khEpoch = gregorianToKhmerInternal(ceYear, 4, 17, 12, 0, 0, true)._khmerDateObj;
-      const diffFromEpoch = ((khEpoch.monthIndex - 4) * 29 + khEpoch.getDayNumber()) - ((lunarDateLerngSak.month - 4) * 29 + lunarDateLerngSak.day);
-      const daysToSubtract = diffFromEpoch + numberNewYearDay - 1;
-      const epochJdn = gregorianToJulianDay(epochLerngSakGreg.year, epochLerngSakGreg.month, epochLerngSakGreg.day);
-      let newYearJdn = epochJdn - daysToSubtract;
-      const newYearDate = julianDayToGregorian(newYearJdn);
-      const newYearMoment = new Date(newYearDate.year, newYearDate.month - 1, newYearDate.day, newYearInfo.timeOfNewYear.hour, newYearInfo.timeOfNewYear.minute);
-      const lerngSakJdn = newYearJdn + numberNewYearDay - 1;
-      const lerngSakDate = julianDayToGregorian(lerngSakJdn);
-      const lerngSakMoment = new Date(lerngSakDate.year, lerngSakDate.month - 1, lerngSakDate.day, 0, 0, 0);
-      const result = { newYearMoment, lerngSakMoment };
-      newYearInfoCache[ceYear] = result;
-      return result;
-  }
-
-  function fromGregorian(year, month, day, hour = 0, minute = 0, second = 0) {
-      return gregorianToKhmerInternal(year, month, day, hour, minute, second, false);
-  }
-
-  exports.default = { fromGregorian, MoonPhase, MonthIndex, AnimalYear, Sak, DayOfWeek };
-  return exports.default;
-}));
-  </script>
-
-  <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ CALENDAR ENGINE HELPER FUNCTIONS (ចម្លងពីឯកសារប្រតិទិនដើម ១០០%)
-  ══════════════════════════════════════════════════════════════════════════ -->
-  <script>
-    var KD='០១២៣៤៥៦៧៨៩';
-    function kn(n){return String(n).replace(/\d/g,function(c){return KD[c];});}
-    var GM=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
-    var DOW=['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
-    var DOWS=['អា','ច','អ','ព','ព្រ','សុ','ស'];
-    var MN={0:'មិគសិរ',1:'បុស្ស',2:'មាឃ',3:'ផល្គុន',4:'ចេត្រ',5:'ពិសាខ',6:'ជេស្ឋ',7:'អាសាឍ',8:'ស្រាពណ៍',9:'ភទ្របទ',10:'អស្សុជ',11:'កត្តិក',12:'បឋមាសាឍ',13:'ទុតិយាសាឍ'};
-    var FIXED={'1-1':'ទិវាចូលឆ្នាំសកល','1-7':'ទិវាជ័យជម្នះលើរបបប្រល័យពូជសាសន៍','3-8':'ទិវានារីអន្តរជាតិ','5-1':'ទិវាពលកម្មអន្តរជាតិ','5-14':'ព្រះរាជពិធីបុណ្យចម្រើនព្រះជន្ម ព្រះមហាក្សត្រ','6-18':'ព្រះរាជពិធីបុណ្យចម្រើនព្រះជន្ម ព្រះវររាជមាតា','9-24':'ទិវាប្រកាសរដ្ឋធម្មនុញ្ញ','10-15':'ទិវាគោរពព្រះវិញ្ញាណក្ខន្ធ ព្រះបរមរតនកោដ្ឋ','10-29':'ព្រះរាជពិធីគ្រងព្រះបរមរាជសម្បត្តិ','11-9':'ពិធីបុណ្យឯករាជ្យជាតិ','12-29':'ទិវាសន្តិភាព'};
-
-    var calCache={};
-    function info(y,m,d){
-      var key=y*10000+m*100+d; if(calCache[key]) return calCache[key];
-      var r=momentkh.fromGregorian(y,m,d), k=r.khmer;
-      var o={y:y,m:m,d:d,dow:r.gregorian.dayOfWeek,kd:k.day,ph:k.moonPhase,mi:k.monthIndex,
-             mname:MN[k.monthIndex]||k.monthName,be:k.beYear,animal:k.animalYearName,sak:k.sakName};
-      calCache[key]=o; return o;
-    }
-    function addDays(y,m,d,n){var t=new Date(y,m-1,d+n);return [t.getFullYear(),t.getMonth()+1,t.getDate()];}
-    function isLast(o){var n=addDays(o.y,o.m,o.d,1),x=info(n[0],n[1],n[2]);return x.kd===1&&x.ph===0;}
-    function lunarText(o){return kn(o.kd)+(o.ph===0?'កើត':'រោច');}
-    function holy(o){
-      if(o.ph===0&&(o.kd===8||o.kd===15)) return true;
-      if(o.ph===1&&(o.kd===8||o.kd===14||o.kd===15)) return true;
-      return false;
-    }
-    function moon(o){
-      if(o.ph===0&&o.kd===15) return '🌕';
-      if(o.ph===0&&o.kd===8) return '🌓';
-      if(o.ph===1&&o.kd===8) return '🌗';
-      if(isLast(o)) return '🌑';
-      return '';
-    }
-    function hols(o){
-      var out=[], f=FIXED[o.m+'-'+o.d];
-      if(f) out.push({t:f,k:'nat'});
-      if(o.m===4&&o.d>=14&&o.d<=16) out.push({t:['ពិធីបុណ្យចូលឆ្នាំ ទី១','ពិធីបុណ្យចូលឆ្នាំ ទី២','ពិធីបុណ្យចូលឆ្នាំ ទី៣'][o.d-14],k:'nat'});
-      var ph=o.ph,d=o.kd,mi=o.mi;
-      if(ph===0&&d===15&&mi===3) out.push({t:'ពិធីបុណ្យមាឃបូជា',k:'bud'});
-      if(ph===0&&d===15&&mi===5) out.push({t:'ពិធីបុណ្យវិសាខបូជា',k:'nat'});
-      if(ph===1&&d===4&&mi===5)  out.push({t:'ព្រះរាជពិធីច្រត់ព្រះនង្គ័ល',k:'nat'});
-      if(ph===1&&mi===9&&(d===14||d===15)) out.push({t:'ពិធីបុណ្យភ្ជុំបិណ្ឌ',k:'nat'});
-      if(ph===0&&d===1&&mi===10) out.push({t:'ពិធីបុណ្យភ្ជុំបិណ្ឌ',k:'nat'});
-      if(mi===11&&((ph===0&&(d===14||d===15))||(ph===1&&d===1))) out.push({t:'ពិធីបុណ្យអុំទូក',k:'nat'});
-      if(ph===0&&d===15&&mi===10) out.push({t:'ថ្ងៃចេញវស្សា',k:'bud'});
-      return out;
-    }
-    function fullText(o){
-      return 'ថ្ងៃ'+DOW[o.dow]+' '+lunarText(o)+' ខែ'+o.mname+' ឆ្នាំ'+o.animal+' '+o.sak+' ពុទ្ធសករាជ '+kn(o.be);
-    }
-    // 🌟 កាលបរិច្ឆេទសូរិយគតិ៖ «កំពង់ល្ពៅ ថ្ងៃទី...» គ្មានឈ្មោះថ្ងៃនៃសប្តាហ៍ឡើយ
-    function gText(o){
-      return 'កំពង់ល្ពៅ ថ្ងៃទី' + kn(o.d) + ' ខែ' + GM[o.m - 1] + ' ឆ្នាំ' + kn(o.y);
-    }
-  </script>
-
-  <!-- =========================================================
-       3. JAVASCRIPT: SUPABASE & DYNAMIC REAL DATA
-  ========================================================= -->
-  <script>
-    const SUPABASE_URL = "https://nggnuobnrxiqjtcwlvwk.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    function readSession() {
-      try { return JSON.parse(localStorage.getItem('krou_supabase_user') || 'null'); } catch(e) { return null; }
-    }
-    const CURRENT_USER = readSession();
-    const USER_ROLE = CURRENT_USER?.role || "teacher";
-    const IS_ADMIN = String(USER_ROLE).toLowerCase().trim() === 'admin';
-
-    function cleanGrade(g) {
-      return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').replace(/[()\-_\s]/g, '').trim();
-    }
-
-    function getTeacherClass() {
-      const c = CURRENT_USER?.assigned_classes || CURRENT_USER?.assigned_class || CURRENT_USER?.grade || CURRENT_USER?.class || "";
-      return cleanGrade(c);
-    }
-
-    function checkAuthentication() {
-      if (!CURRENT_USER || !CURRENT_USER.username) {
-        document.getElementById('authDeniedWrap').style.display = 'flex';
-        document.getElementById('mainToolbar').style.display = 'none';
-        document.getElementById('paperStageWrapper').style.display = 'none';
-        return false;
-      }
-      document.getElementById('authDeniedWrap').style.display = 'none';
-      document.getElementById('mainToolbar').style.display = 'flex';
-      document.getElementById('paperStageWrapper').style.display = 'flex';
-      return true;
-    }
-
-    function goToIndex(e) {
-      if (e) e.preventDefault();
-      window.location.href = 'index.html';
-    }
-
-    function goBackToReports() {
-      closeAllDropdowns();
-      try {
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({ type: 'NAVIGATE', page: 'reportsHub' }, '*');
-          return;
-        }
-      } catch (e) {}
-      window.location.href = 'index.html#reportsHub';
-    }
-
-    const ALL_MONTHS = ['វិច្ឆិកា','ធ្នូ','មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា'];
-    const DEFAULT_MONTHLY_TEMPLATE = [
-      {
-        parentName: 'ភាសាខ្មែរ', isGroup: true,
-        children: [
-          { name: 'សមត្ថភាពស្ដាប់', code: 'kh_listen', max: 10 },
-          { name: 'សមត្ថភាពសរសេរ', code: 'kh_write',  max: 10 },
-          { name: 'សមត្ថភាពអាន',   code: 'kh_read',   max: 10 },
-          { name: 'សមត្ថភាពនិយាយ', code: 'kh_speak',  max: 10 }
-        ]
-      },
-      {
-        parentName: 'គណិតវិទ្យា', isGroup: true,
-        children: [
-          { name: 'ចំនួន',          code: 'm_num',     max: 10 },
-          { name: 'រង្វាស់រង្វាល់', code: 'm_measure', max: 10 },
-          { name: 'ធរណីមាត្រ',     code: 'm_geo',     max: 10 },
-          { name: 'ពិជគណិត',       code: 'm_algebra', max: 10 },
-          { name: 'ស្ថិតិ',          code: 'm_stat',    max: 10 }
-        ]
-      },
-      { parentName: 'វិទ្យាសាស្ត្រ', isGroup: false, code: 'science', max: 10 },
-      { parentName: 'សិក្សាសង្គម',   isGroup: false, code: 'social',  max: 10 },
-      {
-        parentName: 'អប់រំកាយសុខភាព សិល្បៈ', isGroup: true,
-        children: [
-          { name: 'គេហវិទ្យា-អប់រំសិល្បៈ', code: 'a_craft',  max: 10 },
-          { name: 'អប់រំកាយ-កីឡា',         code: 'a_pe',     max: 10 },
-          { name: 'សុខភាព-អនាម័យ',         code: 'a_health', max: 10 },
-          { name: 'អប់រំបំណិនជីវិត',       code: 'a_env',    max: 10 }
-        ]
-      },
-      { parentName: 'ភាសាបរទេស', isGroup: false, code: 'foreign', max: 10 }
-    ];
-
-    const DEFAULT_SEMESTER_TEMPLATE = [
-      { name: 'អំណាន',                  code: 'read',      max: 10 },
-      { name: 'ស្ដាប់ និងនិយាយ',         code: 'listen',    max: 10 },
-      { name: 'សរសេរតាមអាន',            code: 'dictation', max: 10 },
-      { name: 'តែងសេចក្ដី',              code: 'essay',     max: 10 },
-      { name: 'គណិតវិទ្យា',              code: 'math',      max: 10 },
-      { name: 'វិទ្យាសាស្ត្រ',            code: 'science',   max: 10 },
-      { name: 'សិក្សាសង្គម',              code: 'social',    max: 10 },
-      { name: 'គេហវិទ្យា-អប់រំសិល្បៈ',  code: 'homeArts',  max: 10 },
-      { name: 'អប់រំកាយ-សុខភាព',        code: 'pe',        max: 10 },
-      { name: 'អប់រំបំណិនជីវិត',        code: 'ethics',    max: 10 },
-      { name: 'ភាសាបរទេស',              code: 'foreign',   max: 10 }
-    ];
-
-    // 🌟 លំនាំដើម បង្ហាញ «ប្រចាំខែ» និង «ខែបច្ចុប្បន្ន»
-    let reportMode = 'monthly';
-    const nowInit = new Date();
-    let selectedMonth = GM[nowInit.getMonth()]; // ខែបច្ចុប្បន្ន
-    let selectedSemester = 'ឆមាសទី១';
-    let layoutMode = '1_portrait';
-    let gradeMode = 'AF';
-    let currentClassName = '';
-    let studentsList = [];
-    let currentStudentIndex = 0;
-
-    let teacherLunarDate = "";
-    let teacherSolarDate = "";
-    let teacherName = CURRENT_USER?.teacher_name || "សេង សុភាន់";
-
-    const currentYear = nowInit.getFullYear();
-    const academicYearStr = `${currentYear}-${currentYear + 1}`;
-
-    const GRADE_KH_MAP = {
-      'A': 'ល្អប្រសើរ',
-      'B': 'ល្អណាស់',
-      'C': 'ល្អ',
-      'D': 'បង្គួរ',
-      'E': 'មធ្យម',
-      'F': 'ខ្សោយ'
-    };
-
-    function formatGrade(code) {
-      if (!code || code === '-') return '-';
-      return (gradeMode === 'KH') ? (GRADE_KH_MAP[code] || code) : code;
-    }
-
-    function calculateGrade(avg) {
-      if (avg >= 9) return 'A';
-      if (avg >= 8) return 'B';
-      if (avg >= 7) return 'C';
-      if (avg >= 6) return 'D';
-      if (avg >= 5) return 'E';
-      return 'F';
-    }
-
-    function getSubjectScore(scoreObj, sub) {
-      if (!scoreObj || typeof scoreObj !== 'object') return null;
-      const candidates = [
-        sub.code,
-        sub.key,
-        sub.id ? String(sub.id) : null,
-        sub.id ? `sub_${sub.id}` : null,
-        sub.name
-      ].filter(Boolean);
-
-      for (const k of candidates) {
-        if (scoreObj[k] !== undefined && scoreObj[k] !== null && scoreObj[k] !== '') {
-          const num = parseFloat(scoreObj[k]);
-          if (!isNaN(num)) return num;
-        }
-      }
-      return null;
-    }
-
-    /* ══════════════ 🌟 CUSTOM SELECT ENGINE (កូដដើមរបស់អ្នក ១០០%) ══════════════ */
-    function createCSelect(containerId, cfg = {}) {
-      const root = document.getElementById(containerId);
-      const state = {
-        options: [],
-        value: '',
-        disabled: false,
-        placeholder: cfg.placeholder || '',
-        onChange: cfg.onChange || function() {}
-      };
-
-      root.classList.add('cselect');
-      if (cfg.className) root.classList.add(cfg.className);
-      root.innerHTML = `
-        <button type="button" class="cs-btn">
-          <span class="cs-label"></span>
-          <i class="fa-solid fa-chevron-down cs-chev"></i>
-        </button>`;
-
-      const btn = root.querySelector('.cs-btn');
-      const label = root.querySelector('.cs-label');
-
-      const pop = document.createElement('div');
-      pop.className = 'dropdown-popup cs-popup';
-      document.body.appendChild(pop);
-
-      function renderLabel() {
-        const cur = state.options.find(o => String(o.value) === String(state.value));
-        label.textContent = cur ? (cur.btnLabel || cur.label) : state.placeholder;
-      }
-
-      function renderPopup() {
-        pop.innerHTML = '';
-        state.options.forEach(o => {
-          const item = document.createElement('div');
-          item.className = 'dropdown-item' + (String(o.value) === String(state.value) ? ' active' : '');
-          item.innerHTML = `<span>${o.label}</span><i class="fa-solid fa-check"></i>`;
-          item.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const changed = String(state.value) !== String(o.value);
-            state.value = o.value;
-            renderLabel();
-            closeAllDropdowns();
-            if (changed) state.onChange(o.value);
-          });
-          pop.appendChild(item);
-        });
-      }
-
-      function open() {
-        if (state.disabled) return;
-        closeAllDropdowns();
-        renderPopup();
-
-        const r = btn.getBoundingClientRect();
-        pop.style.minWidth = Math.max(r.width, 150) + 'px';
-        pop.style.top = (r.bottom + 6) + 'px';
-        pop.style.maxHeight = Math.max(140, Math.min(300, window.innerHeight - r.bottom - 16)) + 'px';
-        pop.classList.add('show');
-        btn.classList.add('open');
-
-        const pw = pop.offsetWidth;
-        let left = r.left;
-        if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
-        pop.style.left = Math.max(8, left) + 'px';
-
-        const act = pop.querySelector('.dropdown-item.active');
-        if (act) pop.scrollTop = act.offsetTop - (pop.clientHeight / 2) + (act.clientHeight / 2);
-      }
-
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (pop.classList.contains('show')) closeAllDropdowns();
-        else open();
-      });
-
-      return {
-        setOptions(list) { state.options = list || []; renderLabel(); },
-        setValue(v) { state.value = v; renderLabel(); },
-        getValue() { return state.value; },
-        setDisabled(d) { state.disabled = !!d; btn.disabled = !!d; },
-        setPlaceholder(t) { state.placeholder = t; renderLabel(); },
-        show(display) { root.style.display = display || 'flex'; },
-        hide() { root.style.display = 'none'; }
-      };
-    }
-
-    const CS = {};
-
-    function toggleDropdown(id, btn) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const isShown = el.classList.contains('show');
-      closeAllDropdowns();
-      if (!isShown) {
-        el.classList.add('show');
-        if (btn) {
-          btn.classList.add('open');
-          const r = btn.getBoundingClientRect();
-          el.style.top = (r.bottom + 6) + 'px';
-          let left = r.left;
-          if (left + 220 > window.innerWidth) left = window.innerWidth - 226;
-          el.style.left = Math.max(8, left) + 'px';
-        }
-      }
-    }
-
-    function closeAllDropdowns() {
-      document.querySelectorAll('.dropdown-popup').forEach(d => d.classList.remove('show'));
-      document.querySelectorAll('.cs-btn.open, .pill-btn.open').forEach(b => b.classList.remove('open'));
-    }
-
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.tb-group') && !e.target.closest('.cselect') && !e.target.closest('.dropdown-popup')) {
-        closeAllDropdowns();
-      }
-    });
-
-    window.addEventListener('scroll', (e) => {
-      if (e.target && e.target.closest && e.target.closest('.dropdown-popup')) return;
-      closeAllDropdowns();
-    }, true);
-    window.addEventListener('resize', closeAllDropdowns);
-
-    function setLayoutMode(mode, label, el) {
-      layoutMode = mode;
-      document.getElementById('currentLayoutText').innerText = label;
-      document.querySelectorAll('#layoutDropdown .dropdown-item').forEach(i => i.classList.remove('active'));
-      el.classList.add('active');
-      closeAllDropdowns();
-      renderReportWorkspace();
-    }
-
-    function setGradeFormat(fmt, label, el) {
-      gradeMode = fmt;
-      document.getElementById('currentGradeText').innerText = label;
-      document.querySelectorAll('#gradeDropdown .dropdown-item').forEach(i => i.classList.remove('active'));
-      el.classList.add('active');
-      closeAllDropdowns();
-      renderReportWorkspace();
-    }
-
-    function onReportTypeChange(val) {
-      reportMode = val;
-      if (val === 'monthly') { CS.month.show('flex'); CS.semester.hide(); }
-      else if (val === 'semester') { CS.month.hide(); CS.semester.show('flex'); }
-      else { CS.month.hide(); CS.semester.hide(); }
-      loadRealDataForClass(currentClassName);
-    }
-
-    function onSemesterChange(val) {
-      selectedSemester = val;
-      loadRealDataForClass(currentClassName);
-    }
-
-    function onMonthChange(val) {
-      selectedMonth = val;
-      loadRealDataForClass(currentClassName);
-    }
-
-    function initCustomSelects() {
-      CS.cls = createCSelect('csClass', {
-        placeholder: 'ថ្នាក់ទី...',
-        onChange: (v) => onClassChange(v)
-      });
-
-      CS.student = createCSelect('csStudent', {
-        placeholder: 'គ្មានសិស្ស',
-        onChange: (v) => onStudentSelect(v)
-      });
-
-      CS.type = createCSelect('csReportType', {
-        onChange: (v) => onReportTypeChange(v)
-      });
-      CS.type.setOptions([
-        { value: 'monthly',  label: 'ព្រឹត្តិបត្រខែ' },
-        { value: 'semester', label: 'ព្រឹត្តិបត្រឆមាស' },
-        { value: 'yearly',   label: 'ព្រឹត្តិបត្រប្រចាំឆ្នាំ' }
-      ]);
-      CS.type.setValue('monthly');
-
-      CS.month = createCSelect('csMonth', {
-        className: 'month',
-        onChange: (v) => onMonthChange(v)
-      });
-      CS.month.setOptions(ALL_MONTHS.map(m => ({ value: m, label: m })));
-      // 🌟 ជ្រើសរើសខែបច្ចុប្បន្នជាលំនាំដើម
-      CS.month.setValue(selectedMonth);
-
-      CS.semester = createCSelect('csSemester', {
-        className: 'month',
-        onChange: (v) => onSemesterChange(v)
-      });
-      CS.semester.setOptions([
-        { value: 'ឆមាសទី១', label: 'ឆមាសទី១' },
-        { value: 'ឆមាសទី២', label: 'ឆមាសទី២' }
-      ]);
-      CS.semester.setValue(selectedSemester);
-      CS.semester.hide();
-    }
-
-    /* ══════════════ 📱 AUTO RESPONSIVE SCALER FOR ALL DEVICES ══════════════ */
-    function autoScalePaper() {
-      const stage = document.getElementById('paperWorkspace');
-      const wrapper = document.getElementById('paperStageWrapper');
-      if (!stage || !wrapper) return;
-
-      const isPortrait = (layoutMode === '1_portrait');
-      const targetW = isPortrait ? 794 : 1123;
-      const targetH = isPortrait ? 1123 : 794;
-
-      const availW = wrapper.clientWidth - 16;
-      let scale = 1;
-
-      if (availW < targetW) {
-        scale = availW / targetW;
-        scale = Math.max(0.35, Math.min(1, scale));
-      } else {
-        scale = 1;
-      }
-
-      stage.style.transform = `scale(${scale})`;
-      stage.style.transformOrigin = 'top center';
-
-      const totalSheets = stage.children.length || 1;
-      wrapper.style.minHeight = `${(targetH * scale * totalSheets) + 30}px`;
-    }
-
-    window.addEventListener('resize', autoScalePaper);
-
-    /* ══════════════ 📅 KHMER CALENDAR MODAL CONTROLLER ══════════════ */
-    var calView = { y: currentYear, m: nowInit.getMonth() + 1 };
-    var calSel = { y: currentYear, m: nowInit.getMonth() + 1, d: nowInit.getDate() };
-    var calToday = { y: currentYear, m: nowInit.getMonth() + 1, d: nowInit.getDate() };
+    /* 1. CALENDAR CONTROLLER */
+    var nowInit = new Date();
+    var calView = { y: nowInit.getFullYear(), m: nowInit.getMonth() + 1 };
+    var calSel = { y: nowInit.getFullYear(), m: nowInit.getMonth() + 1, d: nowInit.getDate() };
+    var calToday = { y: nowInit.getFullYear(), m: nowInit.getMonth() + 1, d: nowInit.getDate() };
 
     function applySelectedDate(y, m, d) {
       calSel = { y: y, m: m, d: d };
@@ -1713,7 +839,8 @@
       teacherLunarDate = fullText(o);
       teacherSolarDate = gText(o); // «កំពង់ល្ពៅ ថ្ងៃទី...» គ្មានឈ្មោះថ្ងៃនៃសប្តាហ៍ឡើយ
 
-      document.getElementById('lblBtnDate').innerText = 'ថ្ងៃទី' + kn(d) + ' ' + GM[m - 1];
+      var btn = document.getElementById('lblBtnDate');
+      if (btn) btn.innerText = 'ថ្ងៃទី' + kn(d) + ' ' + GM[m - 1];
 
       document.querySelectorAll('.doc-lunar-date').forEach(el => el.innerText = teacherLunarDate);
       document.querySelectorAll('.doc-solar-date').forEach(el => el.innerText = teacherSolarDate);
@@ -1805,11 +932,9 @@
       closeCalendarPopup();
     }
 
-    /* ══════════════ 🏫 FETCH REAL DATA FROM SUPABASE (កូដដើមរបស់អ្នក ១០០%) ══════════════ */
+    /* 2. FETCH REAL DATA FROM SUPABASE (ជួសជុលកុំឱ្យ ERROR 400 ដោយសារវង់ក្រចកថ្នាក់) */
     async function initClassDropdown() {
       const teacherClass = getTeacherClass();
-
-      // គណនាកាលបរិច្ឆេទថ្ងៃនេះតាម MomentKH
       applySelectedDate(calToday.y, calToday.m, calToday.d);
 
       try {
@@ -1845,6 +970,10 @@
     function onClassChange(val) {
       currentClassName = val;
       loadRealDataForClass(val);
+    }
+
+    function normPeriod(p) {
+      return String(p || '').replace(/^ខែ\s*/, '').trim();
     }
 
     async function loadRealDataForClass(cls) {
@@ -1884,24 +1013,33 @@
           return;
         }
 
+        const studentIds = stData.map(s => String(s.student_id || s.id).trim()).filter(Boolean);
+        const studentUuids = stData.map(s => String(s.id).trim()).filter(Boolean);
+        const allSids = Array.from(new Set([...studentIds, ...studentUuids]));
+
         const dataType = (reportMode === 'yearly') ? 'semester' : reportMode;
 
-        // ២. ទាញយកមុខវិជ្ជា
-        const { data: dbSubData } = await sb
+        // ២. ទាញយកមុខវិជ្ជា (គ្មាន PostgREST .or() វង់ក្រចកទៀតទេ ការពារ ERROR 400)
+        const { data: allSubjects } = await sb
           .from('subjects')
           .select('*')
-          .or(`assigned_class.eq.${pure},assigned_class.eq.all`)
-          .eq('subject_type', dataType)
           .order('sort_order', { ascending: true })
           .order('id', { ascending: true });
 
-        // ៣. ទាញយកពិន្ទុ
-        const classVariants = [pure, 'ថ្នាក់ទី' + pure, 'ថ្នាក់ទី ' + pure, 'ថ្នាក់' + pure, 'ថ្នាក់ ' + pure];
-        const { data: scData } = await sb
-          .from('scores')
-          .select('*')
-          .in('assigned_class', classVariants)
-          .eq('score_type', dataType);
+        const dbSubData = (allSubjects || []).filter(s => {
+          const sc = cleanGrade(s.assigned_class);
+          return (!sc || sc === 'all' || sc === pure) && (!s.subject_type || s.subject_type === dataType);
+        });
+
+        // ៣. ទាញយកពិន្ទុ (តាម student_id ការពារ ERROR 400 លើ assigned_class)
+        let scData = [];
+        if (allSids.length > 0) {
+          const { data: sData } = await sb
+            .from('scores')
+            .select('*')
+            .in('student_id', allSids);
+          if (sData) scData = sData;
+        }
 
         const scoreMap = {};
         const scoreMapS1 = {};
@@ -1912,22 +1050,31 @@
           if (typeof scObj === 'string') {
             try { scObj = JSON.parse(scObj); } catch(e) { scObj = {}; }
           }
+          // បញ្ចូល root properties ក្រែងពិន្ទុស្ថិតនៅក្រៅ JSON
+          scObj = Object.assign({}, row, scObj);
+
           const sid = String(row.student_id).trim();
+          const p = normPeriod(row.period);
+
           if (reportMode === 'monthly') {
-            if (row.period === selectedMonth) {
+            if (p === normPeriod(selectedMonth)) {
               scoreMap[sid] = scObj;
             }
           } else {
-            if (row.period === 'ឆមាសទី១') scoreMapS1[sid] = scObj;
-            if (row.period === 'ឆមាសទី២') scoreMapS2[sid] = scObj;
+            if (p.includes('ឆមាសទី១') || p === 'ឆមាស១') scoreMapS1[sid] = scObj;
+            if (p.includes('ឆមាសទី២') || p === 'ឆមាស២') scoreMapS2[sid] = scObj;
           }
         });
 
-        // ៤. ទាញយកអវត្តមាន
-        const { data: attData } = await sb
-          .from('attendance')
-          .select('student_id, status')
-          .in('assigned_class', classVariants);
+        // ៤. ទាញយកអវត្តមាន (តាម student_id)
+        let attData = [];
+        if (allSids.length > 0) {
+          const { data: aData } = await sb
+            .from('attendance')
+            .select('student_id, status')
+            .in('student_id', allSids);
+          if (aData) attData = aData;
+        }
 
         const unexcusedMap = {};
         const excusedMap = {};
@@ -1941,7 +1088,7 @@
           if (excusedCodes.includes(st)) excusedMap[sid] = (excusedMap[sid] || 0) + 1;
         });
 
-        // ៥. រៀបចំទិន្នន័យ
+        // ៥. រៀបចំទិន្នន័យសិស្ស
         studentsList = stData.map(st => {
           const sid1 = String(st.student_id || '').trim();
           const sid2 = String(st.id || '').trim();
@@ -2085,7 +1232,7 @@
               ? dbSubData.map(x => ({ name: x.name, code: x.code || `sub_${x.id}`, id: x.id, max: Number(x.max_score)||10 }))
               : JSON.parse(JSON.stringify(DEFAULT_SEMESTER_TEMPLATE));
 
-            const scSem = (selectedSemester === 'ឆមាសទី២') ? sc2 : sc1;
+            const scSem = (normPeriod(selectedSemester).includes('ឆមាសទី២')) ? sc2 : sc1;
             let semTotal = 0, semCount = 0;
             const activeSemSubjects = [];
 
@@ -2143,412 +1290,12 @@
         renderReportWorkspace();
 
       } catch (err) {
-        console.error(err);
+        console.error("Data fetch error:", err);
         document.getElementById('paperWorkspace').innerHTML = `<div class="empty-state-card" style="color:#ef4444;">❌ កំហុសផ្ទុកទិន្នន័យ៖ ${err.message}</div>`;
       }
     }
 
-    function populateStudentSelect() {
-      if (!studentsList.length) {
-        CS.student.setOptions([]);
-        CS.student.setValue('');
-        CS.student.setPlaceholder('គ្មានសិស្ស');
-        return;
-      }
-      CS.student.setOptions(studentsList.map((s, idx) => ({
-        value: String(idx),
-        label: `${idx + 1}. ${s.name}`
-      })));
-      CS.student.setValue(String(currentStudentIndex));
-    }
-
-    function onStudentSelect(idx) {
-      currentStudentIndex = parseInt(idx, 10);
-      renderReportWorkspace();
-    }
-
-    function prevStudent() {
-      const step = (layoutMode === '2_landscape') ? 2 : 1;
-      if (currentStudentIndex > 0) {
-        currentStudentIndex = Math.max(0, currentStudentIndex - step);
-        CS.student.setValue(String(currentStudentIndex));
-        renderReportWorkspace();
-      }
-    }
-
-    function nextStudent() {
-      const step = (layoutMode === '2_landscape') ? 2 : 1;
-      if (currentStudentIndex < studentsList.length - 1) {
-        currentStudentIndex = Math.min(studentsList.length - 1, currentStudentIndex + step);
-        CS.student.setValue(String(currentStudentIndex));
-        renderReportWorkspace();
-      }
-    }
-
-    /* 4. HTML REPORT SHEET GENERATOR */
-    function generateReportHTML(st) {
-      if (!st) return '';
-
-      const totalAbsent = (st.absentUnexcused || 0) + (st.absentExcused || 0);
-      const isMonthly = (reportMode === 'monthly');
-      const docTitle = isMonthly ? `ព្រឹត្តិបត្រពិន្ទុ ខែ ${selectedMonth}`
-        : (reportMode === 'yearly' ? `ព្រឹត្តិបត្រពិន្ទុប្រចាំឆ្នាំ` : `ព្រឹត្តិបត្រពិន្ទុ ${selectedSemester}`);
-
-      const displayGrade = cleanGrade(st.grade) || cleanGrade(currentClassName) || getTeacherClass() || '...';
-      const rowH = calcRowH(st);
-
-      let theadHtml = '';
-      let tbodyHtml = '';
-      let summaryRowsHtml = '';
-
-      if (isMonthly) {
-        theadHtml = `
-          <tr>
-            <th style="width: 32px;">ល.រ</th>
-            <th colspan="2">មុខវិជ្ជា</th>
-            <th style="width: 78px;">ពិន្ទុអតិបរមា</th>
-            <th style="width: 82px;">ពិន្ទុទទួលបាន</th>
-            <th style="width: 72px;">ចំណាត់ថ្នាក់</th>
-            <th style="width: 52px;">និទ្ទេស</th>
-            <th style="width: 78px;">សេចក្តីផ្សេងៗ</th>
-          </tr>
-        `;
-
-        let rowCounter = 1;
-        const groups = st.monthlyGroups || [];
-
-        if (groups.length === 0) {
-          tbodyHtml = `<tr><td colspan="8" style="padding: 24px; color:#ef4444; font-weight:bold;">⚠️ សិស្សនេះមិនទាន់មានពិន្ទុក្នុងខែ ${selectedMonth} នៅឡើយទេ</td></tr>`;
-        } else {
-          groups.forEach(g => {
-            if (g.isGroup) {
-              g.children.forEach((c, idx) => {
-                const grClass = `gr-${c.grade}`;
-                tbodyHtml += `<tr>`;
-                tbodyHtml += `<td>${rowCounter++}</td>`;
-                if (idx === 0) {
-                  tbodyHtml += `<td rowspan="${g.children.length}" style="font-weight:700; background:#fcfcfc;">${g.parentName}</td>`;
-                }
-                tbodyHtml += `<td style="text-align:left; padding-left:8px;">${c.name}</td>`;
-                tbodyHtml += `<td>${c.max}</td>`;
-                tbodyHtml += `<td class="bold-val">${c.score}</td>`;
-                tbodyHtml += `<td style="color:#dc2626; font-weight:800;">${st.rank}</td>`;
-                tbodyHtml += `<td class="${grClass}">${formatGrade(c.grade)}</td>`;
-                tbodyHtml += `<td></td>`;
-                tbodyHtml += `</tr>`;
-              });
-            } else {
-              const grClass = `gr-${g.grade}`;
-              tbodyHtml += `<tr>`;
-              tbodyHtml += `<td>${rowCounter++}</td>`;
-              tbodyHtml += `<td colspan="2" style="font-weight:700;">${g.parentName}</td>`;
-              tbodyHtml += `<td>${g.max}</td>`;
-              tbodyHtml += `<td class="bold-val">${g.score}</td>`;
-              tbodyHtml += `<td style="color:#dc2626; font-weight:800;">${st.rank}</td>`;
-              tbodyHtml += `<td class="${grClass}">${formatGrade(g.grade)}</td>`;
-              tbodyHtml += `<td></td>`;
-              tbodyHtml += `</tr>`;
-            }
-          });
-        }
-
-        summaryRowsHtml = `
-          <tr style="background:#f8fafc;">
-            <td colspan="3" class="summary-cell-text" style="text-align:left; padding-left:12px;">
-              ពិន្ទុសរុប ${st.totalScore.toFixed(2)} • មធ្យមភាគ ${st.avgScore.toFixed(2)}
-            </td>
-            <td colspan="2" class="summary-cell-text">
-              ចំណាត់ថ្នាក់ទី <span style="color:#dc2626; font-weight:800;">${st.rank}</span>
-            </td>
-            <td colspan="3" class="summary-cell-text gr-${st.gradeLabel}">
-              និទ្ទេស ${formatGrade(st.gradeLabel)}
-            </td>
-          </tr>
-          <tr style="background:#f8fafc;">
-            <td colspan="3" class="summary-cell-text">
-              អវត្តមាន (ឥតច្បាប់) ៖ ${st.absentUnexcused}
-            </td>
-            <td colspan="2" class="summary-cell-text">
-              អវត្តមាន (មានច្បាប់) ៖ ${st.absentExcused}
-            </td>
-            <td colspan="3" class="summary-cell-text">
-              សរុប ៖ ${totalAbsent}
-            </td>
-          </tr>
-        `;
-
-      } else if (reportMode === 'yearly') {
-        theadHtml = `
-          <tr>
-            <th style="width: 32px;">ល.រ</th>
-            <th style="min-width: 140px;">មុខវិជ្ជា</th>
-            <th style="width: 72px;">ពិន្ទុអតិបរមា</th>
-            <th style="width: 78px;">ឆមាសទី១</th>
-            <th style="width: 78px;">ឆមាសទី២</th>
-            <th style="width: 72px;">មធ្យមភាគ</th>
-            <th style="width: 54px;">និទ្ទេស</th>
-            <th style="width: 78px;">សេចក្តីផ្សេងៗ</th>
-          </tr>
-        `;
-
-        const ySubs = st.semSubjects || [];
-        if (ySubs.length === 0) {
-          tbodyHtml = `<tr><td colspan="8" style="padding: 24px; color:#ef4444; font-weight:bold;">⚠️ សិស្សនេះមិនទាន់មានពិន្ទុប្រឡងឆមាសនៅឡើយទេ</td></tr>`;
-        } else {
-          ySubs.forEach((row, i) => {
-            const avgTxt = Number(row.avg).toFixed(2).replace(/\.00$/, '');
-            tbodyHtml += `
-              <tr>
-                <td>${i + 1}</td>
-                <td class="sub-name">${row.name}</td>
-                <td>${row.max}</td>
-                <td>${row.s1}</td>
-                <td>${row.s2}</td>
-                <td class="bold-val">${avgTxt}</td>
-                <td class="gr-${row.grade}">${formatGrade(row.grade)}</td>
-                <td></td>
-              </tr>
-            `;
-          });
-        }
-
-        summaryRowsHtml = `
-          <tr style="background:#f8fafc;">
-            <td colspan="3" class="summary-cell-text" style="text-align:left; padding-left:10px;">
-              មធ្យមភាគឆមាសទី១ ${st.avgSem1 > 0 ? st.avgSem1.toFixed(2) : '-'}
-            </td>
-            <td colspan="2" class="summary-cell-text">
-              មធ្យមភាគឆមាសទី២ ${st.avgSem2 > 0 ? st.avgSem2.toFixed(2) : '-'}
-            </td>
-            <td colspan="3" class="summary-cell-text">
-              មធ្យមភាគប្រចាំឆ្នាំ ${st.avgScore > 0 ? st.avgScore.toFixed(2) : '-'}
-            </td>
-          </tr>
-          <tr style="background:#f8fafc;">
-            <td colspan="3" class="summary-cell-text" style="text-align:left; padding-left:10px;">
-              ចំណាត់ថ្នាក់ប្រចាំឆ្នាំទី <span style="color:#dc2626; font-weight:800;">${st.rank}</span>
-            </td>
-            <td colspan="2" class="summary-cell-text gr-${st.gradeLabel}">
-              និទ្ទេស ${formatGrade(st.gradeLabel)}
-            </td>
-            <td colspan="3" class="summary-cell-text">
-              អវត្តមាន ឥតច្បាប់ ${st.absentUnexcused} • មានច្បាប់ ${st.absentExcused} • សរុប ${totalAbsent}
-            </td>
-          </tr>
-        `;
-
-      } else {
-        theadHtml = `
-          <tr>
-            <th style="width: 32px;">ល.រ</th>
-            <th style="min-width: 150px;">មុខវិជ្ជា</th>
-            <th style="width: 85px;">ពិន្ទុអតិបរមា</th>
-            <th style="width: 90px;">ពិន្ទុទទួលបាន</th>
-            <th style="width: 60px;">និទ្ទេស</th>
-            <th style="width: 90px;">សេចក្តីផ្សេងៗ</th>
-          </tr>
-        `;
-
-        const semSubs = st.semSubjects || [];
-        if (semSubs.length === 0) {
-          tbodyHtml = `<tr><td colspan="6" style="padding: 24px; color:#ef4444; font-weight:bold;">⚠️ សិស្សនេះមិនទាន់មានពិន្ទុ${selectedSemester}នៅឡើយទេ</td></tr>`;
-        } else {
-          semSubs.forEach((row, i) => {
-            tbodyHtml += `
-              <tr>
-                <td>${i + 1}</td>
-                <td class="sub-name">${row.name}</td>
-                <td>${row.max}</td>
-                <td class="bold-val">${row.score}</td>
-                <td class="gr-${row.grade}">${formatGrade(row.grade)}</td>
-                <td></td>
-              </tr>
-            `;
-          });
-        }
-
-        summaryRowsHtml = `
-          <tr style="background:#f8fafc;">
-            <td colspan="2" class="summary-cell-text" style="text-align:left; padding-left:12px;">
-              ពិន្ទុសរុប ${st.totalScore.toFixed(2)} • មធ្យមភាគ ${st.avgScore.toFixed(2)}
-            </td>
-            <td colspan="2" class="summary-cell-text">
-              ចំណាត់ថ្នាក់ទី <span style="color:#dc2626; font-weight:800;">${st.rank}</span>
-            </td>
-            <td colspan="2" class="summary-cell-text gr-${st.gradeLabel}">
-              និទ្ទេស ${formatGrade(st.gradeLabel)}
-            </td>
-          </tr>
-          <tr style="background:#f8fafc;">
-            <td colspan="2" class="summary-cell-text">
-              អវត្តមាន (ឥតច្បាប់) ៖ ${st.absentUnexcused}
-            </td>
-            <td colspan="2" class="summary-cell-text">
-              អវត្តមាន (មានច្បាប់) ៖ ${st.absentExcused}
-            </td>
-            <td colspan="2" class="summary-cell-text">
-              សរុប ៖ ${totalAbsent}
-            </td>
-          </tr>
-        `;
-      }
-
-      return `
-        <div class="report-sheet" style="--row-h:${rowH}mm;">
-          <div class="sheet-national-header">
-            <div class="nat-title-1 f-moul">ព្រះរាជាណាចក្រកម្ពុជា</div>
-            <div class="nat-title-2 f-moul">ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
-            <div class="nat-symbol">─────── ❖ ───────</div>
-          </div>
-
-          <div class="sheet-sub-header">
-            <div class="left-dept-info f-siemreap">
-              <div>ការិយាល័យអប់រំ យុវជន និងកីឡា</div>
-              <div style="font-weight:700;">សាលាបឋមសិក្សាកំពង់ល្ពៅ</div>
-              <div>ថ្នាក់ទី ${displayGrade}</div>
-            </div>
-
-            <div class="center-doc-title">
-              <div class="doc-main-title f-moul">${docTitle}</div>
-              <div class="doc-academic-year">ឆ្នាំសិក្សា ${academicYearStr}</div>
-            </div>
-          </div>
-
-          <div class="student-meta-line f-siemreap">
-            សិស្សឈ្មោះ: <span class="hl-val">${st.name}</span> •
-            ភេទ <span class="hl-val">${st.gender}</span> •
-            អត្តលេខ <span class="hl-val">${st.id}</span> •
-            ចំណាត់ថ្នាក់ទី <span class="hl-rank">${st.rank}</span>
-          </div>
-
-          <table class="report-table f-siemreap">
-            <thead>${theadHtml}</thead>
-            <tbody>
-              ${tbodyHtml}
-              ${summaryRowsHtml}
-            </tbody>
-          </table>
-
-          <div class="sheet-signatures-area f-siemreap">
-            <div class="sig-col left-col">
-              <div class="sig-title-moul f-moul">បានឃើញ និងឯកភាព</div>
-              <div class="sig-role f-moul">នាយកសាលា</div>
-            </div>
-
-            <div class="sig-col mid-col">
-              <div class="sig-title-moul f-moul">មតិរបស់មាតាបិតា</div>
-              <div class="f-moul" style="font-size:11px; margin-bottom:4px;">ឬអាណាព្យាបាលសិស្ស</div>
-              <div class="parent-dotted-lines"></div>
-              <div class="parent-dotted-lines"></div>
-            </div>
-
-            <div class="sig-col right-col">
-              <!-- 🌟 ថ្ងៃខែចន្ទគតិ-សូរិយគតិ គណនាតាម MomentKH -->
-              <div class="clean-lunar-text doc-lunar-date">${teacherLunarDate}</div>
-              <div class="sig-solar-date doc-solar-date">${teacherSolarDate}</div>
-              <div class="sig-role f-moul" style="margin-top:2px;">គ្រូទទួលបន្ទុកថ្នាក់</div>
-              <div class="sig-name">${teacherName}</div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function applyPageStyle() {
-      let el = document.getElementById('dynPageStyle');
-      if (!el) {
-        el = document.createElement('style');
-        el.id = 'dynPageStyle';
-        document.head.appendChild(el);
-      }
-      const orient = (layoutMode === '2_landscape') ? 'landscape' : 'portrait';
-      el.textContent = '@page { size: A4 ' + orient + '; margin: 0; }';
-    }
-
-    function calcRowH(st) {
-      let n;
-      if (reportMode === 'monthly') {
-        n = (st.monthlyGroups || []).reduce((sum, g) => sum + (g.isGroup ? g.children.length : 1), 0);
-      } else {
-        n = (st.semSubjects || []).length;
-      }
-      n = Math.max(n, 4) + 3;
-      const two = (layoutMode === '2_landscape');
-      const avail = two ? 122 : 180;
-      const min = two ? 4.8 : 5.6;
-      const max = two ? 6.5 : 9;
-      return Math.max(min, Math.min(max, avail / n)).toFixed(2);
-    }
-
-    function renderReportWorkspace() {
-      applyPageStyle();
-      const container = document.getElementById('paperWorkspace');
-
-      if (!studentsList.length) {
-        container.className = 'paper-stage';
-        container.innerHTML = `
-          <div class="empty-state-card">
-            <i class="fa-solid fa-folder-open fa-2x" style="color:#f59e0b; margin-bottom:12px;"></i>
-            <div>មិនមានទិន្នន័យសិស្សត្រូវបង្ហាញឡើយ</div>
-          </div>`;
-        return;
-      }
-
-      if (layoutMode === '1_portrait') {
-        container.className = 'paper-stage';
-        const currentStudent = studentsList[currentStudentIndex] || studentsList[0];
-        container.innerHTML = generateReportHTML(currentStudent);
-      } else {
-        container.className = 'paper-stage layout-2col';
-        const st1 = studentsList[currentStudentIndex] || studentsList[0];
-        const st2 = studentsList[currentStudentIndex + 1] || null;
-
-        container.innerHTML = `
-          <div class="report-sheet-container-2col">
-            ${generateReportHTML(st1)}
-            ${st2 ? generateReportHTML(st2) : '<div></div>'}
-          </div>
-        `;
-      }
-
-      autoScalePaper();
-    }
-
-    function printReport() {
-      const stage = document.getElementById('paperWorkspace');
-      if (stage) stage.style.transform = 'none';
-      applyPageStyle();
-      window.print();
-      autoScalePaper();
-    }
-
-    function downloadPDF() {
-      if (!studentsList.length) return alert('គ្មានទិន្នន័យដើម្បីទាញយកជា PDF ឡើយ!');
-      const stage = document.getElementById('paperWorkspace');
-      stage.style.transform = 'none';
-
-      const isPortrait = (layoutMode === '1_portrait');
-      const st = studentsList[currentStudentIndex] || studentsList[0];
-
-      const opt = {
-        margin: [0, 0, 0, 0],
-        filename: `ព្រឹត្តិបត្រពិន្ទុ_${st.name}_ថ្នាក់ទី${st.grade}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 3, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: isPortrait ? 'portrait' : 'landscape' }
-      };
-
-      document.body.classList.add('exporting');
-      html2pdf().set(opt).from(stage).save().then(() => {
-        document.body.classList.remove('exporting');
-        autoScalePaper();
-      }).catch(() => {
-        document.body.classList.remove('exporting');
-        autoScalePaper();
-      });
-    }
-
-    /* ══════════════ 🚀 ENTRY POINT ══════════════ */
+    /* 3. ENTRY POINT */
     window.addEventListener('DOMContentLoaded', async () => {
       if (!checkAuthentication()) return;
       initCustomSelects();
