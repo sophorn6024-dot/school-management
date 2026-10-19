@@ -661,7 +661,16 @@
         print-color-adjust: exact !important;
       }
     }
-  </style>
+  
+    /* 🔣 ត្រូវតែរក្សា font របស់ Font Awesome (បើមិនដូច្នោះ icon នឹងបាត់ ព្រោះ * { font-family !important }) */
+    i.fa, i.fa-solid, i.fa-regular, i.fa-brands, i[class^="fa-"], i[class*=" fa-"], .fa-solid, .fa-regular, .fa-brands {
+      font-family: 'Font Awesome 6 Free' !important;
+    }
+    i.fa-brands, .fa-brands { font-family: 'Font Awesome 6 Brands' !important; font-weight: 400; }
+    i.fa-solid, .fa-solid { font-weight: 900; }
+    i.fa-regular, .fa-regular { font-weight: 400; }
+    i.fa-solid, i.fa-regular, i.fa-brands { font-style: normal; }
+</style>
 </head>
 
 <body>
