@@ -416,7 +416,7 @@
       </button>
 
       <!-- 🏫 ថ្នាក់ Dropdown (Custom Font Battambang) -->
-      <div class="dd-wrap">
+      <div class="dd-wrap" id="classDdWrap" style="display:none;">
         <button type="button" class="tb-btn" id="btnClassSelect" onclick="toggleDropdown('ddClassSelect')">
           <span style="display:flex; align-items:center; gap:7px;">
             <i class="fa-solid fa-school" style="color:#38bdf8;"></i>
@@ -1943,6 +1943,12 @@ exports.default = {
     const TEACHER_NAME = CURRENT_USER?.teacher_name || "សេង សុភាស់";
     const IS_ADMIN = String(CURRENT_USER?.role || '').toLowerCase().trim() === 'admin';
 
+    /* ម៉ូតពន្លឺ/ងងឹត ធ្វើតាមទំព័រមេ (index.html) ដោយស្វ័យប្រវត្តិ */
+    function applyTheme(t) { document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
+    applyTheme(localStorage.getItem('krou_theme_manual') || 'dark');
+    window.addEventListener('message', e => { if (e.data && (e.data.type === 'THEME_CHANGE' || e.data.theme)) applyTheme(e.data.theme || e.data); });
+    window.addEventListener('storage', e => { if (e.key === 'krou_theme_manual') applyTheme(e.newValue); });
+
     let currentSelectedClass = cleanGrade(USER_CLASS) || '៤(ក)';
 
     function cleanGrade(g) {
@@ -1969,6 +1975,8 @@ exports.default = {
 
     async function initClassesDropdown() {
       const dd = document.getElementById('ddClassSelect');
+      /* គ្រូធម្មតា៖ មិនបង្ហាញ dropdown ថ្នាក់ ប្រើថ្នាក់ទទួលបន្ទុករបស់ខ្លួនតែម្តង */
+      if (!IS_ADMIN) { await selectClass(currentSelectedClass); return; }
       
       try {
         const { data: stList } = await sb.from('students').select('grade');
@@ -2330,6 +2338,7 @@ exports.default = {
       const isAuth = await checkAuthentication();
       if (!isAuth) return;
 
+      if (IS_ADMIN) document.getElementById('classDdWrap').style.display = '';
       loadSignDates();
       renderSignDates();
       await initClassesDropdown();
