@@ -304,18 +304,32 @@
     .btn-ghost { background: var(--input-bg); color: var(--text-main); border-color: var(--input-border); }
     .btn-ghost:hover, .btn-ghost.open { border-color: var(--input-focus); }
     .ps-popup, .ps-popup * { font-family: 'Battambang', 'Siemreap', sans-serif; }
-    .ps-popup { display: none; position: fixed; z-index: 99999; width: 330px; max-width: calc(100vw - 16px);
+    .ps-popup { display: none; position: fixed; z-index: 99999; width: 360px; max-width: calc(100vw - 16px);
       background: var(--card-panel-bg); color: var(--text-main); border: 1px solid var(--tb-border);
-      border-radius: 16px; box-shadow: 0 22px 60px rgba(15,23,42,.35); max-height: calc(100vh - 20px); overflow-y: auto; }
+      border-radius: 18px; box-shadow: 0 22px 60px rgba(15,23,42,.4); max-height: calc(100vh - 20px); overflow-y: auto; padding: 16px 18px 12px; }
     .ps-popup.show { display: block; }
-    .ps-head { background: linear-gradient(135deg,#132d56,#1e3a8a); color:#fff; padding: 12px 14px; font-weight: 700; }
-    .ps-body { padding: 10px 14px; display: flex; flex-direction: column; gap: 10px; }
-    .ps-row { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--text-muted); }
-    .ps-row b { color: var(--text-main); margin-left: 6px; }
+    .ps-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .ps-title { font-size: 20px; font-weight: 700; }
+    .ps-reset { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px; display: inline-flex; gap: 6px; align-items: center; }
+    .ps-reset:hover { color: var(--text-main); }
+    .ps-sec { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 14px; margin: 10px 0; }
+    .ps-line { flex: 1; height: 1px; background: var(--tb-border); }
+    .ps-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .ps-tile { border: 1px solid transparent; background: var(--ctrl-group-bg); color: var(--text-muted); border-radius: 12px; padding: 10px 2px; cursor: pointer;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 66px; }
+    .ps-tile b { font-size: 16px; } .ps-tile small { font-size: 11px; } .ps-tile span { font-size: 14px; } .ps-tile i { font-size: 16px; }
+    .ps-tile:hover { border-color: var(--input-focus); }
+    .ps-tile.on { background: #ea580c; border-color: #fb923c; color: #fff; }
+    .ps-step { display: flex; align-items: center; gap: 8px; margin: 4px 0 10px; }
+    .ps-lbl { flex: 1; font-size: 14px; color: var(--text-muted); }
+    .ps-sb { width: 38px; height: 38px; border-radius: 10px; border: none; background: var(--ctrl-group-bg); color: var(--text-main); font-size: 20px; cursor: pointer; }
+    .ps-sb:hover { background: var(--input-border); }
+    .ps-val { min-width: 84px; height: 38px; border-radius: 10px; background: var(--ctrl-group-bg); display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 16px; }
+    .ps-val em { font-style: normal; color: var(--text-muted); font-size: 13px; }
+    .ps-row { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; }
     .ps-row .form-control { width: 100%; height: 34px; }
-    .ps-row input[type=range] { width: 100%; }
-    .ps-sep { font-size: 12px; font-weight: 700; color: #0284c7; border-top: 1px solid var(--tb-border); padding-top: 8px; }
-    .ps-foot { display: flex; justify-content: space-between; gap: 8px; padding: 10px 14px 14px; border-top: 1px solid var(--tb-border); }
+    .ps-count { border-top: 1px solid var(--tb-border); margin-top: 6px; padding-top: 10px; font-size: 16px; }
+    .ps-count b { color: #818cf8; font-size: 20px; margin-right: 4px; }
 
     /* 📱 RESPONSIVE (មិនចាំបាច់អូស Toolbar ទៀតទេ) */
     @media screen and (max-width: 1100px) {
@@ -617,9 +631,6 @@
         border-radius: 0 !important;
         overflow: hidden !important;
         zoom: var(--pz, 1.11);
-        position: relative !important;
-        left: var(--px, 0mm);
-        top: var(--py, 0mm);
         page-break-after: always !important;
         break-after: page !important;
         page-break-inside: avoid !important;
@@ -714,30 +725,29 @@
 
   </div>
 
-  <!-- ⚙️ POPUP រៀបចំទំព័រ -->
-  <div class="ps-popup" id="psPopup" onclick="event.stopPropagation()" role="dialog" aria-label="រៀបចំទំព័រ">
-    <div class="ps-head"><i class="fa-solid fa-sliders"></i> រៀបចំទំព័រ</div>
-    <div class="ps-body">
-      <label class="ps-row"><span>ឆ្នាំសិក្សា</span>
-        <input type="text" id="inYear" class="form-control" oninput="updateAllCertText()"></label>
-      <label class="ps-row"><span>សាលារៀន</span>
-        <input type="text" id="inSchool" class="form-control" value="សាលារៀនបឋមសិក្សាកំពង់ល្ពៅ" oninput="updateAllCertText()"></label>
-      <div class="ps-sep">ការបោះពុម្ព</div>
-      <label class="ps-row"><span>ទំហំក្រដាស (ផ្ដេក)</span>
-        <select id="psPaper" class="form-control" onchange="psChanged()">
-          <option value="A4">A4</option><option value="A5">A5</option><option value="Letter">Letter</option>
-        </select></label>
-      <label class="ps-row"><span>ទំហំបណ្ណ <b id="psScaleV">100%</b></span>
-        <input type="range" id="psScale" min="80" max="110" step="1" value="100" oninput="psChanged()"></label>
-      <label class="ps-row"><span>រំកិលឆ្វេង/ស្តាំ <b id="psXV">0mm</b></span>
-        <input type="range" id="psX" min="-15" max="15" step="1" value="0" oninput="psChanged()"></label>
-      <label class="ps-row"><span>រំកិលលើ/ក្រោម <b id="psYV">0mm</b></span>
-        <input type="range" id="psY" min="-15" max="15" step="1" value="0" oninput="psChanged()"></label>
+  <!-- ⚙️ POPUP ការរៀបចំទំព័រ -->
+  <div class="ps-popup" id="psPopup" onclick="event.stopPropagation()" role="dialog" aria-label="ការរៀបចំទំព័រ">
+    <div class="ps-head">
+      <span class="ps-title">ការរៀបចំទំព័រ</span>
+      <button type="button" class="ps-reset" onclick="psReset()"><i class="fa-solid fa-rotate-left"></i> ដើមវិញ</button>
     </div>
-    <div class="ps-foot">
-      <button type="button" class="cal-btn" onclick="psReset()"><i class="fa-solid fa-rotate-left"></i> កំណត់ដើមវិញ</button>
-      <button type="button" class="cal-btn" onclick="closePageSetup()"><i class="fa-solid fa-check"></i> រួចរាល់</button>
+    <div class="ps-sec"><i class="fa-regular fa-file-lines"></i> ក្រដាស<span class="ps-line"></span></div>
+    <div class="ps-tiles">
+      <button type="button" class="ps-tile" data-k="paper" data-v="A4" onclick="psSet('paper','A4')"><b>A4</b><small>២១០×២៩៧</small></button>
+      <button type="button" class="ps-tile" data-k="paper" data-v="F4" onclick="psSet('paper','F4')"><b>F4</b><small>២១៦×៣៣០</small></button>
+      <button type="button" class="ps-tile" data-k="orient" data-v="portrait" onclick="psSet('orient','portrait')"><i class="fa-solid fa-mobile-screen-button"></i><span>បញ្ឈរ</span></button>
+      <button type="button" class="ps-tile" data-k="orient" data-v="landscape" onclick="psSet('orient','landscape')"><i class="fa-solid fa-tablet-screen-button fa-rotate-90"></i><span>ផ្តេក</span></button>
     </div>
+    <div class="ps-sec"><i class="fa-solid fa-layer-group"></i> ទំហំ និងព័ត៌មាន<span class="ps-line"></span></div>
+    <div class="ps-step">
+      <span class="ps-lbl">ទំហំបណ្ណ</span>
+      <button type="button" class="ps-sb" onclick="psStep(-5)" aria-label="បន្ថយ">−</button>
+      <div class="ps-val"><span id="psScaleV">១០០</span><em>%</em></div>
+      <button type="button" class="ps-sb" onclick="psStep(5)" aria-label="បង្កើន">+</button>
+    </div>
+    <label class="ps-row"><span>ឆ្នាំសិក្សា</span><input type="text" id="inYear" class="form-control" oninput="updateAllCertText()"></label>
+    <label class="ps-row"><span>សាលារៀន</span><input type="text" id="inSchool" class="form-control" value="សាលារៀនបឋមសិក្សាកំពង់ល្ពៅ" oninput="updateAllCertText()"></label>
+    <div class="ps-count"><b id="psCount">០</b> សន្លឹក</div>
   </div>
 
   <!-- 📅 POPUP ប្រតិទិនជ្រើសថ្ងៃហត្ថលេខា -->
@@ -2216,37 +2226,39 @@ exports.default = {
     }
     window.addEventListener('resize', closeCalPopup);
 
-    /* ⚙️ រៀបចំទំព័រ */
-    const PS_KEY = 'commendPageSetup_v1';
-    const PS_BASE = { A4: 1.11, A5: 0.78, Letter: 1.08 };
-    const PS_DEF = { paper: 'A4', scale: 100, x: 0, y: 0 };
+    /* ⚙️ ការរៀបចំទំព័រ */
+    const PS_KEY = 'commendPageSetup_v2';
+    const PS_PAPER = { A4: { w: 210, h: 297 }, F4: { w: 216, h: 330 } };
+    const PS_DEF = { paper: 'A4', orient: 'landscape', scale: 100 };
     let psState = Object.assign({}, PS_DEF);
     function psApply() {
-      const r = document.documentElement.style;
-      r.setProperty('--pz', (PS_BASE[psState.paper] * psState.scale / 100).toFixed(4));
-      r.setProperty('--px', psState.x + 'mm');
-      r.setProperty('--py', psState.y + 'mm');
+      const pp = PS_PAPER[psState.paper], land = psState.orient === 'landscape';
+      const pw = (land ? pp.h : pp.w) / 25.4 * 96, ph = (land ? pp.w : pp.h) / 25.4 * 96;   // px
+      const base = Math.min(pw / 960, ph / 710) * 0.99;
+      document.documentElement.style.setProperty('--pz', (base * psState.scale / 100).toFixed(4));
       let st = document.getElementById('psPageStyle');
       if (!st) { st = document.createElement('style'); st.id = 'psPageStyle'; document.head.appendChild(st); }
-      st.textContent = '@page { size: ' + psState.paper + ' landscape; margin: 0; }';
-      const set = (id, v) => { const e = document.getElementById(id); if (e) e.value = v; };
-      set('psPaper', psState.paper); set('psScale', psState.scale); set('psX', psState.x); set('psY', psState.y);
-      const t = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
-      t('psScaleV', toKhmerDigits(psState.scale) + '%'); t('psXV', toKhmerDigits(psState.x) + 'mm'); t('psYV', toKhmerDigits(psState.y) + 'mm');
+      st.textContent = '@page { size: ' + (land ? pp.h + 'mm ' + pp.w + 'mm' : pp.w + 'mm ' + pp.h + 'mm') + '; margin: 0; }';
+      document.querySelectorAll('.ps-tile').forEach(b => b.classList.toggle('on', psState[b.dataset.k] === b.dataset.v));
+      const v = document.getElementById('psScaleV'); if (v) v.textContent = toKhmerDigits(psState.scale);
+      psCount();
     }
-    function psChanged() {
-      psState = { paper: document.getElementById('psPaper').value, scale: +document.getElementById('psScale').value,
-                  x: +document.getElementById('psX').value, y: +document.getElementById('psY').value };
-      try { localStorage.setItem(PS_KEY, JSON.stringify(psState)); } catch (e) {}
-      psApply();
+    function psCount() {
+      const n = document.querySelectorAll('.certificate-container').length;
+      const c = document.getElementById('psCount'); if (c) c.textContent = toKhmerDigits(n);
     }
-    function psReset() { psState = Object.assign({}, PS_DEF); try { localStorage.setItem(PS_KEY, JSON.stringify(psState)); } catch (e) {} psApply(); }
+    function psSave() { try { localStorage.setItem(PS_KEY, JSON.stringify(psState)); } catch (e) {} }
+    function psSet(k, v) { psState[k] = v; psSave(); psApply(); }
+    function psStep(d) { psState.scale = Math.min(110, Math.max(70, psState.scale + d)); psSave(); psApply(); }
+    function psReset() { psState = Object.assign({}, PS_DEF); psSave(); psApply(); }
     function psLoad() {
       try {
         const o = JSON.parse(localStorage.getItem(PS_KEY) || 'null');
-        if (o && PS_BASE[o.paper]) psState = { paper: o.paper, scale: Math.min(110, Math.max(80, +o.scale || 100)), x: Math.min(15, Math.max(-15, +o.x || 0)), y: Math.min(15, Math.max(-15, +o.y || 0)) };
+        if (o && PS_PAPER[o.paper]) psState = { paper: o.paper, orient: o.orient === 'portrait' ? 'portrait' : 'landscape', scale: Math.min(110, Math.max(70, +o.scale || 100)) };
       } catch (e) {}
       psApply();
+      const list = document.getElementById('certificateList');
+      if (list) new MutationObserver(psCount).observe(list, { childList: true });
     }
     function closePageSetup() { document.getElementById('psPopup')?.classList.remove('show'); document.getElementById('psBtn')?.classList.remove('open'); }
     function togglePageSetup(e) {
@@ -2255,7 +2267,7 @@ exports.default = {
       const was = pop.classList.contains('show');
       closeCalPopup(); closeAllDd(); closePageSetup();
       if (was) return;
-      const r = btn.getBoundingClientRect(), w = Math.min(330, window.innerWidth - 16);
+      const r = btn.getBoundingClientRect(), w = Math.min(360, window.innerWidth - 16);
       pop.style.width = w + 'px';
       if (window.innerWidth <= 720) { pop.style.left = Math.max(8, (window.innerWidth - w) / 2) + 'px'; pop.style.top = 'auto'; pop.style.bottom = '8px'; }
       else { pop.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + 'px'; pop.style.top = (r.bottom + 6) + 'px'; pop.style.bottom = 'auto'; }
