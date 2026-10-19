@@ -50,7 +50,7 @@
       font-family: 'Battambang', 'Khmer OS Battambang', sans-serif !important;
     }
 
-    /* 🌟 ការពារ Font Awesome Icons មិនឱ្យបាត់ដាច់ខាត */
+    /* 🌟 ការពារ FONT AWESOME ICONS មិនឱ្យបាត់ដាច់ខាត */
     i[class*="fa-"], .fa, .fas, .far, .fa-solid, .fa-regular {
       font-family: "Font Awesome 6 Free" !important;
       font-style: normal !important;
@@ -103,7 +103,7 @@
     .tb-btn.success { background: #059669; border-color: transparent; }
     .tb-btn.success:hover { background: #047857; }
 
-    /* 🌟 CUSTOM DROPDOWN (លាតត្រដាងពេញ មិនកំបុត) */
+    /* 🌟 CUSTOM DROPDOWN */
     .dd-wrap {
       position: relative;
       display: inline-block;
@@ -152,8 +152,8 @@
       width: 794px; height: 1123px; min-height: 1123px; max-height: 1123px;
       background: #ffffff; color: #000000; position: relative;
       box-shadow: 0 18px 50px rgba(0,0,0,0.45);
-      /* 🌟 លើកគូទក្រោមឡើងលើ ដោយកំណត់ padding-bottom: 55px */
-      padding: 26px 42px 55px 42px;
+      /* 🌟 លើកគូទក្រោមឡើងលើ ដោយកំណត់ padding-bottom: 58px */
+      padding: 26px 42px 58px 42px;
       display: flex; flex-direction: column; justify-content: space-between;
       overflow: hidden; box-sizing: border-box;
     }
@@ -201,7 +201,7 @@
       display: flex; justify-content: center; align-items: center; width: 100%;
     }
     .photo-center-spacer {
-      width: 175px; /* ស្មើនឹងទទឹងកាតសិស្សលេខ១ */
+      width: 175px; /* ស្មើទទឹងនៃកាតសិស្សលេខ១ */
       flex-shrink: 0;
     }
     .photo-col-left {
@@ -248,7 +248,7 @@
     .footer-col .sign-title { font-size: 14px; margin-top: 3px; }
     .footer-col .sign-space { height: 42px; }
 
-    /* ══════════════ 📅 KHMER CALENDAR MODAL (ចម្លងពីប្រតិទិនដែលអ្នកផ្ញើមក) ══════════════ */
+    /* ══════════════ 📅 KHMER CALENDAR MODAL (កែសម្រួលជួរឈរស្មើគ្នា ១០០%) ══════════════ */
     .cal-modal-backdrop {
       display: none; position: fixed; inset: 0; z-index: 2900; background: rgba(0,0,0,0.65);
     }
@@ -270,26 +270,69 @@
     .cal-monthhead .m { font-family: 'Khmer OS Muol Light', 'Moul', cursive; font-size: 16px; color: #1e3a8a; }
     .cal-monthhead .s { font-size: 12px; color: #64748b; margin-top: 2px; }
 
-    .cal-dow { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 13px; font-weight: bold; color: #64748b; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
+    /* 🌟 កំណត់ minmax(0, 1fr) ធានាថាជួរទាំង ៧ ស្មើគ្នាដាច់ខាត */
+    .cal-dow, .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+      gap: 3px;
+      width: 100%;
+    }
+    .cal-dow { text-align: center; font-size: 13px; font-weight: bold; color: #64748b; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
     .cal-dow div:first-child { color: #c62828; }
     
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-top: 4px; }
     .cal-cell {
-      position: relative; min-height: 52px; padding: 4px 2px; border: 1px solid #f1f5f9; border-radius: 8px;
-      background: #ffffff; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      position: relative;
+      min-height: 52px;
+      padding: 3px 2px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #ffffff;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
       transition: all .12s;
+      min-width: 0 !important;
+      overflow: hidden !important;
+      box-sizing: border-box;
     }
     .cal-cell:hover { border-color: #0284c7; background: #f0f9ff; }
     .cal-cell.today { background: #e8eefc; border-color: #3b82f6; }
-    .cal-cell.sel { outline: 2px solid #1e3a8a; background: #eff6ff !important; }
+    .cal-cell.sel { outline: 2.5px solid #1e3a8a; background: #eff6ff !important; }
     .cal-cell.sun .g { color: #c62828; }
     .cal-cell.other { opacity: 0.35; }
     .cal-cell .g { font-size: 14px; font-weight: bold; line-height: 1.2; }
-    .cal-cell .l { font-size: 10px; color: #64748b; line-height: 1.1; margin-top: 1px; }
+    .cal-cell .l {
+      font-size: 9.5px;
+      color: #64748b;
+      line-height: 1.1;
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
     .cal-cell .l b { color: #1e3a8a; }
     .cal-cell.sil .l b { color: #a8650a; font-weight: bold; }
     .cal-cell .mo { position: absolute; top: 2px; right: 2px; font-size: 10px; }
-    .cal-cell .h { font-size: 9px; line-height: 1.1; border-radius: 4px; padding: 1px 3px; margin-top: 2px; background: #fde9e7; color: #c62828; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 95%; }
+    .cal-cell .h {
+      font-size: 8.5px;
+      line-height: 1.1;
+      border-radius: 3px;
+      padding: 1px 2px;
+      margin-top: 2px;
+      background: #fde9e7;
+      color: #c62828;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
 
     .cal-legend { display: flex; gap: 10px; flex-wrap: wrap; padding: 8px 6px; color: #64748b; font-size: 11px; border-top: 1px solid #e2e8f0; margin-top: 6px; }
     .cal-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; }
@@ -355,7 +398,7 @@
   <!-- 🌟 MAIN CONTENT -->
   <div id="mainPageContent" style="display:none;">
 
-    <!-- 🛠️ TOP TOOLBAR (DROPDOWN ទាំងអស់ប្រើ FONT BATTAMBANG) -->
+    <!-- 🛠️ TOP TOOLBAR (ICON ទាំងអស់បង្ហាញច្បាស់ ១០០%) -->
     <div class="top-toolbar">
       <div class="tb-group">
         <button type="button" class="tb-btn" onclick="goBack()">
@@ -986,8 +1029,8 @@
     function lunarText(o){return kn(o.kd)+(o.ph===0?'កើត':'រោច');}
     function holy(o){
       if(o.ph===0&&(o.kd===8||o.kd===15)) return true;
-      if(o.ph===1&&o.kd===8) return true;
-      return isLast(o);
+      if(o.ph===1&&(o.kd===8||o.kd===14||o.kd===15)) return true;
+      return false;
     }
     function moon(o){
       if(o.ph===0&&o.kd===15) return '🌕';
@@ -1016,619 +1059,5 @@
     function gText(o){return 'ថ្ងៃ'+DOW[o.dow]+' ទី'+kn(o.d)+' ខែ'+GM[o.m-1]+' ឆ្នាំ'+kn(o.y);}
   </script>
 
-  <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ MAIN CONTROLLER & 6 VECTOR TEMPLATES
-  ══════════════════════════════════════════════════════════════════════════ -->
-  <script>
-    const SUPABASE_URL = "https://nggnuobnrxiqjtcwlvwk.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    function cleanGrade(g) { return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').replace(/[()\-_\s]/g, '').trim(); }
-
-    function readSession() {
-      try { return JSON.parse(localStorage.getItem('krou_supabase_user') || 'null'); } catch(e) { return null; }
-    }
-    const CURRENT_USER = readSession();
-    const IS_ADMIN = String(CURRENT_USER?.role || '').toLowerCase().trim() === 'admin';
-    const USER_CLASS = CURRENT_USER?.assigned_classes || CURRENT_USER?.assigned_class || "៤(ក)";
-
-    const PLACEHOLDER_IMG = "data:image/svg+xml;utf8," + encodeURIComponent(
-      "<svg xmlns='http://www.w3.org/2000/svg' width='200' height='240'>" +
-      "<rect width='100%' height='100%' fill='#f1f5f9'/>" +
-      "<circle cx='100' cy='90' r='38' fill='#cbd5e1'/>" +
-      "<path d='M40 210 Q100 140 160 210 Z' fill='#cbd5e1'/>" +
-      "</svg>"
-    );
-
-    let currentSelectedClass = cleanGrade(USER_CLASS) || '៤(ក)';
-
-    // 🌟 1. បង្ហាញទម្រង់រូបថតមុនគេ (original) ជាលំនាំដើម
-    let currentSelectedTemplate = 'original';
-
-    // 🌟 2. ពេលបើកដំបូង បង្ហាញ «ខែមុន» ជាលំនាំដើមស្វ័យប្រវត្តិ
-    let currentPeriodType = 'monthly';
-    const nowInit = new Date();
-    const prevMonthIndex = (nowInit.getMonth() - 1 + 12) % 12;
-    let currentPeriodChild = GM[prevMonthIndex];
-
-    let currentTop5Students = [
-      { name: "សេសៈ សេសៈ", imageUrl: "" },
-      { name: "នា នា", imageUrl: "" },
-      { name: "មាន់ មាន់", imageUrl: "" },
-      { name: "កូ កូ", imageUrl: "" },
-      { name: "កេះ លីណា", imageUrl: "" }
-    ];
-
-    /* ══════════════ 📱 AUTO-FIT RESPONSIVE SCALER ══════════════ */
-    function fitPaper() {
-      const scaler = document.getElementById('paperScaler');
-      const wrapper = document.querySelector('.paper-wrapper');
-      if (!scaler || !wrapper) return;
-
-      const availW = wrapper.clientWidth - 20;
-      const targetW = 794;
-      let scale = availW / targetW;
-
-      if (scale > 1) scale = 1;
-      if (scale < 0.4) scale = 0.4;
-
-      scaler.style.transform = `scale(${scale})`;
-      scaler.style.width = `${targetW * scale}px`;
-      scaler.style.height = `${1123 * scale}px`;
-      scaler.style.marginBottom = `${-(1123 * (1 - scale))}px`;
-    }
-
-    window.addEventListener('resize', fitPaper);
-
-    /* ══════════════ 🎨 RENDER PHOTO CARD & 6 TEMPLATES ══════════════ */
-    function getPhotoCard(rank, student) {
-      const khRank = kn(rank);
-      const name = student?.name || '...';
-      const img = student?.imageUrl || PLACEHOLDER_IMG;
-      const nameColorClass = `r-color-${rank}`;
-      const isTop1 = (rank === 1);
-
-      const w = isTop1 ? 155 : 138;
-      const h = isTop1 ? 185 : 168;
-      const badgeBg = rank === 1 ? '#f59e0b' : (rank === 2 ? '#64748b' : (rank === 3 ? '#b45309' : '#e11d48'));
-
-      return `
-        <div style="text-align:center;">
-          <div style="position:relative; width:${w}px; height:${h}px; margin:0 auto;">
-            <div class="orig-photo-box" style="width:${w}px; height:${h}px;">
-              <img src="${img}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src=PLACEHOLDER_IMG">
-            </div>
-            <span style="position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:${badgeBg}; color:#fff; font-weight:bold; width:32px; height:32px; border-radius:50%; font-size:14.5px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,0.25); border:2px solid #fff; z-index:10;">
-              ${khRank}
-            </span>
-          </div>
-          <div style="margin-top:6px; display:flex; justify-content:center;">
-            <span class="font-moul ${nameColorClass}" style="white-space:nowrap; background:#fff; border:1.5px solid #fbbf24; padding:5px 16px; border-radius:8px; font-size:${isTop1 ? '17px' : '15px'}; box-shadow:0 2px 6px rgba(0,0,0,0.06);">
-              ${name}
-            </span>
-          </div>
-        </div>
-      `;
-    }
-
-    function getVectorCardSvg(template, rank, student) {
-      const khRank = kn(rank);
-      const name = student?.name || '...';
-      const nameColorClass = `r-color-${rank}`;
-      const isTop1 = (rank === 1);
-
-      // 1. គំរូ ៖ ព្រួញបៃតង
-      if (template === 'arrow') {
-        const boxW = isTop1 ? 350 : 320;
-        const fontSize = isTop1 ? '25px' : '22px';
-        return `
-          <div style="position:relative; width:${boxW}px; height:110px; display:flex; flex-direction:column; align-items:center;">
-            <div style="position:relative; margin-bottom:-14px; z-index:3;">
-              <svg width="44" height="44" viewBox="0 0 34 34">
-                <circle cx="17" cy="17" r="15" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
-                <circle cx="17" cy="17" r="12" fill="#ffffff"/>
-              </svg>
-              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:15px; color:#b91c1c;">${khRank}</span>
-            </div>
-            <div style="position:relative; width:100%; height:74px;">
-              <svg width="100%" height="74" viewBox="0 0 320 68" preserveAspectRatio="none">
-                <path d="M12 6 L285 6 L312 34 L285 62 L12 62 L12 6 Z" fill="#15803d"/>
-                <path d="M18 12 L280 12 L302 34 L280 56 L18 56 Z" fill="#ffffff" stroke="#15803d" stroke-width="2"/>
-                <path d="M12 62 L0 62 L12 50 Z" fill="#14532d"/>
-              </svg>
-              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:${fontSize}; padding-right:24px;">${name}</div>
-            </div>
-          </div>
-        `;
-      }
-
-      // 2. គំរូ ៖ បដាកណ្ដាល
-      if (template === 'banner') {
-        const boxW = isTop1 ? 350 : 320;
-        const boxH = isTop1 ? 120 : 110;
-        const fontSize = isTop1 ? '25px' : '22px';
-        return `
-          <div style="position:relative; width:${boxW}px; height:${boxH}px; display:flex; align-items:center; justify-content:center;">
-            <svg width="${boxW}" height="${boxH}" viewBox="0 0 270 95" fill="none">
-              <path d="M70 16 L200 16 L185 88 L85 88 Z" fill="#1e3a8a"/>
-              <path d="M100 88 L170 88 L180 96 L90 96 Z" fill="#15803d"/>
-              <rect x="18" y="22" width="234" height="58" rx="29" fill="#ffffff" stroke="#f59e0b" stroke-width="3.5"/>
-              <circle cx="135" cy="14" r="16" fill="#ffffff" stroke="#f59e0b" stroke-width="3"/>
-            </svg>
-            <span class="font-moul" style="position:absolute; top:3px; font-size:15px; color:#b91c1c;">${khRank}</span>
-            <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; top:48px; font-size:${fontSize}; width:${boxW - 40}px;">${name}</div>
-          </div>
-        `;
-      }
-
-      // 3. គំរូ ៖ ឃ្មុំ
-      if (template === 'bee') {
-        const boxW = isTop1 ? 330 : 305;
-        const fontSize = isTop1 ? '24px' : '21.5px';
-        return `
-          <div style="position:relative; width:${boxW}px; height:130px; display:flex; flex-direction:column; align-items:center;">
-            <svg width="84" height="58" viewBox="0 0 70 50" fill="none" style="margin-bottom:-12px; z-index:2;">
-              <ellipse cx="20" cy="18" rx="14" ry="8" fill="#bae6fd" opacity="0.8" transform="rotate(-25 20 18)"/>
-              <ellipse cx="50" cy="18" rx="14" ry="8" fill="#bae6fd" opacity="0.8" transform="rotate(25 50 18)"/>
-              <ellipse cx="35" cy="30" rx="20" ry="16" fill="#f59e0b"/>
-              <path d="M22 24 Q35 20 48 24 M20 32 Q35 28 50 32" stroke="#000" stroke-width="3.5" stroke-linecap="round"/>
-              <circle cx="28" cy="28" r="4.5" fill="#000"/><circle cx="27" cy="26" r="1.5" fill="#fff"/>
-              <circle cx="42" cy="28" r="4.5" fill="#000"/><circle cx="41" cy="26" r="1.5" fill="#fff"/>
-              <path d="M31 35 Q35 39 39 35" stroke="#b91c1c" stroke-width="2" stroke-linecap="round"/>
-              <path d="M28 16 Q24 8 20 10 M42 16 Q46 8 50 10" stroke="#000" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            <div style="position:relative; width:100%; height:62px; background:#fff; border:3.5px solid #f59e0b; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
-              <span class="font-moul" style="position:absolute; top:-16px; left:14px; font-size:22px; color:#1d4ed8;">${khRank}</span>
-              <div class="student-name-text font-moul ${nameColorClass}" style="font-size:${fontSize}; width:90%;">${name}</div>
-            </div>
-          </div>
-        `;
-      }
-
-      // 4. គំរូ ៖ បង្អួច
-      if (template === 'window') {
-        const boxW = isTop1 ? 340 : 315;
-        const fontSize = isTop1 ? '24px' : '21.5px';
-        return `
-          <div style="position:relative; width:${boxW}px; height:120px; display:flex; flex-direction:column; align-items:center;">
-            <div style="position:relative; margin-bottom:-12px; z-index:3;">
-              <svg width="120" height="30" viewBox="0 0 110 28" fill="none">
-                <path d="M10 14 Q55 0 100 14 L95 24 Q55 12 15 24 Z" fill="#b91c1c"/>
-                <circle cx="55" cy="14" r="12" fill="#fff" stroke="#f59e0b" stroke-width="2.5"/>
-              </svg>
-              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:14px; color:#b91c1c;">${khRank}</span>
-            </div>
-            <div style="position:relative; width:100%; height:78px; display:flex; align-items:center; justify-content:center;">
-              <svg width="100%" height="78" viewBox="0 0 260 68" fill="none">
-                <rect x="48" y="6" width="164" height="56" rx="4" fill="#ffffff" stroke="#854d0e" stroke-width="4.5"/>
-                <path d="M14 2 L48 6 L48 62 L14 66 Z" fill="#854d0e"/>
-                <rect x="21" y="10" width="22" height="46" fill="#7dd3fc" stroke="#5b3408" stroke-width="2"/>
-                <path d="M246 2 L212 6 L212 62 L246 66 Z" fill="#854d0e"/>
-                <rect x="217" y="10" width="22" height="46" fill="#7dd3fc" stroke="#5b3408" stroke-width="2"/>
-              </svg>
-              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; font-size:${fontSize}; width:160px;">${name}</div>
-            </div>
-          </div>
-        `;
-      }
-
-      // 5. គំរូ ៖ ឆ្មា
-      if (template === 'cat') {
-        const boxW = isTop1 ? 320 : 295;
-        const fontSize = isTop1 ? '24px' : '21.5px';
-        return `
-          <div style="position:relative; width:${boxW}px; height:130px; display:flex; flex-direction:column; align-items:center;">
-            <div style="display:flex; align-items:flex-end; gap:8px; margin-bottom:-14px; z-index:2;">
-              <svg width="50" height="50" viewBox="0 0 45 45">
-                <circle cx="22" cy="25" r="17" fill="#fb923c"/>
-                <polygon points="10,12 18,5 20,15" fill="#fb923c"/>
-                <polygon points="35,12 27,5 25,15" fill="#fb923c"/>
-                <circle cx="17" cy="23" r="3" fill="#000"/><circle cx="28" cy="23" r="3" fill="#000"/>
-                <circle cx="22.5" cy="28" r="2" fill="#b91c1c"/>
-              </svg>
-              <span class="font-moul" style="font-size:22px; color:#f59e0b; margin-bottom:5px;">${khRank}</span>
-              <svg width="50" height="50" viewBox="0 0 45 45">
-                <circle cx="22" cy="25" r="17" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
-                <polygon points="10,12 18,5 20,15" fill="#f8fafc" stroke="#e2e8f0"/>
-                <polygon points="35,12 27,5 25,15" fill="#f8fafc" stroke="#e2e8f0"/>
-                <circle cx="17" cy="23" r="3" fill="#0284c7"/><circle cx="28" cy="23" r="3" fill="#0284c7"/>
-                <circle cx="22.5" cy="28" r="2" fill="#ec4899"/>
-              </svg>
-            </div>
-            <div style="position:relative; width:100%; height:60px; background:#fff; border:3.5px solid #b91c1c; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
-              <div class="student-name-text font-moul ${nameColorClass}" style="font-size:${fontSize}; width:90%;">${name}</div>
-            </div>
-          </div>
-        `;
-      }
-
-      // 6. គំរូ ៖ ឆ្លាក់មាស
-      if (template === 'kbach') {
-        const boxW = isTop1 ? 340 : 315;
-        const fontSize = isTop1 ? '24px' : '21.5px';
-        return `
-          <div style="position:relative; width:${boxW}px; height:125px; display:flex; flex-direction:column; align-items:center;">
-            <div style="position:relative; margin-bottom:-10px; z-index:3;">
-              <svg width="74" height="36" viewBox="0 0 60 30" fill="none">
-                <path d="M30 2 L38 14 L52 14 L42 22 L46 30 L30 24 L14 30 L18 22 L8 14 L22 14 Z" fill="#eab308" stroke="#a16207" stroke-width="1.2"/>
-                <circle cx="30" cy="18" r="9" fill="#ffffff" stroke="#ca8a04" stroke-width="2.5"/>
-              </svg>
-              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:14px; color:#b91c1c; padding-top:6px;">${khRank}</span>
-            </div>
-            <div style="position:relative; width:100%; height:75px; display:flex; align-items:center; justify-content:center;">
-              <svg width="100%" height="75" viewBox="0 0 260 60" fill="none">
-                <path d="M55 30 Q20 4 4 30 Q20 56 55 30 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="2.5"/>
-                <path d="M205 30 Q240 4 256 30 Q240 56 205 30 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="2.5"/>
-                <rect x="48" y="6" width="164" height="48" rx="4" fill="#ffffff" stroke="#eab308" stroke-width="3.5"/>
-              </svg>
-              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; font-size:${fontSize}; width:160px;">${name}</div>
-            </div>
-          </div>
-        `;
-      }
-    }
-
-    /* 🌟 ប្លង់តម្រឹម៖ លេខ២,៤ ស្មើជ្រុងឆ្វេងនៃលេខ១ ហើយលេខ៣,៥ ស្មើជ្រុងស្តាំនៃលេខ១ */
-    function renderActiveTemplate() {
-      const area = document.getElementById('podiumArea');
-      const s = currentTop5Students;
-      const t = currentSelectedTemplate;
-
-      if (t === 'original') {
-        area.innerHTML = `
-          <!-- លេខ ១ នៅចំកណ្តាលខាងលើ -->
-          <div class="photo-podium-row-1">
-            <div style="width: 175px; display: flex; justify-content: center;">
-              ${getPhotoCard(1, s[0])}
-            </div>
-          </div>
-
-          <!-- លេខ ២ (ខាងឆ្វេងស្មើជ្រុងលេខ១) និង លេខ ៣ (ខាងស្តាំស្មើជ្រុងលេខ១) -->
-          <div class="photo-podium-row-2">
-            <div class="photo-col-left">
-              ${getPhotoCard(2, s[1])}
-            </div>
-            <div class="photo-center-spacer"></div>
-            <div class="photo-col-right">
-              ${getPhotoCard(3, s[2])}
-            </div>
-          </div>
-
-          <!-- លេខ ៤ (ខាងឆ្វេងស្មើជ្រុងលេខ១) និង លេខ ៥ (ខាងស្តាំស្មើជ្រុងលេខ១) -->
-          <div class="photo-podium-row-3">
-            <div class="photo-col-left">
-              ${getPhotoCard(4, s[3])}
-            </div>
-            <div class="photo-center-spacer"></div>
-            <div class="photo-col-right">
-              ${getPhotoCard(5, s[4])}
-            </div>
-          </div>
-        `;
-      } else {
-        area.innerHTML = `
-          <div class="vector-podium-row-1">
-            <div class="rank-card-slot">${getVectorCardSvg(t, 1, s[0])}</div>
-          </div>
-          <div class="vector-podium-row-2">
-            <div class="rank-card-slot">${getVectorCardSvg(t, 2, s[1])}</div>
-            <div class="rank-card-slot">${getVectorCardSvg(t, 3, s[2])}</div>
-          </div>
-          <div class="vector-podium-row-3">
-            <div class="rank-card-slot">${getVectorCardSvg(t, 4, s[3])}</div>
-            <div class="rank-card-slot">${getVectorCardSvg(t, 5, s[4])}</div>
-          </div>
-        `;
-      }
-
-      fitPaper();
-    }
-
-    /* ══════════════ 🛠️ CUSTOM DROPDOWN ENGINE ══════════════ */
-    function toggleDropdown(id) {
-      const p = document.getElementById(id);
-      const isShow = p.classList.contains('show');
-      closeAllDropdowns();
-      if (!isShow) p.classList.add('show');
-    }
-
-    function closeAllDropdowns() {
-      document.querySelectorAll('.dd-popup').forEach(p => p.classList.remove('show'));
-    }
-
-    document.addEventListener('click', e => {
-      if (!e.target.closest('.dd-wrap')) closeAllDropdowns();
-    });
-
-    function selectTemplate(val, label) {
-      currentSelectedTemplate = val;
-      document.getElementById('txtTemplateSelect').innerText = label;
-      document.querySelectorAll('#ddTemplateList .dd-item').forEach(el => {
-        el.classList.toggle('active', el.innerText === label);
-      });
-      closeAllDropdowns();
-      renderActiveTemplate();
-    }
-
-    function selectPeriodType(type, label) {
-      currentPeriodType = type;
-      document.getElementById('txtPeriodSelect').innerText = label;
-      document.querySelectorAll('#ddPeriodList .dd-item').forEach(el => {
-        el.classList.toggle('active', el.getAttribute('data-val') === type);
-      });
-
-      const childWrap = document.getElementById('childPeriodWrap');
-      const childPopup = document.getElementById('ddChildPeriodList');
-      closeAllDropdowns();
-
-      if (type === 'monthly') {
-        childWrap.style.display = 'inline-block';
-        document.getElementById('txtChildPeriodSelect').innerText = currentPeriodChild;
-        childPopup.innerHTML = GM.map(m => `
-          <div class="dd-item ${m === currentPeriodChild ? 'active' : ''}" onclick="selectChildPeriod('${m}')">${m}</div>
-        `).join('');
-      } else if (type === 'exam_semester') {
-        childWrap.style.display = 'inline-block';
-        currentPeriodChild = 'ឆមាសទី១';
-        document.getElementById('txtChildPeriodSelect').innerText = currentPeriodChild;
-        childPopup.innerHTML = `
-          <div class="dd-item active" onclick="selectChildPeriod('ឆមាសទី១')">ឆមាសទី១</div>
-          <div class="dd-item" onclick="selectChildPeriod('ឆមាសទី២')">ឆមាសទី២</div>
-        `;
-      } else if (type === 'semester_total') {
-        childWrap.style.display = 'inline-block';
-        currentPeriodChild = 'ប្រចាំឆមាសទី១';
-        document.getElementById('txtChildPeriodSelect').innerText = currentPeriodChild;
-        childPopup.innerHTML = `
-          <div class="dd-item active" onclick="selectChildPeriod('ប្រចាំឆមាសទី១')">ប្រចាំឆមាសទី១</div>
-          <div class="dd-item" onclick="selectChildPeriod('ប្រចាំឆមាសទី២')">ប្រចាំឆមាសទី២</div>
-        `;
-      } else {
-        childWrap.style.display = 'none';
-        currentPeriodChild = '';
-      }
-
-      loadHonorRoll();
-    }
-
-    function selectChildPeriod(val) {
-      currentPeriodChild = val;
-      document.getElementById('txtChildPeriodSelect').innerText = val;
-      document.querySelectorAll('#ddChildPeriodList .dd-item').forEach(el => {
-        el.classList.toggle('active', el.innerText === val);
-      });
-      closeAllDropdowns();
-      loadHonorRoll();
-    }
-
-    /* ══════════════ 📅 KHMER CALENDAR MODAL CONTROLLER (តាមប្រតិទិនដែលផ្ញើមក) ══════════════ */
-    var nowT = new Date();
-    var calToday = { y: nowT.getFullYear(), m: nowT.getMonth() + 1, d: nowT.getDate() };
-    var calView = { y: calToday.y, m: calToday.m };
-    var calSel = { y: calToday.y, m: calToday.m, d: calToday.d };
-
-    function applySelectedDate(y, m, d) {
-      calSel = { y: y, m: m, d: d };
-      var o = info(y, m, d);
-
-      document.getElementById('lblLunarDate').innerText = fullText(o);
-      document.getElementById('lblSolarDate').innerText = 'កំពង់ល្ពៅ, ' + gText(o);
-      document.getElementById('lblBtnDate').innerText = 'ថ្ងៃទី' + kn(d) + ' ' + GM[m - 1];
-    }
-
-    function openKhmerCalendar() {
-      document.getElementById('calBackdrop').classList.add('show');
-      document.getElementById('calModal').classList.add('show');
-      initCalendarPopup();
-    }
-    function closeCalendarPopup() {
-      document.getElementById('calBackdrop').classList.remove('show');
-      document.getElementById('calModal').classList.remove('show');
-    }
-
-    function initCalendarPopup() {
-      var sm = document.getElementById('calSelMonth');
-      var sy = document.getElementById('calSelYear');
-      sm.innerHTML = GM.map((n, i) => `<option value="${i+1}">${n}</option>`).join('');
-      var yh = '';
-      for (var y = 2020; y <= 2030; y++) yh += `<option value="${y}">${kn(y)}</option>`;
-      sy.innerHTML = yh;
-      renderCalendarGrid();
-    }
-
-    function changeCalendarSelect() {
-      calView.m = +document.getElementById('calSelMonth').value;
-      calView.y = +document.getElementById('calSelYear').value;
-      renderCalendarGrid();
-    }
-
-    function shiftCalendarMonth(n) {
-      var t = new Date(calView.y, calView.m - 1 + n, 1);
-      calView = { y: t.getFullYear(), m: t.getMonth() + 1 };
-      renderCalendarGrid();
-    }
-
-    function renderCalendarGrid() {
-      var y = calView.y, m = calView.m;
-      var first = new Date(y, m - 1, 1).getDay();
-      var dim = new Date(y, m, 0).getDate();
-      document.getElementById('calSelMonth').value = m;
-      document.getElementById('calSelYear').value = y;
-
-      var total = Math.ceil((first + dim) / 7) * 7;
-      var months = [], be = [], an = [];
-      var html = '';
-
-      for (var i = 0; i < total; i++) {
-        var p = addDays(y, m, 1, i - first);
-        var inM = (p[0] === y && p[1] === m);
-        var o = info(p[0], p[1], p[2]);
-
-        if (inM) {
-          if (months.indexOf(o.mname) < 0) months.push(o.mname);
-          if (be.indexOf(o.be) < 0) be.push(o.be);
-          var a = o.animal + ' ' + o.sak;
-          if (an.indexOf(a) < 0) an.push(a);
-        }
-
-        var hs = hols(o), hol = hs.length > 0;
-        var isToday = (calToday.y === o.y && calToday.m === o.m && calToday.d === o.d);
-        var isSel = (calSel.y === o.y && calSel.m === o.m && calSel.d === o.d);
-        var isSil = holy(o);
-        var cls = 'cal-cell' + (inM ? '' : ' other') + (o.dow === 0 ? ' sun' : '') + (isToday ? ' today' : '') + (isSel ? ' sel' : '') + (isSil ? ' sil' : '');
-        var mo = moon(o);
-        var lt = (isSil && !(o.kd === 1 && o.ph === 0) ? '<b>' + lunarText(o) + '</b>' : lunarText(o)) + ((o.kd === 1 && o.ph === 0) || (o.d === 1 && inM) ? ' ខែ' + o.mname : '');
-
-        html += '<button type="button" class="' + cls + '" onclick="pickCalDate(' + o.y + ',' + o.m + ',' + o.d + ')">'
-          + '<span class="g">' + kn(o.d) + '</span>'
-          + (mo ? '<span class="mo">' + mo + '</span>' : '')
-          + '<span class="l">' + lt + '</span>'
-          + (hol ? '<span class="h ' + hs[0].k + '">' + hs[0].t + '</span>' : '')
-          + '</button>';
-      }
-
-      document.getElementById('calGrid').innerHTML = html;
-      document.getElementById('calMTitle').textContent = 'ខែ' + GM[m - 1] + ' ឆ្នាំ' + kn(y);
-      document.getElementById('calMSub').textContent = 'ចន្ទគតិ៖ ខែ' + months.join(' – ខែ') + ' · ព.ស. ' + be.map(kn).join(' – ') + ' · ឆ្នាំ' + an.join(' → ');
-    }
-
-    function pickCalDate(y, m, d) {
-      applySelectedDate(y, m, d);
-      closeCalendarPopup();
-    }
-
-    function selectCalendarToday() {
-      applySelectedDate(calToday.y, calToday.m, calToday.d);
-      closeCalendarPopup();
-    }
-
-    /* ══════════════ 🏫 SUPABASE DATA & ROLE LOGIC ══════════════ */
-    async function initPage() {
-      if (!CURRENT_USER || !CURRENT_USER.username) {
-        document.getElementById('authDeniedWrap').style.display = 'flex';
-        return;
-      }
-      document.getElementById('mainPageContent').style.display = 'block';
-
-      // 🌟 បង្ហាញ Dropdown ថ្នាក់សម្រាប់តែ ADMIN ប៉ុណ្ណោះ
-      const adminBox = document.getElementById('adminClassBox');
-      const ddClassList = document.getElementById('ddClassList');
-
-      if (IS_ADMIN) {
-        adminBox.style.display = 'inline-block';
-        try {
-          const { data } = await sb.from('students').select('grade');
-          let classes = [...new Set((data || []).map(d => cleanGrade(d.grade)).filter(Boolean))];
-          if (!classes.length) classes = ['១', '២', '៣', '៤(ក)', '៤(ខ)', '៥', '៦'];
-          classes.sort((a,b) => a.localeCompare(b, 'km'));
-          
-          ddClassList.innerHTML = classes.map(c => `
-            <div class="dd-item ${c === currentSelectedClass ? 'active' : ''}" onclick="selectAdminClass('${c}')">ថ្នាក់ទី ${c}</div>
-          `).join('');
-          
-          document.getElementById('txtClassSelect').innerText = `ថ្នាក់ទី ${currentSelectedClass}`;
-        } catch(e) {}
-      } else {
-        adminBox.style.display = 'none';
-        currentSelectedClass = cleanGrade(USER_CLASS);
-      }
-
-      // 🌟 បង្ហាញ Dropdown ខែមុនជាលំនាំដើមស្វ័យប្រវត្តិ
-      const childPopup = document.getElementById('ddChildPeriodList');
-      document.getElementById('txtChildPeriodSelect').innerText = currentPeriodChild;
-      childPopup.innerHTML = GM.map(m => `
-        <div class="dd-item ${m === currentPeriodChild ? 'active' : ''}" onclick="selectChildPeriod('${m}')">${m}</div>
-      `).join('');
-
-      // 🌟 កាលបរិច្ឆេទថ្ងៃនេះតាមប្រតិទិន MomentKH ដែលផ្ញើមក
-      applySelectedDate(calToday.y, calToday.m, calToday.d);
-
-      await loadHonorRoll();
-      fitPaper();
-    }
-
-    function selectAdminClass(cls) {
-      currentSelectedClass = cleanGrade(cls);
-      document.getElementById('txtClassSelect').innerText = `ថ្នាក់ទី ${cls}`;
-      document.querySelectorAll('#ddClassList .dd-item').forEach(el => {
-        el.classList.toggle('active', el.innerText.includes(cls));
-      });
-      closeAllDropdowns();
-      loadHonorRoll();
-    }
-
-    async function loadHonorRoll() {
-      document.getElementById('lblDocumentClass').innerText = `ថ្នាក់ទី${currentSelectedClass}`;
-
-      let pLabel = "ប្រចាំខែ " + currentPeriodChild;
-      if (currentPeriodType === 'monthly') pLabel = `ប្រចាំខែ ${currentPeriodChild}`;
-      else if (currentPeriodType === 'exam_semester') pLabel = `ការប្រឡង ${currentPeriodChild}`;
-      else if (currentPeriodType === 'semester_total') pLabel = currentPeriodChild;
-      else if (currentPeriodType === 'yearly') pLabel = "ប្រចាំឆ្នាំ";
-      document.getElementById('lblPeriodTitle').innerText = pLabel;
-
-      // ទាញយកឈ្មោះគ្រូថ្នាក់
-      try {
-        const { data: users } = await sb.from('users').select('*');
-        const teacher = (users || []).find(u => cleanGrade(u.assigned_classes || u.assigned_class) === currentSelectedClass);
-        if (teacher) document.getElementById('lblTeacherName').innerText = teacher.teacher_name || '';
-      } catch(e) {}
-
-      // ទាញយកសិស្ស Top 5
-      try {
-        const { data: students } = await sb.from('students').select('id, student_id, student_name, grade, photo_url');
-        const classStudents = (students || []).filter(s => cleanGrade(s.grade) === currentSelectedClass);
-        const sIds = classStudents.map(s => String(s.student_id || s.id));
-
-        const { data: scores } = await sb.from('scores').select('student_id, average, period, score_type').in('student_id', sIds);
-
-        const list = classStudents.map(st => {
-          const sid = String(st.student_id || st.id);
-          const sc = (scores || []).find(s => String(s.student_id) === sid);
-          return {
-            name: st.student_name,
-            imageUrl: st.photo_url || PLACEHOLDER_IMG,
-            avg: Number(sc?.average || 0)
-          };
-        });
-
-        list.sort((a,b) => b.avg - a.avg);
-        const top5 = list.slice(0, 5);
-
-        if (top5.length > 0) {
-          currentTop5Students = top5;
-          while (currentTop5Students.length < 5) currentTop5Students.push({ name: '...', imageUrl: PLACEHOLDER_IMG });
-        }
-      } catch(e) {}
-
-      renderActiveTemplate();
-    }
-
-    function goBack() {
-      if (window.parent && window.parent !== window) {
-        try { window.parent.postMessage({ type: 'NAVIGATE', page: 'reportsHub' }, '*'); return; } catch(e) {}
-      }
-      if (window.history.length > 1) window.history.back();
-    }
-
-    function downloadPDF() {
-      const element = document.getElementById('honorPaper');
-      const opt = {
-        margin: 0,
-        filename: `តារាងកិត្តិយស_ថ្នាក់ទី_${currentSelectedClass}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2.2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-      html2pdf().from(element).set(opt).save();
-    }
-
-    function printReport() {
-      window.print();
-    }
-
-    window.addEventListener('DOMContentLoaded', initPage);
-  </script>
 </body>
 </html>
