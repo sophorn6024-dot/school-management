@@ -201,7 +201,7 @@
       display: flex; justify-content: center; align-items: center; width: 100%;
     }
     .photo-center-spacer {
-      width: 175px; /* ស្មើនឹងទទឹងកាតសិស្សលេខ១ */
+      width: 175px; /* ស្មើទទឹងកាតសិស្សលេខ១ */
       flex-shrink: 0;
     }
     .photo-col-left {
@@ -248,7 +248,7 @@
     .footer-col .sign-title { font-size: 14px; margin-top: 3px; }
     .footer-col .sign-space { height: 42px; }
 
-    /* ══════════════ 📅 KHMER CALENDAR MODAL (កែសម្រួលជួរឈរស្មើគ្នា ១០០%) ══════════════ */
+    /* ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ */
     .cal-modal-backdrop {
       display: none; position: fixed; inset: 0; z-index: 2900; background: rgba(0,0,0,0.65);
     }
@@ -398,7 +398,7 @@
   <!-- 🌟 MAIN CONTENT -->
   <div id="mainPageContent" style="display:none;">
 
-    <!-- 🛠️ TOP TOOLBAR (DROPDOWN ទាំងអស់ប្រើ FONT BATTAMBANG) -->
+    <!-- 🛠️ TOP TOOLBAR -->
     <div class="top-toolbar">
       <div class="tb-group">
         <button type="button" class="tb-btn" onclick="goBack()">
@@ -526,6 +526,7 @@
 
             <div class="footer-col">
               <div id="lblLunarDate" style="font-size:13px;"></div>
+              <!-- 🌟 កាលបរិច្ឆេទសូរិយគតិ៖ ដាក់ត្រឹមតែ «ថ្ងៃទី...» គ្មានឈ្មោះថ្ងៃនៃសប្តាហ៍ឡើយ -->
               <div id="lblSolarDate" style="font-size:13px; margin-top:2px;"></div>
               <div class="font-moul sign-title" style="color:#2b3990; margin-top:4px;">គ្រូបន្ទុកថ្នាក់</div>
               <div class="sign-space"></div>
@@ -539,7 +540,7 @@
 
   </div> <!-- END #mainPageContent -->
 
-  <!-- ══════════════ 📅 KHMER CALENDAR MODAL (ចម្លងពីប្រតិទិនដែលអ្នកផ្ញើមក) ══════════════ -->
+  <!-- ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ -->
   <div class="cal-modal-backdrop" id="calBackdrop" onclick="closeCalendarPopup()"></div>
   <div class="cal-modal" id="calModal">
     <div class="cal-nav">
@@ -1056,11 +1057,14 @@
     function fullText(o){
       return 'ថ្ងៃ'+DOW[o.dow]+' '+lunarText(o)+' ខែ'+o.mname+' ឆ្នាំ'+o.animal+' '+o.sak+' ពុទ្ធសករាជ '+kn(o.be);
     }
-    function gText(o){return 'ថ្ងៃ'+DOW[o.dow]+' ទី'+kn(o.d)+' ខែ'+GM[o.m-1]+' ឆ្នាំ'+kn(o.y);}
+    // 🌟 កាលបរិច្ឆេទសូរិយគតិ៖ ដាក់ត្រឹម «ថ្ងៃទី...» គ្មានឈ្មោះថ្ងៃនៃសប្តាហ៍ឡើយ
+    function gText(o){
+      return 'ថ្ងៃទី' + kn(o.d) + ' ខែ' + GM[o.m - 1] + ' ឆ្នាំ' + kn(o.y);
+    }
   </script>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ MAIN JAVASCRIPT CONTROLLER (ពេញលេញ ១០០% មិនដាច់កូដ)
+       ⚡ MAIN JAVASCRIPT CONTROLLER (ពេញលេញ ១០០%)
   ══════════════════════════════════════════════════════════════════════════ -->
   <script>
     const SUPABASE_URL = "https://nggnuobnrxiqjtcwlvwk.supabase.co";
@@ -1445,7 +1449,7 @@
       loadHonorRoll();
     }
 
-    /* ══════════════ 📅 KHMER CALENDAR CONTROLLER ══════════════ */
+    /* ══════════════ 📅 KHMER CALENDAR MODAL CONTROLLER ══════════════ */
     var nowT = new Date();
     var calToday = { y: nowT.getFullYear(), m: nowT.getMonth() + 1, d: nowT.getDate() };
     var calView = { y: calToday.y, m: calToday.m };
@@ -1456,6 +1460,7 @@
       var o = info(y, m, d);
 
       document.getElementById('lblLunarDate').innerText = fullText(o);
+      // 🌟 កាលបរិច្ឆេទសូរិយគតិ៖ «កំពង់ល្ពៅ ថ្ងៃទី...» គ្មានឈ្មោះថ្ងៃនៃសប្តាហ៍ឡើយ
       document.getElementById('lblSolarDate').innerText = 'កំពង់ល្ពៅ, ' + gText(o);
       document.getElementById('lblBtnDate').innerText = 'ថ្ងៃទី' + kn(d) + ' ' + GM[m - 1];
     }
@@ -1584,7 +1589,7 @@
         <div class="dd-item ${m === currentPeriodChild ? 'active' : ''}" onclick="selectChildPeriod('${m}')">${m}</div>
       `).join('');
 
-      // 🌟 កាលបរិច្ឆេទថ្ងៃនេះតាមប្រតិទិន MomentKH
+      // 🌟 កាលបរិច្ឆេទថ្ងៃនេះតាមប្រតិទិន MomentKH ដែលផ្ញើមក
       applySelectedDate(calToday.y, calToday.m, calToday.d);
 
       await loadHonorRoll();
