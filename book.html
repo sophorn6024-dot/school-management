@@ -632,14 +632,8 @@
       </div>
 
       <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-        <button type="button" class="tab-pill-btn" id="themeToggleBtn" onclick="toggleTheme()" title="ប្ដូររបៀបពន្លឺ/ងងឹត">
-          <i class="fa-solid fa-sun" id="themeToggleIcon"></i> <span id="themeToggleText">Light</span>
-        </button>
         <div id="adminClassBox" style="display:none;">
           <select id="classSelect" style="display:none;" onchange="onClassChange()"></select>
-        </div>
-        <div id="teacherClassBadge" class="sub-chip-check" style="display:none; color:var(--primary); font-weight:bold;">
-          <i class="fa-solid fa-chalkboard-user"></i> <span id="teacherClassText">ថ្នាក់ទី...</span>
         </div>
 
         <button type="button" class="btn-save-main" onclick="saveLoanData()">
@@ -2225,19 +2219,12 @@ exports.default = {
       setTimeout(() => t.classList.remove('show'), 2800);
     }
 
+    /* ម៉ូតពន្លឺ/ងងឹត ធ្វើតាមទំព័រមេ (index.html) ដោយស្វ័យប្រវត្តិ */
     function applyTheme(th) {
-      const theme = th === 'light' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('krou_theme_manual', theme);
-      const icon = document.getElementById('themeToggleIcon');
-      const label = document.getElementById('themeToggleText');
-      if (icon) icon.className = theme === 'dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-      if (label) label.textContent = theme === 'dark' ? 'Light' : 'Dark';
+      document.documentElement.setAttribute('data-theme', th === 'light' ? 'light' : 'dark');
     }
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute('data-theme') || 'dark';
-      applyTheme(current === 'dark' ? 'light' : 'dark');
-    }
+    window.addEventListener('message', e => { if (e.data && (e.data.type === 'THEME_CHANGE' || e.data.theme)) applyTheme(e.data.theme || e.data); });
+    window.addEventListener('storage', e => { if (e.key === 'krou_theme_manual') applyTheme(e.newValue); });
     applyTheme(localStorage.getItem('krou_theme_manual') || 'dark');
 
     /* =========================================================
@@ -2700,7 +2687,6 @@ exports.default = {
     ========================================================= */
     async function initClassSelection() {
       const adminBox = document.getElementById('adminClassBox');
-      const teacherBadge = document.getElementById('teacherClassBadge');
       const sel = document.getElementById('classSelect');
       const cleanUserClass = cleanGrade(USER_CLASS);
 
@@ -2734,23 +2720,16 @@ exports.default = {
         if (!IS_ADMIN) {
           adminBox.style.display = 'none';
           if (cleanUserClass && sortedClasses.includes(cleanUserClass)) {
-            document.getElementById('teacherClassText').innerText = 'ថ្នាក់ទី ' + cleanUserClass;
-            teacherBadge.style.display = 'inline-flex';
             currentClassName = cleanUserClass;
             sel.value = cleanUserClass;
             await loadStudentsAndBookData();
           } else if (cleanUserClass) {
-            document.getElementById('teacherClassText').innerText = 'ថ្នាក់ទី ' + cleanUserClass;
-            teacherBadge.style.display = 'inline-flex';
             currentClassName = cleanUserClass;
             await loadStudentsAndBookData();
           } else {
-            teacherBadge.style.display = 'inline-flex';
-            document.getElementById('teacherClassText').innerText = 'មិនទាន់កំណត់ថ្នាក់';
             document.getElementById('studentTableBody').innerHTML = '<tr><td colspan="11" style="padding:40px; color:#f59e0b; font-weight:bold;">⚠️ គណនីរបស់អ្នកមិនទាន់មានថ្នាក់ទទួលបន្ទុកឡើយ។</td></tr>';
           }
         } else {
-          teacherBadge.style.display = 'none';
           adminBox.style.display = 'inline-flex';
 
           if (cleanUserClass && sortedClasses.includes(cleanUserClass)) {
