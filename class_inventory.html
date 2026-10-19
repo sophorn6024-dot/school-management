@@ -133,7 +133,7 @@ td.no{position:relative}
 td.nm:empty::before{content:'ឈ្មោះសម្ភារៈ...';color:#9ca3af}
 [contenteditable="true"]:focus{outline:2px solid #0891b2;outline-offset:-2px;background:#f0fdff}
 .foot{display:flex;justify-content:space-between;align-items:flex-start;margin-top:1em}
-.sig-l{text-align:center;min-width:14em;line-height:1.8}
+.sig-l{text-align:center;min-width:14em;line-height:1.8;margin-top:1.8em}
 .sig-r{text-align:center;min-width:22em;line-height:1.8}
 .sig-r .role{color:#1d4ed8}
 .sig-space{height:4.7em}
@@ -1632,7 +1632,7 @@ function render(){
     </table>
     <div class="foot">
       <div class="sig-l">
-        ${dIso?`<div style="font-size:.93em">${lunarOfIso(dIso)}</div><div>${fmtKhDate(dIso)}</div><div>បានឃើញ និងឯកភាព</div>`:`<div>&nbsp;</div><div>បានឃើញ និងឯកភាព</div>`}
+        ${dIso?`<div style="font-size:.93em">${lunarOfIso(dIso)}</div><div>${fmtKhDate(dIso)}</div><div>បានឃើញ និងឯកភាព</div>`:`<div>&nbsp;</div><div>&nbsp;</div><div>បានឃើញ និងឯកភាព</div>`}
         <div class="moul" style="font-size:.96em">នាយកសាលា</div>
         <div class="sig-space"></div>
       </div>
