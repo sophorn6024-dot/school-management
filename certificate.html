@@ -362,6 +362,17 @@
       transform-origin: top center;
     }
 
+    /* 📄 ក្រដាសបង្ហាញជាមុន (តាមការរៀបចំទំព័រ) */
+    .sheet-preview {
+      width: var(--sw, 1123px);
+      height: var(--sh, 794px);
+      flex: none;
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+      overflow: hidden;
+    }
+    .sheet-preview .certificate-container { zoom: var(--pz, 1.1); box-shadow: none; }
+
     .certificate-container {
       width: 960px;
       height: 710px;
@@ -631,15 +642,18 @@
         border-radius: 0 !important;
         overflow: hidden !important;
         zoom: var(--pz, 1.11);
-        page-break-after: always !important;
-        break-after: page !important;
+        page-break-after: auto !important;
+        break-after: auto !important;
         page-break-inside: avoid !important;
         break-inside: avoid !important;
       }
-      .certificate-container:last-child {
-        page-break-after: auto !important;
-        break-after: auto !important;
+      .sheet-preview {
+        width: auto !important; height: auto !important; background: none !important;
+        box-shadow: none !important; overflow: visible !important;
+        page-break-after: always !important; break-after: page !important;
+        page-break-inside: avoid !important; break-inside: avoid !important;
       }
+      .sheet-preview:last-child { page-break-after: auto !important; break-after: auto !important; }
 
       .certificate-container,
       .certificate-container * {
@@ -2076,7 +2090,7 @@ exports.default = {
     function setFitZoom() {
       const container = document.getElementById('certificateList');
       if (!container) return;
-      let scale = (document.documentElement.clientWidth - 24) / 980;
+      let scale = (document.documentElement.clientWidth - 24) / ((window.PS_SHEET_W || 980) + 20);
       if (scale > 1) scale = 1;
       if (scale < 0.28) scale = 0.28;
       container.style.zoom = scale >= 0.999 ? '1' : scale.toFixed(4);
@@ -2236,6 +2250,9 @@ exports.default = {
       const pw = (land ? pp.h : pp.w) / 25.4 * 96, ph = (land ? pp.w : pp.h) / 25.4 * 96;   // px
       const base = Math.min(pw / 960, ph / 710) * 0.99;
       document.documentElement.style.setProperty('--pz', (base * psState.scale / 100).toFixed(4));
+      document.documentElement.style.setProperty('--sw', pw.toFixed(1) + 'px');
+      document.documentElement.style.setProperty('--sh', ph.toFixed(1) + 'px');
+      window.PS_SHEET_W = pw; psWrap(); setFitZoom();
       let st = document.getElementById('psPageStyle');
       if (!st) { st = document.createElement('style'); st.id = 'psPageStyle'; document.head.appendChild(st); }
       st.textContent = '@page { size: ' + (land ? pp.h + 'mm ' + pp.w + 'mm' : pp.w + 'mm ' + pp.h + 'mm') + '; margin: 0; }';
@@ -2243,7 +2260,14 @@ exports.default = {
       const v = document.getElementById('psScaleV'); if (v) v.textContent = toKhmerDigits(psState.scale);
       psCount();
     }
+    function psWrap() {
+      document.querySelectorAll('#certificateList > .certificate-container').forEach(c => {
+        const w = document.createElement('div'); w.className = 'sheet-preview';
+        c.parentNode.insertBefore(w, c); w.appendChild(c);
+      });
+    }
     function psCount() {
+      psWrap();
       const n = document.querySelectorAll('.certificate-container').length;
       const c = document.getElementById('psCount'); if (c) c.textContent = toKhmerDigits(n);
     }
