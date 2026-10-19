@@ -300,6 +300,23 @@
     .sd-l { font-size: 11.5px; line-height: 1.45; white-space: nowrap; }
     .sd-s { font-size: 12px; line-height: 1.45; white-space: nowrap; }
 
+    /* ⚙️ រៀបចំទំព័រ */
+    .btn-ghost { background: var(--input-bg); color: var(--text-main); border-color: var(--input-border); }
+    .btn-ghost:hover, .btn-ghost.open { border-color: var(--input-focus); }
+    .ps-popup, .ps-popup * { font-family: 'Battambang', 'Siemreap', sans-serif; }
+    .ps-popup { display: none; position: fixed; z-index: 99999; width: 330px; max-width: calc(100vw - 16px);
+      background: var(--card-panel-bg); color: var(--text-main); border: 1px solid var(--tb-border);
+      border-radius: 16px; box-shadow: 0 22px 60px rgba(15,23,42,.35); max-height: calc(100vh - 20px); overflow-y: auto; }
+    .ps-popup.show { display: block; }
+    .ps-head { background: linear-gradient(135deg,#132d56,#1e3a8a); color:#fff; padding: 12px 14px; font-weight: 700; }
+    .ps-body { padding: 10px 14px; display: flex; flex-direction: column; gap: 10px; }
+    .ps-row { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--text-muted); }
+    .ps-row b { color: var(--text-main); margin-left: 6px; }
+    .ps-row .form-control { width: 100%; height: 34px; }
+    .ps-row input[type=range] { width: 100%; }
+    .ps-sep { font-size: 12px; font-weight: 700; color: #0284c7; border-top: 1px solid var(--tb-border); padding-top: 8px; }
+    .ps-foot { display: flex; justify-content: space-between; gap: 8px; padding: 10px 14px 14px; border-top: 1px solid var(--tb-border); }
+
     /* 📱 RESPONSIVE (មិនចាំបាច់អូស Toolbar ទៀតទេ) */
     @media screen and (max-width: 1100px) {
       .tb-filters { flex: 1 1 100%; }
@@ -314,7 +331,7 @@
       .tb-filters .bb-dropdown { flex: 1 1 auto; min-width: 0; }
       .tb-filters .bb-dd-btn, .tb-filters .dt-btn { width: 100%; min-width: 0 !important; flex: 1 1 auto; }
       .tb-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; width: 100%; }
-      .tb-actions .btn { width: 100%; justify-content: center; }
+      .tb-actions .btn, .tb-filters > .btn { width: 100%; justify-content: center; }
       .form-control, .btn, .bb-dd-btn, .dt-btn { height: 34px; font-size: 12.5px; }
     }
     @media screen and (max-width: 420px) {
@@ -570,7 +587,6 @@
 
     /* ══════════════ 🖨️ PRINT (ដូចពេលបង្ហាញ ១០០% — គ្រាន់តែពង្រីកស្មើគ្នាឲ្យពេញ A4) ══════════════ */
     @media print {
-      @page { size: A4 landscape; margin: 0; }
 
       html, body {
         background: #ffffff !important;
@@ -581,7 +597,7 @@
         min-height: 0 !important;
       }
 
-      .no-print-toolbar, .auth-wrapper, .cal-popup, .bb-dd-menu { display: none !important; }
+      .no-print-toolbar, .auth-wrapper, .cal-popup, .ps-popup, .bb-dd-menu { display: none !important; }
 
       .certificate-list {
         display: block !important;
@@ -600,7 +616,10 @@
         box-shadow: none !important;
         border-radius: 0 !important;
         overflow: hidden !important;
-        zoom: 1.11;
+        zoom: var(--pz, 1.11);
+        position: relative !important;
+        left: var(--px, 0mm);
+        top: var(--py, 0mm);
         page-break-after: always !important;
         break-after: page !important;
         page-break-inside: avoid !important;
@@ -666,17 +685,10 @@
         </div>
       </div>
 
-      <!-- ឆ្នាំសិក្សា -->
-      <div class="panel-pill-box">
-        <span class="toolbar-label"><i class="fa-solid fa-calendar-days" style="color:#f59e0b;"></i> <span class="lbl">ឆ្នាំសិក្សា៖</span></span>
-        <input type="text" id="inYear" class="form-control" value="" style="width:110px;" oninput="updateAllCertText()" title="ឆ្នាំសិក្សា">
-      </div>
-
-      <!-- សាលារៀន -->
-      <div class="panel-pill-box">
-        <span class="toolbar-label"><i class="fa-solid fa-school" style="color:#10b981;"></i> <span class="lbl">សាលា៖</span></span>
-        <input type="text" id="inSchool" class="form-control" value="សាលារៀនបឋមសិក្សាកំពង់ល្ពៅ" style="width:200px;" oninput="updateAllCertText()" title="ឈ្មោះសាលារៀន">
-      </div>
+      <!-- ⚙️ រៀបចំទំព័រ -->
+      <button type="button" class="btn btn-ghost" id="psBtn" onclick="togglePageSetup(event)" title="រៀបចំទំព័រ">
+        <i class="fa-solid fa-sliders"></i> <span>រៀបចំទំព័រ</span>
+      </button>
 
       <!-- 📅 ថ្ងៃខែហត្ថលេខា (ចន្ទគតិ) : គ្រូ + នាយក -->
       <div class="panel-pill-box">
@@ -700,6 +712,32 @@
       </button>
     </div>
 
+  </div>
+
+  <!-- ⚙️ POPUP រៀបចំទំព័រ -->
+  <div class="ps-popup" id="psPopup" onclick="event.stopPropagation()" role="dialog" aria-label="រៀបចំទំព័រ">
+    <div class="ps-head"><i class="fa-solid fa-sliders"></i> រៀបចំទំព័រ</div>
+    <div class="ps-body">
+      <label class="ps-row"><span>ឆ្នាំសិក្សា</span>
+        <input type="text" id="inYear" class="form-control" oninput="updateAllCertText()"></label>
+      <label class="ps-row"><span>សាលារៀន</span>
+        <input type="text" id="inSchool" class="form-control" value="សាលារៀនបឋមសិក្សាកំពង់ល្ពៅ" oninput="updateAllCertText()"></label>
+      <div class="ps-sep">ការបោះពុម្ព</div>
+      <label class="ps-row"><span>ទំហំក្រដាស (ផ្ដេក)</span>
+        <select id="psPaper" class="form-control" onchange="psChanged()">
+          <option value="A4">A4</option><option value="A5">A5</option><option value="Letter">Letter</option>
+        </select></label>
+      <label class="ps-row"><span>ទំហំបណ្ណ <b id="psScaleV">100%</b></span>
+        <input type="range" id="psScale" min="80" max="110" step="1" value="100" oninput="psChanged()"></label>
+      <label class="ps-row"><span>រំកិលឆ្វេង/ស្តាំ <b id="psXV">0mm</b></span>
+        <input type="range" id="psX" min="-15" max="15" step="1" value="0" oninput="psChanged()"></label>
+      <label class="ps-row"><span>រំកិលលើ/ក្រោម <b id="psYV">0mm</b></span>
+        <input type="range" id="psY" min="-15" max="15" step="1" value="0" oninput="psChanged()"></label>
+    </div>
+    <div class="ps-foot">
+      <button type="button" class="cal-btn" onclick="psReset()"><i class="fa-solid fa-rotate-left"></i> កំណត់ដើមវិញ</button>
+      <button type="button" class="cal-btn" onclick="closePageSetup()"><i class="fa-solid fa-check"></i> រួចរាល់</button>
+    </div>
   </div>
 
   <!-- 📅 POPUP ប្រតិទិនជ្រើសថ្ងៃហត្ថលេខា -->
@@ -1992,8 +2030,8 @@ exports.default = {
       });
       menu.classList.add('open'); placeMenu(menu);
     }
-    document.addEventListener('click', () => { closeAllDd(); closeCalPopup(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeAllDd(); closeCalPopup(); } });
+    document.addEventListener('click', () => { closeAllDd(); closeCalPopup(); closePageSetup(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeAllDd(); closeCalPopup(); closePageSetup(); } });
     buildFrameDropdown();
 
 
@@ -2157,7 +2195,7 @@ exports.default = {
       if (e) e.stopPropagation();
       const pop = document.getElementById('calPopup'), btn = document.getElementById(role === 'teacher' ? 'signBtnT' : 'signBtnD');
       const wasOpen = pop.classList.contains('show') && calRole === role;
-      closeCalPopup(); closeAllDd();
+      closeCalPopup(); closeAllDd(); closePageSetup();
       if (wasOpen) return;
       calRole = role;
       document.getElementById('signBlankIn').checked = signDates[calRole].blank;
@@ -2178,6 +2216,53 @@ exports.default = {
     }
     window.addEventListener('resize', closeCalPopup);
 
+    /* ⚙️ រៀបចំទំព័រ */
+    const PS_KEY = 'commendPageSetup_v1';
+    const PS_BASE = { A4: 1.11, A5: 0.78, Letter: 1.08 };
+    const PS_DEF = { paper: 'A4', scale: 100, x: 0, y: 0 };
+    let psState = Object.assign({}, PS_DEF);
+    function psApply() {
+      const r = document.documentElement.style;
+      r.setProperty('--pz', (PS_BASE[psState.paper] * psState.scale / 100).toFixed(4));
+      r.setProperty('--px', psState.x + 'mm');
+      r.setProperty('--py', psState.y + 'mm');
+      let st = document.getElementById('psPageStyle');
+      if (!st) { st = document.createElement('style'); st.id = 'psPageStyle'; document.head.appendChild(st); }
+      st.textContent = '@page { size: ' + psState.paper + ' landscape; margin: 0; }';
+      const set = (id, v) => { const e = document.getElementById(id); if (e) e.value = v; };
+      set('psPaper', psState.paper); set('psScale', psState.scale); set('psX', psState.x); set('psY', psState.y);
+      const t = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+      t('psScaleV', toKhmerDigits(psState.scale) + '%'); t('psXV', toKhmerDigits(psState.x) + 'mm'); t('psYV', toKhmerDigits(psState.y) + 'mm');
+    }
+    function psChanged() {
+      psState = { paper: document.getElementById('psPaper').value, scale: +document.getElementById('psScale').value,
+                  x: +document.getElementById('psX').value, y: +document.getElementById('psY').value };
+      try { localStorage.setItem(PS_KEY, JSON.stringify(psState)); } catch (e) {}
+      psApply();
+    }
+    function psReset() { psState = Object.assign({}, PS_DEF); try { localStorage.setItem(PS_KEY, JSON.stringify(psState)); } catch (e) {} psApply(); }
+    function psLoad() {
+      try {
+        const o = JSON.parse(localStorage.getItem(PS_KEY) || 'null');
+        if (o && PS_BASE[o.paper]) psState = { paper: o.paper, scale: Math.min(110, Math.max(80, +o.scale || 100)), x: Math.min(15, Math.max(-15, +o.x || 0)), y: Math.min(15, Math.max(-15, +o.y || 0)) };
+      } catch (e) {}
+      psApply();
+    }
+    function closePageSetup() { document.getElementById('psPopup')?.classList.remove('show'); document.getElementById('psBtn')?.classList.remove('open'); }
+    function togglePageSetup(e) {
+      if (e) e.stopPropagation();
+      const pop = document.getElementById('psPopup'), btn = document.getElementById('psBtn');
+      const was = pop.classList.contains('show');
+      closeCalPopup(); closeAllDd(); closePageSetup();
+      if (was) return;
+      const r = btn.getBoundingClientRect(), w = Math.min(330, window.innerWidth - 16);
+      pop.style.width = w + 'px';
+      if (window.innerWidth <= 720) { pop.style.left = Math.max(8, (window.innerWidth - w) / 2) + 'px'; pop.style.top = 'auto'; pop.style.bottom = '8px'; }
+      else { pop.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + 'px'; pop.style.top = (r.bottom + 6) + 'px'; pop.style.bottom = 'auto'; }
+      pop.classList.add('show'); btn.classList.add('open');
+    }
+    window.addEventListener('resize', closePageSetup);
+
     function doPrint() {
       window.focus();
       setTimeout(() => {
@@ -2192,6 +2277,7 @@ exports.default = {
       document.getElementById('inYear').value = defaultAcademicYear();
       loadSignDates();
       renderSignLabels();
+      psLoad();
 
       await initClasses();
       setFitZoom();
