@@ -151,7 +151,7 @@
     .tb-btn.success { background: #059669; border-color: transparent; }
     .tb-btn.success:hover { background: #047857; }
 
-    /* 🌟 CUSTOM DROPDOWN (លាតត្រដាងពេញ មិនកំបុត) */
+    /* 🌟 CUSTOM DROPDOWN */
     .dd-wrap {
       position: relative;
       display: inline-block;
@@ -212,14 +212,15 @@
     .student-nav-btn:hover { background: #334155; }
 
     /* =========================================================
-       📄 RESPONSIVE PAPER WORKSPACE (AUTO-SCALING)
+       📄 PAPER STAGE & SCALING SYSTEM
     ========================================================= */
     .paper-stage-wrapper {
       width: 100%;
       display: flex;
       justify-content: center;
       padding: 20px 10px;
-      overflow-x: hidden;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .paper-stage {
@@ -228,7 +229,7 @@
       align-items: center;
       gap: 24px;
       transform-origin: top center;
-      transition: transform 0.15s ease;
+      transition: transform 0.2s ease;
     }
 
     .report-sheet {
@@ -440,6 +441,7 @@
     .cal-monthhead .m { font-family: 'Khmer OS Muol Light', 'Moul', cursive; font-size: 16px; color: #1e3a8a; }
     .cal-monthhead .s { font-size: 12px; color: #64748b; margin-top: 2px; }
 
+    /* 🌟 ជួរទាំង ៧ ស្មើគ្នាដាច់ខាត */
     .cal-dow, .cal-grid {
       display: grid;
       grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
@@ -650,11 +652,11 @@
         </div>
       </div>
 
-      <!-- 🌟 ជ្រើសរើសខែ / ឆមាស (លំនាំដើម ខែបច្ចុប្បន្ន) -->
+      <!-- 🌟 ជ្រើសរើសខែ / ឆមាស -->
       <div class="dd-wrap" id="monthDropdownWrap">
         <button type="button" class="tb-btn" onclick="toggleDropdown('ddMonthList')">
           <i class="fa-solid fa-calendar-week" style="color:#38bdf8;"></i>
-          <span id="txtMonthSelect">តុលា</span>
+          <span id="txtMonthSelect">កញ្ញា</span>
           <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
         </button>
         <div class="dd-popup" id="ddMonthList"></div>
@@ -691,6 +693,12 @@
         <span id="lblBtnDate">កាលបរិច្ឆេទ</span>
       </button>
 
+      <!-- សមអេក្រង់ -->
+      <button type="button" class="tb-btn" id="btnFitScreen" onclick="toggleMobileFitScreen()" title="ពង្រីក/បង្រួមសមអេក្រង់">
+        <i class="fa-solid fa-expand"></i>
+        <span id="txtFitScreen">សមអេក្រង់</span>
+      </button>
+
       <!-- PDF -->
       <button type="button" class="tb-btn success" onclick="downloadPDF()" title="ទាញយក PDF">
         <i class="fa-solid fa-download"></i>
@@ -707,9 +715,8 @@
   </div>
 
   <!-- =========================================================
-       2. សន្លឹកព្រឹត្តិបត្រពិន្ទុ (AUTO RESPONSIVE WORKSPACE)
-  ========================================================= */
-  -->
+       2. សន្លឹកព្រឹត្តិបត្រពិន្ទុ (PAPER WORKSPACE)
+  ========================================================= -->
   <div class="paper-stage-wrapper" id="paperStageWrapper" style="display:none;">
     <div class="paper-stage" id="paperWorkspace">
       <div class="empty-state-card">
@@ -719,20 +726,299 @@
     </div>
   </div>
 
-  <!-- =========================================================
-       3. JAVASCRIPT: SUPABASE & DYNAMIC REAL DATA
-  ========================================================= -->
+  <!-- ══════════════ 📅 KHMER CALENDAR MODAL (MOMENTKH) ══════════════ -->
+  <div class="cal-modal-backdrop" id="calBackdrop" onclick="closeCalendarPopup()"></div>
+  <div class="cal-modal" id="calModal">
+    <div class="cal-nav">
+      <button class="cal-btn-ico" type="button" onclick="shiftCalendarMonth(-1)">‹</button>
+      <select id="calSelMonth" onchange="changeCalendarSelect()"></select>
+      <select id="calSelYear" onchange="changeCalendarSelect()"></select>
+      <button class="cal-btn-ico" type="button" onclick="shiftCalendarMonth(1)">›</button>
+    </div>
+    <div class="cal-monthhead">
+      <div class="m font-moul" id="calMTitle"></div>
+      <div class="s" id="calMSub"></div>
+    </div>
+    <div class="cal-dow">
+      <div>អា</div><div>ច</div><div>អ</div><div>ព</div><div>ព្រ</div><div>សុ</div><div>ស</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-legend">
+      <span><i style="background:#fde9e7"></i>ថ្ងៃឈប់សម្រាក</span>
+      <span><i style="background:#fbefd5"></i>ថ្ងៃសីល</span>
+      <span>🌕 ពេញបូណ៌មី · 🌑 ចុងខែ · 🌓🌗 ថ្ងៃសីល ៨</span>
+    </div>
+    <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+      <button type="button" class="tb-btn" style="background:#eff6ff; color:#0284c7; border:none; height:34px;" onclick="selectCalendarToday()">ថ្ងៃនេះ</button>
+      <button type="button" class="tb-btn primary" style="height:34px;" onclick="closeCalendarPopup()">បិទ</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════════
+       ⚡ MAIN SCRIPT (MOMENTKH + SUPABASE INTEGRATED)
+  ══════════════════════════════════════════════════════════════════════════ -->
   <script>
-    // 🌟 លំនាំដើម បង្ហាញ «ប្រចាំខែ» និង «ខែបច្ចុប្បន្ន»
+    /* 1. MOMENTKH ENGINE INITIALIZATION */
+    const momentkh = (function () {
+      "use strict";
+      var MoonPhase = { Waxing: 0, Waning: 1 };
+      var MonthIndex = {
+        Migasir: 0, Boss: 1, Meak: 2, Phalkun: 3, Cheit: 4, Pisakh: 5,
+        Jesth: 6, Asadh: 7, Srap: 8, Phatrabot: 9, Assoch: 10, Kadeuk: 11,
+        Pathamasadh: 12, Tutiyasadh: 13
+      };
+      var LunarMonthNames = [
+        'មិគសិរ', 'បុស្ស', 'មាឃ', 'ផល្គុន', 'ចេត្រ', 'ពិសាខ',
+        'ជេស្ឋ', 'អាសាឍ', 'ស្រាពណ៍', 'ភទ្របទ', 'អស្សុជ', 'កត្តិក',
+        'បឋមាសាឍ', 'ទុតិយាសាឍ'
+      ];
+      var AnimalYearNames = ['ជូត', 'ឆ្លូវ', 'ខាល', 'ថោះ', 'រោង', 'ម្សាញ់', 'មមី', 'មមែ', 'វក', 'រកា', 'ច', 'កុរ'];
+      var SakNames = ['សំរឹទ្ធិស័ក', 'ឯកស័ក', 'ទោស័ក', 'ត្រីស័ក', 'ចត្វាស័ក', 'បញ្ចស័ក', 'ឆស័ក', 'សប្តស័ក', 'អដ្ឋស័ក', 'នព្វស័ក'];
+      var WeekdayNames = ['អាទិត្យ', 'ចន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'];
+      var MoonPhaseNames = ['កើត', 'រោច'];
+
+      function gregorianToJulianDay(year, month, day) {
+        var a = Math.floor((14 - month) / 12);
+        var y = year + 4800 - a;
+        var m = month + 12 * a - 3;
+        return day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+      }
+      function julianDayToGregorian(jdn) {
+        var a = jdn + 32044;
+        var b = Math.floor((4 * a + 3) / 146097);
+        var c = a - Math.floor((146097 * b) / 4);
+        var d = Math.floor((4 * c + 3) / 1461);
+        var e = c - Math.floor((1461 * d) / 4);
+        var m = Math.floor((5 * e + 2) / 153);
+        var day = e - Math.floor((153 * m + 2) / 5) + 1;
+        var month = m + 3 - 12 * Math.floor(m / 10);
+        var year = 100 * b + d - 4800 + Math.floor(m / 10);
+        return { year: year, month: month, day: day };
+      }
+      function getDayOfWeek(y, m, d) { return (gregorianToJulianDay(y, m, d) + 1) % 7; }
+      function adToJs(adYear) { return adYear - 638; }
+      function beToJs(beYear) { return beYear - 1182; }
+
+      function getAharkun(beYear) { return Math.floor((beYear * 292207 + 499) / 800) + 4; }
+      function getAharkunMod(beYear) { return (beYear * 292207 + 499) % 800; }
+      function getKromthupul(beYear) { return 800 - getAharkunMod(beYear); }
+      function getAvoman(beYear) { return (getAharkun(beYear) * 11 + 25) % 692; }
+      function getBodithey(beYear) {
+        var ah = getAharkun(beYear);
+        return (Math.floor((ah * 11 + 25) / 692) + ah + 29) % 30;
+      }
+      function isKhmerSolarLeap(beYear) { return getKromthupul(beYear) <= 207; }
+      function isKhmerLeapDayByCalculation(beYear) {
+        var av = getAvoman(beYear);
+        if (av === 0 && getAvoman(beYear - 1) === 137) return true;
+        else if (isKhmerSolarLeap(beYear)) return av < 127;
+        else if (av === 137 && getAvoman(beYear + 1) === 0) return false;
+        else if (av < 138) return true;
+        return false;
+      }
+      function isKhmerLeapMonth(beYear) {
+        var b1 = getBodithey(beYear), b2 = getBodithey(beYear + 1);
+        if (b1 === 25 && b2 === 5) return false;
+        return (b1 === 24 && b2 === 6) || (b1 >= 25) || (b1 < 6);
+      }
+      function getLeapType(beYear) {
+        if (isKhmerLeapMonth(beYear)) return 1;
+        else if (isKhmerLeapDayByCalculation(beYear)) return 2;
+        return 0;
+      }
+      function getNumberOfDaysInKhmerMonth(monthIndex, beYear) {
+        const leapType = getLeapType(beYear);
+        if (monthIndex === MonthIndex.Jesth && leapType === 2) return 30;
+        if (monthIndex === MonthIndex.Pathamasadh || monthIndex === MonthIndex.Tutiyasadh) return leapType === 1 ? 30 : 0;
+        return monthIndex % 2 === 0 ? 29 : 30;
+      }
+      function getNumberOfDaysInKhmerYear(beYear) {
+        const leapType = getLeapType(beYear);
+        return leapType === 1 ? 384 : (leapType === 2 ? 355 : 354);
+      }
+      function nextMonthOf(monthIndex, beYear) {
+        const leapType = getLeapType(beYear);
+        if (monthIndex === MonthIndex.Jesth && leapType === 1) return MonthIndex.Pathamasadh;
+        if (monthIndex === MonthIndex.Kadeuk) return MonthIndex.Migasir;
+        if (monthIndex === MonthIndex.Pathamasadh) return MonthIndex.Tutiyasadh;
+        if (monthIndex === MonthIndex.Tutiyasadh) return MonthIndex.Srap;
+        return (monthIndex + 1);
+      }
+
+      function getMaybeBEYear(year, month) { return month <= 4 ? year + 543 : year + 544; }
+
+      function fromGregorian(year, month, day, hour = 0, minute = 0, second = 0) {
+        let epochJdn = gregorianToJulianDay(1900, 1, 1);
+        const targetJdn = gregorianToJulianDay(year, month, day);
+        let khmerMonth = 1;
+        let diffDays = targetJdn - epochJdn;
+
+        if (diffDays > 0) {
+          while (true) {
+            const epochGreg = julianDayToGregorian(epochJdn);
+            const nextYearBE = getMaybeBEYear(epochGreg.year + 1, epochGreg.month);
+            const daysInNextYear = getNumberOfDaysInKhmerYear(nextYearBE);
+            if (diffDays > daysInNextYear) { diffDays -= daysInNextYear; epochJdn += daysInNextYear; } else break;
+          }
+        }
+        while (diffDays > 0) {
+          const epochGreg = julianDayToGregorian(epochJdn);
+          const currentBE = getMaybeBEYear(epochGreg.year, epochGreg.month);
+          const daysInMonth = getNumberOfDaysInKhmerMonth(khmerMonth, currentBE);
+          if (diffDays > daysInMonth) { diffDays -= daysInMonth; epochJdn += daysInMonth; khmerMonth = nextMonthOf(khmerMonth, currentBE); } else break;
+        }
+
+        const finalBE = getMaybeBEYear(year, month);
+        const totalDaysInMonth = getNumberOfDaysInKhmerMonth(khmerMonth, finalBE);
+        if (diffDays >= totalDaysInMonth) {
+          diffDays = diffDays % totalDaysInMonth;
+          khmerMonth = nextMonthOf(khmerMonth, finalBE);
+        }
+
+        const dayInPhase = diffDays < 15 ? diffDays + 1 : (diffDays - 15) + 1;
+        const moonPhase = diffDays < 15 ? 0 : 1;
+        const jsYear = beToJs(finalBE);
+        const animalYearIndex = ((finalBE + 4) % 12 + 12) % 12;
+        const sakIndex = ((jsYear % 10) + 10) % 10;
+        const dayOfWeek = getDayOfWeek(year, month, day);
+
+        return {
+          gregorian: { year, month, day, hour, minute, second, dayOfWeek },
+          khmer: {
+            day: dayInPhase,
+            moonPhase: moonPhase,
+            moonPhaseName: MoonPhaseNames[moonPhase],
+            monthIndex: khmerMonth,
+            monthName: LunarMonthNames[khmerMonth],
+            beYear: finalBE,
+            animalYearName: AnimalYearNames[animalYearIndex],
+            sakName: SakNames[sakIndex],
+            dayOfWeekName: WeekdayNames[dayOfWeek]
+          }
+        };
+      }
+
+      return { fromGregorian: fromGregorian };
+    })();
+
+    /* 2. CALENDAR HELPER UTILITIES */
+    var KD = '០១២៣៤៥៦៧៨៩';
+    function kn(n) { return String(n).replace(/\d/g, c => KD[c]); }
+    var GM = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+    var DOW = ['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
+    var MN = {0:'មិគសិរ',1:'បុស្ស',2:'មាឃ',3:'ផល្គុន',4:'ចេត្រ',5:'ពិសាខ',6:'ជេស្ឋ',7:'អាសាឍ',8:'ស្រាពណ៍',9:'ភទ្របទ',10:'អស្សុជ',11:'កត្តិក',12:'បឋមាសាឍ',13:'ទុតិយាសាឍ'};
+    var FIXED = {'1-1':'ទិវាចូលឆ្នាំសកល','1-7':'ទិវាជ័យជម្នះលើរបបប្រល័យពូជសាសន៍','3-8':'ទិវានារីអន្តរជាតិ','5-1':'ទិវាពលកម្មអន្តរជាតិ','5-14':'ព្រះរាជពិធីបុណ្យចម្រើនព្រះជន្ម ព្រះមហាក្សត្រ','6-18':'ព្រះរាជពិធីបុណ្យចម្រើនព្រះជន្ម ព្រះវររាជមាតា','9-24':'ទិវាប្រកាសរដ្ឋធម្មនុញ្ញ','10-15':'ទិវាគោរពព្រះវិញ្ញាណក្ខន្ធ ព្រះបរមរតនកោដ្ឋ','10-29':'ព្រះរាជពិធីគ្រងព្រះបរមរាជសម្បត្តិ','11-9':'ពិធីបុណ្យឯករាជ្យជាតិ','12-29':'ទិវាសន្តិភាព'};
+
+    var calCache = {};
+    function info(y, m, d) {
+      var key = y * 10000 + m * 100 + d;
+      if (calCache[key]) return calCache[key];
+      var r = momentkh.fromGregorian(y, m, d);
+      var k = r.khmer;
+      var o = {
+        y: y, m: m, d: d, dow: r.gregorian.dayOfWeek,
+        kd: k.day, ph: k.moonPhase, mi: k.monthIndex,
+        mname: MN[k.monthIndex] || k.monthName,
+        be: k.beYear, animal: k.animalYearName, sak: k.sakName
+      };
+      calCache[key] = o;
+      return o;
+    }
+    function addDays(y, m, d, n) { var t = new Date(y, m - 1, d + n); return [t.getFullYear(), t.getMonth() + 1, t.getDate()]; }
+    function lunarText(o) { return kn(o.kd) + (o.ph === 0 ? 'កើត' : 'រោច'); }
+    function holy(o) {
+      if (o.ph === 0 && (o.kd === 8 || o.kd === 15)) return true;
+      if (o.ph === 1 && (o.kd === 8 || o.kd === 14 || o.kd === 15)) return true;
+      return false;
+    }
+    function moon(o) {
+      if (o.ph === 0 && o.kd === 15) return '🌕';
+      if (o.ph === 0 && o.kd === 8) return '🌓';
+      if (o.ph === 1 && o.kd === 8) return '🌗';
+      if (o.ph === 1 && (o.kd === 14 || o.kd === 15)) return '🌑';
+      return '';
+    }
+    function hols(o) {
+      var out = [], f = FIXED[o.m + '-' + o.d];
+      if (f) out.push({ t: f, k: 'nat' });
+      if (o.m === 4 && o.d >= 14 && o.d <= 16) out.push({ t: ['ពិធីបុណ្យចូលឆ្នាំ ទី១', 'ពិធីបុណ្យចូលឆ្នាំ ទី២', 'ពិធីបុណ្យចូលឆ្នាំ ទី៣'][o.d - 14], k: 'nat' });
+      var ph = o.ph, d = o.kd, mi = o.mi;
+      if (ph === 0 && d === 15 && mi === 3) out.push({ t: 'ពិធីបុណ្យមាឃបូជា', k: 'bud' });
+      if (ph === 0 && d === 15 && mi === 5) out.push({ t: 'ពិធីបុណ្យវិសាខបូជា', k: 'nat' });
+      if (ph === 1 && d === 4 && mi === 5)  out.push({ t: 'ព្រះរាជពិធីច្រត់ព្រះនង្គ័ល', k: 'nat' });
+      if (ph === 1 && mi === 9 && (d === 14 || d === 15)) out.push({ t: 'ពិធីបុណ្យភ្ជុំបិណ្ឌ', k: 'nat' });
+      if (ph === 0 && d === 1 && mi === 10) out.push({ t: 'ពិធីបុណ្យភ្ជុំបិណ្ឌ', k: 'nat' });
+      if (mi === 11 && ((ph === 0 && (d === 14 || d === 15)) || (ph === 1 && d === 1))) out.push({ t: 'ពិធីបុណ្យអុំទូក', k: 'nat' });
+      if (ph === 0 && d === 15 && mi === 10) out.push({ t: 'ថ្ងៃចេញវស្សា', k: 'bud' });
+      return out;
+    }
+    function fullText(o) {
+      return 'ថ្ងៃ' + DOW[o.dow] + ' ' + lunarText(o) + ' ខែ' + o.mname + ' ឆ្នាំ' + o.animal + ' ' + o.sak + ' ពុទ្ធសករាជ ' + kn(o.be);
+    }
+    function gText(o) {
+      return 'កំពង់ល្ពៅ ថ្ងៃទី' + kn(o.d) + ' ខែ' + GM[o.m - 1] + ' ឆ្នាំ' + kn(o.y);
+    }
+
+    /* 3. SUPABASE CLIENT & STATE */
+    const SUPABASE_URL = "https://nggnuobnrxiqjtcwlvwk.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function readSession() {
+      try { return JSON.parse(localStorage.getItem('krou_supabase_user') || 'null'); } catch(e) { return null; }
+    }
+    const CURRENT_USER = readSession();
+    const USER_ROLE = CURRENT_USER?.role || "teacher";
+    const IS_ADMIN = String(USER_ROLE).toLowerCase().trim() === 'admin';
+
+    function cleanGrade(g) { return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').replace(/[()\-_\s]/g, '').trim(); }
+
+    function getTeacherClass() {
+      const c = CURRENT_USER?.assigned_classes || CURRENT_USER?.assigned_class || CURRENT_USER?.grade || CURRENT_USER?.class || "";
+      return cleanGrade(c);
+    }
+
+    function checkAuthentication() {
+      if (!CURRENT_USER || !CURRENT_USER.username) {
+        document.getElementById('authDeniedWrap').style.display = 'flex';
+        document.getElementById('mainToolbar').style.display = 'none';
+        document.getElementById('paperStageWrapper').style.display = 'none';
+        return false;
+      }
+      document.getElementById('authDeniedWrap').style.display = 'none';
+      document.getElementById('mainToolbar').style.display = 'flex';
+      document.getElementById('paperStageWrapper').style.display = 'flex';
+      return true;
+    }
+
+    function goToIndex(e) {
+      if (e) e.preventDefault();
+      window.location.href = 'index.html';
+    }
+
+    function goBackToReports() {
+      closeAllDropdowns();
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'NAVIGATE', page: 'reportsHub' }, '*');
+          return;
+        }
+      } catch (e) {}
+      window.location.href = 'index.html#reportsHub';
+    }
+
+    // 🌟 លំនាំដើម បង្ហាញ «ប្រចាំខែ» និង «ខែមុន»
     let reportMode = 'monthly';
     const nowInit = new Date();
-    let selectedMonth = GM[nowInit.getMonth()]; // ខែបច្ចុប្បន្ន
+    const prevMonthIndex = (nowInit.getMonth() - 1 + 12) % 12;
+    let selectedMonth = GM[prevMonthIndex];
     let selectedSemester = 'ឆមាសទី១';
     let layoutMode = '1_portrait';
     let gradeMode = 'AF';
     let currentClassName = '';
     let studentsList = [];
     let currentStudentIndex = 0;
+    let isFitScreen = true;
 
     let teacherLunarDate = "";
     let teacherSolarDate = "";
@@ -741,36 +1027,49 @@
     const currentYear = nowInit.getFullYear();
     const academicYearStr = `${currentYear}-${currentYear + 1}`;
 
-    /* ══════════════ 📱 AUTO-FIT RESPONSIVE SCALER FOR ALL DEVICES ══════════════ */
-    function autoScalePaper() {
-      const stage = document.getElementById('paperWorkspace');
-      const wrapper = document.getElementById('paperStageWrapper');
-      if (!stage || !wrapper) return;
+    const GRADE_KH_MAP = {
+      'A': 'ល្អប្រសើរ',
+      'B': 'ល្អណាស់',
+      'C': 'ល្អ',
+      'D': 'បង្គួរ',
+      'E': 'មធ្យម',
+      'F': 'ខ្សោយ'
+    };
 
-      const isPortrait = (layoutMode === '1_portrait');
-      const targetW = isPortrait ? 794 : 1123;
-      const targetH = isPortrait ? 1123 : 794;
-
-      const availW = wrapper.clientWidth - 16;
-      let scale = 1;
-
-      if (availW < targetW) {
-        scale = availW / targetW;
-        scale = Math.max(0.35, Math.min(1, scale));
-      } else {
-        scale = 1;
-      }
-
-      stage.style.transform = `scale(${scale})`;
-      stage.style.transformOrigin = 'top center';
-
-      const totalSheets = stage.children.length || 1;
-      wrapper.style.minHeight = `${(targetH * scale * totalSheets) + 30}px`;
+    function formatGrade(code) {
+      if (!code || code === '-') return '-';
+      return (gradeMode === 'KH') ? (GRADE_KH_MAP[code] || code) : code;
     }
 
-    window.addEventListener('resize', autoScalePaper);
+    function calculateGrade(avg) {
+      if (avg >= 9) return 'A';
+      if (avg >= 8) return 'B';
+      if (avg >= 7) return 'C';
+      if (avg >= 6) return 'D';
+      if (avg >= 5) return 'E';
+      return 'F';
+    }
 
-    /* ══════════════ 🛠️ CUSTOM DROPDOWN ENGINE ══════════════ */
+    function getSubjectScore(scoreObj, sub) {
+      if (!scoreObj || typeof scoreObj !== 'object') return null;
+      const candidates = [
+        sub.code,
+        sub.key,
+        sub.id ? String(sub.id) : null,
+        sub.id ? `sub_${sub.id}` : null,
+        sub.name
+      ].filter(Boolean);
+
+      for (const k of candidates) {
+        if (scoreObj[k] !== undefined && scoreObj[k] !== null && scoreObj[k] !== '') {
+          const num = parseFloat(scoreObj[k]);
+          if (!isNaN(num)) return num;
+        }
+      }
+      return null;
+    }
+
+    /* 4. CUSTOM DROPDOWNS */
     function toggleDropdown(id) {
       const p = document.getElementById(id);
       if (!p) return;
@@ -874,7 +1173,7 @@
       }
     }
 
-    /* ══════════════ 📅 KHMER CALENDAR MODAL CONTROLLER ══════════════ */
+    /* 5. CALENDAR CONTROLLER */
     var calView = { y: currentYear, m: nowInit.getMonth() + 1 };
     var calSel = { y: currentYear, m: nowInit.getMonth() + 1, d: nowInit.getDate() };
     var calToday = { y: currentYear, m: nowInit.getMonth() + 1, d: nowInit.getDate() };
@@ -978,13 +1277,13 @@
       closeCalendarPopup();
     }
 
-    /* ══════════════ 🏫 SUPABASE FETCH & DATA PROCESS ══════════════ */
+    /* 6. SUPABASE FETCH & DATA PROCESS */
     async function initClassDropdown() {
       const teacherClass = getTeacherClass();
       const adminBox = document.getElementById('adminClassBox');
       const ddClassList = document.getElementById('ddClassList');
 
-      // 🌟 Populate Month Dropdown (លំនាំដើម ខែបច្ចុប្បន្ន)
+      // Populate Month Dropdown (ខែ)
       const ddMonthList = document.getElementById('ddMonthList');
       ddMonthList.innerHTML = GM.map(m => `
         <div class="dd-item ${m === selectedMonth ? 'active' : ''}" onclick="selectMonth('${m}')">${m}</div>
@@ -1353,7 +1652,7 @@
       document.getElementById('txtStudentSelect').innerText = cur ? `${currentStudentIndex + 1}. ${cur.name}` : 'សិស្ស';
     }
 
-    /* 8. HTML REPORT SHEET GENERATOR */
+    /* 7. HTML REPORT SHEET GENERATOR */
     function generateReportHTML(st) {
       if (!st) return '';
 
@@ -1679,15 +1978,48 @@
         `;
       }
 
-      autoScalePaper();
+      applyAutoMobileScale();
     }
+
+    function applyAutoMobileScale() {
+      const stage = document.getElementById('paperWorkspace');
+      const wrapper = document.getElementById('paperStageWrapper');
+      if (!stage || !wrapper) return;
+
+      const screenWidth = window.innerWidth;
+
+      if (screenWidth <= 850 && isFitScreen) {
+        const paperWidth = (layoutMode === '1_portrait') ? 794 : 1122;
+        const availableWidth = screenWidth - 16;
+        const scaleRatio = Math.min(1, availableWidth / paperWidth);
+
+        stage.style.transform = `scale(${scaleRatio})`;
+        stage.style.transformOrigin = 'top center';
+
+        const scaledHeight = (stage.scrollHeight || 1122) * scaleRatio;
+        wrapper.style.minHeight = (scaledHeight + 30) + 'px';
+      } else {
+        stage.style.transform = 'none';
+        wrapper.style.minHeight = 'auto';
+      }
+    }
+
+    function toggleMobileFitScreen() {
+      isFitScreen = !isFitScreen;
+      document.getElementById('txtFitScreen').innerText = isFitScreen ? 'សមអេក្រង់' : 'ទំហំដើម';
+      const icon = document.querySelector('#btnFitScreen i');
+      if (icon) icon.className = isFitScreen ? 'fa-solid fa-expand' : 'fa-solid fa-compress';
+      applyAutoMobileScale();
+    }
+
+    window.addEventListener('resize', applyAutoMobileScale);
 
     function printReport() {
       const stage = document.getElementById('paperWorkspace');
       if (stage) stage.style.transform = 'none';
       applyPageStyle();
       window.print();
-      autoScalePaper();
+      applyAutoMobileScale();
     }
 
     function downloadPDF() {
@@ -1709,14 +2041,14 @@
       document.body.classList.add('exporting');
       html2pdf().set(opt).from(stage).save().then(() => {
         document.body.classList.remove('exporting');
-        autoScalePaper();
+        applyAutoMobileScale();
       }).catch(() => {
         document.body.classList.remove('exporting');
-        autoScalePaper();
+        applyAutoMobileScale();
       });
     }
 
-    /* 9. APPLICATION ENTRY POINT */
+    /* 8. ENTRY POINT */
     window.addEventListener('DOMContentLoaded', async () => {
       if (!checkAuthentication()) return;
       await initClassDropdown();
