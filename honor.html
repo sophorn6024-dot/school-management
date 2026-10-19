@@ -50,7 +50,7 @@
       font-family: 'Battambang', 'Khmer OS Battambang', sans-serif !important;
     }
 
-    /* 🌟 ការពារ Font Awesome Icons មិនឱ្យបាត់ដាច់ខាត */
+    /* 🌟 ការពារ FONT AWESOME ICONS មិនឱ្យបាត់ដាច់ខាត */
     i[class*="fa-"], .fa, .fas, .far, .fa-solid, .fa-regular {
       font-family: "Font Awesome 6 Free" !important;
       font-style: normal !important;
@@ -152,8 +152,8 @@
       width: 794px; height: 1123px; min-height: 1123px; max-height: 1123px;
       background: #ffffff; color: #000000; position: relative;
       box-shadow: 0 18px 50px rgba(0,0,0,0.45);
-      /* 🌟 លើកគូទក្រោមឡើងលើ ដោយកំណត់ padding-bottom: 55px */
-      padding: 26px 42px 55px 42px;
+      /* 🌟 លើកគូទក្រោមឡើងលើ ដោយកំណត់ padding-bottom: 58px */
+      padding: 26px 42px 58px 42px;
       display: flex; flex-direction: column; justify-content: space-between;
       overflow: hidden; box-sizing: border-box;
     }
@@ -248,7 +248,7 @@
     .footer-col .sign-title { font-size: 14px; margin-top: 3px; }
     .footer-col .sign-space { height: 42px; }
 
-    /* ══════════════ 📅 KHMER CALENDAR MODAL (ចម្លងពីប្រតិទិនដែលអ្នកផ្ញើមក) ══════════════ */
+    /* ══════════════ 📅 KHMER CALENDAR MODAL (កែសម្រួលជួរឈរស្មើគ្នា ១០០%) ══════════════ */
     .cal-modal-backdrop {
       display: none; position: fixed; inset: 0; z-index: 2900; background: rgba(0,0,0,0.65);
     }
@@ -270,26 +270,69 @@
     .cal-monthhead .m { font-family: 'Khmer OS Muol Light', 'Moul', cursive; font-size: 16px; color: #1e3a8a; }
     .cal-monthhead .s { font-size: 12px; color: #64748b; margin-top: 2px; }
 
-    .cal-dow { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 13px; font-weight: bold; color: #64748b; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
+    /* 🌟 កំណត់ minmax(0, 1fr) ធានាថាជួរទាំង ៧ ស្មើគ្នាដាច់ខាត */
+    .cal-dow, .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+      gap: 3px;
+      width: 100%;
+    }
+    .cal-dow { text-align: center; font-size: 13px; font-weight: bold; color: #64748b; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
     .cal-dow div:first-child { color: #c62828; }
     
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-top: 4px; }
     .cal-cell {
-      position: relative; min-height: 52px; padding: 4px 2px; border: 1px solid #f1f5f9; border-radius: 8px;
-      background: #ffffff; text-align: center; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      position: relative;
+      min-height: 52px;
+      padding: 3px 2px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #ffffff;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
       transition: all .12s;
+      min-width: 0 !important;
+      overflow: hidden !important;
+      box-sizing: border-box;
     }
     .cal-cell:hover { border-color: #0284c7; background: #f0f9ff; }
     .cal-cell.today { background: #e8eefc; border-color: #3b82f6; }
-    .cal-cell.sel { outline: 2px solid #1e3a8a; background: #eff6ff !important; }
+    .cal-cell.sel { outline: 2.5px solid #1e3a8a; background: #eff6ff !important; }
     .cal-cell.sun .g { color: #c62828; }
     .cal-cell.other { opacity: 0.35; }
     .cal-cell .g { font-size: 14px; font-weight: bold; line-height: 1.2; }
-    .cal-cell .l { font-size: 10px; color: #64748b; line-height: 1.1; margin-top: 1px; }
+    .cal-cell .l {
+      font-size: 9.5px;
+      color: #64748b;
+      line-height: 1.1;
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
     .cal-cell .l b { color: #1e3a8a; }
     .cal-cell.sil .l b { color: #a8650a; font-weight: bold; }
     .cal-cell .mo { position: absolute; top: 2px; right: 2px; font-size: 10px; }
-    .cal-cell .h { font-size: 9px; line-height: 1.1; border-radius: 4px; padding: 1px 3px; margin-top: 2px; background: #fde9e7; color: #c62828; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 95%; }
+    .cal-cell .h {
+      font-size: 8.5px;
+      line-height: 1.1;
+      border-radius: 3px;
+      padding: 1px 2px;
+      margin-top: 2px;
+      background: #fde9e7;
+      color: #c62828;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
 
     .cal-legend { display: flex; gap: 10px; flex-wrap: wrap; padding: 8px 6px; color: #64748b; font-size: 11px; border-top: 1px solid #e2e8f0; margin-top: 6px; }
     .cal-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; }
@@ -496,7 +539,7 @@
 
   </div> <!-- END #mainPageContent -->
 
-  <!-- ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ -->
+  <!-- ══════════════ 📅 KHMER CALENDAR MODAL (ចម្លងពីប្រតិទិនដែលអ្នកផ្ញើមក) ══════════════ -->
   <div class="cal-modal-backdrop" id="calBackdrop" onclick="closeCalendarPopup()"></div>
   <div class="cal-modal" id="calModal">
     <div class="cal-nav">
@@ -962,7 +1005,7 @@
   </script>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ CALENDAR ENGINE HELPER FUNCTIONS (ចម្លងពីឯកសារប្រតិទិនដែលអ្នកផ្ញើមក ១០០%)
+       ⚡ CALENDAR ENGINE HELPER FUNCTIONS (ចម្លងពីឯកសារប្រតិទិនដើម ១០០%)
   ══════════════════════════════════════════════════════════════════════════ -->
   <script>
     var KD='០១២៣៤៥៦៧៨៩';
@@ -986,8 +1029,8 @@
     function lunarText(o){return kn(o.kd)+(o.ph===0?'កើត':'រោច');}
     function holy(o){
       if(o.ph===0&&(o.kd===8||o.kd===15)) return true;
-      if(o.ph===1&&o.kd===8) return true;
-      return isLast(o);
+      if(o.ph===1&&(o.kd===8||o.kd===14||o.kd===15)) return true;
+      return false;
     }
     function moon(o){
       if(o.ph===0&&o.kd===15) return '🌕';
@@ -1017,7 +1060,7 @@
   </script>
 
   <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ MAIN CONTROLLER & 6 VECTOR TEMPLATES
+       ⚡ MAIN JAVASCRIPT CONTROLLER (ពេញលេញ ១០០% មិនដាច់កូដ)
   ══════════════════════════════════════════════════════════════════════════ -->
   <script>
     const SUPABASE_URL = "https://nggnuobnrxiqjtcwlvwk.supabase.co";
@@ -1043,10 +1086,10 @@
 
     let currentSelectedClass = cleanGrade(USER_CLASS) || '៤(ក)';
 
-    // 🌟 1. បង្ហាញទម្រង់រូបថតមុនគេ (original) ជាលំនាំដើម
+    // 🌟 1. បង្ហាញទម្រង់រូបថតមុនគេ (original)
     let currentSelectedTemplate = 'original';
 
-    // 🌟 2. ពេលបើកដំបូង បង្ហាញ «ខែមុន» ជាលំនាំដើមស្វ័យប្រវត្តិ
+    // 🌟 2. ពេលបើកដំបូង បង្ហាញ «ខែមុន» ជាស្វ័យប្រវត្តិ
     let currentPeriodType = 'monthly';
     const nowInit = new Date();
     const prevMonthIndex = (nowInit.getMonth() - 1 + 12) % 12;
@@ -1402,7 +1445,7 @@
       loadHonorRoll();
     }
 
-    /* ══════════════ 📅 KHMER CALENDAR MODAL CONTROLLER (តាមប្រតិទិនដែលផ្ញើមក) ══════════════ */
+    /* ══════════════ 📅 KHMER CALENDAR CONTROLLER ══════════════ */
     var nowT = new Date();
     var calToday = { y: nowT.getFullYear(), m: nowT.getMonth() + 1, d: nowT.getDate() };
     var calView = { y: calToday.y, m: calToday.m };
@@ -1541,7 +1584,7 @@
         <div class="dd-item ${m === currentPeriodChild ? 'active' : ''}" onclick="selectChildPeriod('${m}')">${m}</div>
       `).join('');
 
-      // 🌟 កាលបរិច្ឆេទថ្ងៃនេះតាមប្រតិទិន MomentKH ដែលផ្ញើមក
+      // 🌟 កាលបរិច្ឆេទថ្ងៃនេះតាមប្រតិទិន MomentKH
       applySelectedDate(calToday.y, calToday.m, calToday.d);
 
       await loadHonorRoll();
