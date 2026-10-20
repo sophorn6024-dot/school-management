@@ -374,6 +374,7 @@
     .print-table th, .print-table td {
       border: 1px solid #334155; padding: 2.5px 1px; vertical-align: middle; font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
     }
+    .weekend-col { background: #fce7f3 !important; color: #be185d !important; font-weight: bold; }
     .weekend-merged-cell { background: #fce7f3 !important; color: #be185d !important; font-weight: bold; }
     .holiday-cell { background: #fee2e2 !important; color: #b91c1c !important; font-weight: bold; }
     .vertical-sun-box { width: 24px; height: 80px; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
@@ -3000,7 +3001,7 @@ exports.default = {
       '1-1': 'ចូលឆ្នាំសកល', '1-7': 'ជ័យជម្នះ ៧មករា', '3-8': 'ទិវានារី',
       '4-14': 'ចូលឆ្នាំខ្មែរ', '4-15': 'ចូលឆ្នាំខ្មែរ', '4-16': 'ចូលឆ្នាំខ្មែរ',
       '5-1': 'ទិវាពលកម្ម', '5-14': 'ព្រះរាជពិធីចម្រើនព្រះជន្ម', '6-18': 'ចម្រើនព្រះជន្មព្រះមាតា',
-      '9-24': 'ទិវារដ្ឋធម្មនុញ្ញ', '10-15': 'ព្រះវិញ្ញាណក្ខន្ធ', '10-29': 'ព្រះរាជពិធីគ្រងរាជ្យ', '11-9': 'បុណ្យឯករាជ្យ'
+      '9-24': 'ទិវារដ្ឋធម្មនុញ្ញ', '10-15': 'ព្រះវិញ្ញាណក្ខន្ធ', '10-29': 'ព្រះរាជពិធីគ្រងរាជ្យ', '11-9': 'បុណ្យឯករាជ្យ', '12-29': 'ទិវាសន្តិភាព'
     };
     var _natCache = {};
     function natHolidays(year, mIdx) {
@@ -3013,8 +3014,8 @@ exports.default = {
         var reason = NAT_FIXED[(mIdx + 1) + '-' + d] || '';
         var o = inf(year, mIdx, d), lun = '';
         if (o) {
-          if (is(o, 15, 0, 2)) lun = 'បុណ្យមាឃបូជា';
-          else if (is(o, 15, 0, 5)) lun = 'បុណ្យវិសាខបូជា';
+          if (is(o, 15, 0, 5)) lun = 'បុណ្យវិសាខបូជា';
+          else if (is(o, 4, 1, 5)) lun = 'ព្រះរាជពិធីច្រត់ព្រះនង្គ័ល';
           else if (is(inf(year, mIdx, d), 1, 0, 10) || is(inf(year, mIdx, d + 1), 1, 0, 10) || is(inf(year, mIdx, d + 2), 1, 0, 10)) lun = 'បុណ្យភ្ជុំបិណ្ឌ';
           else if (is(inf(year, mIdx, d - 1), 15, 0, 11) || is(o, 15, 0, 11) || is(inf(year, mIdx, d + 1), 15, 0, 11)) lun = 'បុណ្យអុំទូក';
         }
