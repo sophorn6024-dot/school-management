@@ -2274,8 +2274,21 @@ function renderGradeMenuPopup(){
 }
 function toggleGradeMenu(e){
   if(e)e.stopPropagation();
-  document.getElementById('gradeMenuPopup').classList.toggle('show');
+  var pop=document.getElementById('gradeMenuPopup');
+  pop.classList.toggle('show');
+  if(pop.classList.contains('show'))placeGradeMenu();
 }
+function placeGradeMenu(){
+  var pop=document.getElementById('gradeMenuPopup'),btn=document.getElementById('btnGradeFilter');
+  if(!pop||!btn||!pop.classList.contains('show'))return;
+  var r=btn.getBoundingClientRect(),w=pop.offsetWidth,h=pop.offsetHeight;
+  var left=Math.max(8,Math.min(r.left,window.innerWidth-w-8));
+  var top=r.bottom+6;
+  if(top+h>window.innerHeight-8)top=Math.max(8,r.top-h-6);
+  pop.style.left=left+'px';pop.style.top=top+'px';
+}
+window.addEventListener('resize',placeGradeMenu);
+document.addEventListener('scroll',placeGradeMenu,true);
 function closeGradeMenu(){document.getElementById('gradeMenuPopup')?.classList.remove('show')}
 function selectGradeFilter(code,label){
   currentGradeFilter=code;
