@@ -689,11 +689,7 @@
                 <option value="8">កញ្ញា</option><option value="9">តុលា</option>
                 <option value="10">វិច្ឆិកា</option><option value="11">ធ្នូ</option>
               </select>
-              <select id="calYearSelect" onchange="renderCalendarDays()">
-                <option value="2025">2025</option>
-                <option value="2026">2026</option>
-                <option value="2027">2027</option>
-              </select>
+              <select id="calYearSelect" onchange="renderCalendarDays()"></select>
             </div>
 
             <div class="cal-month-title" id="calMonthYearTitle">...</div>
@@ -899,7 +895,7 @@
               </div>
             </div>
 
-            <input type="text" id="holidayReasonInput" placeholder="មូលហេតុ (ឧ. គ្រូសុំច្បាប់)" style="flex:1; min-width:180px; padding:8px 12px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); outline:none; font-size:12.5px;">
+            <input type="text" id="holidayReasonInput" placeholder="មូលហេតុ (ឧ. បុណ្យភ្ជុំបិណ្ឌ)" style="flex:1; min-width:180px; padding:8px 12px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); outline:none; font-size:12.5px;">
             <button onclick="addHolidayForCurrentMonth()" class="btn-open-report" style="background:#059669;"><i class="fa-solid fa-plus"></i> បន្ថែម</button>
           </div>
           <div id="holidayTagsContainer" style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;"></div>
@@ -3773,6 +3769,11 @@ exports.default = {
 
     function initEnhancers() {
       enhanceSelect(document.getElementById('calMonthSelect'), true);
+      (function(){   /* ឆ្នាំ៖ 2020 ដល់ ឆ្នាំបច្ចុប្បន្ន+15 (មិនកំណត់ត្រឹម 2027 ទៀត) */
+        var ys = document.getElementById('calYearSelect'), y0 = 2020, y1 = new Date().getFullYear() + 15, h = '';
+        for (var y = y0; y <= y1; y++) h += '<option value="' + y + '">' + y + '</option>';
+        ys.innerHTML = h; ys.value = selectedDate.getFullYear();
+      })();
       enhanceSelect(document.getElementById('calYearSelect'), true);
       enhanceSelect(document.getElementById('rptMonthSelect'), false);
       enhanceSelect(document.getElementById('classSelect'), false);
