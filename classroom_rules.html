@@ -135,6 +135,7 @@
     }
 
     /* 💧 Background Watermark (MoEYS) */
+    .rules-paper:not(.wm-on) .watermark-seal { display: none; }
     .watermark-seal {
       position: absolute; top: 52%; left: 50%; transform: translate(-50%, -50%);
       width: 380px; height: 380px; opacity: 0.08; pointer-events: none; z-index: 1;
@@ -464,6 +465,11 @@
         </span>
       </button>
 
+      <!-- 💧 Watermark (បើក/បិទ) -->
+      <button type="button" class="tb-btn" id="btnWatermark" onclick="toggleWatermark()" title="បើក/បិទ Watermark ក្រសួង លើក្រដាស">
+        <i class="fa-solid fa-droplet" style="color:#38bdf8;"></i> <span id="wmLabel">ដាក់ Watermark</span>
+      </button>
+
       <!-- ⚙ កំណត់ទំព័រ -->
       <button type="button" class="tb-btn" onclick="openPageSetup()">
         <i class="fa-solid fa-sliders" style="color:#c084fc;"></i> <span>កំណត់ទំព័រ</span>
@@ -509,9 +515,9 @@
             <div class="rules-sub-meta">
               <div>
                 <div>រដ្ឋបាលស្រុកសំឡូត</div>
-                <div>កម្រងសាលារៀន អូរជាំ</div>
+                <div>កម្រងសាលារៀន អូររំដួល</div>
                 <div>សាលាបឋមសិក្សា កំពង់ល្ពៅ</div>
-                <div id="lblDisplayClass">ថ្នាក់ទី ..(..)</div>
+                <div id="lblDisplayClass">ថ្នាក់ទី ៤(ក)</div>
               </div>
             </div>
 
@@ -1944,6 +1950,17 @@ exports.default = {
     const IS_ADMIN = String(CURRENT_USER?.role || '').toLowerCase().trim() === 'admin';
 
     /* ម៉ូតពន្លឺ/ងងឹត ធ្វើតាមទំព័រមេ (index.html) ដោយស្វ័យប្រវត្តិ */
+    /* 💧 Watermark : លំនាំដើមគឺគ្មាន ចុចប៊ូតុងដើម្បីដាក់វិញ */
+    function applyWatermark(on) {
+      const paper = document.getElementById('printablePaper');
+      if (paper) paper.classList.toggle('wm-on', !!on);
+      const lb = document.getElementById('wmLabel'); if (lb) lb.textContent = on ? 'ដក Watermark' : 'ដាក់ Watermark';
+    }
+    function toggleWatermark() {
+      const on = !document.getElementById('printablePaper').classList.contains('wm-on');
+      applyWatermark(on);
+      try { localStorage.setItem('rulesWatermark_v1', on ? '1' : '0'); } catch (e) {}
+    }
     function applyTheme(t) { document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
     applyTheme(localStorage.getItem('krou_theme_manual') || 'dark');
     window.addEventListener('message', e => { if (e.data && (e.data.type === 'THEME_CHANGE' || e.data.theme)) applyTheme(e.data.theme || e.data); });
@@ -2339,6 +2356,7 @@ exports.default = {
       if (!isAuth) return;
 
       if (IS_ADMIN) document.getElementById('classDdWrap').style.display = '';
+      try { applyWatermark(localStorage.getItem('rulesWatermark_v1') === '1'); } catch (e) { applyWatermark(false); }
       loadSignDates();
       renderSignDates();
       await initClassesDropdown();
