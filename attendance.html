@@ -3250,7 +3250,7 @@ exports.default = {
       sgcView = { y, m }; signChanged(); sgClose();
     }
     function sgToday() {
-      const st = signDates[activeCalendarTarget]; st.date = ''; st.blank = false; signChanged(); sgClose();
+      const st = signDates[activeCalendarTarget], t = new Date(); st.date = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0'); st.blank = false; signChanged(); sgClose();
     }
     function sgBlank() {
       signDates[activeCalendarTarget].blank = true; signChanged(); sgClose();
