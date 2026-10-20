@@ -3261,7 +3261,11 @@ exports.default = {
 
     function closeReportView() { closePageSetup(); document.getElementById('reportViewerModal').style.display = 'none'; }
 
-    function downloadPDF() {
+    /* 📄 ទាញយក PDF ភ្លាមៗ (ចុចមួយដង → ទាញយកតែម្តង គ្មានប្រអប់បោះពុម្ព)
+       ថតជារូបភាពគុណភាពខ្ពស់ ~៤០០dpi (PNG) ដើម្បីឱ្យអក្សរច្បាស់ទោះពង្រីកខ្លាំង */
+    function downloadPDF() { downloadPDFRaster(); }
+
+    function downloadPDFRaster() {
       var element = document.getElementById('printableReportPaper');
       var scaler = document.getElementById('paperScaler');
       var mName = document.getElementById('rptMonthSelect').value;
@@ -3278,20 +3282,27 @@ exports.default = {
       document.body.classList.add('pdf-mode');
       document.querySelectorAll('.page-guide').forEach(function(g) { g.style.display = 'none'; });
 
+      var isMob = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
+      var pxW = (d[0] - 2 * m) * 96 / 25.4, pxH = Math.max(element.scrollHeight, 10);
+      var pdfScale = Math.max(2, Math.min(4.2, Math.sqrt((isMob ? 14e6 : 120e6) / (pxW * pxH))));
+      var tt = document.getElementById('saveToast');
+      if (tt) { tt.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> កំពុងបង្កើត PDF...'; tt.classList.add('show'); }
+
       var opt = {
         margin: [m, m, m, m],
         filename: 'Attendance_Report_' + (currentClassName || 'Class') + '_' + mName + '.pdf',
-        image: { type: 'jpeg', quality: 1.0 },
-        html2canvas: { scale: 3, useCORS: true },
-        jsPDF: { unit: 'mm', format: [Math.min(d[0], d[1]), Math.max(d[0], d[1])], orientation: PS.orient },
+        image: { type: 'png' },
+        html2canvas: { scale: pdfScale, useCORS: true, letterRendering: false, scrollX: 0, scrollY: 0 },
+        jsPDF: { unit: 'mm', format: [Math.min(d[0], d[1]), Math.max(d[0], d[1])], orientation: PS.orient, compress: true },
         pagebreak: { mode: ['css', 'legacy'], avoid: ['tr'] }
       };
 
-      function restore() {
+      function restore(ok) {
         document.body.classList.remove('pdf-mode');
         applyPageSetup();
+        if (tt) { tt.innerHTML = ok === true ? '<i class="fa-solid fa-circle-check"></i> បានទាញយក PDF រួចរាល់' : '<i class="fa-solid fa-triangle-exclamation"></i> បង្កើត PDF មិនបាន សូមសាកល្បងម្តងទៀត'; setTimeout(function() { tt.classList.remove('show'); }, 2500); }
       }
-      html2pdf().from(element).set(opt).save().then(restore).catch(restore);
+      html2pdf().from(element).set(opt).save().then(function() { restore(true); }).catch(function() { restore(false); });
     }
 
     /* 9. របាយការណ៍ប្រចាំខែ (កាត់សិស្សបោះបង់ឆមាសទី១ ចេញពីខែនៃឆមាសទី២) */
