@@ -135,10 +135,9 @@
     }
 
     /* 💧 Background Watermark (MoEYS) */
-    .rules-paper:not(.wm-on) .watermark-seal { display: none; }
-    .watermark-seal {
+        .watermark-seal {
       position: absolute; top: 52%; left: 50%; transform: translate(-50%, -50%);
-      width: 380px; height: 380px; opacity: 0.08; pointer-events: none; z-index: 1;
+      width: 380px; height: 380px; opacity: 0.15; pointer-events: none; z-index: 1; object-fit: contain;
     }
 
     /* 🌟 Content Container ជាមួយនឹងគម្លាតលើក្រោមស្អាតពេញក្រដាស */
@@ -465,10 +464,15 @@
         </span>
       </button>
 
-      <!-- 💧 Watermark (បើក/បិទ) -->
-      <button type="button" class="tb-btn" id="btnWatermark" onclick="toggleWatermark()" title="បើក/បិទ Watermark ក្រសួង លើក្រដាស">
-        <i class="fa-solid fa-droplet" style="color:#38bdf8;"></i> <span id="wmLabel">ដាក់ Watermark</span>
+      <!-- 💧 Watermark (Upload រូបភាពខ្លួនឯង) -->
+      <label class="tb-btn" style="cursor:pointer;" title="Upload រូបភាព Watermark (Logo សាលា ។ល។)">
+        <span style="display:flex; align-items:center; gap:7px;"><i class="fa-solid fa-droplet" style="color:#38bdf8;"></i> <span class="wm-txt" id="wmUploadTxt">Watermark</span></span>
+        <input type="file" id="wmFileInput" accept="image/*" style="display:none;" onchange="handleWatermarkFile(event)">
+      </label>
+      <button type="button" class="tb-btn" id="btnWmClear" style="display:none; color:#f87171;" onclick="clearWatermark()" title="លុប Watermark">
+        <i class="fa-solid fa-trash-can"></i> <span>លុប</span>
       </button>
+      <input type="range" id="wmOpacity" min="0.05" max="0.40" step="0.01" value="0.15" style="display:none; width:80px; cursor:pointer;" oninput="setWatermarkOpacity(this.value)" title="ភាពច្បាស់ Watermark">
 
       <!-- ⚙ កំណត់ទំព័រ -->
       <button type="button" class="tb-btn" onclick="openPageSetup()">
@@ -495,14 +499,8 @@
           <div class="kbach-border-frame">
             <div class="kbach-border-inner"></div>
           </div>
-
-          <!-- 💧 MoEYS Emblem Watermark -->
-          <svg class="watermark-seal" viewBox="0 0 200 200">
-            <circle cx="100" cy="100" r="90" fill="none" stroke="#2563eb" stroke-width="3"/>
-            <circle cx="100" cy="100" r="75" fill="none" stroke="#2563eb" stroke-width="1.5"/>
-            <text x="100" y="70" text-anchor="middle" font-size="11.5" fill="#2563eb" font-family="'Khmer OS Muol Light', Moul">ក្រសួងអប់រំ យុវជន និងកីឡា</text>
-            <path d="M60 120 L100 80 L140 120 L100 140 Z" fill="none" stroke="#2563eb" stroke-width="2.5"/>
-          </svg>
+          <!-- 💧 Watermark (អ្នកប្រើ Upload ខ្លួនឯង) -->
+          <img class="watermark-seal" id="wmImg" alt="Watermark" style="display:none;">
 
           <!-- 📜 Document Main Body -->
           <div class="rules-content-wrap">
@@ -1950,16 +1948,45 @@ exports.default = {
     const IS_ADMIN = String(CURRENT_USER?.role || '').toLowerCase().trim() === 'admin';
 
     /* ម៉ូតពន្លឺ/ងងឹត ធ្វើតាមទំព័រមេ (index.html) ដោយស្វ័យប្រវត្តិ */
-    /* 💧 Watermark : លំនាំដើមគឺគ្មាន ចុចប៊ូតុងដើម្បីដាក់វិញ */
-    function applyWatermark(on) {
-      const paper = document.getElementById('printablePaper');
-      if (paper) paper.classList.toggle('wm-on', !!on);
-      const lb = document.getElementById('wmLabel'); if (lb) lb.textContent = on ? 'ដក Watermark' : 'ដាក់ Watermark';
+    /* 💧 Watermark : គ្មានតាមលំនាំដើម អ្នកប្រើ Upload រូបភាពខ្លួនឯង */
+    const WM_IMG_KEY = 'rulesWatermarkImg_v1', WM_OP_KEY = 'rulesWatermarkOp_v1';
+    function applyWatermark(src, op) {
+      const img = document.getElementById('wmImg'); if (!img) return;
+      if (src) { img.src = src; img.style.display = 'block'; } else { img.removeAttribute('src'); img.style.display = 'none'; }
+      img.style.opacity = op;
+      document.getElementById('btnWmClear').style.display = src ? '' : 'none';
+      const r = document.getElementById('wmOpacity'); r.style.display = src ? '' : 'none'; r.value = op;
+      document.getElementById('wmUploadTxt').textContent = src ? 'ប្តូរ Watermark' : 'Watermark';
     }
-    function toggleWatermark() {
-      const on = !document.getElementById('printablePaper').classList.contains('wm-on');
-      applyWatermark(on);
-      try { localStorage.setItem('rulesWatermark_v1', on ? '1' : '0'); } catch (e) {}
+    function loadWatermark() {
+      let src = '', op = 0.15;
+      try { src = localStorage.getItem(WM_IMG_KEY) || ''; const o = parseFloat(localStorage.getItem(WM_OP_KEY)); if (o >= 0.05 && o <= 0.4) op = o; } catch (e) {}
+      applyWatermark(src, op);
+    }
+    function handleWatermarkFile(e) {
+      const f = e.target.files && e.target.files[0]; if (!f) return;
+      const fr = new FileReader();
+      fr.onload = ev => {
+        const im = new Image();
+        im.onload = () => {
+          const k = Math.min(1, 800 / Math.max(im.width, im.height)), c = document.createElement('canvas');
+          c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+          c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+          const src = c.toDataURL('image/png');
+          try { localStorage.setItem(WM_IMG_KEY, src); } catch (err) {}
+          applyWatermark(src, parseFloat(document.getElementById('wmOpacity').value) || 0.15);
+        };
+        im.src = ev.target.result;
+      };
+      fr.readAsDataURL(f); e.target.value = '';
+    }
+    function setWatermarkOpacity(v) {
+      document.getElementById('wmImg').style.opacity = v;
+      try { localStorage.setItem(WM_OP_KEY, v); } catch (e) {}
+    }
+    function clearWatermark() {
+      try { localStorage.removeItem(WM_IMG_KEY); } catch (e) {}
+      applyWatermark('', parseFloat(document.getElementById('wmOpacity').value) || 0.15);
     }
     function applyTheme(t) { document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
     applyTheme(localStorage.getItem('krou_theme_manual') || 'dark');
@@ -2356,7 +2383,7 @@ exports.default = {
       if (!isAuth) return;
 
       if (IS_ADMIN) document.getElementById('classDdWrap').style.display = '';
-      try { applyWatermark(localStorage.getItem('rulesWatermark_v1') === '1'); } catch (e) { applyWatermark(false); }
+      loadWatermark();
       loadSignDates();
       renderSignDates();
       await initClassesDropdown();
