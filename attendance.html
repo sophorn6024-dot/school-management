@@ -876,7 +876,7 @@
             <i class="fa-solid fa-umbrella-beach" style="color:#059669;"></i>
             <span>កំណត់ថ្ងៃឈប់សម្រាកក្នុងខែ (មិនរាប់ជាថ្ងៃរៀន)៖</span>
           </div>
-          <div style="font-size:11.5px; color:var(--text-muted); margin-bottom:4px;">
+          <div id="holidayClassLine" style="font-size:11.5px; color:var(--text-muted); margin-bottom:4px;">
             🏫 អនុវត្តសម្រាប់ <b id="holidayClassLabel">ថ្នាក់ទី...</b> តែប៉ុណ្ណោះ
           </div>
           <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:10px; margin-top:10px;">
@@ -2353,12 +2353,12 @@ exports.default = {
 
         if (userCls) {
           text.innerText = 'ថ្នាក់ទី ' + userCls;
-          badge.style.display = 'inline-flex';
+          badge.style.display = 'none';   // គ្រូមិនបាច់បង្ហាញថ្នាក់
           sel.innerHTML = '<option value="' + userCls + '">ថ្នាក់ទី ' + userCls + '</option>';
           sel.value = userCls;
           currentClassName = userCls;
         } else {
-          badge.style.display = 'inline-flex';
+          badge.style.display = 'none';
           text.innerText = 'មិនទាន់កំណត់ថ្នាក់';
           container.innerHTML = `<div style="text-align:center; padding:40px; color:#f59e0b; font-weight:bold;">
             ⚠️ គណនីរបស់អ្នកមិនទាន់មានថ្នាក់ទទួលបន្ទុកនៅឡើយទេ។ សូមទាក់ទង Admin។
@@ -2832,9 +2832,9 @@ exports.default = {
       if (summaryMode === 'month') {
         var prefix = selectedDate.getFullYear() + '-' + pad2(selectedDate.getMonth() + 1);
         filterFn = function(r) { return String(r.attendance_date).indexOf(prefix) === 0; };
-        subText = 'ខែ' + KHMER_MONTHS[selectedDate.getMonth()] + ' ' + selectedDate.getFullYear() + ' · ថ្នាក់ទី ' + currentClassName;
+        subText = 'ខែ' + KHMER_MONTHS[selectedDate.getMonth()] + ' ' + selectedDate.getFullYear() + (IS_ADMIN ? ' · ថ្នាក់ទី ' + currentClassName : '');
       } else {
-        subText = 'ឆ្នាំសិក្សា ' + yearAttLabel + ' · ថ្នាក់ទី ' + currentClassName;
+        subText = 'ឆ្នាំសិក្សា ' + yearAttLabel + (IS_ADMIN ? ' · ថ្នាក់ទី ' + currentClassName : '');
       }
       document.getElementById('summarySubTitle').textContent = subText;
 
@@ -2991,19 +2991,56 @@ exports.default = {
         var cls = getHolidayClass();
         lbl.textContent = cls ? ('ថ្នាក់ទី ' + cls) : 'មិនទាន់កំណត់ថ្នាក់';
       }
+      var hl = document.getElementById('holidayClassLine'); if (hl) hl.style.display = IS_ADMIN ? '' : 'none';
       renderHolidayTagsList();
+    }
+
+    /* 🎌 ថ្ងៃបុណ្យជាតិ (គណនាស្វ័យប្រវត្តិ៖ សុរិយគតិថេរ + ចន្ទគតិតាម MomentKH) — ចាត់ជាថ្ងៃឈប់ មិនរាប់ជាថ្ងៃរៀន */
+    var NAT_FIXED = {
+      '1-1': 'ចូលឆ្នាំសកល', '1-7': 'ជ័យជម្នះ ៧មករា', '3-8': 'ទិវានារី',
+      '4-14': 'ចូលឆ្នាំខ្មែរ', '4-15': 'ចូលឆ្នាំខ្មែរ', '4-16': 'ចូលឆ្នាំខ្មែរ',
+      '5-1': 'ទិវាពលកម្ម', '5-14': 'ព្រះរាជពិធីចម្រើនព្រះជន្ម', '6-18': 'ចម្រើនព្រះជន្មព្រះមាតា',
+      '9-24': 'ទិវារដ្ឋធម្មនុញ្ញ', '10-15': 'ព្រះវិញ្ញាណក្ខន្ធ', '10-29': 'ព្រះរាជពិធីគ្រងរាជ្យ', '11-9': 'បុណ្យឯករាជ្យ'
+    };
+    var _natCache = {};
+    function natHolidays(year, mIdx) {
+      var key = year + '-' + mIdx;
+      if (_natCache[key]) return _natCache[key];
+      var out = [], dim = new Date(year, mIdx + 1, 0).getDate();
+      function inf(y, m, d) { var t = new Date(y, m, d); try { return sdInfo(t.getFullYear(), t.getMonth() + 1, t.getDate()); } catch (e) { return null; } }
+      function is(o, kd, ph, mi) { return o && o.kd === kd && o.ph === ph && o.mname === SD_LM[mi]; }
+      for (var d = 1; d <= dim; d++) {
+        var reason = NAT_FIXED[(mIdx + 1) + '-' + d] || '';
+        var o = inf(year, mIdx, d), lun = '';
+        if (o) {
+          if (is(o, 15, 0, 2)) lun = 'បុណ្យមាឃបូជា';
+          else if (is(o, 15, 0, 5)) lun = 'បុណ្យវិសាខបូជា';
+          else if (is(inf(year, mIdx, d), 1, 0, 10) || is(inf(year, mIdx, d + 1), 1, 0, 10) || is(inf(year, mIdx, d + 2), 1, 0, 10)) lun = 'បុណ្យភ្ជុំបិណ្ឌ';
+          else if (is(inf(year, mIdx, d - 1), 15, 0, 11) || is(o, 15, 0, 11) || is(inf(year, mIdx, d + 1), 15, 0, 11)) lun = 'បុណ្យអុំទូក';
+        }
+        if (lun) reason = reason ? reason + ' · ' + lun : lun;
+        if (reason) out.push({ day: d, reason: reason, nat: true });
+      }
+      return (_natCache[key] = out);
+    }
+    function holidaysFor(mName, year) {
+      var mIdx = KHMER_MONTHS.indexOf(mName), custom = monthlyHolidaysMap[mName] || [];
+      var list = custom.map(function(h) { return h; });
+      if (mIdx >= 0) natHolidays(year, mIdx).forEach(function(n) { if (!list.some(function(h) { return h.day === n.day; })) list.push(n); });
+      return list.sort(function(a, b) { return a.day - b.day; });
     }
 
     function renderHolidayTagsList() {
       var mName = document.getElementById('rptMonthSelect').value;
       var container = document.getElementById('holidayTagsContainer');
-      var list = monthlyHolidaysMap[mName] || [];
+      var list = holidaysFor(mName, selectedDate.getFullYear());
       if (list.length === 0) {
         container.innerHTML = '<span style="font-size:11.5px; color:var(--text-muted); font-style:italic;">មិនទាន់មានថ្ងៃឈប់សម្រាកសម្រាប់ខែនេះទេ</span>';
         return;
       }
       var html = '';
       list.forEach(function(h) {
+        if (h.nat) { html += `<span class="holiday-tag-pill" style="opacity:.85;">🎌 ថ្ងៃទី${toKhmerNum(h.day)} (${escapeHtml(h.reason)})</span>`; return; }
         html += `<span class="holiday-tag-pill">ថ្ងៃទី${toKhmerNum(h.day)} (${escapeHtml(h.reason)}) <i class="fa-solid fa-xmark" onclick="removeHoliday('${mName}', ${h.day})"></i></span>`;
       });
       container.innerHTML = html;
@@ -3269,7 +3306,7 @@ exports.default = {
 
       var endOfMonthDate = new Date(currentYear, mIdx + 1, 0);
       var khDate = getFullKhmerDateString(endOfMonthDate);
-      var monthHolidays = monthlyHolidaysMap[mName] || [];   // 🌟 ថ្ងៃឈប់របស់ថ្នាក់នេះប៉ុណ្ណោះ
+      var monthHolidays = holidaysFor(mName, currentYear);   // 🌟 ថ្ងៃឈប់ថ្នាក់ + ថ្ងៃបុណ្យជាតិ
       var holidayDaysList = monthHolidays.map(h => h.day);
       var curPure = cleanGrade(currentClassName);
       var curSem = getSemesterByMonthName(mName); // ពិនិត្យឆមាសនៃខែរបាយការណ៍
