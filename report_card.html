@@ -1476,6 +1476,14 @@
       return 'F';
     }
 
+    function normP(s) { return String(s || '').replace(/\s+/g, ''); }
+    function selectedMonthOld() { return selectedMonth; }
+    function showToastRC(msg) {
+      var t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 16px;border-radius:12px;z-index:9999;font-size:13px;max-width:90vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4)';
+      document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 3500);
+    }
     function getSubjectScore(scoreObj, sub) {
       if (!scoreObj || typeof scoreObj !== 'object') return null;
       const candidates = [
@@ -1932,21 +1940,29 @@
         const dataType = (reportMode === 'yearly') ? 'semester' : reportMode;
 
         // ២. ទាញយកមុខវិជ្ជា
-        const { data: dbSubData } = await sb
+        /* ទាញតាម subject_type រួចតម្រងថ្នាក់ក្នុង JS (ទប់ស្កាត់ចន្លោះ/ទម្រង់ថ្នាក់ខុសគ្នា ដូច "៦ ក" vs "៦ក") */
+        const { data: _allSub } = await sb
           .from('subjects')
           .select('*')
-          .or(`assigned_class.eq.${pure},assigned_class.eq.all`)
           .eq('subject_type', dataType)
           .order('sort_order', { ascending: true })
           .order('id', { ascending: true });
+        const dbSubData = (_allSub || []).filter(r => {
+          const c = cleanGrade(r.assigned_class);
+          return c === pure || c.toLowerCase() === 'all' || c === 'ទាំងអស់';
+        });
 
         // ៣. ទាញយកពិន្ទុ
         const classVariants = [pure, 'ថ្នាក់ទី' + pure, 'ថ្នាក់ទី ' + pure, 'ថ្នាក់' + pure, 'ថ្នាក់ ' + pure];
-        const { data: scData } = await sb
+        /* ទាញតាមលេខសម្គាល់សិស្ស (មិនពឹងលើឈ្មោះថ្នាក់ ដែលអាចរក្សាទុកខុសទម្រង់) */
+        const stIds = [];
+        stData.forEach(s => { [s.student_id, s.id].forEach(v => { if (v !== null && v !== undefined && v !== '') stIds.push(String(v).trim()); }); });
+        const { data: scData, error: scErr } = await sb
           .from('scores')
           .select('*')
-          .in('assigned_class', classVariants)
+          .in('student_id', [...new Set(stIds)])
           .eq('score_type', dataType);
+        if (scErr) throw scErr;
 
         const scoreMap = {};
         const scoreMapS1 = {};
@@ -1958,21 +1974,44 @@
             try { scObj = JSON.parse(scObj); } catch(e) { scObj = {}; }
           }
           const sid = String(row.student_id).trim();
+          const per = normP(row.period);
           if (reportMode === 'monthly') {
-            if (row.period === selectedMonth) {
+            if (per === normP(selectedMonth)) {
               scoreMap[sid] = scObj;
             }
           } else {
-            if (row.period === 'ឆមាសទី១') scoreMapS1[sid] = scObj;
-            if (row.period === 'ឆមាសទី២') scoreMapS2[sid] = scObj;
+            if (per === normP('ឆមាសទី១') || per === normP('ឆមាសទី1')) scoreMapS1[sid] = scObj;
+            if (per === normP('ឆមាសទី២') || per === normP('ឆមាសទី2')) scoreMapS2[sid] = scObj;
           }
         });
+
+        /* ⚠️ បើគ្មានពិន្ទុសម្រាប់ខែ/ឆមាសដែលបានជ្រើស → ស្វែងរកខែដែលមានពិន្ទុ ហើយជូនដំណឹង */
+        const hasAny = (reportMode === 'monthly') ? Object.keys(scoreMap).length
+                      : (Object.keys(scoreMapS1).length + Object.keys(scoreMapS2).length);
+        if (!hasAny) {
+          const avail = [...new Set((scData || []).map(r => String(r.period || '').trim()).filter(Boolean))];
+          if (reportMode === 'monthly' && avail.length && !window.__fbTried) {
+            const alt = GM.find(m => avail.some(p => normP(p) === normP(m)));
+            if (alt) {
+              window.__fbTried = true;
+              selectedMonth = alt;
+              try { CS.month.setValue(alt); } catch (e) {}
+              showToastRC('ខែ ' + normP(selectedMonthOld()) + ' មិនទាន់មានពិន្ទុ — បង្ហាញខែ ' + alt + ' វិញ');
+              await loadRealDataForClass(cls);
+              window.__fbTried = false;
+              return;
+            }
+          }
+          window.__noScoreNote = (scData && scData.length)
+            ? 'មានពិន្ទុតែក្នុង៖ ' + avail.join(', ') + ' (មិនត្រូវនឹងការជ្រើសរើស)'
+            : 'មិនទាន់មានពិន្ទុក្នុងប្រព័ន្ធសម្រាប់ថ្នាក់ទី ' + pure + ' (ប្រភេទ ' + dataType + ') ទេ — សូមបញ្ចូលពិន្ទុក្នុង Form បញ្ចូលពិន្ទុជាមុន';
+        } else { window.__noScoreNote = ''; }
 
         // ៤. ទាញយកអវត្តមាន
         const { data: attData } = await sb
           .from('attendance')
           .select('student_id, status')
-          .in('assigned_class', classVariants);
+          .in('student_id', [...new Set(stIds)]);
 
         const unexcusedMap = {};
         const excusedMap = {};
@@ -2186,6 +2225,7 @@
         currentStudentIndex = 0;
         populateStudentSelect();
         renderReportWorkspace();
+        if (window.__noScoreNote) showToastRC('⚠ ' + window.__noScoreNote);
 
       } catch (err) {
         console.error(err);
