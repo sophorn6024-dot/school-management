@@ -1822,6 +1822,21 @@ const DAY_THEMES = [
  {dayIndex:6,nameKh:'ថ្ងៃសៅរ៍',primary:'#0284c7',primaryHover:'#0369a1',primarySoft:'rgba(2, 132, 199, 0.15)',titleColor:'#7dd3fc',sidebarBg:'linear-gradient(180deg, #06192e 0%, #04101e 50%, #020810 100%)',sidebarCardBg:'#0e2945',sidebarBorder:'rgba(2, 132, 199, 0.22)',activeBtnBg:'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)',activeBtnShadow:'0 6px 18px rgba(2, 132, 199, 0.45)',heroLight:'linear-gradient(135deg, #38bdf8 0%, #0284c7 60%, #075985 100%)',heroDark:'linear-gradient(135deg, #0b233f 0%, #07172b 60%, #030c18 100%)',iconGradient:'linear-gradient(135deg, #38bdf8 0%, #0284c7 100%)'}
 ];
 
+
+/* 🎨 ពណ៌ស្រាលៗ (Soft palette) — លាយពណ៌ប្រចាំថ្ងៃជាមួយពណ៌ស/ប្រផេះ ដើម្បីកុំឱ្យច្បាស់ពេក */
+function mixHex(a, b, t) {
+  const p = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+  const A = p(a), B = p(b);
+  return '#' + A.map((v, i) => Math.round(v * (1 - t) + B[i] * t).toString(16).padStart(2, '0')).join('');
+}
+function softPalette(cfg, isDark) {
+  const white = '#ffffff';
+  const primary = mixHex(cfg.primary, white, isDark ? 0.14 : 0.2);
+  const hover = mixHex(cfg.primaryHover, white, isDark ? 0.1 : 0.14);
+  const r = parseInt(cfg.primary.slice(1, 3), 16), g = parseInt(cfg.primary.slice(3, 5), 16), b = parseInt(cfg.primary.slice(5, 7), 16);
+  return { primary, hover, soft: `rgba(${r}, ${g}, ${b}, ${isDark ? 0.14 : 0.1})`, tint: (t, base) => mixHex(base, cfg.primary, t) };
+}
+
 function applyDayTheme() {
   const themeConfig = DAY_THEMES[new Date().getDay()] || DAY_THEMES[6];
   const isDark = (document.documentElement.getAttribute('data-theme') || 'dark') === 'dark';
@@ -1831,15 +1846,35 @@ function applyDayTheme() {
   root.style.setProperty('--sidebar-border', themeConfig.sidebarBorder);
   root.style.setProperty('--sidebar-active-btn-bg', themeConfig.activeBtnBg);
   root.style.setProperty('--sidebar-active-btn-shadow', themeConfig.activeBtnShadow);
-  root.style.setProperty('--primary', themeConfig.primary);
-  root.style.setProperty('--primary-hover', themeConfig.primaryHover);
-  root.style.setProperty('--primary-soft', themeConfig.primarySoft);
-  root.style.setProperty('--hero-title-color', themeConfig.titleColor);
-  root.style.setProperty('--hero-icon-gradient', themeConfig.iconGradient);
-  root.style.setProperty('--hero-bg', isDark ? themeConfig.heroDark : themeConfig.heroLight);
-  localStorage.setItem('krou_theme_primary', themeConfig.primary);
-  localStorage.setItem('krou_theme_primary_hover', themeConfig.primaryHover);
-  localStorage.setItem('krou_theme_primary_soft', themeConfig.primarySoft);
+  const sp = softPalette(themeConfig, isDark);
+  root.style.setProperty('--primary', sp.primary);
+  root.style.setProperty('--primary-hover', sp.hover);
+  root.style.setProperty('--primary-soft', sp.soft);
+  /* ផ្ទាំងស្វាគមន៍៖ ផ្ទៃស្រាលៗ + អក្សរងាយមើល */
+  if (isDark) {
+    root.style.setProperty('--hero-bg', `linear-gradient(135deg, ${sp.tint(0.16, '#0f1b2d')} 0%, ${sp.tint(0.07, '#0c1524')} 100%)`);
+    root.style.setProperty('--hero-text', '#e2e8f0');
+    root.style.setProperty('--hero-title-color', mixHex(themeConfig.titleColor, '#ffffff', 0.25));
+    root.style.setProperty('--hero-stat-bg', 'rgba(255,255,255,.06)');
+    root.style.setProperty('--hero-stat-border', 'rgba(255,255,255,.12)');
+    root.style.setProperty('--today-card-bg', 'rgba(251,191,36,.08)');
+    root.style.setProperty('--today-card-border', 'rgba(251,191,36,.25)');
+    root.style.setProperty('--today-card-text', '#fcd34d');
+  } else {
+    root.style.setProperty('--hero-bg', `linear-gradient(135deg, ${sp.tint(0.2, '#ffffff')} 0%, ${sp.tint(0.08, '#ffffff')} 100%)`);
+    root.style.setProperty('--hero-text', '#334155');
+    root.style.setProperty('--hero-title-color', mixHex(themeConfig.primaryHover, '#0f172a', 0.35));
+    root.style.setProperty('--hero-stat-bg', 'rgba(255,255,255,.75)');
+    root.style.setProperty('--hero-stat-border', sp.soft);
+    root.style.setProperty('--today-card-bg', '#fffbeb');
+    root.style.setProperty('--today-card-border', '#fde68a');
+    root.style.setProperty('--today-card-text', '#92400e');
+  }
+  root.style.setProperty('--hero-icon-gradient', `linear-gradient(135deg, ${mixHex(themeConfig.primary, '#ffffff', 0.45)} 0%, ${sp.primary} 100%)`);
+  root.style.setProperty('--sidebar-active-btn-bg', `linear-gradient(135deg, ${mixHex(themeConfig.primary, '#ffffff', 0.3)} 0%, ${sp.primary} 100%)`);
+  localStorage.setItem('krou_theme_primary', sp.primary);
+  localStorage.setItem('krou_theme_primary_hover', sp.hover);
+  localStorage.setItem('krou_theme_primary_soft', sp.soft);
   syncThemeToIframe(isDark ? 'dark' : 'light');
 }
 
@@ -2012,9 +2047,10 @@ function syncThemeToIframe(theme) {
   const frame = document.getElementById('pageFrame');
   if (!frame) return;
   const themeConfig = DAY_THEMES[new Date().getDay()] || DAY_THEMES[6];
+  const sp = softPalette(themeConfig, theme === 'dark');
   if (frame.contentWindow) {
     try {
-      frame.contentWindow.postMessage({ type: 'THEME_CHANGE', theme: theme, primary: themeConfig.primary, primaryHover: themeConfig.primaryHover, primarySoft: themeConfig.primarySoft }, '*');
+      frame.contentWindow.postMessage({ type: 'THEME_CHANGE', theme: theme, primary: sp.primary, primaryHover: sp.hover, primarySoft: sp.soft }, '*');
     } catch(e) {}
   }
   try {
@@ -2022,10 +2058,10 @@ function syncThemeToIframe(theme) {
     if (fDoc && fDoc.documentElement) {
       const root = fDoc.documentElement;
       root.setAttribute('data-theme', theme);
-      root.style.setProperty('--primary', themeConfig.primary);
-      root.style.setProperty('--primary-hover', themeConfig.primaryHover);
-      root.style.setProperty('--primary-dark', themeConfig.primaryHover);
-      root.style.setProperty('--primary-soft', themeConfig.primarySoft);
+      root.style.setProperty('--primary', sp.primary);
+      root.style.setProperty('--primary-hover', sp.hover);
+      root.style.setProperty('--primary-dark', sp.hover);
+      root.style.setProperty('--primary-soft', sp.soft);
     }
   } catch(e) {}
 }
@@ -2098,7 +2134,7 @@ function navigate(page, el) {
   overlay.classList.add('show');
   const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
   const themeConfig = DAY_THEMES[new Date().getDay()] || DAY_THEMES[6];
-  frame.src = `${page}.html?theme=${encodeURIComponent(currentTheme)}&primary=${encodeURIComponent(themeConfig.primary)}&v=${Date.now()}`;
+  frame.src = `${page}.html?theme=${encodeURIComponent(currentTheme)}&primary=${encodeURIComponent(softPalette(themeConfig, currentTheme === 'dark').primary)}&v=${Date.now()}`;
 }
 
 document.getElementById('pageFrame').addEventListener('load', function() {
