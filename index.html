@@ -206,6 +206,15 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 @keyframes icoPop{0%{transform:scale(.7) translateY(2px)}55%{transform:scale(1.2) translateY(-3px)}100%{transform:scale(1) translateY(0)}}
 @keyframes badgePop{0%{transform:scale(.3)}60%{transform:scale(1.4)}100%{transform:scale(1)}}
 @keyframes badgePulse{0%{box-shadow:0 0 0 0 rgba(239,68,68,.55)}100%{box-shadow:0 0 0 9px rgba(239,68,68,0)}}
+.hero-left-col{display:flex;flex-direction:column;gap:16px;min-width:0;width:100%}
+.hero-left-col .hero-banner-right{width:100%}
+.hero-left-col .hero-banner-right>*{flex:1;min-width:0}
+.dash-clock{background:var(--hero-stat-bg);border:1px solid var(--hero-stat-border);border-radius:20px;padding:14px 20px;text-align:center;backdrop-filter:blur(8px)}
+.dash-clock .ck-time{display:flex;align-items:baseline;justify-content:center;gap:8px;font-weight:800;line-height:1.1}
+.dash-clock .ck-hm{font-size:clamp(34px,4vw,50px);letter-spacing:1px}
+.dash-clock .ck-s{font-size:18px;opacity:.75}
+.dash-clock .ck-p{font-size:15px;opacity:.9;font-weight:700}
+.dash-clock .ck-line{margin-top:10px;padding-top:10px;border-top:1px solid var(--hero-stat-border);font-size:13.5px;font-weight:600;line-height:1.6}
 /* ===== 💬 CHAT TOAST ===== */
 .chat-toast{position:fixed;left:50%;top:max(12px,env(safe-area-inset-top));transform:translate(-50%,-160%);width:min(calc(100% - 24px),420px);z-index:10100;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:var(--surface-card);border:1px solid var(--border);box-shadow:0 14px 36px rgba(0,0,0,.3);cursor:pointer;opacity:0;pointer-events:none;transition:transform .45s cubic-bezier(.34,1.4,.5,1),opacity .3s}
 .chat-toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
@@ -309,17 +318,12 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 
 /* ===== 📅 DASHBOARD CALENDAR (desktop only) ===== */
 .dash-cal-card{display:none}
-.dc-left-hero{order:-1}
 @media (min-width:769px){
-.dash-cal-card{display:block;background:var(--surface-card);border:1px solid var(--border);border-radius:24px;padding:16px 16px 12px;box-shadow:var(--card-shadow);max-width:520px;width:100%}
-}
-@media (min-width:1280px){
-.dash-inner-container.has-cal{display:grid;grid-template-columns:minmax(0,1fr) 380px;grid-template-rows:auto auto 1fr;gap:22px}
-.dash-inner-container.has-cal>*{grid-column:1/-1}
-.dash-inner-container.has-cal>.dc-left-hero{grid-column:1;grid-row:1}
-.dash-inner-container.has-cal>.dc-left-head{grid-column:1;grid-row:2}
-.dash-inner-container.has-cal>.dc-left-tasks{grid-column:1;grid-row:3;align-self:start}
-.dash-inner-container.has-cal>.dash-cal-card{grid-column:2;grid-row:1/span 3;max-width:none;align-self:start}
+.dash-cal-card{display:block;background:var(--surface-card);border:1px solid var(--border);border-radius:22px;padding:16px 16px 12px;box-shadow:0 8px 24px rgba(0,0,0,.12);color:var(--text)}
+.dash-inner-container{container-type:inline-size;container-name:dash}
+.hero-banner-card.has-cal{flex-direction:column;align-items:stretch}
+.dash-cal-card{width:100%;max-width:520px}
+@container dash (min-width:880px){.hero-banner-card.has-cal{display:grid;grid-template-columns:minmax(0,1fr) minmax(340px,430px);align-items:start;gap:22px}.dash-cal-card{max-width:none}}
 }
 .dc-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .dc-ico{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,#34d399,#10b981);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
@@ -437,9 +441,9 @@ body.chat-page #chatMobileBar{display:flex;position:fixed;left:0;right:0;top:0;h
     <div class="content-area">
 
       <div class="view-panel active" id="dashboardView">
-        <div class="dash-inner-container has-cal">
-          <aside class="dash-cal-card" id="dashCal"></aside>
-          <div class="hero-banner-card dc-left-hero">
+        <div class="dash-inner-container">
+          <div class="hero-banner-card has-cal">
+            <div class="hero-left-col">
             <div class="hero-banner-left">
               <div class="hero-building-icon">🏫</div>
               <div class="hero-info-texts">
@@ -448,6 +452,7 @@ body.chat-page #chatMobileBar{display:flex;position:fixed;left:0;right:0;top:0;h
                 <div class="hero-sub-meta" id="dashHeroSubMeta">ថ្នាក់ទី... · សិស្ស 0 នាក់</div>
               </div>
             </div>
+            <div class="dash-clock" id="dashClock"><div class="ck-time"><span class="ck-hm" id="ckHm">--:--</span><span class="ck-s" id="ckS">00</span><span class="ck-p" id="ckP"></span></div><div class="ck-line"><div id="ckLunar"></div><div id="ckSolar"></div></div></div>
             <div class="hero-banner-right">
               <div class="hero-stat-card">
                 <div class="h-stat-top"><span>👥</span><span>សិស្ស</span></div>
@@ -460,11 +465,13 @@ body.chat-page #chatMobileBar{display:flex;position:fixed;left:0;right:0;top:0;h
                 <div class="h-today-sub" id="dashTodaySub">ត្រូវកត់វត្តមាន</div>
               </div>
             </div>
+            </div>
+            <aside class="dash-cal-card" id="dashCal"></aside>
           </div>
 
-          <div class="section-headline-group dc-left-head"><div class="section-cyan-title">កិច្ចការថ្ងៃនេះ:</div><div class="section-slate-sub">រឿងសំខាន់ៗដែលត្រូវពិនិត្យថ្ងៃនេះ</div></div>
+          <div class="section-headline-group"><div class="section-cyan-title">កិច្ចការថ្ងៃនេះ:</div><div class="section-slate-sub">រឿងសំខាន់ៗដែលត្រូវពិនិត្យថ្ងៃនេះ</div></div>
 
-          <div class="today-tasks-grid dc-left-tasks">
+          <div class="today-tasks-grid">
             <div class="task-action-card" onclick="navigate('attendance', null)">
               <div class="task-left-box">
                 <div class="task-icon-orange"><div class="task-cal-mini"><div class="cal-mini-header" id="taskCalMonth">OCT</div><div class="cal-mini-body" id="taskCalDay">10</div></div></div>
@@ -2865,6 +2872,30 @@ setInterval(function () {
   const m = cur.match(/^(អរុណសួស្ដី|ទិវាសួស្ដី|សាយ័ណ្ហសួស្ដី|រាត្រីសួស្ដី)\s/);
   if (m && m[1] !== g) el.innerText = g + cur.slice(m[1].length);
 }, 60000);
+
+/* 🕒 នាឡិកា + ថ្ងៃខែចន្ទគតិ/សុរិយគតិ ក្នុងផ្ទាំងស្វាគមន៍ */
+(function(){
+  var LMc={0:'មិគសិរ',1:'បុស្ស',2:'មាឃ',3:'ផល្គុន',4:'ចេត្រ',5:'ពិសាខ',6:'ជេស្ឋ',7:'អាសាឍ',8:'ស្រាពណ៍',9:'ភទ្របទ',10:'អស្សុជ',11:'កត្តិក',12:'បឋមាសាឍ',13:'ទុតិយាសាឍ'};
+  var MN=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+  var DW=['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
+  var lastDay=-1;
+  function tick(){
+    var el=document.getElementById('ckHm'); if(!el)return;
+    var n=new Date(),h=n.getHours(),h12=h%12||12;
+    el.textContent=h12+':'+String(n.getMinutes()).padStart(2,'0');
+    document.getElementById('ckS').textContent=String(n.getSeconds()).padStart(2,'0');
+    document.getElementById('ckP').textContent=h<12?'ព្រឹក':(h<17?'រសៀល':(h<19?'ល្ងាច':'យប់'));
+    if(lastDay!==n.getDate()){
+      lastDay=n.getDate();
+      document.getElementById('ckSolar').textContent='ថ្ងៃ'+DW[n.getDay()]+' ទី'+n.getDate()+' ខែ'+MN[n.getMonth()]+' ឆ្នាំ'+n.getFullYear();
+      try{
+        var k=momentkh.fromGregorian(n.getFullYear(),n.getMonth()+1,n.getDate()).khmer;
+        document.getElementById('ckLunar').textContent=k.day+(k.moonPhase===0?'កើត':'រោច')+' ខែ'+(LMc[k.monthIndex]||k.monthName)+' ឆ្នាំ'+k.animalYearName+' '+k.sakName+' ពុទ្ធសករាជ '+k.beYear;
+      }catch(e){}
+    }
+  }
+  tick(); setInterval(tick,1000);
+})();
 </script>
 </body>
 </html>
