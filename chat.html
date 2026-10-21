@@ -313,7 +313,7 @@ function render(stick){
   const sig=ROOM+'|'+q+'|'+list.map(m=>m.id+':'+(m.content||'').length+(m.edited_at||'')).join(',')+'|'+Object.keys(users).length+'|'+oldestReached+'|'+Object.keys(quoteCache).length;
   if(sig===lastSig)return;lastSig=sig;
   $('roomTitle').textContent=APP_TITLE;
-  if(!list.length){box.innerHTML=`<div class="empty">${q?'រកមិនឃើញសារទេ':'មិនទាន់មានសារសន្ទនានៅឡើយទេ<br><small>វាយបញ្ចូលសារខាងក្រោមដើម្បីចាប់ផ្តើម</small>'}</div>`;updateFab();return}
+  if(!list.length){box.innerHTML=`<div class="empty">${q?'<br><small></small>'}</div>`;updateFab();return}
   let h=!oldestReached&&!q?'<button class="load-more" data-act="older">ទាញសារចាស់ៗ</button>':'';
   let lastDate='';
   list.forEach((m,i)=>{
