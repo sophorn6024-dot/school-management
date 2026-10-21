@@ -307,8 +307,15 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 @media (max-width:1024px){.reports-grid-clean{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:900px){.hero-banner-card{flex-direction:column;align-items:flex-start}.hero-banner-right{width:100%;justify-content:flex-start}.today-tasks-grid{grid-template-columns:1fr}.admin-classes-grid{grid-template-columns:repeat(2,1fr)}.pv-info-grid{grid-template-columns:1fr}}
 @media (max-width:768px){
-.sidebar{position:fixed;left:0;top:0;bottom:0;width:275px!important;transform:translateX(-100%);z-index:90}
-.sidebar.open{transform:translateX(0)}
+.sidebar{position:fixed;inset:0;width:100%!important;height:100dvh;transform:translateY(18px) scale(.98);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s ease,transform .3s cubic-bezier(.2,.9,.3,1.05),visibility 0s linear .3s;z-index:90;box-shadow:none;border:none}
+.sidebar.open{transform:none;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .25s ease,transform .3s cubic-bezier(.2,.9,.3,1.05)}
+#mobileBackdrop{display:none!important}
+.collapse-arrow-btn{display:none!important}
+.sb-close-m{display:flex!important}
+.sidebar.collapsed .user-profile-meta{display:block}.sidebar.collapsed .class-year-pill-box{display:flex}.sidebar.collapsed .nav-text{display:inline}.sidebar.collapsed .sidebar-user-header{flex-direction:row;padding:16px 14px 12px}
+.sidebar .nav-scrollable{padding:6px 16px 16px}
+.sidebar .nav-link-btn{height:54px;font-size:15.5px;border-radius:16px;margin-bottom:7px;padding:0 18px}
+.sidebar .sidebar-footer{padding-bottom:max(14px,env(safe-area-inset-bottom))}
 .mobile-bottom-nav{display:block}
 #dashboardView,#reportsHubView{padding:16px 14px calc(var(--mnav-reserve) + 12px)}
 .iframe-container{bottom:var(--mnav-reserve)}
@@ -319,11 +326,11 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 /* ===== 📅 DASHBOARD CALENDAR (desktop only) ===== */
 .dash-cal-card{display:none}
 @media (min-width:769px){
-.dash-cal-card{display:block;background:var(--surface-card);border:1px solid var(--border);border-radius:22px;padding:16px 16px 12px;box-shadow:0 8px 24px rgba(0,0,0,.12);color:var(--text)}
+.dash-cal-card{display:block;background:var(--surface-card);border:1px solid var(--border);border-radius:20px;padding:12px 12px 10px;box-shadow:0 6px 18px rgba(0,0,0,.1);color:var(--text)}
 .dash-inner-container{container-type:inline-size;container-name:dash}
 .hero-banner-card.has-cal{flex-direction:column;align-items:stretch}
-.dash-cal-card{width:100%;max-width:520px}
-@container dash (min-width:660px){.hero-banner-card.has-cal{display:grid;grid-template-columns:minmax(0,1fr) clamp(290px,42%,430px);align-items:start;gap:18px;padding:20px}.dash-cal-card{max-width:none;padding:14px 12px 10px}.hero-left-col .hero-banner-right{flex-wrap:wrap}.dc-day{min-height:40px}.dc-day .n{font-size:13.5px}}
+.dash-cal-card{width:100%;max-width:380px}
+@container dash (min-width:660px){.hero-banner-card.has-cal{display:grid;grid-template-columns:minmax(0,1fr) clamp(270px,36%,350px);align-items:start;gap:18px;padding:20px}.dash-cal-card{max-width:none}.hero-left-col .hero-banner-right{flex-wrap:wrap}}
 }
 .dc-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .dc-ico{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,#34d399,#10b981);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
@@ -368,6 +375,15 @@ body.chat-page .mobile-bottom-nav{display:none!important}
 body.chat-page .iframe-container{top:0;bottom:0}
 }
 
+/* ប្រតិទិនតូចស្អាត */
+.dc-head{gap:8px;margin-bottom:8px}.dc-ico{width:34px;height:34px;border-radius:12px;font-size:16px}
+.dc-title b{font-size:15px}.dc-title small{font-size:10.5px}
+.dc-nav button{width:28px;height:28px;font-size:16px}
+.dc-banner{padding:5px 10px;font-size:11px;margin-bottom:6px;border-radius:12px}
+.dc-grid{gap:1px}.dc-dow{font-size:10px;padding:2px 0}
+.dc-day{min-height:34px;padding:2px 0;border-radius:11px}.dc-day .n{font-size:12.5px}.dc-day .l{font-size:8.5px}.dc-day .dot{top:3px;right:6px;width:5px;height:5px}
+.dc-detail{margin-top:8px;padding:7px 11px;border-radius:13px;gap:1px}.dc-detail b{font-size:12.5px}.dc-detail span,.dc-detail em{font-size:11px}
+.dc-list{margin-top:7px;padding-top:6px;gap:3px;max-height:64px}.dc-list div{font-size:11px}
 /* ===== 🔤 TEXT RESPONSIVE ===== */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .hero-info-texts,.task-text-box{min-width:0}
@@ -435,6 +451,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
           <div class="user-display-role" id="sidebarTeacherRole">គ្រូបង្រៀន</div>
         </div>
       </div>
+      <button class="sb-close-m" type="button" onclick="closeSidebarMobile()" aria-label="បិទ" style="display:none;width:38px;height:38px;border-radius:50%;border:1px solid var(--sidebar-border);background:rgba(255,255,255,.08);color:#fff;font-size:18px;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0">✕</button>
       <button class="collapse-arrow-btn" id="collapseArrowBtn" onclick="toggleSidebarCollapse()" title="បង្រួម/ពង្រីករបាចំហៀង"><span id="collapseArrowChar">‹</span></button>
     </div>
 
@@ -2969,10 +2986,10 @@ setInterval(function () {
     document.getElementById('ckP').textContent=h<12?'ព្រឹក':(h<17?'រសៀល':(h<19?'ល្ងាច':'យប់'));
     if(lastDay!==n.getDate()){
       lastDay=n.getDate();
-      document.getElementById('ckSolar').textContent='ថ្ងៃ'+DW[n.getDay()]+' ទី'+n.getDate()+' ខែ'+MN[n.getMonth()]+' ឆ្នាំ'+n.getFullYear();
+      document.getElementById('ckSolar').textContent='ថ្ងៃទី'+n.getDate()+' ខែ'+MN[n.getMonth()]+' ឆ្នាំ'+n.getFullYear();
       try{
         var k=momentkh.fromGregorian(n.getFullYear(),n.getMonth()+1,n.getDate()).khmer;
-        document.getElementById('ckLunar').textContent=k.day+(k.moonPhase===0?'កើត':'រោច')+' ខែ'+(LMc[k.monthIndex]||k.monthName)+' ឆ្នាំ'+k.animalYearName+' '+k.sakName+' ពុទ្ធសករាជ '+k.beYear;
+        document.getElementById('ckLunar').textContent='ថ្ងៃ'+DW[n.getDay()]+' '+k.day+(k.moonPhase===0?'កើត':'រោច')+' ខែ'+(LMc[k.monthIndex]||k.monthName)+' ឆ្នាំ'+k.animalYearName+' '+k.sakName+' ពុទ្ធសករាជ '+k.beYear;
       }catch(e){}
     }
   }
