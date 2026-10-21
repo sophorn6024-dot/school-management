@@ -178,9 +178,20 @@
     .cal-day-cell.muted { color: var(--text-soft); cursor: default; }
 
     .daily-layout-grid { display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start; }
-    @media(min-width: 960px) {
-      .daily-layout-grid { grid-template-columns: 310px 1fr; }
-      .daily-sidebar-card { position: sticky; top: 14px; z-index: 10; }
+    /* 🖥️ ទម្រង់កុំព្យូទ័រ/ថេប្លេត៖ ២ជួរឈរ (ផ្ទាំងសង្ខេបខាងឆ្វេង + បញ្ជីសិស្សខាងស្តាំ) ចាប់ពីទទឹង 560px
+       (មិនមែនតែ 720px ទេ ព្រោះពេលបើកក្នុងគេហទំព័រមេ មាន Sidebar ស៊ីទទឹងអេក្រង់) */
+    @media(min-width: 560px) {
+      .daily-layout-grid { grid-template-columns: minmax(200px, 270px) minmax(0, 1fr); gap: 12px; }
+      .daily-sidebar-card { position: sticky; top: 14px; z-index: 10; padding: 14px; }
+    }
+    @media(min-width: 900px) {
+      .daily-layout-grid { grid-template-columns: minmax(250px, 310px) minmax(0, 1fr); gap: 16px; }
+      .daily-sidebar-card { padding: 18px 20px; }
+    }
+    @media(min-width: 560px) and (max-width: 899px) {
+      .status-counter-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .counter-card { height: 66px; padding: 10px 12px; }
+      .daily-list-card { padding: 14px; }
     }
     .daily-sidebar-card, .daily-list-card, .report-launcher-card {
       background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 18px 20px; box-shadow: var(--card-shadow);
