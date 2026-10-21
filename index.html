@@ -354,7 +354,8 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .dc-detail b{font-size:14px;color:var(--text)}
 .dc-detail span{font-size:12.5px;color:var(--text-muted);font-weight:600}
 .dc-detail em{font-style:normal;font-size:12.5px;color:#e11d48;font-weight:700}
-.dc-list{margin-top:10px;padding-top:8px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:5px;max-height:84px;overflow-y:auto}
+.dc-list{margin-top:10px;padding-top:8px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:5px;max-height:96px;overflow-y:auto}
+.dc-hi{cursor:pointer}.dc-hi:hover span{text-decoration:underline}
 .dc-list div{display:flex;gap:10px;font-size:12px;color:#e11d48;font-weight:600}
 .dc-list b{min-width:22px;text-align:right}
 .dc-list .dc-none{color:var(--text-muted);font-weight:500}
@@ -2873,6 +2874,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     h+='<div class="dc-detail"><b>ថ្ងៃ'+DWK[sdw]+' ទី'+sel.d+' ខែ'+GMN[sel.m]+' ឆ្នាំ'+sel.y+'</b>'+
        (so?'<span>'+so.kd+(so.ph===0?'កើត':'រោច')+' ខែ'+so.mn+' ឆ្នាំ'+so.animal+' '+(so.sak||'')+' ពុទ្ធសករាជ '+so.be+'</span>':'')+
        (sh?'<em>🎌 '+sh+'</em>':'')+'</div>';
+    var days=Object.keys(H).map(Number).sort(function(p,q){return p-q});
+    h+='<div class="dc-list">'+(days.length?days.map(function(d){return '<div class="dc-hi" onclick="dcPick('+y+','+m0+','+d+')"><b>'+d+'</b><span>'+H[d]+'</span></div>'}).join(''):'<div class="dc-none">គ្មានថ្ងៃបុណ្យក្នុងខែនេះ</div>')+'</div>';
     host.innerHTML=h;
   };
   function boot(){ if(typeof momentkh!=='undefined')dcRender(); }
@@ -2882,28 +2885,41 @@ window.addEventListener('DOMContentLoaded', async () => {
 })();
 
 
-/* ===== 🔄 ពិនិត្យកំណែថ្មី (ប្រៀបធៀបខ្លឹមសារ index ជាមួយដែលកំពុងប្រើ) ===== */
+/* ===== 🔄 ពិនិត្យកំណែថ្មី (index + ទំព័រកូនដែលកំពុងបើក) ===== */
 (function(){
   if (!/^https?:/.test(location.protocol)) return;
-  var base = null, dismissed = false;
+  var base = {}, dismissed = false;
   function sig(t){ var h=0; for (var i=0;i<t.length;i++){ h=(h*31+t.charCodeAt(i))|0; } return t.length+':'+h; }
-  async function fetchSig(){
-    var u = location.origin + location.pathname + '?_v=' + Date.now();
-    var r = await fetch(u, { cache: 'no-store' });
+  async function fetchSig(path){
+    var r = await fetch(location.origin + path + '?_v=' + Date.now(), { cache: 'no-store' });
     if (!r.ok) throw 0;
     return sig(await r.text());
   }
-  async function check(){
+  function targets(){
+    var list = [location.pathname];
     try {
-      var s = await fetchSig();
-      if (base === null) { base = s; return; }
-      if (s !== base && !dismissed) document.getElementById('updToast').classList.add('show');
+      var f = document.getElementById('pageFrame'), p = f && f.contentWindow && f.contentWindow.location.pathname;
+      if (p && /\.html$/.test(p) && p !== location.pathname) list.push(p);
     } catch(e) {}
+    return list;
+  }
+  async function check(){
+    var t = targets();
+    for (var k = 0; k < t.length; k++) {
+      try {
+        var s = await fetchSig(t[k]);
+        if (base[t[k]] === undefined) { base[t[k]] = s; continue; }
+        if (s !== base[t[k]] && !dismissed) document.getElementById('updToast').classList.add('show');
+      } catch(e) {}
+    }
   }
   window.dismissUpdate = function(){ dismissed = true; document.getElementById('updToast').classList.remove('show'); };
+  window.checkForUpdate = check;
   check();
   setInterval(check, 60000);
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) check(); });
+  var pf = document.getElementById('pageFrame');
+  if (pf) pf.addEventListener('load', function(){ setTimeout(check, 800); });
 })();
 
 /* 👋 សារស្វាគមន៍តាមម៉ោង */
