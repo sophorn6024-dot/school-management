@@ -1838,7 +1838,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   if(bTxt)bTxt.textContent=curKhMonth+' · ស្រង់ពិន្ទុ';
   const lBadge=document.getElementById('landingClassBadgeTxt');
   if(lBadge){
-    lBadge.textContent=IS_ADMIN?'គ្រប់គ្រងគ្រប់ថ្នាក់ (Admin)':(cleanGrade(USER_CLASS)?('ថ្នាក់ទី '+cleanGrade(USER_CLASS)):'មិនទាន់កំណត់ថ្នាក់');
+    lBadge.textContent='គ្រប់គ្រងគ្រប់ថ្នាក់ (Admin)';
+    if(!IS_ADMIN){const lb=document.getElementById('landingClassBadge');if(lb)lb.style.display='none'}
   }
   updateLockUI();
   updateGradeLangUI();
@@ -1906,8 +1907,7 @@ async function loadClassList(){
     sel.innerHTML=rawClasses.map(c=>`<option value="${c}">ថ្នាក់ទី ${c}</option>`).join('');
     if(!IS_ADMIN){
       document.getElementById('adminClassBox').style.display='none';
-      document.getElementById('teacherClassBadge').style.display='inline-flex';
-      document.getElementById('teacherClassText').innerText=cleanUserClass?('ថ្នាក់ទី '+cleanUserClass):'មិនទាន់កំណត់ថ្នាក់';
+      document.getElementById('teacherClassBadge').style.display='none';
       sel.value=cleanUserClass;
     }else{
       document.getElementById('teacherClassBadge').style.display='none';
