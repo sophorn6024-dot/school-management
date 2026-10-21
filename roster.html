@@ -717,12 +717,6 @@
         <input type="text" id="yearInput" class="form-control" style="max-width:105px;" oninput="syncTitleYear()">
       </div>
 
-      <!-- គ្រូបន្ទុកថ្នាក់ -->
-      <div class="panel-pill-box">
-        <span class="toolbar-label"><i class="fa-solid fa-user-tie" style="color:#10b981;"></i> គ្រូ៖</span>
-        <input type="text" id="teacherNameCtrl" class="form-control" placeholder="ឈ្មោះគ្រូ..." oninput="syncTeacherName(this.value)">
-      </div>
-
       <!-- 📅 ថ្ងៃខែហត្ថលេខា (ចន្ទគតិ) -->
       <button type="button" class="btn btn-secondary" onclick="openKhmerCalendar('teacher')" title="ថ្ងៃខែហត្ថលេខា គ្រូ">
         <span class="tb-lbl">គ្រូ</span><span id="teacherDateBadge" class="dbadge"></span>
@@ -2531,7 +2525,6 @@ window.addEventListener('scroll',function(e){
       document.getElementById('titleYear').value  = schoolYear;
 
       if (TEACHER_NAME) {
-        document.getElementById('teacherNameCtrl').value = TEACHER_NAME;
         document.getElementById('teacherNameDisplay').textContent = TEACHER_NAME;
       }
 
