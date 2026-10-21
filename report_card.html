@@ -290,6 +290,17 @@
     .dropdown-item .fa-check { display: none; font-size: 14px; }
     .dropdown-item.active .fa-check { display: inline; }
 
+    /* ☀️ ម៉ូដភ្លឺ (តាម Theme របស់ form មេ) */
+    [data-theme="light"] body { background: #e2e8f0; }
+    [data-theme="light"] .top-toolbar { background: #ffffff; border-bottom-color: #cbd5e1; box-shadow: 0 4px 16px rgba(15,23,42,.08); }
+    [data-theme="light"] .pill-btn, [data-theme="light"] .cs-btn, [data-theme="light"] .student-nav-group { background: #f1f5f9; color: #0f172a; border-color: #cbd5e1; }
+    [data-theme="light"] .student-nav-group .cs-btn { background: transparent; border: none; }
+    [data-theme="light"] .pill-btn:hover, [data-theme="light"] .cs-btn:hover, [data-theme="light"] .student-nav-btn:hover { background: #e2e8f0; border-color: #94a3b8; }
+    [data-theme="light"] .student-nav-btn { color: #0f172a; }
+    [data-theme="light"] .pill-btn.primary { background: #00875a; color: #fff; border-color: #00875a; }
+    [data-theme="light"] .cselect.month .cs-btn { background: #e0f2fe; color: #0369a1; border-color: #0284c7; }
+    [data-theme="light"] .empty-state-card { background: #ffffff; color: #0f172a; }
+
     @media screen and (max-width: 768px) {
       .top-toolbar {
         padding: 8px 10px;
@@ -762,9 +773,13 @@
       </div>
 
       <!-- 📅 ប៊ូតុងបើកប្រតិទិនចន្ទគតិខ្មែរ -->
-      <button type="button" class="pill-btn" id="btnOpenCal" onclick="openKhmerCalendar()" title="កាលបរិច្ឆេទ">
+      <button type="button" class="pill-btn" id="btnOpenCal" onclick="openKhmerCalendar('teacher')" title="ថ្ងៃខែហត្ថលេខា គ្រូ">
         <i class="fa-regular fa-calendar-days" style="color:#60a5fa;"></i>
-        <span class="btn-label" id="lblBtnDate">កាលបរិច្ឆេទ</span>
+        <span class="btn-label">គ្រូ</span> <span class="btn-label" id="lblBtnDate">កាលបរិច្ឆេទ</span>
+      </button>
+      <button type="button" class="pill-btn" id="btnOpenCalP" onclick="openKhmerCalendar('principal')" title="ថ្ងៃខែហត្ថលេខា នាយក">
+        <i class="fa-regular fa-calendar-days" style="color:#f59e0b;"></i>
+        <span class="btn-label">នាយក</span> <span class="btn-label" id="lblBtnDateP">មិនដាក់</span>
       </button>
 
       <!-- PDF -->
@@ -797,6 +812,7 @@
   <!-- ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ -->
   <div class="cal-modal-backdrop" id="calBackdrop" onclick="closeCalendarPopup()"></div>
   <div class="cal-modal" id="calModal">
+    <div id="calRoleLbl" style="text-align:center;font-weight:800;font-size:13px;color:#0369a1;margin-bottom:8px;"></div>
     <div class="cal-nav">
       <button class="cal-btn-ico" type="button" onclick="shiftCalendarMonth(-1)">‹</button>
       <select id="calSelMonth" onchange="changeCalendarSelect()"></select>
@@ -818,6 +834,7 @@
     </div>
     <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
       <button type="button" class="pill-btn" style="background:#eff6ff; color:#0284c7; border:none; height:34px;" onclick="selectCalendarToday()">ថ្ងៃនេះ</button>
+      <button type="button" class="pill-btn" id="calBtnBlank" style="background:#fef2f2; color:#dc2626; border:none; height:34px;" onclick="calBlankDate()">ទុកទទេ</button>
       <button type="button" class="pill-btn primary" style="height:34px;" onclick="closeCalendarPopup()">បិទ</button>
     </div>
   </div>
@@ -1321,6 +1338,12 @@
       try { return JSON.parse(localStorage.getItem('krou_supabase_user') || 'null'); } catch(e) { return null; }
     }
     const CURRENT_USER = readSession();
+
+    /* 🌗 Theme តាម form មេ (Dark/Light) */
+    function applyTheme(t) { document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
+    applyTheme(new URLSearchParams(location.search).get('theme') || localStorage.getItem('krou_theme_manual') || 'dark');
+    window.addEventListener('message', e => { if (e.data && (e.data.type === 'THEME_CHANGE' || e.data.theme)) applyTheme(e.data.theme || e.data); });
+    window.addEventListener('storage', e => { if (e.key === 'krou_theme_manual') applyTheme(e.newValue); });
     const USER_ROLE = CURRENT_USER?.role || "teacher";
     const IS_ADMIN = String(USER_ROLE).toLowerCase().trim() === 'admin';
 
@@ -1424,6 +1447,7 @@
 
     let teacherLunarDate = "";
     let teacherSolarDate = "";
+    let principalDateHtml = "";
     let teacherName = CURRENT_USER?.teacher_name || "សេង សុភាន់";
 
     const currentYear = nowInit.getFullYear();
@@ -1706,20 +1730,43 @@
     var calSel = { y: currentYear, m: nowInit.getMonth() + 1, d: nowInit.getDate() };
     var calToday = { y: currentYear, m: nowInit.getMonth() + 1, d: nowInit.getDate() };
 
-    function applySelectedDate(y, m, d) {
-      calSel = { y: y, m: m, d: d };
-      var o = info(y, m, d);
-
-      teacherLunarDate = fullText(o);
-      teacherSolarDate = gText(o); // «កំពង់ល្ពៅ ថ្ងៃទី...» គ្មានឈ្មោះថ្ងៃនៃសប្តាហ៍ឡើយ
-
-      document.getElementById('lblBtnDate').innerText = 'ថ្ងៃទី' + kn(d) + ' ' + GM[m - 1];
-
+    /* ថ្ងៃខែហត្ថលេខា គ្រូ + នាយក (នាយកលំនាំដើម = ទទេ) */
+    var SIGN_KEY = 'reportCardSignDates_v1', calRole = 'teacher';
+    var SIGN_ROLE_TXT = { teacher: 'គ្រូទទួលបន្ទុកថ្នាក់', principal: 'នាយកសាលា' };
+    var signStore = { teacher: { blank: false, date: '' }, principal: { blank: true, date: '' } };
+    try {
+      var _o = JSON.parse(localStorage.getItem(SIGN_KEY) || 'null');
+      if (_o) ['teacher', 'principal'].forEach(function(r) {
+        if (_o[r] && typeof _o[r].blank === 'boolean') signStore[r] = { blank: _o[r].blank, date: /^\d{4}-\d{2}-\d{2}$/.test(_o[r].date || '') ? _o[r].date : '' };
+      });
+    } catch (e) {}
+    function saveSignStore() { try { localStorage.setItem(SIGN_KEY, JSON.stringify(signStore)); } catch (e) {} }
+    function signDay(role) {
+      var s = signStore[role];
+      if (s.date) { var p = s.date.split('-').map(Number); return { y: p[0], m: p[1], d: p[2] }; }
+      return { y: calToday.y, m: calToday.m, d: calToday.d };
+    }
+    function refreshSignTexts() {
+      var t = signDay('teacher'), p = signDay('principal'), ot = info(t.y, t.m, t.d), op = info(p.y, p.m, p.d);
+      if (signStore.teacher.blank) {
+        teacherLunarDate = 'ថ្ងៃ.................... ខែ.......... ឆ្នាំ........... ពុទ្ធសករាជ ' + kn(ot.be);
+        teacherSolarDate = 'កំពង់ល្ពៅ ថ្ងៃទី...... ខែ...... ឆ្នាំ' + kn(t.y);
+      } else { teacherLunarDate = fullText(ot); teacherSolarDate = gText(ot); }
+      principalDateHtml = signStore.principal.blank ? ''
+        : '<div>' + fullText(op) + '</div><div class="sig-solar-date" style="margin-top:2px;">ថ្ងៃទី' + kn(p.d) + ' ខែ' + GM[p.m - 1] + ' ឆ្នាំ' + kn(p.y) + '</div>';
+      document.getElementById('lblBtnDate').innerText = signStore.teacher.blank ? 'ទទេ' : 'ថ្ងៃទី' + kn(t.d) + ' ' + GM[t.m - 1];
+      document.getElementById('lblBtnDateP').innerText = signStore.principal.blank ? 'មិនដាក់' : 'ថ្ងៃទី' + kn(p.d) + ' ' + GM[p.m - 1];
       document.querySelectorAll('.doc-lunar-date').forEach(el => el.innerText = teacherLunarDate);
       document.querySelectorAll('.doc-solar-date').forEach(el => el.innerText = teacherSolarDate);
+      document.querySelectorAll('.doc-principal-date').forEach(el => el.innerHTML = principalDateHtml);
     }
+    function applySelectedDate() { refreshSignTexts(); }
 
-    function openKhmerCalendar() {
+    function openKhmerCalendar(role) {
+      calRole = role || 'teacher';
+      calSel = signDay(calRole); calView = { y: calSel.y, m: calSel.m };
+      document.getElementById('calRoleLbl').textContent = '✍ ថ្ងៃខែហត្ថលេខា · ' + SIGN_ROLE_TXT[calRole];
+      document.getElementById('calBtnBlank').textContent = calRole === 'principal' ? 'មិនដាក់' : 'ទុកទទេ';
       document.getElementById('calBackdrop').classList.add('show');
       document.getElementById('calModal').classList.add('show');
       initCalendarPopup();
@@ -1734,7 +1781,7 @@
       var sy = document.getElementById('calSelYear');
       sm.innerHTML = GM.map((n, i) => `<option value="${i+1}" ${i+1 === calView.m ? 'selected' : ''}>${n}</option>`).join('');
       var yh = '';
-      for (var y = 2020; y <= 2030; y++) yh += `<option value="${y}" ${y === calView.y ? 'selected' : ''}>${kn(y)}</option>`;
+      for (var y = 2020; y <= new Date().getFullYear() + 15; y++) yh += `<option value="${y}" ${y === calView.y ? 'selected' : ''}>${kn(y)}</option>`;
       sy.innerHTML = yh;
       renderCalendarGrid();
     }
@@ -1776,7 +1823,7 @@
 
         var hs = hols(o), hol = hs.length > 0;
         var isToday = (calToday.y === o.y && calToday.m === o.m && calToday.d === o.d);
-        var isSel = (calSel.y === o.y && calSel.m === o.m && calSel.d === o.d);
+        var isSel = !signStore[calRole].blank && (calSel.y === o.y && calSel.m === o.m && calSel.d === o.d);
         var isSil = holy(o);
         var cls = 'cal-cell' + (inM ? '' : ' other') + (o.dow === 0 ? ' sun' : '') + (isToday ? ' today' : '') + (isSel ? ' sel' : '') + (isSil ? ' sil' : '');
         var mo = moon(o);
@@ -1795,22 +1842,20 @@
       document.getElementById('calMSub').textContent = 'ចន្ទគតិ៖ ខែ' + months.join(' – ខែ') + ' · ព.ស. ' + be.map(kn).join(' – ') + ' · ឆ្នាំ' + an.join(' → ');
     }
 
-    function pickCalDate(y, m, d) {
-      applySelectedDate(y, m, d);
-      closeCalendarPopup();
+    function setSignDate(y, m, d) {
+      signStore[calRole] = { blank: false, date: y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0') };
+      saveSignStore(); refreshSignTexts(); closeCalendarPopup();
     }
-
-    function selectCalendarToday() {
-      applySelectedDate(calToday.y, calToday.m, calToday.d);
-      closeCalendarPopup();
-    }
+    function pickCalDate(y, m, d) { setSignDate(y, m, d); }
+    function selectCalendarToday() { setSignDate(calToday.y, calToday.m, calToday.d); }
+    function calBlankDate() { signStore[calRole].blank = true; saveSignStore(); refreshSignTexts(); closeCalendarPopup(); }
 
     /* ══════════════ 🏫 FETCH REAL DATA FROM SUPABASE (កូដដើមរបស់អ្នក ១០០%) ══════════════ */
     async function initClassDropdown() {
       const teacherClass = getTeacherClass();
 
       // គណនាកាលបរិច្ឆេទថ្ងៃនេះតាម MomentKH
-      applySelectedDate(calToday.y, calToday.m, calToday.d);
+      refreshSignTexts();
 
       try {
         if (!IS_ADMIN && teacherClass) {
@@ -2431,6 +2476,7 @@
 
           <div class="sheet-signatures-area f-siemreap">
             <div class="sig-col left-col">
+              <div class="clean-lunar-text doc-principal-date">${principalDateHtml}</div>
               <div class="sig-title-moul f-moul">បានឃើញ និងឯកភាព</div>
               <div class="sig-role f-moul">នាយកសាលា</div>
             </div>
@@ -2533,9 +2579,9 @@
       const opt = {
         margin: [0, 0, 0, 0],
         filename: `ព្រឹត្តិបត្រពិន្ទុ_${st.name}_ថ្នាក់ទី${st.grade}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 3, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: isPortrait ? 'portrait' : 'landscape' }
+        image: { type: 'png' },
+        html2canvas: { scale: 4.2, useCORS: true, scrollX: 0, scrollY: 0 },   /* ~៤០០dpi ច្បាស់ ទោះពង្រីក */
+        jsPDF: { unit: 'mm', format: 'a4', orientation: isPortrait ? 'portrait' : 'landscape', compress: true }
       };
 
       document.body.classList.add('exporting');
