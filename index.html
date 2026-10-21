@@ -330,7 +330,7 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .dash-inner-container{container-type:inline-size;container-name:dash}
 .hero-banner-card.has-cal{flex-direction:column;align-items:stretch}
 .dash-cal-card{width:100%;max-width:420px}
-@container dash (min-width:660px){.hero-banner-card.has-cal{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:18px;padding:20px}.dash-cal-card{max-width:none}.hero-left-col .hero-banner-right{flex-wrap:wrap}}
+@container dash (min-width:660px){.hero-banner-card.has-cal{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch;gap:18px;padding:20px}.hero-left-col{justify-content:space-between}.dash-clock{flex:1;display:flex;flex-direction:column;justify-content:center}.dash-cal-card{align-self:stretch}.dash-cal-card{max-width:none}.hero-left-col .hero-banner-right{flex-wrap:wrap}}
 }
 .dc-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .dc-ico{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,#34d399,#10b981);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
@@ -403,10 +403,10 @@ body.chat-page .iframe-container{top:0;bottom:0}
 .dc-detail{background:var(--surface-elevated)}
 /* ប្រតិទិនធំស្មើក្នុងកាតពាក់កណ្ដាល */
 @container calc (min-width:430px){
-.dc-head{margin-bottom:10px}.dc-ico{width:40px;height:40px}.dc-title b{font-size:17px}.dc-title small{font-size:12px}
-.dc-nav button{width:32px;height:32px}.dc-banner{font-size:12.5px;padding:7px 12px}.dc-dow{font-size:12px;padding:4px 0}
-.dc-day{min-height:46px}.dc-day .n{font-size:15.5px}.dc-day .l{font-size:10px}
-.dc-detail{padding:10px 14px}.dc-detail b{font-size:14.5px}.dc-detail span,.dc-detail em{font-size:12.5px}.dc-list div{font-size:12.5px}
+.dc-head{margin-bottom:8px}.dc-ico{width:36px;height:36px}.dc-title b{font-size:17px}.dc-title small{font-size:12px}
+.dc-nav button{width:32px;height:32px}.dc-banner{font-size:12px;padding:5px 12px;margin-bottom:6px}.dc-dow{font-size:12px;padding:4px 0}
+.dc-day{min-height:38px}.dc-day .n{font-size:14.5px}.dc-day .l{font-size:9.5px}
+.dc-detail{padding:8px 13px;margin-top:6px}.dc-detail b{font-size:13.5px}.dc-detail span,.dc-detail em{font-size:12px}.dc-list{margin-top:6px;padding-top:5px;max-height:54px}.dc-list div{font-size:12px}
 }
 /* ===== 📁 REPORTS HUB (ទូរស័ព្ទ) ===== */
 @media (max-width:768px){
