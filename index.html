@@ -209,8 +209,8 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .hero-left-col{display:flex;flex-direction:column;gap:16px;min-width:0;width:100%}
 .hero-left-col .hero-banner-right{width:100%}
 .hero-left-col .hero-banner-right>*{flex:1;min-width:0}
-.dash-clock{background:var(--hero-stat-bg);border:1px solid var(--hero-stat-border);border-radius:20px;padding:14px 20px;text-align:center;backdrop-filter:blur(8px)}
-.dash-clock .ck-time{display:flex;align-items:baseline;justify-content:center;gap:8px;font-weight:800;line-height:1.1}
+.dash-clock{background:var(--clock-bg,var(--hero-stat-bg));border:1.5px solid var(--clock-border,var(--hero-stat-border));border-radius:20px;padding:14px 20px;text-align:center;backdrop-filter:blur(8px)}
+.dash-clock .ck-time{color:var(--clock-time,inherit);display:flex;align-items:baseline;justify-content:center;gap:8px;font-weight:800;line-height:1.1}
 .dash-clock .ck-hm{font-size:clamp(34px,4vw,50px);letter-spacing:1px}
 .dash-clock .ck-s{font-size:18px;opacity:.75}
 .dash-clock .ck-p{font-size:15px;opacity:.9;font-weight:700}
@@ -384,6 +384,23 @@ body.chat-page .iframe-container{top:0;bottom:0}
 .dc-day{min-height:34px;padding:2px 0;border-radius:11px}.dc-day .n{font-size:12.5px}.dc-day .l{font-size:8.5px}.dc-day .dot{top:3px;right:6px;width:5px;height:5px}
 .dc-detail{margin-top:8px;padding:7px 11px;border-radius:13px;gap:1px}.dc-detail b{font-size:12.5px}.dc-detail span,.dc-detail em{font-size:11px}
 .dc-list{margin-top:7px;padding-top:6px;gap:3px;max-height:64px}.dc-list div{font-size:11px}
+/* ===== ✨ SOFT LOOK ===== */
+.hero-top-tag{font-size:14px;font-weight:600;opacity:.85}
+.hero-main-title{background:linear-gradient(90deg,var(--hero-title-color),#0891b2);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;font-weight:800}
+.hero-building-icon{background:linear-gradient(135deg,#10b981,#0d9488);box-shadow:0 8px 20px rgba(16,185,129,.28)}
+.hero-building-icon svg{display:block}
+.hero-stat-card,.hero-today-card{padding:14px 18px 16px;border-radius:20px;gap:4px;text-align:center}
+.h-stat-top,.h-today-top{justify-content:space-between;font-size:13px;font-weight:600}
+.h-stat-top .lbl{color:var(--text-muted)}.h-today-top .lbl{color:#b45309}
+.chip{width:34px;height:34px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center}
+.chip.g{background:rgba(16,185,129,.16);color:#059669}.chip.a{background:rgba(245,158,11,.2);color:#d97706}
+.h-stat-digit{margin-top:4px}
+.dc-ico{background:rgba(16,185,129,.16);color:#059669}
+.dc-todaybtn{border:none;background:none;color:#059669;font-family:inherit;font-weight:700;font-size:12.5px;cursor:pointer;padding:4px 6px;border-radius:8px}
+.dc-todaybtn:hover{background:rgba(16,185,129,.12)}
+.dc-title{flex:1}
+.dc-day{min-height:38px}.dc-day .n{font-size:13.5px}
+.dc-detail{background:var(--surface-elevated)}
 /* ===== 🔤 TEXT RESPONSIVE ===== */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .hero-info-texts,.task-text-box{min-width:0}
@@ -488,9 +505,9 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
           <div class="hero-banner-card has-cal">
             <div class="hero-left-col">
             <div class="hero-banner-left">
-              <div class="hero-building-icon">🏫</div>
+              <div class="hero-building-icon"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 21V10.5L12 4l8.5 6.5V21"/><path d="M9 21v-5.5a3 3 0 0 1 6 0V21"/><path d="M12 4V2"/><circle cx="12" cy="10.2" r="1.2"/></svg></div>
               <div class="hero-info-texts">
-                <div class="hero-top-tag-row"><div class="hero-top-tag" id="dashRoleTopTag">ផ្ទាំងគ្រូបង្រៀន</div></div>
+                <div class="hero-top-tag-row"><div class="hero-top-tag" id="dashRoleTopTag">សួស្ដី</div></div>
                 <div class="hero-main-title" id="dashHeroGreeting">សួស្ដី លោកគ្រូ</div>
                 <div class="hero-sub-meta" id="dashHeroSubMeta">ថ្នាក់ទី... · សិស្ស 0 នាក់</div>
               </div>
@@ -498,12 +515,12 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
             <div class="dash-clock" id="dashClock"><div class="ck-time"><span class="ck-hm" id="ckHm">--:--</span><span class="ck-s" id="ckS">00</span><span class="ck-p" id="ckP"></span></div><div class="ck-line"><div id="ckLunar"></div><div id="ckSolar"></div></div></div>
             <div class="hero-banner-right">
               <div class="hero-stat-card">
-                <div class="h-stat-top"><span>👥</span><span>សិស្ស</span></div>
+                <div class="h-stat-top"><span class="lbl">សិស្ស</span><span class="chip g"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.2 2.7-5.5 6-5.5s6 2.3 6 5.5"/><path d="M16 5.2a3 3 0 0 1 0 5.6M18 14.8c1.8.7 3 2.4 3 5.2"/></svg></span></div>
                 <div class="h-stat-digit" id="dashStudentCountDigit">0</div>
                 <div class="h-stat-sub" id="dashStudentSubLabel">ក្នុងថ្នាក់របស់អ្នក</div>
               </div>
               <div class="hero-today-card" onclick="navigate('attendance', null)">
-                <div class="h-today-top"><span>🕒</span><span>ថ្ងៃនេះ:</span></div>
+                <div class="h-today-top"><span class="lbl">ថ្ងៃនេះ:</span><span class="chip a"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3 2"/></svg></span></div>
                 <div class="h-today-status" id="dashTodayStatus">រង់ចាំ</div>
                 <div class="h-today-sub" id="dashTodaySub">ត្រូវកត់វត្តមាន</div>
               </div>
@@ -1899,15 +1916,21 @@ function applyDayTheme() {
     root.style.setProperty('--hero-title-color', mixHex(themeConfig.titleColor, '#ffffff', 0.25));
     root.style.setProperty('--hero-stat-bg', 'rgba(255,255,255,.06)');
     root.style.setProperty('--hero-stat-border', 'rgba(255,255,255,.12)');
+    root.style.setProperty('--clock-bg', 'rgba(16,185,129,.07)');
+    root.style.setProperty('--clock-border', 'rgba(16,185,129,.3)');
+    root.style.setProperty('--clock-time', '#e2e8f0');
     root.style.setProperty('--today-card-bg', 'rgba(251,191,36,.08)');
     root.style.setProperty('--today-card-border', 'rgba(251,191,36,.25)');
     root.style.setProperty('--today-card-text', '#fcd34d');
   } else {
-    root.style.setProperty('--hero-bg', `linear-gradient(135deg, ${sp.tint(0.2, '#ffffff')} 0%, ${sp.tint(0.08, '#ffffff')} 100%)`);
+    root.style.setProperty('--hero-bg', `linear-gradient(135deg, ${sp.tint(0.1, '#ffffff')} 0%, ${sp.tint(0.04, '#ffffff')} 100%)`);
     root.style.setProperty('--hero-text', '#334155');
     root.style.setProperty('--hero-title-color', mixHex(themeConfig.primaryHover, '#0f172a', 0.35));
-    root.style.setProperty('--hero-stat-bg', 'rgba(255,255,255,.75)');
+    root.style.setProperty('--hero-stat-bg', 'rgba(255,255,255,.8)');
     root.style.setProperty('--hero-stat-border', sp.soft);
+    root.style.setProperty('--clock-bg', sp.tint(0.08, '#ffffff'));
+    root.style.setProperty('--clock-border', 'rgba(16,185,129,.35)');
+    root.style.setProperty('--clock-time', '#065f46');
     root.style.setProperty('--today-card-bg', '#fffbeb');
     root.style.setProperty('--today-card-border', '#fde68a');
     root.style.setProperty('--today-card-text', '#92400e');
@@ -2360,8 +2383,8 @@ async function refreshStats() {
     }
 
     if (IS_ADMIN) {
-      document.getElementById('dashRoleTopTag').innerText = "ផ្ទាំងអ្នកគ្រប់គ្រងប្រព័ន្ធ";
-      document.getElementById('dashHeroGreeting').innerText = `${timeGreeting()} ${TEACHER_NAME || 'អ្នកគ្រប់គ្រង'}`;
+      document.getElementById('dashRoleTopTag').innerText = timeGreeting();
+      document.getElementById('dashHeroGreeting').innerText = TEACHER_NAME || 'អ្នកគ្រប់គ្រង';
       document.getElementById('dashHeroSubMeta').innerText = `សាលាបឋមសិក្សាកំពង់ល្ពៅ · ថ្នាក់សរុប ${totalClasses} · សិស្សសរុប ${totalStudents} នាក់`;
       document.getElementById('dashStudentSubLabel').innerText = "សិស្សសរុបទាំងអស់";
       studentCountForView = totalStudents;
@@ -2375,8 +2398,8 @@ async function refreshStats() {
         });
       }
     } else {
-      document.getElementById('dashRoleTopTag').innerText = "ផ្ទាំងគ្រូបង្រៀន";
-      document.getElementById('dashHeroGreeting').innerText = `${timeGreeting()} ${TEACHER_NAME || 'លោកគ្រូ/អ្នកគ្រូ'}`;
+      document.getElementById('dashRoleTopTag').innerText = timeGreeting();
+      document.getElementById('dashHeroGreeting').innerText = TEACHER_NAME || 'លោកគ្រូ/អ្នកគ្រូ';
       const myClassObj = classBreakdown.find(c => c.className === targetClassName);
       studentCountForView = myClassObj ? myClassObj.count : (classBreakdown[0] ? classBreakdown[0].count : totalStudents);
       document.getElementById('dashHeroSubMeta').innerText = `ថ្នាក់ទី ${targetClassName} · សិស្ស ${studentCountForView} នាក់`;
@@ -2889,11 +2912,11 @@ window.addEventListener('DOMContentLoaded', async () => {
     var first=new Date(y,m0,1).getDay(),dim=new Date(y,m0+1,0).getDate();
     var a=safe(y,m0+1,1),b=safe(y,m0+1,dim),mid=safe(y,m0+1,15)||a;
     var lunar=[a&&a.mn,b&&b.mn].filter(function(v,i,s){return v&&s.indexOf(v)===i}).join(' · ');
-    var sub='ខែ'+lunar+' · '+(mid?'ឆ្នាំ'+mid.animal+' ព.ស. '+kn(mid.be):'');
+    var sub='ខែ'+lunar;
     var nh=nextHoliday(now),ban='';
     if(nh){ban='<div class="dc-banner"><span>🎊</span><b>'+(nh.days===0?'ថ្ងៃនេះ':kn(nh.days)+' ថ្ងៃទៀត')+'</b><span>· '+kn(nh.date.getDate())+' '+GMN[nh.date.getMonth()]+' · '+nh.reason+'</span></div>'}
-    var h='<div class="dc-head"><div class="dc-ico">📅</div><div class="dc-title" onclick="dcToday()" title="ត្រឡប់ទៅថ្ងៃនេះ"><b>'+GMN[m0]+' '+y+'</b><small>'+sub+'</small></div>'+
-      '<div class="dc-nav"><button type="button" onclick="dcShift(-1)" aria-label="ខែមុន">‹</button><button type="button" onclick="dcShift(1)" aria-label="ខែក្រោយ">›</button></div></div>'+ban+
+    var h='<div class="dc-head"><div class="dc-ico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg></div><div class="dc-title" onclick="dcToday()" title="ត្រឡប់ទៅថ្ងៃនេះ"><b>'+GMN[m0]+' '+y+'</b><small>'+sub+'</small></div>'+
+      '<button type="button" class="dc-todaybtn" onclick="dcToday()">ថ្ងៃនេះ</button><div class="dc-nav"><button type="button" onclick="dcShift(-1)" aria-label="ខែមុន">‹</button><button type="button" onclick="dcShift(1)" aria-label="ខែក្រោយ">›</button></div></div>'+ban+
       '<div class="dc-grid">'+['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'].map(function(w,i){return '<div class="dc-dow'+(i===0?' sun':'')+'"><span class="f">'+w+'</span><span class="s">'+({0:'អា',1:'ច',2:'អ',3:'ពុ',4:'ព្រ',5:'សុ',6:'សៅ'})[i]+'</span></div>'}).join('');
     for(var i=0;i<first;i++)h+='<div></div>';
     for(var d=1;d<=dim;d++){
@@ -2964,13 +2987,7 @@ function timeGreeting() {
   if (h >= 15 && h < 19) return 'សាយ័ណ្ហសួស្ដី';
   return 'រាត្រីសួស្ដី';
 }
-setInterval(function () {
-  const el = document.getElementById('dashHeroGreeting');
-  if (!el) return;
-  const g = timeGreeting(), cur = el.innerText;
-  const m = cur.match(/^(អរុណសួស្ដី|ទិវាសួស្ដី|សាយ័ណ្ហសួស្ដី|រាត្រីសួស្ដី)\s/);
-  if (m && m[1] !== g) el.innerText = g + cur.slice(m[1].length);
-}, 60000);
+setInterval(function () { const el = document.getElementById('dashRoleTopTag'); if (el) el.innerText = timeGreeting(); }, 60000);
 
 /* 🕒 នាឡិកា + ថ្ងៃខែចន្ទគតិ/សុរិយគតិ ក្នុងផ្ទាំងស្វាគមន៍ */
 (function(){
