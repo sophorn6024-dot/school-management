@@ -226,7 +226,7 @@ function copySql(){navigator.clipboard&&navigator.clipboard.writeText(SQL).then(
 async function loadFlags(){
   FLAGS=new Set();INFO={};
   const {data,error}=await sb.from(TABLE).select('student_id,flag,value').eq('school_year',CUR.year).eq('class',CUR.cls);
-  if(error){DBOK=false;showSetup('មិនទាន់មានតារាង <b>student_age_flags</b> ក្នុង Database — កំពុងរក្សាទុកក្នុងឧបករណ៍នេះសិន។');const l=lsLoad();(l.flags||[]).forEach(x=>FLAGS.add(x));INFO=l.info||{};return}
+  if(error){DBOK=false;showSetup('Database មិនទាន់រួចរាល់ (<b>student_age_flags</b>) — កំពុងរក្សាទុកក្នុងឧបករណ៍នេះសិន។ <span style="opacity:.7;font-size:12px">['+esc(error.message||error.code||'')+']</span>');const l=lsLoad();(l.flags||[]).forEach(x=>FLAGS.add(x));INFO=l.info||{};return}
   DBOK=true;document.getElementById('banner').style.display='none';
   (data||[]).forEach(r=>{if(r.student_id==='__form__'&&r.flag==='info'){try{INFO=JSON.parse(r.value||'{}')}catch(e){}}else FLAGS.add(fk(r.student_id,r.flag))});
 }
@@ -249,12 +249,27 @@ let itm;function saveInfo(){INFO.__t=Date.now();clearTimeout(itm);setSt('busy','
 /* ===== render ===== */
 function repAge(a){const r=(INFO.rep||{})[a]||{};return [num(r.t),Math.min(num(r.f),num(r.t))]}
 function num(v){const n=parseInt(fromKh(v),10);return isNaN(n)||n<0?0:n}
+let TEACHER={};
+async function fetchTeacher(cls){
+  try{
+    const {data,error}=await sb.from('users').select('teacher_name, gender, dob, username, assigned_classes, role');
+    if(error||!data)return {};
+    const norm=v=>String(v||'').split(/[,;،\/]+/).map(cleanGrade).filter(Boolean);
+    let u=null;
+    if(!IS_ADMIN)u=data.find(x=>x.username&&x.username===USER.username);
+    if(!u)u=data.find(x=>String(x.role||'').toLowerCase().trim()!=='admin'&&norm(x.assigned_classes).includes(cls));
+    return u||{};
+  }catch(e){return {}}
+}
+function tSex(){const g=String(TEACHER.gender||'').trim();if(!g)return '';return (g==='ស'||g.includes('ស្រី')||/^f/i.test(g))?'ស្រី':(g==='ប'||g.includes('ប្រុស')||/^m/i.test(g))?'ប្រុស':g}
+function tAge(){const d=parseDob(TEACHER.dob);if(!d)return '';const a=ageAt(d,refDate());return a>=0&&a<100?toKh(a)+'ឆ្នាំ':''}
+function kvVal(k){const m=INFO['kv_'+k];if(m!==undefined)return m;return k==='name'?(TEACHER.teacher_name||''):k==='sex'?tSex():k==='age'?tAge():''}
 function count(fn){let t=0,f=0;activeStu().forEach(s=>{if(fn(s)){t++;if(isF(s.gender))f++}});return [t,f]}
 function render(){
   document.getElementById('yrTxt').textContent=CUR.year.split('-').map(toKh).join('-');
   document.getElementById('clsTxt').textContent=CUR.cls;{const r=refDate();document.getElementById('asTxt').textContent=toKh(r.getDate())+' '+KM[r.getMonth()]+' '+toKh(r.getFullYear())}
-  document.querySelectorAll('.ed[data-k]').forEach(el=>{const v=INFO[el.dataset.k];if(v!==undefined)el.textContent=v});
-  document.getElementById('kv').innerHTML=KV.map(([k,l])=>`<tr><th>${l}</th><td><span class="ed" contenteditable data-kv="${k}" data-ph="" style="min-width:90px;border-bottom:0">${esc(INFO['kv_'+k]??'')}</span></td></tr>`).join('');
+  document.querySelectorAll('.ed[data-k]').forEach(el=>{const v=INFO[el.dataset.k];if(v!==undefined)el.textContent=v;else if(el.dataset.k==='teacher'&&TEACHER.teacher_name)el.textContent=TEACHER.teacher_name});
+  document.getElementById('kv').innerHTML=KV.map(([k,l])=>`<tr><th>${l}</th><td><span class="ed" contenteditable data-kv="${k}" data-ph="" style="min-width:90px;border-bottom:0">${esc(kvVal(k))}</span></td></tr>`).join('');
   // age table
   const n=v=>v?toKh(v):'០';
   let h=`<thead><tr><th rowspan="3" style="width:13%">អាយុ<br>(ឆ្នាំ)</th><th colspan="6">ចំនួនសិស្ស</th></tr>
@@ -355,10 +370,7 @@ async function reload(keepAsOf){
     if(error)throw error;
     STU=(data||[]).filter(s=>cleanGrade(s.grade)===CUR.cls);
     await loadFlags();
-    // teacher name default
-    if(!INFO.teacher&&!IS_ADMIN&&USER.teacher_name)INFO.teacher=USER.teacher_name;
-    if(!INFO.kv_name&&!IS_ADMIN&&USER.teacher_name)INFO.kv_name=USER.teacher_name;
-    if(IS_ADMIN&&!INFO.teacher){try{const {data:us}=await sb.from('users').select('teacher_name, assigned_classes, role');const t=(us||[]).find(u=>String(u.assigned_classes||'').split(/[,;،\/]+/).map(cleanGrade).includes(CUR.cls)&&String(u.role||'').toLowerCase()!=='admin');if(t){INFO.teacher=t.teacher_name;if(!INFO.kv_name)INFO.kv_name=t.teacher_name}}catch(e){}}
+    TEACHER=await fetchTeacher(CUR.cls);
     document.querySelectorAll('.ed[data-k]').forEach(el=>{if(INFO[el.dataset.k]===undefined)el.textContent=el.dataset.def||el.textContent});
     render();setSt(DBOK?'ok':'err',DBOK?'ភ្ជាប់ Database រួច':'រក្សាទុកក្នុងឧបករណ៍');
   }catch(err){setSt('err','កំហុស');toast('❌ '+err.message)}
