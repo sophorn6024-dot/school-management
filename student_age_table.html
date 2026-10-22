@@ -69,9 +69,9 @@ table.kv td{padding:6px 10px;text-align:center}
 .warn{font-size:11.5px;color:#b45309;line-height:1.7;padding:6px 4px 0}
 @media print{.warn{display:none}}
 .foot{margin-top:18px;display:flex;justify-content:space-between;align-items:flex-start}
-.sign-l{min-width:200px}
-.sign{text-align:center;font-size:13px;line-height:2.1;min-width:300px}
-.sign .ed{min-width:180px}
+.sign-l{min-width:200px;margin-left:30px}
+.sign{text-align:center;font-size:13px;line-height:2.1;min-width:0;white-space:nowrap}
+.sign .ed{min-width:120px}
 /* modal */
 .ov{position:fixed;inset:0;z-index:200;background:rgba(15,23,42,.45);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:16px}
 .ov.show{display:flex}
@@ -263,6 +263,9 @@ table.kv td{padding:6px 10px;text-align:center}
 select.edu{appearance:none;-webkit-appearance:none;border:0;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2364748b' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 4px center;font:inherit;color:#0f172a;text-align:center;text-align-last:center;width:100%;padding:2px 16px;cursor:pointer;outline:none}
 select.edu:focus{background-color:#eef2ff}
 @media print{select.edu{background-image:none;padding:2px}select.edu:invalid{color:transparent}}
+select,select option,select optgroup,.cal-nav select,.fc{font-family:'Battambang','Kantumruy Pro',sans-serif!important}
+select,.fc{font-weight:400}
+select option{font-size:14px;font-weight:400}
 </style>
 </head>
 <body>
@@ -295,7 +298,7 @@ select.edu:focus{background-color:#eef2ff}
       <div class="sec"><h3>១.ព័ត៌មានសេវាគ្រូបន្ទុកថ្នាក់ទី <span id="clsTxt"></span></h3><div class="body">
         <table class="kv" id="kv"></table></div></div>
       <div class="sec"><h3>២.(ខ) សិស្សថ្មី សិស្សឡើងថ្នាក់ និង សិស្សត្រួតថ្នាក់</h3>
-        <div class="tip">👉 សិស្សថ្មី = សិស្សសរុប ដកសិស្សត្រួតថ្នាក់ · ចុចលើ «សិស្សត្រួតថ្នាក់» ដើម្បីបញ្ចូលចំនួនតាមអាយុ</div>
+        <div class="tip">👉 សិស្សថ្មី = សិស្សសរុប ដកសិស្សត្រួតថ្នាក់ · ចុចលើ «សិស្សត្រួតថ្នាក់» ដើម្បីជ្រើសឈ្មោះសិស្ស</div>
         <div class="body" style="padding-top:0"><table id="ageT"></table><div id="ageWarn" class="warn"></div></div></div>
     </div>
     <div class="col">
@@ -313,7 +316,7 @@ select.edu:focus{background-color:#eef2ff}
   </div><div class="sign">
     <div><button type="button" class="dtbtn" onclick="openCal('sign')">📅 ជ្រើសថ្ងៃខែ</button></div>
     <div id="signLunar"></div>
-    <div>ធ្វើនៅ<span class="ed" contenteditable data-k="place" data-ph="...............">កំពង់ល្ពៅ</span> <span id="signSolar"></span></div>
+    <div>ធ្វើនៅកំពង់ល្ពៅ <span id="signSolar"></span></div>
     <div>គ្រូទទួលបន្ទុកថ្នាក់</div>
     <div style="height:44px"></div>
     <div><b><span class="ed" contenteditable data-k="teacher" data-ph="ឈ្មោះគ្រូ"></span></b></div>
@@ -928,12 +931,12 @@ function render(){
   // age table
   const n=v=>v?toKh(v):'០';
   let h=`<thead><tr><th rowspan="3" style="width:13%">អាយុ<br>(ឆ្នាំ)</th><th colspan="6">ចំនួនសិស្ស</th></tr>
-  <tr><th colspan="2">សិស្សថ្មី</th><th colspan="2" class="clk" onclick="openRepeat()">សិស្សត្រួតថ្នាក់</th><th colspan="2">សិស្សសរុប</th></tr>
+  <tr><th colspan="2">សិស្សថ្មី</th><th colspan="2" class="clk" onclick="openModal('repeat')">សិស្សត្រួតថ្នាក់</th><th colspan="2">សិស្សសរុប</th></tr>
   <tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(3)}</tr></thead><tbody>`;
   const sum=[0,0,0,0,0,0];
   AGES.forEach(a=>{
     const inAge=s=>{const x=ageOf(s);return x!==null&&(a===15?x>=15:x===a)};
-    const tt=count(inAge);let rp=repAge(a);rp=[Math.min(rp[0],tt[0]),Math.min(rp[1],tt[1],rp[0])];const nw=[tt[0]-rp[0],tt[1]-rp[1]];
+    const tt=count(inAge);const rp=count(s=>inAge(s)&&FLAGS.has(fk(s.student_id||s.id,'repeat')));const nw=[tt[0]-rp[0],tt[1]-rp[1]];
     const row=[...nw,...rp,...tt];row.forEach((v,i)=>sum[i]+=v);
     h+=`<tr><td class="c">${a===15?'១៥+':toKh(a)}</td>${row.map(v=>`<td class="c">${n(v)}</td>`).join('')}</tr>`;
   });
