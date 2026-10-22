@@ -536,8 +536,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     </nav>
 
     <div class="sidebar-footer">
-      <button class="sidebar-theme-btn" onclick="toggleThemeAuto()" id="sidebarAutoBtn" title="ប្ដូរ Dark/Light តាមម៉ោងស្វ័យប្រវត្តិ"><span>🕒</span><span class="nav-text">តាមម៉ោង (ស្វ័យប្រវត្តិ)</span><span class="auto-pill" data-auto-theme-state style="margin-left:auto">បិទ</span></button>
-      <button class="sidebar-theme-btn" onclick="toggleTheme()" id="sidebarThemeBtn" title="ប្ដូរ Dark/Light Mode"><span id="themeIcon">🌙</span><span class="nav-text" id="themeText">ពន្លឺ / ងងឹត</span></button>
+      <button class="sidebar-theme-btn" onclick="toggleTheme()" id="sidebarThemeBtn" title="ប្ដូរ ងងឹត → ភ្លឺ → តាមម៉ោង"><span id="themeIcon">🌙</span><span class="nav-text" id="themeText">ពន្លឺ / ងងឹត</span></button>
       <button class="sidebar-logout-btn" onclick="doLogout()" title="ចាកចេញពីប្រព័ន្ធ"><span>🚪</span><span class="nav-text">ចាកចេញ</span></button>
     </div>
   </aside>
@@ -656,10 +655,9 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       <div class="ms-top">
         <button type="button" class="ms-back" onclick="closeMoreSheet()" aria-label="ត្រឡប់">‹</button>
         <div class="ms-pill"><span>🏫</span><span id="msClass">ថ្នាក់...</span></div>
-        <button type="button" class="ms-ib" id="msTheme" onclick="toggleTheme();setTimeout(refreshMoreThemeBtn,50)" aria-label="ប្តូរ Theme">🌙</button>
+        <button type="button" class="ms-ib" id="msTheme" onclick="toggleTheme()" aria-label="ប្តូរ Theme">🌙</button>
       </div>
       <div class="ms-profile" onclick="closeMoreSheet();openProfileModal()"><div class="ms-av" id="msAvatar">ស</div><div class="ms-grow"><div class="ms-name" id="msName">...</div><div class="ms-role" id="msRole">គ្រូបង្រៀន</div></div><span class="ms-arrow">›</span></div>
-      <div class="ms-item" onclick="toggleThemeAuto()"><div class="ms-ico">🕒</div><div class="ms-grow"><div class="ms-t">Dark/Light តាមម៉ោង</div><div class="ms-d">ភ្លឺ ៦:០០–១៨:០០ · ងងឹតពេលយប់</div></div><span class="auto-pill" data-auto-theme-state>បិទ</span></div>
       <div id="msList"></div>
     </div>
     <nav class="mobile-bottom-nav" id="mobileNav">
@@ -2147,33 +2145,34 @@ function applyTheme(theme) {
   theme = (theme === 'light') ? 'light' : 'dark';
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('krou_theme_manual', theme);
-  const icon = document.getElementById('themeIcon');
-  const text = document.getElementById('themeText');
-  if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
-  if (text) text.textContent = theme === 'dark' ? 'ពន្លឺ (Light)' : 'ងងឹត (Dark)';
   const meta = document.getElementById('metaThemeColor');
   if (meta) meta.content = theme === 'dark' ? '#090e17' : '#f8fafc';
   applyDayTheme();
+  refreshAutoThemeUI();
 }
 /* 🕒 Dark/Light ស្វ័យប្រវត្តិតាមម៉ោង (ភ្លឺ ៦:០០–១៨:០០ · ងងឹតក្រៅពីនោះ) */
 function autoThemeNow() { const h = new Date().getHours(); return (h >= 6 && h < 18) ? 'light' : 'dark'; }
 function isThemeAuto() { try { return localStorage.getItem('krou_theme_auto') === '1'; } catch (e) { return false; } }
 function refreshAutoThemeUI() {
-  const on = isThemeAuto();
-  document.querySelectorAll('[data-auto-theme-state]').forEach(el => { el.textContent = on ? 'បើក' : 'បិទ'; el.classList.toggle('on', on); });
+  const auto = isThemeAuto(), dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const ic = auto ? '🕒' : (dark ? '🌙' : '☀️');
+  const tx = auto ? 'តាមម៉ោង (Auto)' : (dark ? 'ងងឹត (Dark)' : 'ពន្លឺ (Light)');
+  const a = document.getElementById('themeIcon'), b = document.getElementById('themeText'), c = document.getElementById('msTheme');
+  if (a) a.textContent = ic; if (b) b.textContent = tx; if (c) c.textContent = ic;
 }
 function setThemeAuto(on) {
   try { localStorage.setItem('krou_theme_auto', on ? '1' : '0'); } catch (e) {}
   if (on) applyTheme(autoThemeNow());
   refreshAutoThemeUI();
 }
-function toggleThemeAuto() { setThemeAuto(!isThemeAuto()); if (typeof refreshMoreThemeBtn === 'function') refreshMoreThemeBtn(); }
 setInterval(function () { if (isThemeAuto() && document.documentElement.getAttribute('data-theme') !== autoThemeNow()) { applyTheme(autoThemeNow()); if (typeof refreshMoreThemeBtn === 'function') refreshMoreThemeBtn(); } }, 60000);
 document.addEventListener('visibilitychange', function () { if (!document.hidden && isThemeAuto() && document.documentElement.getAttribute('data-theme') !== autoThemeNow()) applyTheme(autoThemeNow()); });
 function toggleTheme() {
-  const current = document.documentElement.getAttribute('data-theme') || 'dark';
-  setThemeAuto(false);
-  applyTheme(current === 'dark' ? 'light' : 'dark');
+  /* ងងឹត → ភ្លឺ → តាមម៉ោង → ងងឹត */
+  const auto = isThemeAuto(), dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if (auto) { setThemeAuto(false); applyTheme('dark'); }
+  else if (dark) { applyTheme('light'); }
+  else { setThemeAuto(true); }
 }
 window.addEventListener('storage', (e) => {
   if (e.key === 'krou_theme_manual' && e.newValue && e.newValue !== document.documentElement.getAttribute('data-theme')) applyTheme(e.newValue);
@@ -2317,10 +2316,7 @@ const MORE_ITEMS = [
   { page: 'teacher', t: 'គ្រប់គ្រងគ្រូ', d: 'គ្រប់គ្រងគណនីគ្រូបង្រៀន', i: '👨‍🏫', admin: true }
 ];
 function isMobileView() { return window.matchMedia('(max-width:768px)').matches; }
-function refreshMoreThemeBtn() {
-  const b = document.getElementById('msTheme');
-  if (b) b.textContent = (document.documentElement.getAttribute('data-theme') === 'dark') ? '☀️' : '🌙';
-}
+function refreshMoreThemeBtn() { refreshAutoThemeUI(); }
 function buildMoreSheet() {
   document.getElementById('msClass').textContent = (document.getElementById('sidebarClassYearText')?.textContent || '').trim() || 'ថ្នាក់...';
   document.getElementById('msName').textContent = document.getElementById('sidebarTeacherName')?.textContent || '';
