@@ -39,8 +39,12 @@ body{background:var(--bg);color:var(--text);font-family:'Battambang','Kantumruy 
 .ed{outline:none;border-bottom:1px dotted #94a3b8;min-width:70px;display:inline-block;padding:0 4px;color:#0f172a}
 .ed:focus{background:#eef2ff;border-bottom-color:#4f46e5}
 .ed:empty:before{content:attr(data-ph);color:#cbd5e1}
-.cols{display:grid;grid-template-columns:1fr 1.02fr;gap:12px;align-items:start}
+.cols{display:grid;grid-template-columns:1fr 1.02fr;gap:12px;align-items:stretch}
 .col{display:flex;flex-direction:column;gap:12px}
+.col>.sec{display:flex;flex-direction:column}
+.col>.sec:last-child{flex:1}
+.col>.sec:last-child>.body{flex:1;display:flex;flex-direction:column}
+.col>.sec:last-child>.body>table{flex:1;height:100%}
 .sec{background:#fff;border:1px solid #dbe3f3;border-radius:16px;overflow:hidden;box-shadow:0 6px 18px rgba(30,58,138,.12)}
 .sec>h3{margin:0;background:linear-gradient(135deg,#3b4cb8,#27348b);color:#fff;font-family:'Battambang',sans-serif;font-weight:700;font-size:13.5px;line-height:1.7;text-align:center;padding:9px 12px}
 .sec .body{padding:8px}
@@ -64,7 +68,8 @@ table.kv th{width:46%;text-align:left;background:#f8faff;color:#64748b;font-weig
 table.kv td{padding:6px 10px;text-align:center}
 .warn{font-size:11.5px;color:#b45309;line-height:1.7;padding:6px 4px 0}
 @media print{.warn{display:none}}
-.foot{margin-top:18px;display:flex;justify-content:flex-end}
+.foot{margin-top:18px;display:flex;justify-content:space-between;align-items:flex-start}
+.sign-l{min-width:200px}
 .sign{text-align:center;font-size:13px;line-height:2.1;min-width:300px}
 .sign .ed{min-width:180px}
 /* modal */
@@ -92,11 +97,172 @@ table.kv td{padding:6px 10px;text-align:center}
 @media print{
   @page{size:210mm 297mm;margin:0}
   body{background:#fff;padding:0}.tb,.banner,.tip,.ov,.toast{display:none!important}
-  .stage{padding:0;display:block;overflow:visible}.page{box-shadow:none;zoom:1!important;border-radius:0}
+  html,body{height:auto;overflow:visible}
+  .stage{padding:0;display:block;overflow:visible}.page{box-shadow:none;border-radius:0;margin:0 auto;min-height:0!important;height:297mm;overflow:hidden;padding:8mm 8mm 6mm;page-break-after:avoid;break-after:avoid}
   .ed{border-bottom:0}.ed:empty:before{content:''}
   td.nm.lk:after{display:none}th.clk{text-decoration:none}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+    /* ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ */
+    .cal-modal-backdrop {
+      display: none; position: fixed; inset: 0; z-index: 2900; background: rgba(0,0,0,0.65);
+    }
+    .cal-modal-backdrop.show { display: block; }
+    .cal-modal {
+      display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 440px; max-width: calc(100vw - 20px); background: #ffffff; border-radius: 20px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6); padding: 18px 20px; z-index: 3000; color: #1f2433;
+      user-select: none;
+    }
+    .cal-modal.show { display: block; animation: popIn .15s ease-out; }
+    
+    .cal-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .cal-nav select { border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 10px; padding: 6px 10px; height: 38px; font-weight: bold; flex: 1; }
+    .cal-btn-ico { width: 38px; height: 38px; border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; }
+    .cal-btn-ico:hover { border-color: #0284c7; }
+
+    .cal-monthhead { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; margin-bottom: 6px; }
+    .cal-monthhead .m { font-family: 'Khmer OS Muol Light', 'Moul', cursive; font-size: 16px; color: #1e3a8a; }
+    .cal-monthhead .s { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+    .cal-dow, .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+      gap: 3px;
+      width: 100%;
+    }
+    .cal-dow { text-align: center; font-size: 13px; font-weight: bold; color: #64748b; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
+    .cal-dow div:first-child { color: #c62828; }
+    
+    .cal-cell {
+      position: relative;
+      min-height: 52px;
+      padding: 3px 2px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #ffffff;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      transition: all .12s;
+      min-width: 0 !important;
+      overflow: hidden !important;
+      box-sizing: border-box;
+    }
+    .cal-cell:hover { border-color: #0284c7; background: #f0f9ff; }
+    .cal-cell.today { background: #e8eefc; border-color: #3b82f6; }
+    .cal-cell.sel { outline: 2.5px solid #1e3a8a; background: #eff6ff !important; }
+    .cal-cell.sun .g { color: #c62828; }
+    .cal-cell.other { opacity: 0.35; }
+    .cal-cell .g { font-size: 14px; font-weight: bold; line-height: 1.2; }
+    .cal-cell .l {
+      font-size: 9.5px;
+      color: #64748b;
+      line-height: 1.1;
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .cal-cell .l b { color: #1e3a8a; }
+    .cal-cell.sil .l b { color: #a8650a; font-weight: bold; }
+    .cal-cell .mo { position: absolute; top: 2px; right: 2px; font-size: 10px; }
+    .cal-cell .h {
+      font-size: 8.5px;
+      line-height: 1.1;
+      border-radius: 3px;
+      padding: 1px 2px;
+      margin-top: 2px;
+      background: #fde9e7;
+      color: #c62828;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .cal-legend { display: flex; gap: 10px; flex-wrap: wrap; padding: 8px 6px; color: #64748b; font-size: 11px; border-top: 1px solid #e2e8f0; margin-top: 6px; }
+    .cal-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; }
+
+    body.exporting .report-sheet,
+    body.exporting .report-sheet-container-2col { box-shadow: none !important; }
+
+    .empty-state-card {
+      background: #ffffff;
+      padding: 50px 30px;
+      border-radius: 16px;
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      max-width: 440px;
+      margin-top: 40px;
+    }
+
+    @page { size: A4 portrait; margin: 0; }
+
+    @media print {
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      html, body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+        min-height: 0 !important;
+        width: auto !important;
+        overflow: visible !important;
+      }
+      .top-toolbar, #authDeniedWrap, .dropdown-popup, .cal-modal-backdrop, .cal-modal { display: none !important; }
+      .paper-stage-wrapper {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        min-height: 0 !important;
+        width: auto !important;
+        overflow: visible !important;
+      }
+      .paper-stage {
+        display: block !important;
+        transform: none !important;
+        gap: 0 !important;
+        width: auto !important;
+      }
+      .report-sheet {
+        box-shadow: none !important;
+        margin: 0 !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .paper-stage.layout-2col .report-sheet-container-2col {
+        box-shadow: none !important;
+        margin: 0 !important;
+        width: 297mm !important;
+        height: 209mm !important;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .paper-stage.layout-2col .report-sheet { width: 100% !important; height: 100% !important; }
+    }
+@keyframes popIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+}
+.pill-btn{border:0;border-radius:10px;padding:0 14px;font:700 13px Battambang,sans-serif;cursor:pointer;background:#eef2ff;color:#4f46e5}.pill-btn.primary{background:#4f46e5;color:#fff}
+.cal-cell .h{font-size:8px}
+.dtbtn{display:inline-flex;align-items:center;gap:6px;border:1.5px dashed #818cf8;background:#eef2ff;color:#4f46e5;border-radius:10px;padding:3px 12px;font:700 12px Battambang,sans-serif;cursor:pointer;margin-bottom:4px}
+.dtbtn:hover{background:#e0e7ff}
+@media print{.dtbtn,.cal-modal,.cal-modal-backdrop{display:none!important}}
+select.edu{appearance:none;-webkit-appearance:none;border:0;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2364748b' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 4px center;font:inherit;color:#0f172a;text-align:center;text-align-last:center;width:100%;padding:2px 16px;cursor:pointer;outline:none}
+select.edu:focus{background-color:#eef2ff}
+@media print{select.edu{background-image:none;padding:2px}select.edu:invalid{color:transparent}}
 </style>
 </head>
 <body>
@@ -107,13 +273,13 @@ table.kv td{padding:6px 10px;text-align:center}
   <button class="btn" onclick="goBack()">‹ ត្រឡប់</button>
   <span class="pill"><label>ឆ្នាំសិក្សា</label><select class="fc" id="selYear" onchange="reload()"></select></span>
   <span class="pill"><label>ថ្នាក់</label><select class="fc" id="selClass" onchange="reload()"></select></span>
-  <span class="pill"><label>អាយុគិតត្រឹម</label><input class="fc" type="date" id="asOf" onchange="reload(true)"></span>
+  <span class="pill"><label>អាយុគិតត្រឹម</label><input type="hidden" id="asOf"><button type="button" class="fc" id="asOfBtn" onclick="openCal('asof')" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px">📅 <span></span></button></span>
   <span class="sp"></span>
   <span class="st" id="st"><i></i><span>...</span></span>
   <button class="btn" onclick="doPrint()">🖨️ បោះពុម្ព</button>
   <button class="btn ok" onclick="doPdf()">⬇ PDF</button>
 </div>
-<div class="banner" id="banner"></div>
+
 
 <div class="stage"><div class="page" id="page">
   <div class="logo">Pri</div>
@@ -129,7 +295,7 @@ table.kv td{padding:6px 10px;text-align:center}
       <div class="sec"><h3>១.ព័ត៌មានសេវាគ្រូបន្ទុកថ្នាក់ទី <span id="clsTxt"></span></h3><div class="body">
         <table class="kv" id="kv"></table></div></div>
       <div class="sec"><h3>២.(ខ) សិស្សថ្មី សិស្សឡើងថ្នាក់ និង សិស្សត្រួតថ្នាក់</h3>
-        <div class="tip">👉 ចុចលើ «សិស្សថ្មី» ដើម្បីជ្រើសសិស្ស · ចុចលើ «សិស្សត្រួតថ្នាក់» ដើម្បីកែចំនួនតាមអាយុ</div>
+        <div class="tip">👉 សិស្សថ្មី = សិស្សសរុប ដកសិស្សត្រួតថ្នាក់ · ចុចលើ «សិស្សត្រួតថ្នាក់» ដើម្បីបញ្ចូលចំនួនតាមអាយុ</div>
         <div class="body" style="padding-top:0"><table id="ageT"></table><div id="ageWarn" class="warn"></div></div></div>
     </div>
     <div class="col">
@@ -138,9 +304,16 @@ table.kv td{padding:6px 10px;text-align:center}
         <div class="body" style="padding-top:0"><table id="diffT"></table></div></div>
     </div>
   </div>
-  <div class="foot"><div class="sign">
-    <div><span class="ed" contenteditable data-k="d1" data-ph="ថ្ងៃ... ខែ... ឆ្នាំ... ពុទ្ធសករាជ ..."></span></div>
-    <div>ធ្វើនៅ<span class="ed" contenteditable data-k="place" data-ph="...............">កំពង់ល្ពៅ</span> <span class="ed" contenteditable data-k="d2" data-ph="ថ្ងៃទី... ខែ... ឆ្នាំ..."></span></div>
+  <div class="foot"><div class="sign sign-l">
+    <div style="height:62px"></div>
+    <div>បានឃើញ និងឯកភាព</div>
+    <div>នាយកសាលា</div>
+    <div style="height:40px"></div>
+    <div><b><span class="ed" contenteditable data-k="principal" data-ph="ឈ្មោះនាយក"></span></b></div>
+  </div><div class="sign">
+    <div><button type="button" class="dtbtn" onclick="openCal('sign')">📅 ជ្រើសថ្ងៃខែ</button></div>
+    <div id="signLunar"></div>
+    <div>ធ្វើនៅ<span class="ed" contenteditable data-k="place" data-ph="...............">កំពង់ល្ពៅ</span> <span id="signSolar"></span></div>
     <div>គ្រូទទួលបន្ទុកថ្នាក់</div>
     <div style="height:44px"></div>
     <div><b><span class="ed" contenteditable data-k="teacher" data-ph="ឈ្មោះគ្រូ"></span></b></div>
@@ -154,26 +327,522 @@ table.kv td{padding:6px 10px;text-align:center}
   <div class="cnt" id="mdC"></div>
   <div class="list" id="mdL"></div>
 </div></div>
+  <!-- ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ -->
+  <div class="cal-modal-backdrop" id="calBackdrop" onclick="closeCalendarPopup()"></div>
+  <div class="cal-modal" id="calModal">
+    <div id="calRoleLbl" style="text-align:center;font-weight:800;font-size:13px;color:#0369a1;margin-bottom:8px;"></div>
+    <div class="cal-nav">
+      <button class="cal-btn-ico" type="button" onclick="shiftCalendarMonth(-1)">‹</button>
+      <select id="calSelMonth" onchange="changeCalendarSelect()"></select>
+      <select id="calSelYear" onchange="changeCalendarSelect()"></select>
+      <button class="cal-btn-ico" type="button" onclick="shiftCalendarMonth(1)">›</button>
+    </div>
+    <div class="cal-monthhead">
+      <div class="m" id="calMTitle"></div>
+      <div class="s" id="calMSub"></div>
+    </div>
+    <div class="cal-dow">
+      <div>អា</div><div>ច</div><div>អ</div><div>ព</div><div>ព្រ</div><div>សុ</div><div>ស</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-legend">
+      <span><i style="background:#fde9e7"></i>ថ្ងៃឈប់សម្រាក</span>
+      <span><i style="background:#fbefd5"></i>ថ្ងៃសីល</span>
+      <span>🌕 ពេញបូណ៌មី · 🌑 ចុងខែ · 🌓🌗 ថ្ងៃសីល ៨</span>
+    </div>
+    <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+      <button type="button" class="pill-btn" style="background:#eff6ff; color:#0284c7; border:none; height:34px;" onclick="selectCalendarToday()">ថ្ងៃនេះ</button>
+      <button type="button" class="pill-btn" id="calBtnBlank" style="background:#fef2f2; color:#dc2626; border:none; height:34px;" onclick="calBlankDate()">ទុកទទេ</button>
+      <button type="button" class="pill-btn primary" style="height:34px;" onclick="closeCalendarPopup()">បិទ</button>
+    </div>
+  </div>
+
 <div class="toast" id="toast"></div>
 
+  <script>
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define([], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    module.exports = factory();
+  } else {
+    var exp = factory();
+    root.momentkh = exp;
+    root.MoonPhase = exp.MoonPhase;
+    root.MonthIndex = exp.MonthIndex;
+    root.AnimalYear = exp.AnimalYear;
+    root.AnimalYearEmojis = exp.AnimalYearEmojis;
+    root.Sak = exp.Sak;
+    root.DayOfWeek = exp.DayOfWeek;
+  }
+}(typeof self !== 'undefined' ? self : this, function () {
+  var module = { exports: {} };
+  var exports = module.exports;
+  "use strict";
+
+  var MoonPhase;
+  (function (MoonPhase) {
+      MoonPhase[MoonPhase["Waxing"] = 0] = "Waxing";
+      MoonPhase[MoonPhase["Waning"] = 1] = "Waning";
+  })(MoonPhase || (exports.MoonPhase = MoonPhase = {}));
+
+  var MonthIndex;
+  (function (MonthIndex) {
+      MonthIndex[MonthIndex["Migasir"] = 0] = "Migasir";
+      MonthIndex[MonthIndex["Boss"] = 1] = "Boss";
+      MonthIndex[MonthIndex["Meak"] = 2] = "Meak";
+      MonthIndex[MonthIndex["Phalkun"] = 3] = "Phalkun";
+      MonthIndex[MonthIndex["Cheit"] = 4] = "Cheit";
+      MonthIndex[MonthIndex["Pisakh"] = 5] = "Pisakh";
+      MonthIndex[MonthIndex["Jesth"] = 6] = "Jesth";
+      MonthIndex[MonthIndex["Asadh"] = 7] = "Asadh";
+      MonthIndex[MonthIndex["Srap"] = 8] = "Srap";
+      MonthIndex[MonthIndex["Phatrabot"] = 9] = "Phatrabot";
+      MonthIndex[MonthIndex["Assoch"] = 10] = "Assoch";
+      MonthIndex[MonthIndex["Kadeuk"] = 11] = "Kadeuk";
+      MonthIndex[MonthIndex["Pathamasadh"] = 12] = "Pathamasadh";
+      MonthIndex[MonthIndex["Tutiyasadh"] = 13] = "Tutiyasadh";
+  })(MonthIndex || (exports.MonthIndex = MonthIndex = {}));
+
+  var AnimalYear;
+  (function (AnimalYear) {
+      AnimalYear[AnimalYear["Chhut"] = 0] = "Chhut";
+      AnimalYear[AnimalYear["Chlov"] = 1] = "Chlov";
+      AnimalYear[AnimalYear["Khal"] = 2] = "Khal";
+      AnimalYear[AnimalYear["Thos"] = 3] = "Thos";
+      AnimalYear[AnimalYear["Rong"] = 4] = "Rong";
+      AnimalYear[AnimalYear["Masagn"] = 5] = "Masagn";
+      AnimalYear[AnimalYear["Momee"] = 6] = "Momee";
+      AnimalYear[AnimalYear["Momae"] = 7] = "Momae";
+      AnimalYear[AnimalYear["Vok"] = 8] = "Vok";
+      AnimalYear[AnimalYear["Roka"] = 9] = "Roka";
+      AnimalYear[AnimalYear["Cho"] = 10] = "Cho";
+      AnimalYear[AnimalYear["Kor"] = 11] = "Kor";
+  })(AnimalYear || (exports.AnimalYear = AnimalYear = {}));
+
+  var Sak;
+  (function (Sak) {
+      Sak[Sak["SamridhiSak"] = 0] = "SamridhiSak";
+      Sak[Sak["AekSak"] = 1] = "AekSak";
+      Sak[Sak["ToSak"] = 2] = "ToSak";
+      Sak[Sak["TreiSak"] = 3] = "TreiSak";
+      Sak[Sak["ChattvaSak"] = 4] = "ChattvaSak";
+      Sak[Sak["PanchaSak"] = 5] = "PanchaSak";
+      Sak[Sak["ChhaSak"] = 6] = "ChhaSak";
+      Sak[Sak["SappaSak"] = 7] = "SappaSak";
+      Sak[Sak["AtthaSak"] = 8] = "AtthaSak";
+      Sak[Sak["NappaSak"] = 9] = "NappaSak";
+  })(Sak || (exports.Sak = Sak = {}));
+
+  var DayOfWeek;
+  (function (DayOfWeek) {
+      DayOfWeek[DayOfWeek["Sunday"] = 0] = "Sunday";
+      DayOfWeek[DayOfWeek["Monday"] = 1] = "Monday";
+      DayOfWeek[DayOfWeek["Tuesday"] = 2] = "Tuesday";
+      DayOfWeek[DayOfWeek["Wednesday"] = 3] = "Wednesday";
+      DayOfWeek[DayOfWeek["Thursday"] = 4] = "Thursday";
+      DayOfWeek[DayOfWeek["Friday"] = 5] = "Friday";
+      DayOfWeek[DayOfWeek["Saturday"] = 6] = "Saturday";
+  })(DayOfWeek || (exports.DayOfWeek = DayOfWeek = {}));
+
+  const LunarMonthNames = [
+      'មិគសិរ', 'បុស្ស', 'មាឃ', 'ផល្គុន', 'ចេត្រ', 'ពិសាខ',
+      'ជេស្ឋ', 'អាសាឍ', 'ស្រាពណ៍', 'ភទ្របទ', 'អស្សុជ', 'កត្ដិក',
+      'បឋមាសាឍ', 'ទុតិយាសាឍ'
+  ];
+  const AnimalYearNames = [
+      'ជូត', 'ឆ្លូវ', 'ខាល', 'ថោះ', 'រោង', 'ម្សាញ់',
+      'មមី', 'មមែ', 'វក', 'រកា', 'ច', 'កុរ'
+  ];
+  const SakNames = [
+      'សំរឹទ្ធិស័ក', 'ឯកស័ក', 'ទោស័ក', 'ត្រីស័ក', 'ចត្វាស័ក',
+      'បញ្ចស័ក', 'ឆស័ក', 'សប្តស័ក', 'អដ្ឋស័ក', 'នព្វស័ក'
+  ];
+  const WeekdayNames = [
+      'អាទិត្យ', 'ចន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'
+  ];
+  const MoonPhaseNames = ['កើត', 'រោច'];
+
+  function isGregorianLeapYear(year) {
+      return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+  }
+  function getDaysInGregorianMonth(year, month) {
+      const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      if (month === 2 && isGregorianLeapYear(year)) return 29;
+      return daysInMonth[month - 1];
+  }
+  function gregorianToJulianDay(year, month, day) {
+      const a = Math.floor((14 - month) / 12);
+      const y = year + 4800 - a;
+      const m = month + 12 * a - 3;
+      return day + Math.floor((153 * m + 2) / 5) + 365 * y +
+          Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+  }
+  function julianDayToGregorian(jdn) {
+      const a = jdn + 32044;
+      const b = Math.floor((4 * a + 3) / 146097);
+      const c = a - Math.floor((146097 * b) / 4);
+      const d = Math.floor((4 * c + 3) / 1461);
+      const e = c - Math.floor((1461 * d) / 4);
+      const m = Math.floor((5 * e + 2) / 153);
+      const day = e - Math.floor((153 * m + 2) / 5) + 1;
+      const month = m + 3 - 12 * Math.floor(m / 10);
+      const year = 100 * b + d - 4800 + Math.floor(m / 10);
+      return { year, month, day };
+  }
+  function getDayOfWeek(year, month, day) {
+      const jdn = gregorianToJulianDay(year, month, day);
+      return (jdn + 1) % 7;
+  }
+  function adToJs(adYear) { return adYear - 638; }
+  function beToJs(beYear) { return beYear - 1182; }
+
+  function getAharkun(beYear) { return Math.floor((beYear * 292207 + 499) / 800) + 4; }
+  function getAharkunMod(beYear) { return (beYear * 292207 + 499) % 800; }
+  function getKromthupul(beYear) { return 800 - getAharkunMod(beYear); }
+  function getAvoman(beYear) { return (getAharkun(beYear) * 11 + 25) % 692; }
+  function getBodithey(beYear) {
+      const aharkun = getAharkun(beYear);
+      return (Math.floor((aharkun * 11 + 25) / 692) + aharkun + 29) % 30;
+  }
+  function isKhmerSolarLeap(beYear) { return getKromthupul(beYear) <= 207; }
+  function isKhmerLeapDayByCalculation(beYear) {
+      const avoman = getAvoman(beYear);
+      const isSolarLeap = isKhmerSolarLeap(beYear);
+      if (avoman === 0 && getAvoman(beYear - 1) === 137) return true;
+      else if (isSolarLeap) return avoman < 127;
+      else if (avoman === 137 && getAvoman(beYear + 1) === 0) return false;
+      else if (avoman < 138) return true;
+      return false;
+  }
+  function isKhmerLeapMonth(beYear) {
+      const bodithey = getBodithey(beYear);
+      const boditheyNextYear = getBodithey(beYear + 1);
+      if (bodithey === 25 && boditheyNextYear === 5) return false;
+      return (bodithey === 24 && boditheyNextYear === 6) || (bodithey >= 25) || (bodithey < 6);
+  }
+  function getLeapType(beYear) {
+      if (isKhmerLeapMonth(beYear)) return 1;
+      else if (isKhmerLeapDayByCalculation(beYear)) return 2;
+      else if (isKhmerLeapMonth(beYear - 1)) {
+          let previousYear = beYear - 1;
+          while (true) {
+              if (isKhmerLeapDayByCalculation(previousYear)) return 2;
+              previousYear -= 1;
+              if (!isKhmerLeapMonth(previousYear)) return 0;
+          }
+      }
+      return 0;
+  }
+  function getNumberOfDaysInKhmerMonth(monthIndex, beYear) {
+      const leapType = getLeapType(beYear);
+      if (monthIndex === MonthIndex.Jesth && leapType === 2) return 30;
+      if (monthIndex === MonthIndex.Pathamasadh || monthIndex === MonthIndex.Tutiyasadh) return leapType === 1 ? 30 : 0;
+      return monthIndex % 2 === 0 ? 29 : 30;
+  }
+  function getNumberOfDaysInKhmerYear(beYear) {
+      const leapType = getLeapType(beYear);
+      if (leapType === 1) return 384;
+      if (leapType === 2) return 355;
+      return 354;
+  }
+  function nextMonthOf(monthIndex, beYear) {
+      const leapType = getLeapType(beYear);
+      if (monthIndex === MonthIndex.Jesth && leapType === 1) return MonthIndex.Pathamasadh;
+      if (monthIndex === MonthIndex.Kadeuk) return MonthIndex.Migasir;
+      if (monthIndex === MonthIndex.Pathamasadh) return MonthIndex.Tutiyasadh;
+      if (monthIndex === MonthIndex.Tutiyasadh) return MonthIndex.Srap;
+      return (monthIndex + 1);
+  }
+
+  function getAharkunJs(jsYear) { return Math.floor((jsYear * 292207 + 373) / 800) + 1; }
+  function getAvomanJs(jsYear) { return (getAharkunJs(jsYear) * 11 + 650) % 692; }
+  function getKromthupulJs(jsYear) { return 800 - ((292207 * jsYear + 373) % 800); }
+  function getBoditheyJs(jsYear) {
+      const aharkun = getAharkunJs(jsYear);
+      return (aharkun + Math.floor((11 * aharkun + 650) / 692)) % 30;
+  }
+  function isAdhikameas(jsYear) {
+      const bodithey = getBoditheyJs(jsYear);
+      const boditheyNext = getBoditheyJs(jsYear + 1);
+      if (bodithey === 24 && boditheyNext === 6) return true;
+      if (bodithey === 25 && boditheyNext === 5) return false;
+      return bodithey > 24 || bodithey < 6;
+  }
+  function isChantrathimeas(jsYear) {
+      const avoman = getAvomanJs(jsYear);
+      const avomanNext = getAvomanJs(jsYear + 1);
+      const avomanPrev = getAvomanJs(jsYear - 1);
+      const isSolarLeap = getKromthupulJs(jsYear) <= 207;
+      if (avoman === 0 && avomanPrev === 137) return true;
+      if (isSolarLeap) return avoman < 127;
+      if (avoman === 137 && avomanNext === 0) return false;
+      if (!isSolarLeap && avoman < 138) return true;
+      if (avomanPrev === 137 && avoman === 0) return true;
+      return false;
+  }
+  function has366Days(jsYear) { return getKromthupulJs(jsYear) <= 207; }
+  function getSunInfo(jsYear, sotin) {
+      const infoOfPrevYear = { kromathopol: getKromthupulJs(jsYear - 1) };
+      const r2 = 800 * sotin + infoOfPrevYear.kromathopol;
+      const reasey = Math.floor(r2 / 24350);
+      const r3 = r2 % 24350;
+      const angsar = Math.floor(r3 / 811);
+      const r4 = r3 % 811;
+      const l1 = Math.floor(r4 / 14);
+      const libda = l1 - 3;
+      const sunAverageAsLibda = (30 * 60 * reasey) + (60 * angsar) + libda;
+      const s1 = ((30 * 60 * 2) + (60 * 20));
+      let leftOver = sunAverageAsLibda - s1;
+      if (sunAverageAsLibda < s1) leftOver += (30 * 60 * 12);
+      const kaen = Math.floor(leftOver / (30 * 60));
+      let rs = -1;
+      if ([0, 1, 2].includes(kaen)) rs = kaen;
+      else if ([3, 4, 5].includes(kaen)) rs = (30 * 60 * 6) - leftOver;
+      else if ([6, 7, 8].includes(kaen)) rs = leftOver - (30 * 60 * 6);
+      else if ([9, 10, 11].includes(kaen)) rs = ((30 * 60 * 11) + (60 * 29) + 60) - leftOver;
+      const lastLeftOver = {
+          reasey: Math.floor(rs / (30 * 60)),
+          angsar: Math.floor((rs % (30 * 60)) / 60),
+          libda: rs % 60
+      };
+      let khan, pouichalip;
+      if (lastLeftOver.angsar >= 15) {
+          khan = 2 * lastLeftOver.reasey + 1;
+          pouichalip = 60 * (lastLeftOver.angsar - 15) + lastLeftOver.libda;
+      } else {
+          khan = 2 * lastLeftOver.reasey;
+          pouichalip = 60 * lastLeftOver.angsar + lastLeftOver.libda;
+      }
+      const chhayaSunMap = [
+          { multiplicity: 35, chhaya: 0 }, { multiplicity: 32, chhaya: 35 },
+          { multiplicity: 27, chhaya: 67 }, { multiplicity: 22, chhaya: 94 },
+          { multiplicity: 13, chhaya: 116 }, { multiplicity: 5, chhaya: 129 }
+      ];
+      const chhayaSun = khan <= 5 ? chhayaSunMap[khan] : { multiplicity: 0, chhaya: 134 };
+      const q = Math.floor((pouichalip * chhayaSun.multiplicity) / 900);
+      const pholAsLibda = q + chhayaSun.chhaya;
+      const sunInaugurationAsLibda = kaen <= 5 ? sunAverageAsLibda - pholAsLibda : sunAverageAsLibda + pholAsLibda;
+      return {
+          sunInaugurationAsLibda,
+          reasey: Math.floor(sunInaugurationAsLibda / (30 * 60)),
+          angsar: Math.floor((sunInaugurationAsLibda % (30 * 60)) / 60),
+          libda: sunInaugurationAsLibda % 60
+      };
+  }
+  function getNewYearInfo(jsYear) {
+      const sotins = has366Days(jsYear - 1) ? [363, 364, 365, 366] : [362, 363, 364, 365];
+      const newYearsDaySotins = sotins.map(sotin => getSunInfo(jsYear, sotin));
+      let timeOfNewYear = { hour: 0, minute: 0 };
+      for (const sotin of newYearsDaySotins) {
+          if (sotin.angsar === 0) {
+              const minutes = (24 * 60) - (sotin.libda * 24);
+              timeOfNewYear = { hour: Math.floor(minutes / 60) % 24, minute: minutes % 60 };
+              break;
+          }
+      }
+      const numberOfVanabatDays = (newYearsDaySotins[0].angsar === 0) ? 2 : 1;
+      return { timeOfNewYear, numberOfVanabatDays, newYearsDaySotins };
+  }
+
+  class KhmerDate {
+      constructor(day, moonPhase, monthIndex, beYear) {
+          this.day = day; this.moonPhase = moonPhase; this.monthIndex = monthIndex; this.beYear = beYear;
+      }
+      getDayNumber() {
+          return this.moonPhase === MoonPhase.Waxing ? this.day - 1 : 15 + (this.day - 1);
+      }
+      static fromDayNumber(dayNum) {
+          return dayNum < 15 ? { day: dayNum + 1, moonPhase: MoonPhase.Waxing } : { day: (dayNum - 15) + 1, moonPhase: MoonPhase.Waning };
+      }
+  }
+
+  function getMaybeBEYear(year, month) { return month <= 4 ? year + 543 : year + 544; }
+  const visakhaBocheaCache = {};
+  const newYearInfoCache = {};
+
+  function getPisakhaBochea(year, isSearching = false) {
+      if (visakhaBocheaCache[year]) return visakhaBocheaCache[year];
+      for (let searchMonth = 4; searchMonth <= 6; searchMonth++) {
+          const daysInMonth = new Date(year, searchMonth, 0).getDate();
+          for (let searchDay = 1; searchDay <= daysInMonth; searchDay++) {
+              const result = gregorianToKhmerInternal(year, searchMonth, searchDay, 12, 0, 0, true);
+              if (result.khmer.monthIndex === MonthIndex.Pisakh && result._khmerDateObj.getDayNumber() === 15) {
+                  const timestamp = new Date(year, searchMonth - 1, searchDay, 0, 0, 0, 0).getTime();
+                  visakhaBocheaCache[year] = timestamp;
+                  return timestamp;
+              }
+          }
+      }
+      const fallback = new Date(year, 3, 15, 0, 0, 0, 0).getTime();
+      visakhaBocheaCache[year] = fallback;
+      return fallback;
+  }
+
+  function gregorianToKhmerInternal(year, month, day, hour = 0, minute = 0, second = 0, isSearching = false) {
+      let epochJdn = gregorianToJulianDay(1900, 1, 1);
+      const targetJdn = gregorianToJulianDay(year, month, day);
+      let khmerMonth = 1;
+      let khmerDayNumber = 0;
+      let diffDays = targetJdn - epochJdn;
+
+      if (diffDays > 0) {
+          while (true) {
+              const epochGreg = julianDayToGregorian(epochJdn);
+              const nextYearBE = getMaybeBEYear(epochGreg.year + 1, epochGreg.month);
+              const daysInNextYear = getNumberOfDaysInKhmerYear(nextYearBE);
+              if (diffDays > daysInNextYear) { diffDays -= daysInNextYear; epochJdn += daysInNextYear; } else break;
+          }
+      } else if (diffDays < 0) {
+          while (diffDays < 0) {
+              const epochGreg = julianDayToGregorian(epochJdn);
+              const currentYearBE = getMaybeBEYear(epochGreg.year, epochGreg.month);
+              const daysInCurrentYear = getNumberOfDaysInKhmerYear(currentYearBE);
+              diffDays += daysInCurrentYear; epochJdn -= daysInCurrentYear;
+          }
+      }
+      while (diffDays > 0) {
+          const epochGreg = julianDayToGregorian(epochJdn);
+          const currentBE = getMaybeBEYear(epochGreg.year, epochGreg.month);
+          const daysInMonth = getNumberOfDaysInKhmerMonth(khmerMonth, currentBE);
+          if (diffDays > daysInMonth) { diffDays -= daysInMonth; epochJdn += daysInMonth; } else break;
+      }
+      khmerDayNumber = diffDays;
+      const finalBE = getMaybeBEYear(year, month);
+      const totalDaysInMonth = getNumberOfDaysInKhmerMonth(khmerMonth, finalBE);
+      if (khmerDayNumber >= totalDaysInMonth) {
+          khmerDayNumber = khmerDayNumber % totalDaysInMonth;
+          khmerMonth = nextMonthOf(khmerMonth, finalBE);
+      }
+      const khmerDayInfo = KhmerDate.fromDayNumber(khmerDayNumber);
+      let beYear;
+      if (isSearching) {
+          beYear = month <= 4 ? year + 543 : year + 544;
+      } else {
+          const inputTimestamp = new Date(year, month - 1, day, hour, minute, second).getTime();
+          const beYearTransitionTimestamp = getPisakhaBochea(year);
+          beYear = inputTimestamp >= beYearTransitionTimestamp ? year + 544 : year + 543;
+      }
+      let jsYear = beToJs(beYear);
+      let animalYearIndex = ((beYear + 4) % 12 + 12) % 12;
+      if (!isSearching) {
+          const newYearInfo = getNewYearFullInfo(year);
+          const inputTimestamp = new Date(year, month - 1, day, hour, minute, second).getTime();
+          const visakhaBocheaTimestamp = getPisakhaBochea(year);
+          if (inputTimestamp >= newYearInfo.newYearMoment.getTime() && inputTimestamp <= visakhaBocheaTimestamp) animalYearIndex = (animalYearIndex + 1) % 12;
+          if (inputTimestamp >= newYearInfo.lerngSakMoment.getTime() && inputTimestamp <= visakhaBocheaTimestamp) jsYear++;
+      }
+      const sakIndex = ((jsYear % 10) + 10) % 10;
+      const dayOfWeek = getDayOfWeek(year, month, day);
+      const khmerDate = new KhmerDate(khmerDayInfo.day, khmerDayInfo.moonPhase, khmerMonth, beYear);
+      return {
+          gregorian: { year, month, day, hour, minute, second, dayOfWeek },
+          khmer: {
+              day: khmerDayInfo.day,
+              moonPhase: khmerDayInfo.moonPhase,
+              moonPhaseName: MoonPhaseNames[khmerDayInfo.moonPhase],
+              monthIndex: khmerMonth,
+              monthName: LunarMonthNames[khmerMonth],
+              beYear: beYear,
+              animalYearName: AnimalYearNames[animalYearIndex],
+              sakName: SakNames[sakIndex],
+              dayOfWeekName: WeekdayNames[dayOfWeek]
+          },
+          _khmerDateObj: khmerDate
+      };
+  }
+
+  function getNewYearFullInfo(ceYear) {
+      if (newYearInfoCache[ceYear]) return newYearInfoCache[ceYear];
+      const jsYear = adToJs(ceYear);
+      let newYearInfo = getNewYearInfo(jsYear);
+      let bodithey = getBoditheyJs(jsYear);
+      if (isAdhikameas(jsYear - 1) && isChantrathimeas(jsYear - 1)) bodithey = (bodithey + 1) % 30;
+      const lunarDateLerngSak = { day: bodithey >= 6 ? bodithey - 1 : bodithey, month: bodithey >= 6 ? 4 : 5 };
+      const numberNewYearDay = newYearInfo.newYearsDaySotins[0].angsar === 0 ? 4 : 3;
+      const epochLerngSakGreg = { year: ceYear, month: 4, day: 17 };
+      const khEpoch = gregorianToKhmerInternal(ceYear, 4, 17, 12, 0, 0, true)._khmerDateObj;
+      const diffFromEpoch = ((khEpoch.monthIndex - 4) * 29 + khEpoch.getDayNumber()) - ((lunarDateLerngSak.month - 4) * 29 + lunarDateLerngSak.day);
+      const daysToSubtract = diffFromEpoch + numberNewYearDay - 1;
+      const epochJdn = gregorianToJulianDay(epochLerngSakGreg.year, epochLerngSakGreg.month, epochLerngSakGreg.day);
+      let newYearJdn = epochJdn - daysToSubtract;
+      const newYearDate = julianDayToGregorian(newYearJdn);
+      const newYearMoment = new Date(newYearDate.year, newYearDate.month - 1, newYearDate.day, newYearInfo.timeOfNewYear.hour, newYearInfo.timeOfNewYear.minute);
+      const lerngSakJdn = newYearJdn + numberNewYearDay - 1;
+      const lerngSakDate = julianDayToGregorian(lerngSakJdn);
+      const lerngSakMoment = new Date(lerngSakDate.year, lerngSakDate.month - 1, lerngSakDate.day, 0, 0, 0);
+      const result = { newYearMoment, lerngSakMoment };
+      newYearInfoCache[ceYear] = result;
+      return result;
+  }
+
+  function fromGregorian(year, month, day, hour = 0, minute = 0, second = 0) {
+      return gregorianToKhmerInternal(year, month, day, hour, minute, second, false);
+  }
+
+  exports.default = { fromGregorian, MoonPhase, MonthIndex, AnimalYear, Sak, DayOfWeek };
+  return exports.default;
+}));
+  </script>
+  <script>
+    var KD='០១២៣៤៥៦៧៨៩';
+    function kn(n){return String(n).replace(/\d/g,function(c){return KD[c];});}
+    var GM=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+    var DOW=['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
+    var DOWS=['អា','ច','អ','ព','ព្រ','សុ','ស'];
+    var MN={0:'មិគសិរ',1:'បុស្ស',2:'មាឃ',3:'ផល្គុន',4:'ចេត្រ',5:'ពិសាខ',6:'ជេស្ឋ',7:'អាសាឍ',8:'ស្រាពណ៍',9:'ភទ្របទ',10:'អស្សុជ',11:'កត្តិក',12:'បឋមាសាឍ',13:'ទុតិយាសាឍ'};
+    var FIXED={'1-1':'ទិវាចូលឆ្នាំសកល','1-7':'ទិវាជ័យជម្នះលើរបបប្រល័យពូជសាសន៍','3-8':'ទិវានារីអន្តរជាតិ','5-1':'ទិវាពលកម្មអន្តរជាតិ','5-14':'ព្រះរាជពិធីបុណ្យចម្រើនព្រះជន្ម ព្រះមហាក្សត្រ','6-18':'ព្រះរាជពិធីបុណ្យចម្រើនព្រះជន្ម ព្រះវររាជមាតា','9-24':'ទិវាប្រកាសរដ្ឋធម្មនុញ្ញ','10-15':'ទិវាគោរពព្រះវិញ្ញាណក្ខន្ធ ព្រះបរមរតនកោដ្ឋ','10-29':'ព្រះរាជពិធីគ្រងព្រះបរមរាជសម្បត្តិ','11-9':'ពិធីបុណ្យឯករាជ្យជាតិ','12-29':'ទិវាសន្តិភាព'};
+
+    var calCache={};
+    function info(y,m,d){
+      var key=y*10000+m*100+d; if(calCache[key]) return calCache[key];
+      var r=momentkh.fromGregorian(y,m,d), k=r.khmer;
+      var o={y:y,m:m,d:d,dow:r.gregorian.dayOfWeek,kd:k.day,ph:k.moonPhase,mi:k.monthIndex,
+             mname:MN[k.monthIndex]||k.monthName,be:k.beYear,animal:k.animalYearName,sak:k.sakName};
+      calCache[key]=o; return o;
+    }
+    function addDays(y,m,d,n){var t=new Date(y,m-1,d+n);return [t.getFullYear(),t.getMonth()+1,t.getDate()];}
+    function isLast(o){var n=addDays(o.y,o.m,o.d,1),x=info(n[0],n[1],n[2]);return x.kd===1&&x.ph===0;}
+    function lunarText(o){return kn(o.kd)+(o.ph===0?'កើត':'រោច');}
+    function holy(o){
+      if(o.ph===0&&(o.kd===8||o.kd===15)) return true;
+      if(o.ph===1&&(o.kd===8||o.kd===14||o.kd===15)) return true;
+      return false;
+    }
+    function moon(o){
+      if(o.ph===0&&o.kd===15) return '🌕';
+      if(o.ph===0&&o.kd===8) return '🌓';
+      if(o.ph===1&&o.kd===8) return '🌗';
+      if(isLast(o)) return '🌑';
+      return '';
+    }
+    function hols(o){
+      var out=[], f=FIXED[o.m+'-'+o.d];
+      if(f) out.push({t:f,k:'nat'});
+      if(o.m===4&&o.d>=14&&o.d<=16) out.push({t:['ពិធីបុណ្យចូលឆ្នាំ ទី១','ពិធីបុណ្យចូលឆ្នាំ ទី២','ពិធីបុណ្យចូលឆ្នាំ ទី៣'][o.d-14],k:'nat'});
+      var ph=o.ph,d=o.kd,mi=o.mi;
+      if(ph===0&&d===15&&mi===3) out.push({t:'ពិធីបុណ្យមាឃបូជា',k:'bud'});
+      if(ph===0&&d===15&&mi===5) out.push({t:'ពិធីបុណ្យវិសាខបូជា',k:'nat'});
+      if(ph===1&&d===4&&mi===5)  out.push({t:'ព្រះរាជពិធីច្រត់ព្រះនង្គ័ល',k:'nat'});
+      if(ph===1&&mi===9&&(d===14||d===15)) out.push({t:'ពិធីបុណ្យភ្ជុំបិណ្ឌ',k:'nat'});
+      if(ph===0&&d===1&&mi===10) out.push({t:'ពិធីបុណ្យភ្ជុំបិណ្ឌ',k:'nat'});
+      if(mi===11&&((ph===0&&(d===14||d===15))||(ph===1&&d===1))) out.push({t:'ពិធីបុណ្យអុំទូក',k:'nat'});
+      if(ph===0&&d===15&&mi===10) out.push({t:'ថ្ងៃចេញវស្សា',k:'bud'});
+      return out;
+    }
+    function fullText(o){
+      return 'ថ្ងៃ'+DOW[o.dow]+' '+lunarText(o)+' ខែ'+o.mname+' ឆ្នាំ'+o.animal+' '+o.sak+' ពុទ្ធសករាជ '+kn(o.be);
+    }
+    // 🌟 កាលបរិច្ឆេទសូរិយគតិ៖ «កំពង់ល្ពៅ ថ្ងៃទី...» គ្មានឈ្មោះថ្ងៃនៃសប្តាហ៍ឡើយ
+    function gText(o){
+      return 'កំពង់ល្ពៅ ថ្ងៃទី' + kn(o.d) + ' ខែ' + GM[o.m - 1] + ' ឆ្នាំ' + kn(o.y);
+    }
+  </script>
 <script>
 const sb=supabase.createClient("https://nggnuobnrxiqjtcwlvwk.supabase.co","sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML");
-const TABLE='student_age_flags';
-const SQL=`create table if not exists public.student_age_flags (
-  id bigserial primary key,
-  school_year text not null,
-  class text not null,
-  student_id text not null,
-  flag text not null,
-  value text,
-  updated_at timestamptz default now(),
-  unique (school_year, class, student_id, flag)
-);
-alter table public.student_age_flags enable row level security;
-create policy "student_age_flags_all" on public.student_age_flags for all using (true) with check (true);`;
-const KD='០១២៣៤៥៦៧៨៩';
-const toKh=v=>String(v??'').replace(/[0-9]/g,d=>KD[d]);
-const fromKh=v=>String(v??'').replace(/[០-៩]/g,d=>KD.indexOf(d));
+const KHD='០១២៣៤៥៦៧៨៩';
+const toKh=v=>String(v??'').replace(/[0-9]/g,d=>KHD[d]);
+const fromKh=v=>String(v??'').replace(/[០-៩]/g,d=>KHD.indexOf(d));
 const cleanGrade=g=>String(g||'').replace(/^ថ្នាក់ទី\s*/,'').trim();
 const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function readSession(){try{return JSON.parse(localStorage.getItem('krou_supabase_user')||'null')}catch(e){return null}}
@@ -194,9 +863,10 @@ const DIFF=[
  {t:'សិស្សជួបការលំបាកផ្នែកសុខភាព',k:'hlt',rows:[['h_nutri','ខ្វះអាហារូបត្ថម្ភធ្ងន់ធ្ងរ'],['h_chronic','ជម្ងឺប្រចាំកាយ'],['h_hiv','កុមាររងគ្រោះដោយ HIV']]},
  {t:'សិស្សជួបការលំបាក',k:'hard',rows:[['x_move','មកពីគ្រួសារផ្លាស់ប្តូរទីលំនៅ'],['x_orphan','កុមារកំព្រា'],['x_violence','កុមាររងអំពើហិង្សា'],['x_labor','កុមាររងការកេងប្រវ័ញ្ចពលកម្ម'],['x_poor','កុមារមកពីគ្រួសារក្រីក្រ']]}
 ];
+const EDU=['មធ្យមសិក្សាបឋមភូមិ','មធ្យមសិក្សាទុតិយភូមិ','បរិញ្ញាបត្ររង','បរិញ្ញាបត្រ','បរិញ្ញាបត្រជាន់ខ្ពស់','បណ្ឌិត'];
 const KV=[['name','ឈ្មោះជាអក្សរខ្មែរ'],['sex','ភេទ'],['age','អាយុ'],['eth','ជនជាតិដើមភាគតិច'],['edu','កម្រិតវប្បធម៌'],['svc','រយៈពេលបម្រើការងារ'],['sal','កម្រិតកំប្រាក់']];
 
-let STU=[],FLAGS=new Set(),INFO={},DBOK=true,CUR={year:'',cls:''};
+let STU=[],FLAGS=new Set(),INFO={},CUR={year:'',cls:''};
 const fk=(sid,f)=>sid+'|'+f;
 
 const KM=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
@@ -221,30 +891,12 @@ function ageOf(s){const d=parseDob(s.dob);return d?ageAt(d,refDate()):null}
 function lsKey(){return 'ageTbl_v1:'+CUR.year+':'+CUR.cls}
 function lsLoad(){try{return JSON.parse(localStorage.getItem(lsKey())||'{}')}catch(e){return {}}}
 function lsSave(){try{localStorage.setItem(lsKey(),JSON.stringify({flags:[...FLAGS],info:INFO}))}catch(e){}}
-function showSetup(msg){const b=document.getElementById('banner');b.style.display='block';b.innerHTML='⚠️ '+msg+' <button onclick="copySql()">ចម្លង SQL</button> <span style="font-size:12px">(បិទភ្ជាប់ក្នុង Supabase → SQL Editor រួចចុច Run រួចផ្ទុកទំព័រម្ដងទៀត)</span>'}
-function copySql(){navigator.clipboard&&navigator.clipboard.writeText(SQL).then(()=>toast('បានចម្លង SQL'),()=>prompt('ចម្លង SQL',SQL))||0}
-async function loadFlags(){
-  FLAGS=new Set();INFO={};
-  const {data,error}=await sb.from(TABLE).select('student_id,flag,value').eq('school_year',CUR.year).eq('class',CUR.cls);
-  if(error){DBOK=false;showSetup('Database មិនទាន់រួចរាល់ (<b>student_age_flags</b>) — កំពុងរក្សាទុកក្នុងឧបករណ៍នេះសិន។ <span style="opacity:.7;font-size:12px">['+esc(error.message||error.code||'')+']</span>');const l=lsLoad();(l.flags||[]).forEach(x=>FLAGS.add(x));INFO=l.info||{};return}
-  DBOK=true;document.getElementById('banner').style.display='none';
-  (data||[]).forEach(r=>{if(r.student_id==='__form__'&&r.flag==='info'){try{INFO=JSON.parse(r.value||'{}')}catch(e){}}else FLAGS.add(fk(r.student_id,r.flag))});
-}
-async function setFlag(sid,flag,on){
-  const key=fk(sid,flag);on?FLAGS.add(key):FLAGS.delete(key);
-  if(!DBOK){lsSave();return true}
-  setSt('busy','កំពុងរក្សាទុក...');
-  let r;
-  if(on)r=await sb.from(TABLE).upsert({school_year:CUR.year,class:CUR.cls,student_id:String(sid),flag,updated_at:new Date().toISOString()},{onConflict:'school_year,class,student_id,flag'});
-  else r=await sb.from(TABLE).delete().eq('school_year',CUR.year).eq('class',CUR.cls).eq('student_id',String(sid)).eq('flag',flag);
-  if(r.error){setSt('err','រក្សាទុកមិនបាន');on?FLAGS.delete(key):FLAGS.add(key);toast('❌ '+r.error.message);return false}
-  setSt('ok','បានរក្សាទុក');return true;
-}
-let itm;function saveInfo(){INFO.__t=Date.now();clearTimeout(itm);setSt('busy','កំពុងរក្សាទុក...');itm=setTimeout(async()=>{
-  if(!DBOK){lsSave();setSt('ok','បានរក្សាទុក (ក្នុងឧបករណ៍)');return}
-  const {error}=await sb.from(TABLE).upsert({school_year:CUR.year,class:CUR.cls,student_id:'__form__',flag:'info',value:JSON.stringify(INFO),updated_at:new Date().toISOString()},{onConflict:'school_year,class,student_id,flag'});
-  error?(setSt('err','រក្សាទុកមិនបាន'),toast('❌ '+error.message)):setSt('ok','បានរក្សាទុក');
-},500)}
+function lsKey(){return 'ageTbl_v2:'+(USER.username||'')+':'+CUR.year+':'+CUR.cls}
+function lsLoad(){try{return JSON.parse(localStorage.getItem(lsKey())||'{}')}catch(e){return {}}}
+function lsSave(){try{localStorage.setItem(lsKey(),JSON.stringify({flags:[...FLAGS],info:INFO}));return true}catch(e){return false}}
+async function loadFlags(){const l=lsLoad();FLAGS=new Set(l.flags||[]);INFO=l.info||{}}
+async function setFlag(sid,flag,on){const key=fk(sid,flag);on?FLAGS.add(key):FLAGS.delete(key);lsSave();return true}
+let itm;function saveInfo(){clearTimeout(itm);itm=setTimeout(lsSave,300)}
 
 /* ===== render ===== */
 function repAge(a){const r=(INFO.rep||{})[a]||{};return [num(r.t),Math.min(num(r.f),num(r.t))]}
@@ -269,16 +921,19 @@ function render(){
   document.getElementById('yrTxt').textContent=CUR.year.split('-').map(toKh).join('-');
   document.getElementById('clsTxt').textContent=CUR.cls;{const r=refDate();document.getElementById('asTxt').textContent=toKh(r.getDate())+' '+KM[r.getMonth()]+' '+toKh(r.getFullYear())}
   document.querySelectorAll('.ed[data-k]').forEach(el=>{const v=INFO[el.dataset.k];if(v!==undefined)el.textContent=v;else if(el.dataset.k==='teacher'&&TEACHER.teacher_name)el.textContent=TEACHER.teacher_name});
-  document.getElementById('kv').innerHTML=KV.map(([k,l])=>`<tr><th>${l}</th><td><span class="ed" contenteditable data-kv="${k}" data-ph="" style="min-width:90px;border-bottom:0">${esc(kvVal(k))}</span></td></tr>`).join('');
+  document.getElementById('kv').innerHTML=KV.map(([k,l])=>k==='edu'
+    ?`<tr><th>${l}</th><td><select class="edu" data-edu="1" required><option value="">— ជ្រើសរើស —</option>${EDU.map(e=>`<option value="${e}" ${kvVal('edu')===e?'selected':''}>${e}</option>`).join('')}</select></td></tr>`
+    :`<tr><th>${l}</th><td><span class="ed" contenteditable data-kv="${k}" data-ph="" style="min-width:90px;border-bottom:0">${esc(kvVal(k))}</span></td></tr>`).join('');
+  renderSign();document.getElementById('asOfBtn').lastChild.textContent=dLabel(document.getElementById('asOf').value);
   // age table
   const n=v=>v?toKh(v):'០';
   let h=`<thead><tr><th rowspan="3" style="width:13%">អាយុ<br>(ឆ្នាំ)</th><th colspan="6">ចំនួនសិស្ស</th></tr>
-  <tr><th colspan="2" class="clk" onclick="openModal('new')">សិស្សថ្មី</th><th colspan="2" class="clk" onclick="openRepeat()">សិស្សត្រួតថ្នាក់</th><th colspan="2">សិស្សសរុប</th></tr>
+  <tr><th colspan="2">សិស្សថ្មី</th><th colspan="2" class="clk" onclick="openRepeat()">សិស្សត្រួតថ្នាក់</th><th colspan="2">សិស្សសរុប</th></tr>
   <tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(3)}</tr></thead><tbody>`;
   const sum=[0,0,0,0,0,0];
   AGES.forEach(a=>{
     const inAge=s=>{const x=ageOf(s);return x!==null&&(a===15?x>=15:x===a)};
-    const nw=count(s=>inAge(s)&&FLAGS.has(fk(s.student_id||s.id,'new'))),rp=repAge(a),tt=count(inAge);
+    const tt=count(inAge);let rp=repAge(a);rp=[Math.min(rp[0],tt[0]),Math.min(rp[1],tt[1],rp[0])];const nw=[tt[0]-rp[0],tt[1]-rp[1]];
     const row=[...nw,...rp,...tt];row.forEach((v,i)=>sum[i]+=v);
     h+=`<tr><td class="c">${a===15?'១៥+':toKh(a)}</td>${row.map(v=>`<td class="c">${n(v)}</td>`).join('')}</tr>`;
   });
@@ -301,12 +956,65 @@ function render(){
   d+=`<tr class="t"><td class="nm" style="text-align:center">សរុប</td><td class="c">${n(gT)}</td><td class="c">${n(gF)}</td></tr></tbody>`;
   document.getElementById('diffT').innerHTML=d;
 }
+document.addEventListener('change',e=>{if(e.target.dataset&&e.target.dataset.edu){INFO.kv_edu=e.target.value;saveInfo()}});
 document.addEventListener('input',e=>{
   const t=e.target;if(t.dataset&&t.dataset.k){INFO[t.dataset.k]=t.textContent;saveInfo()}
   else if(t.dataset&&t.dataset.kv){INFO['kv_'+t.dataset.kv]=t.textContent;saveInfo()}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.ed'))e.preventDefault()});
 document.addEventListener('paste',e=>{if(e.target.matches('.ed')){e.preventDefault();document.execCommand('insertText',false,(e.clipboardData.getData('text')||'').replace(/\n/g,' '))}});
+
+
+/* ===== ប្រតិទិនជ្រើសថ្ងៃខែ ===== */
+const _n=new Date();
+var calToday={y:_n.getFullYear(),m:_n.getMonth()+1,d:_n.getDate()},calView={y:calToday.y,m:calToday.m},calSel={y:calToday.y,m:calToday.m,d:calToday.d},calTarget='sign';
+const iso=(y,m,d)=>y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+const isoParts=v=>/^\d{4}-\d{2}-\d{2}$/.test(v||'')?v.split('-').map(Number):null;
+function dLabel(v){const p=isoParts(v);return p?kn(p[2])+' '+GM[p[1]-1]+' '+kn(p[0]):'ជ្រើសថ្ងៃ'}
+function signParts(){if(INFO.signDate==='blank')return null;return isoParts(INFO.signDate)||[calToday.y,calToday.m,calToday.d]}
+function renderSign(){
+  const p=signParts(),L=document.getElementById('signLunar'),S=document.getElementById('signSolar');
+  if(!p){L.textContent='ថ្ងៃ.................... ខែ.......... ឆ្នាំ........... ពុទ្ធសករាជ ......';S.textContent='ថ្ងៃទី...... ខែ...... ឆ្នាំ......';return}
+  const o=info(p[0],p[1],p[2]);L.textContent=fullText(o);S.textContent='ថ្ងៃទី'+kn(p[2])+' ខែ'+GM[p[1]-1]+' ឆ្នាំ'+kn(p[0]);
+}
+function curTargetParts(){return calTarget==='asof'?(isoParts(document.getElementById('asOf').value)||[calToday.y,calToday.m,calToday.d]):signParts()||[calToday.y,calToday.m,calToday.d]}
+function openCal(t){
+  calTarget=t;const p=curTargetParts();calSel={y:p[0],m:p[1],d:p[2]};calView={y:p[0],m:p[1]};
+  document.getElementById('calRoleLbl').textContent=t==='asof'?'📅 អាយុគិតត្រឹមថ្ងៃ':'✍ ថ្ងៃខែហត្ថលេខា · គ្រូទទួលបន្ទុកថ្នាក់';
+  document.getElementById('calBtnBlank').style.display=t==='asof'?'none':'';
+  document.getElementById('calBackdrop').classList.add('show');document.getElementById('calModal').classList.add('show');
+  initCalendarPopup();
+}
+function closeCalendarPopup(){document.getElementById('calBackdrop').classList.remove('show');document.getElementById('calModal').classList.remove('show')}
+function initCalendarPopup(){
+  document.getElementById('calSelMonth').innerHTML=GM.map((n,i)=>`<option value="${i+1}">${n}</option>`).join('');
+  let yh='';for(let y=2000;y<=calToday.y+15;y++)yh+=`<option value="${y}">${kn(y)}</option>`;
+  document.getElementById('calSelYear').innerHTML=yh;renderCalendarGrid();
+}
+function changeCalendarSelect(){calView.m=+document.getElementById('calSelMonth').value;calView.y=+document.getElementById('calSelYear').value;renderCalendarGrid()}
+function shiftCalendarMonth(n){const t=new Date(calView.y,calView.m-1+n,1);calView={y:t.getFullYear(),m:t.getMonth()+1};renderCalendarGrid()}
+function renderCalendarGrid(){
+  const y=calView.y,m=calView.m,first=new Date(y,m-1,1).getDay(),dim=new Date(y,m,0).getDate(),total=Math.ceil((first+dim)/7)*7;
+  document.getElementById('calSelMonth').value=m;document.getElementById('calSelYear').value=y;
+  const months=[],be=[],an=[];let html='';const blank=calTarget==='sign'&&INFO.signDate==='blank';
+  for(let i=0;i<total;i++){
+    const p=addDays(y,m,1,i-first),inM=(p[0]===y&&p[1]===m),o=info(p[0],p[1],p[2]);
+    if(inM){if(!months.includes(o.mname))months.push(o.mname);if(!be.includes(o.be))be.push(o.be);const a=o.animal+' '+o.sak;if(!an.includes(a))an.push(a)}
+    const hs=hols(o),isToday=(calToday.y===o.y&&calToday.m===o.m&&calToday.d===o.d),isSel=!blank&&(calSel.y===o.y&&calSel.m===o.m&&calSel.d===o.d),isSil=holy(o);
+    const cls='cal-cell'+(inM?'':' other')+(o.dow===0?' sun':'')+(isToday?' today':'')+(isSel?' sel':'')+(isSil?' sil':'');
+    const mo=moon(o),lt=(isSil&&!(o.kd===1&&o.ph===0)?'<b>'+lunarText(o)+'</b>':lunarText(o))+((o.kd===1&&o.ph===0)||(o.d===1&&inM)?' ខែ'+o.mname:'');
+    html+=`<button type="button" class="${cls}" onclick="pickCalDate(${o.y},${o.m},${o.d})"><span class="g">${kn(o.d)}</span>${mo?'<span class="mo">'+mo+'</span>':''}<span class="l">${lt}</span>${hs.length?'<span class="h '+hs[0].k+'">'+hs[0].t+'</span>':''}</button>`;
+  }
+  document.getElementById('calGrid').innerHTML=html;
+  document.getElementById('calMTitle').textContent='ខែ'+GM[m-1]+' ឆ្នាំ'+kn(y);
+  document.getElementById('calMSub').textContent='ចន្ទគតិ៖ ខែ'+months.join(' – ខែ')+' · ព.ស. '+be.map(kn).join(' – ')+' · ឆ្នាំ'+an.join(' → ');
+}
+function pickCalDate(y,m,d){
+  if(calTarget==='asof'){document.getElementById('asOf').value=iso(y,m,d);closeCalendarPopup();reload(true)}
+  else{INFO.signDate=iso(y,m,d);saveInfo();renderSign();closeCalendarPopup()}
+}
+function selectCalendarToday(){pickCalDate(calToday.y,calToday.m,calToday.d)}
+function calBlankDate(){INFO.signDate='blank';saveInfo();renderSign();closeCalendarPopup()}
 
 /* ===== modal ===== */
 let MD=null;
@@ -316,7 +1024,7 @@ function openModal(flag){MD=flag;document.getElementById('mdT').textContent=NAME
 function openRepeat(){
   MD='repeat';document.getElementById('mdT').textContent='សិស្សត្រួតថ្នាក់ · ថ្នាក់ទី '+CUR.cls;
   document.getElementById('mdQ').parentNode.style.display='none';
-  document.getElementById('mdC').textContent='បញ្ចូលចំនួនសិស្សត្រួតថ្នាក់ តាមអាយុនីមួយៗ (ស្រី ត្រូវតូចជាង ឬស្មើសរុប)';
+  document.getElementById('mdC').textContent='បញ្ចូលចំនួនសិស្សត្រួតថ្នាក់ តាមអាយុ — ចំនួននេះនឹងត្រូវដកចេញពី «សិស្សថ្មី» (ស្រី ≤ សរុប)';
   const rep=INFO.rep||{};
   document.getElementById('mdL').innerHTML=`<div style="display:grid;grid-template-columns:70px 1fr 1fr;gap:8px;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);padding:0 6px"><span>អាយុ</span><span style="text-align:center">សរុប</span><span style="text-align:center">ស្រី</span></div>`+
    AGES.map(a=>`<div style="display:grid;grid-template-columns:70px 1fr 1fr;gap:8px;align-items:center;padding:2px 6px"><b>${a===15?'១៥+':toKh(a)} ឆ្នាំ</b><input class="fc" type="number" min="0" inputmode="numeric" placeholder="0" style="text-align:center" value="${(rep[a]||{}).t??''}" oninput="setRep(${a},'t',this)"><input class="fc" type="number" min="0" inputmode="numeric" placeholder="0" style="text-align:center" value="${(rep[a]||{}).f??''}" oninput="setRep(${a},'f',this)"></div>`).join('');
@@ -372,10 +1080,27 @@ async function reload(keepAsOf){
     await loadFlags();
     TEACHER=await fetchTeacher(CUR.cls);
     document.querySelectorAll('.ed[data-k]').forEach(el=>{if(INFO[el.dataset.k]===undefined)el.textContent=el.dataset.def||el.textContent});
-    render();setSt(DBOK?'ok':'err',DBOK?'ភ្ជាប់ Database រួច':'រក្សាទុកក្នុងឧបករណ៍');
+    render();setSt('ok','ទាញពី Database រួច');
   }catch(err){setSt('err','កំហុស');toast('❌ '+err.message)}
   first=false;
 }
+
+/* ===== បោះពុម្ពឱ្យចូលតែ ១ សន្លឹក A4 ===== */
+function fitOnePage(){
+  const el=document.getElementById('page');el.style.zoom='';el.style.width='';
+  el.style.minHeight='0';el.style.height='auto';
+  const target=297/25.4*96-4;let z=1;
+  for(let i=0;i<8;i++){
+    el.style.zoom=z;el.style.width=(210/z)+'mm';
+    const h=el.scrollHeight*z;
+    if(h<=target)break;
+    z*=target/h*0.99;
+  }
+  return z;
+}
+function unfit(){const el=document.getElementById('page');el.style.zoom='';el.style.width='';el.style.minHeight='';el.style.height=''}
+window.addEventListener('beforeprint',fitOnePage);
+window.addEventListener('afterprint',unfit);
 function doPrint(){window.focus();setTimeout(()=>{try{window.print()}catch(e){window.parent.print()}},100)}
 async function doPdf(){
   if(!window.html2canvas||!window.jspdf){toast('មិនអាចផ្ទុក library PDF បានទេ');return}
@@ -384,7 +1109,8 @@ async function doPdf(){
     if(document.fonts&&document.fonts.ready)await document.fonts.ready;
     const c=await html2canvas(el,{scale:3,backgroundColor:'#fff',useCORS:true});
     const {jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');
-    pdf.addImage(c.toDataURL('image/png'),'PNG',0,0,210,Math.min(297,c.height*210/c.width),undefined,'FAST');
+    let ih=c.height*210/c.width,iw=210;if(ih>297){iw=210*297/ih;ih=297}
+    pdf.addImage(c.toDataURL('image/png'),'PNG',(210-iw)/2,0,iw,ih,undefined,'FAST');
     pdf.save('តារាងចំនួនសិស្សតាមអាយុ_'+CUR.cls+'.pdf');
   }catch(err){toast('❌ PDF៖ '+err.message)}
   el.style.zoom=z;
