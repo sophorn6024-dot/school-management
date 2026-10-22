@@ -304,6 +304,12 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .rci-inline .rci-left{gap:10px}
 @media (max-width:480px){.rci-inline{padding:12px 12px}.rci-inline .rci-icon{width:36px;height:36px;font-size:17px}.rf-open.rf-open-sm{padding:0 11px;font-size:13px}}
 .rci-inline .rf-row{flex-shrink:0}
+.rci-roster{grid-column:1/-1}
+.rci-roster .rf-select{height:38px;font-size:13px;padding:0 12px;border-radius:12px;min-width:0}
+.rci-roster .rf-row{gap:8px}
+.rci-roster .rf-open{height:38px;padding:0 14px;font-size:13.5px;border-radius:12px;gap:6px}
+.rci-roster .rf-open svg{width:17px;height:17px}
+@media (max-width:480px){.rci-roster .rci-icon,.rci-roster .rf-chev{display:none}.rci-roster .rci-name{white-space:nowrap}.rci-roster .rf-select{padding:0 8px;font-size:12px;gap:4px}.rci-roster .rf-open{padding:0 10px}}
 .rf-open.rf-open-sm{height:38px;padding:0 14px;font-size:13.5px;border-radius:12px;gap:6px}
 .rf-open.rf-open-sm svg{width:17px;height:17px}
 [data-theme="dark"] .rf-open{color:#34d399;background:rgba(52,211,153,.14)}
@@ -727,7 +733,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
             <button class="btn-back-home" onclick="navigate('dashboard', null)"><span>🏠</span><span>ទំព័រដើម</span></button>
           </div>
           <div class="reports-grid-clean">
-            <div class="report-card-item has-format">
+            <div class="report-card-item rci-inline rci-roster">
               <div class="rci-left"><div class="rci-icon">🗒️</div><div class="rci-name">បញ្ជីរាយនាមសិស្ស</div></div>
               <div class="rf-row">
                 <button type="button" class="rf-select" id="rfTrigger" onclick="toggleRosterFormatMenu(event)" aria-haspopup="listbox">
