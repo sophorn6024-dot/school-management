@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="km" data-theme="light">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ចំនួនសិស្សជួបការលំបាកតាមថ្នាក់</title>
+<link href="https://fonts.googleapis.com/css2?family=Moul&family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#f1f5f9;--tb:rgba(255,255,255,.96);--line:#e2e8f0;--text:#0f172a;--muted:#64748b;--card:#fff;--in:#fff;--inl:#cbd5e1;--ac:#4f46e5;--acs:#e0e7ff;--ok:#059669;--oks:#d1fae5;--bad:#e11d48;--bads:#ffe4e6;color-scheme:light}
+[data-theme=dark]{--bg:#0b1220;--tb:rgba(15,23,42,.95);--line:#1e293b;--text:#f1f5f9;--muted:#9aa3b2;--card:#111e33;--in:#162642;--inl:#2b4468;--ac:#a5b4fc;--acs:#27306b;--ok:#34d399;--oks:#12392f;--bad:#fb7185;--bads:#3b1520;color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Battambang','Kantumruy Pro',sans-serif;font-size:14px;padding-bottom:60px}
+.tb{position:sticky;top:0;z-index:50;background:var(--tb);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px 10px}
+.pill label{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.fc{font:600 13px 'Kantumruy Pro','Battambang',sans-serif;background:var(--in);color:var(--text);border:1.5px solid var(--inl);border-radius:9px;padding:5px 8px;height:34px;outline:none;min-width:0}
+.fc:focus{border-color:var(--ac)}
+.btn{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px;border:0;border-radius:12px;font:700 13px 'Kantumruy Pro','Battambang',sans-serif;cursor:pointer;background:var(--acs);color:var(--ac);transition:transform .15s,filter .2s}
+.btn:active{transform:scale(.96)}.btn:hover{filter:brightness(.96)}
+.btn.ok{background:var(--oks);color:var(--ok)}.btn.bad{background:var(--bads);color:var(--bad)}
+.sp{flex:1}
+.hint{width:100%;font-size:12px;color:var(--muted)}
+.hint b{color:var(--ac)}
+.stage{padding:16px;display:flex;justify-content:center;overflow-x:auto}
+.page{width:210mm;min-height:297mm;background:#fff;color:#0f172a;padding:12mm 12mm 14mm;box-shadow:0 10px 40px rgba(15,23,42,.18);position:relative;flex-shrink:0}
+.ttl{font-family:'Moul',serif;text-align:center;font-size:19px;color:#1e3a8a;line-height:1.8}
+.sub{font-family:'Moul',serif;text-align:center;font-size:14px;color:#1e3a8a;margin-top:2px}
+.info{margin-top:12px;display:flex;flex-direction:column;gap:6px;font-size:13px}
+.info .r{display:flex;flex-wrap:wrap;gap:6px 26px}
+.ed{outline:none;border-bottom:1px dotted #94a3b8;min-width:60px;display:inline-block;padding:0 4px}
+.ed:focus{background:#eef2ff;border-bottom-color:#4f46e5}
+.ed:empty:before{content:attr(data-ph);color:#94a3b8}
+table{width:100%;border-collapse:collapse;margin-top:14px;font-size:13px}
+th,td{border:1px solid #cbd5e1;padding:0}
+thead th{background:#e8edfb;color:#1e3a8a;font-weight:700;text-align:center;padding:7px 6px;font-size:13px}
+tr.g td{background:#eef2ff;font-weight:700;color:#1e3a8a}
+tr.t td{background:#e0e7ff;font-weight:700;color:#1e3a8a}
+td.nm{padding:5px 30px 5px 10px;text-align:left;position:relative}
+td.nm .lb{outline:none;display:inline-block;min-width:40px}
+td.nm .lb:focus{background:#eef2ff}
+td.n{width:90px;text-align:center}
+td.n input{width:100%;height:30px;border:0;background:transparent;text-align:center;font:inherit;color:inherit;outline:none;-moz-appearance:textfield}
+td.n input::-webkit-outer-spin-button,td.n input::-webkit-inner-spin-button{-webkit-appearance:none}
+td.n input:focus{background:#eef2ff;box-shadow:inset 0 0 0 2px #6366f1;border-radius:3px}
+td.n.calc{font-weight:700;padding:5px}
+td.act{width:0;border:0;padding:0;position:relative;background:none}
+.rm,.add{border:0;cursor:pointer;font:700 11px 'Kantumruy Pro',sans-serif;border-radius:8px}
+.rm{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:20px;height:20px;background:#ffe4e6;color:#e11d48;display:flex;align-items:center;justify-content:center}
+.add{margin:4px 0 4px 8px;padding:2px 10px;background:#e0e7ff;color:#4f46e5}
+.foot{margin-top:26px;display:flex;justify-content:flex-end}
+.sign{text-align:center;font-size:13px;line-height:2.1;min-width:260px}
+.sign .ed{min-width:200px}
+.saved{font-size:12px;font-weight:700;color:var(--ok);opacity:0;transition:opacity .3s}
+.saved.on{opacity:1}
+.auth{display:none;min-height:70vh;align-items:center;justify-content:center;text-align:center;padding:24px}
+.auth div{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:34px 26px;max-width:380px}
+@media(max-width:860px){.stage{padding:8px}.page{zoom:.46}}
+@media(max-width:600px){.page{zoom:.4}}
+@media print{
+  @page{size:210mm 297mm;margin:0}
+  body{background:#fff;padding:0}.tb,.hint,.add,.rm,.noprint{display:none!important}
+  .stage{padding:0;display:block;overflow:visible}.page{box-shadow:none;zoom:1!important;width:210mm;min-height:297mm}
+  .ed{border-bottom:0}.ed:empty:before{content:''}
+  td.n input{-webkit-appearance:none}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="auth" id="auth"><div><h2 style="color:#e11d48;font-size:18px;margin-bottom:8px">សូមចូលប្រើប្រព័ន្ធជាមុន</h2><p style="color:var(--muted);line-height:1.7;margin-bottom:18px">ទំព័រនេះត្រូវការចូលគណនីតាមរយៈទំព័រដើម។</p><button class="btn" onclick="goIndex()">ទៅទំព័រចូលប្រើ</button></div></div>
+
+<div id="app" style="display:none">
+<div class="tb">
+  <button class="btn" onclick="goBack()">‹ ត្រឡប់</button>
+  <span class="pill"><label>ឆ្នាំសិក្សា</label><select class="fc" id="selYear" onchange="loadData()"></select></span>
+  <span class="pill"><label>ថ្នាក់</label><select class="fc" id="selClass" onchange="loadData()"></select></span>
+  <span class="sp"></span>
+  <span class="saved" id="saved">✓ បានរក្សាទុក</span>
+  <button class="btn bad" onclick="resetAll()">↺ សម្អាត</button>
+  <button class="btn" onclick="doPrint()">🖨️ បោះពុម្ព</button>
+  <button class="btn ok" onclick="doPdf()">⬇ PDF</button>
+  <div class="hint">👉 <b>ចុចលើលេខ</b> ដើម្បីកែ · ចុចលើ<b>ឈ្មោះបរិយាយ</b> ឬអក្សរក្បាលទំព័រ ដើម្បីកែអត្ថបទ · ប្រព័ន្ធបូកសរុបឱ្យស្វ័យប្រវត្តិ និងរក្សាទុកក្នុងឧបករណ៍នេះ</div>
+</div>
+
+<div class="stage"><div class="page" id="page">
+  <div class="ttl">ចំនួនសិស្សជួបការលំបាកតាមថ្នាក់</div>
+  <div class="sub">ឆ្នាំសិក្សា <span id="yrTxt"></span></div>
+  <div class="info">
+    <div class="r"><span>រាជធានី/ខេត្ត <span class="ed" contenteditable data-k="prov" data-ph="................"></span></span><span>ស្រុក/ខណ្ឌ <span class="ed" contenteditable data-k="dist" data-ph="................"></span></span></div>
+    <div class="r"><span>សាលាបឋមសិក្សា <b><span class="ed" contenteditable data-k="school" data-ph="................">កំពង់ល្ពៅ</span></b></span><span>ថ្នាក់ទី <b id="clsTxt"></b></span></div>
+  </div>
+  <table>
+    <colgroup><col><col style="width:90px"><col style="width:90px"></colgroup>
+    <thead>
+      <tr><th rowspan="2">បរិយាយ</th><th colspan="2">ចំណុចជួបការលំបាក</th></tr>
+      <tr><th>សរុប</th><th>ស្រី</th></tr>
+    </thead>
+    <tbody id="tb"></tbody>
+  </table>
+  <div class="foot"><div class="sign">
+    <div><span class="ed" contenteditable data-k="d1" data-ph="ថ្ងៃ... ខែ... ឆ្នាំ... ពុទ្ធសករាជ ..."></span></div>
+    <div>ធ្វើនៅ<span class="ed" contenteditable data-k="place" data-ph="................">កំពង់ល្ពៅ</span> <span class="ed" contenteditable data-k="d2" data-ph="ថ្ងៃទី... ខែ... ឆ្នាំ..."></span></div>
+    <div>គ្រូទទួលបន្ទុកថ្នាក់</div>
+    <div style="height:46px"></div>
+    <div><b><span class="ed" contenteditable data-k="teacher" data-ph="ឈ្មោះគ្រូ"></span></b></div>
+  </div></div>
+</div></div>
+</div>
+
+<script>
+const DEFAULT_GROUPS=()=>[
+ {t:'សិស្សពិការ',rows:['ពិបាកក្នុងការធ្វើចលនា','ពិបាកក្នុងការស្តាប់','ពិបាកក្នុងការនិយាយ','ពិបាកក្នុងការមើល','ពិបាកសរីរាង្គខាងក្នុង','ពិបាកសតិបញ្ញា','ពិបាកផ្លូវចិត្ត','ពិបាកផ្សេងៗ(ក្រៅពីខាងលើ)'].map(x=>({l:x,a:'',f:''}))},
+ {t:'សិស្សជួបការលំបាកផ្នែកសុខភាព',rows:['ខ្វះអាហារូបត្ថម្ភធ្ងន់ធ្ងរ','ជម្ងឺប្រចាំកាយ','កុមាររងគ្រោះដោយ HIV'].map(x=>({l:x,a:'',f:''}))},
+ {t:'សិស្សជួបការលំបាក',rows:['មកពីគ្រួសារផ្លាស់ប្តូរទីលំនៅ','កុមារកំព្រា','កុមាររងអំពើហិង្សា','កុមាររងការកេងប្រវ័ញ្ចពលកម្ម','កុមារមកពីគ្រួសារក្រីក្រ'].map(x=>({l:x,a:'',f:''}))}
+];
+let S=null, D=null; // session, data
+function readSession(){try{return JSON.parse(localStorage.getItem('krou_supabase_user')||'null')}catch(e){return null}}
+function goIndex(){try{if(window.parent!==window){window.parent.location.href='index.html';return}}catch(e){}location.href='index.html'}
+function goBack(){try{if(window.parent!==window){window.parent.postMessage({type:'NAVIGATE',page:'reportsHub'},'*');if(window.parent.navigate){window.parent.navigate('reportsHub',null);return}}}catch(e){}history.length>1?history.back():goIndex()}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light')}
+applyTheme(localStorage.getItem('krou_theme_manual')||'light');
+window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme))applyTheme(e.data.theme||e.data)});
+window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual')applyTheme(e.newValue)});
+
+const khDigits='០១២៣៤៥៦៧៨៩';
+const toKh=n=>String(n).replace(/\d/g,d=>khDigits[d]);
+function key(){return 'specialNeeds_v1:'+(S.username||'')+':'+document.getElementById('selYear').value+':'+document.getElementById('selClass').value}
+function num(v){const n=parseInt(v,10);return isNaN(n)||n<0?0:n}
+function blank(){return {groups:DEFAULT_GROUPS(),txt:{}}}
+function initSelectors(){
+  const y=new Date().getFullYear(),m=new Date().getMonth();const base=m>=9?y:y-1;
+  const ys=document.getElementById('selYear');ys.innerHTML='';
+  for(let i=base+1;i>=base-5;i--){const o=document.createElement('option');o.value=i+'-'+(i+1);o.textContent=toKh(i)+'-'+toKh(i+1);if(i===base)o.selected=true;ys.appendChild(o)}
+  const cs=document.getElementById('selClass');const set=new Set();
+  String(S.assigned_classes||'').split(/[,;،]/).map(s=>s.trim()).filter(Boolean).forEach(c=>set.add(c));
+  const last=localStorage.getItem('specialNeeds_lastClass');
+  const names=['១ក','១ខ','២ក','២ខ','៣ក','៣ខ','៤ក','៤ខ','៥ក','៥ខ','៦ក','៦ខ'];
+  const isAdmin=S.role==='admin';
+  const list=set.size&&!isAdmin?[...set]:[...new Set([...set,...names])];
+  list.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cs.appendChild(o)});
+  if(last&&list.includes(last))cs.value=last;
+}
+function loadData(){
+  try{localStorage.setItem('specialNeeds_lastClass',document.getElementById('selClass').value)}catch(e){}
+  try{D=JSON.parse(localStorage.getItem(key())||'null')}catch(e){D=null}
+  if(!D||!D.groups){D=blank()}
+  if(!D.txt)D.txt={};
+  if(!D.txt.teacher&&S.teacher_name&&S.role!=='admin')D.txt.teacher=S.teacher_name;
+  render();
+}
+let tm;function save(){clearTimeout(tm);tm=setTimeout(()=>{try{localStorage.setItem(key(),JSON.stringify(D));const s=document.getElementById('saved');s.classList.add('on');setTimeout(()=>s.classList.remove('on'),1100)}catch(e){}},250)}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function render(){
+  const yr=document.getElementById('selYear').value.split('-');
+  document.getElementById('yrTxt').textContent=toKh(yr[0])+'-'+toKh(yr[1]);
+  document.getElementById('clsTxt').textContent=document.getElementById('selClass').value;
+  document.querySelectorAll('[data-k]').forEach(el=>{const v=D.txt[el.dataset.k];if(v!==undefined)el.textContent=v;else if(!el.dataset.default){el.dataset.default=el.textContent;}});
+  let h='';
+  D.groups.forEach((g,gi)=>{
+    h+=`<tr class="g"><td class="nm"><span class="lb" contenteditable data-g="${gi}" data-f="t">${esc(g.t)}</span></td><td class="n calc" id="gs${gi}"></td><td class="n calc" id="gf${gi}"></td></tr>`;
+    g.rows.forEach((r,ri)=>{
+      h+=`<tr><td class="nm"><span class="lb" contenteditable data-g="${gi}" data-r="${ri}" data-f="l">${esc(r.l)}</span><button class="rm noprint" title="លុបជួរ" onclick="delRow(${gi},${ri})">×</button></td>
+      <td class="n"><input type="number" min="0" inputmode="numeric" placeholder="0" value="${r.a}" data-g="${gi}" data-r="${ri}" data-f="a"></td>
+      <td class="n"><input type="number" min="0" inputmode="numeric" placeholder="0" value="${r.f}" data-g="${gi}" data-r="${ri}" data-f="f"></td></tr>`;
+    });
+    h+=`<tr class="noprint"><td colspan="3" style="border:0;padding:0"><button class="add" onclick="addRow(${gi})">+ ថែមជួរ</button></td></tr>`;
+  });
+  h+=`<tr class="t"><td class="nm" style="text-align:center">សរុប</td><td class="n calc" id="ts"></td><td class="n calc" id="tf"></td></tr>`;
+  document.getElementById('tb').innerHTML=h;
+  sums();
+}
+function sums(){
+  let ta=0,tf=0;
+  D.groups.forEach((g,gi)=>{let a=0,f=0;g.rows.forEach(r=>{a+=num(r.a);f+=num(r.f)});ta+=a;tf+=f;
+    document.getElementById('gs'+gi).textContent=a;document.getElementById('gf'+gi).textContent=f});
+  document.getElementById('ts').textContent=ta;document.getElementById('tf').textContent=tf;
+}
+function addRow(gi){D.groups[gi].rows.push({l:'បរិយាយថ្មី',a:'',f:''});save();render()}
+function delRow(gi,ri){if(!confirm('លុបជួរនេះ?'))return;D.groups[gi].rows.splice(ri,1);save();render()}
+function resetAll(){if(!confirm('សម្អាតតម្លៃលេខទាំងអស់ក្នុងថ្នាក់ និងឆ្នាំនេះ?'))return;D.groups.forEach(g=>g.rows.forEach(r=>{r.a='';r.f=''}));save();render()}
+document.addEventListener('input',e=>{
+  const t=e.target;if(!D)return;
+  if(t.matches('input[data-f]')){const r=D.groups[t.dataset.g].rows[t.dataset.r];
+    let v=t.value;if(v!==''&&num(v)<0){v='0';t.value=0}
+    r[t.dataset.f]=v;
+    if(t.dataset.f==='f'&&num(r.f)>num(r.a)&&r.a!==''){t.style.color='#e11d48'}else t.style.color='';
+    sums();save();}
+  else if(t.matches('.lb[data-f]')){const g=D.groups[t.dataset.g];if(t.dataset.f==='t')g.t=t.textContent;else g.rows[t.dataset.r].l=t.textContent;save()}
+  else if(t.matches('.ed[data-k]')){D.txt[t.dataset.k]=t.textContent;save()}
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.matches('.lb,.ed'))e.preventDefault();
+  if(e.key==='Enter'&&e.target.matches('td.n input')){e.preventDefault();const ins=[...document.querySelectorAll('td.n input')];const i=ins.indexOf(e.target);(ins[i+1]||ins[0]).focus();}
+});
+document.addEventListener('paste',e=>{if(e.target.matches('.lb,.ed')){e.preventDefault();document.execCommand('insertText',false,(e.clipboardData.getData('text')||'').replace(/\n/g,' '))}});
+function doPrint(){window.print()}
+async function doPdf(){
+  if(!window.html2canvas||!window.jspdf){alert('មិនអាចផ្ទុក library PDF បានទេ សូមពិនិត្យអ៊ីនធឺណិត ឬប្រើ «បោះពុម្ព» ហើយជ្រើស Save as PDF');return}
+  const el=document.getElementById('page');const old=el.style.zoom;el.style.zoom='1';document.body.classList.add('pdfing');
+  document.querySelectorAll('.add,.rm').forEach(x=>x.style.display='none');
+  try{
+    const c=await html2canvas(el,{scale:3,backgroundColor:'#fff',useCORS:true});
+    const {jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');
+    pdf.addImage(c.toDataURL('image/png'),'PNG',0,0,210,Math.min(297,c.height*210/c.width),undefined,'FAST');
+    pdf.save('ចំនួនសិស្សជួបការលំបាក_'+document.getElementById('selClass').value+'.pdf');
+  }catch(err){alert('បង្កើត PDF មិនបាន៖ '+err.message)}
+  el.style.zoom=old;document.querySelectorAll('.add,.rm').forEach(x=>x.style.display='');
+}
+(function boot(){
+  S=readSession();
+  if(!S||!S.username){document.getElementById('auth').style.display='flex';return}
+  document.getElementById('app').style.display='block';
+  initSelectors();loadData();
+})();
+</script>
+</body>
+</html>
