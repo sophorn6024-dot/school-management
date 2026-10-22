@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" id="metaThemeColor" content="#090e17">
 <title>ប្រព័ន្ធគ្រប់គ្រងសិស្ស និងគ្រូបង្រៀន</title>
-<script>(function(){try{var t=localStorage.getItem('krou_theme_manual');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);var m=document.getElementById('metaThemeColor');if(m)m.content=t==='dark'?'#090e17':'#f8fafc'}}catch(e){}})();</script>
+<script>(function(){try{var t=localStorage.getItem('krou_theme_manual');if(localStorage.getItem('krou_theme_auto')==='1'){var hh=new Date().getHours();t=(hh>=6&&hh<18)?'light':'dark'}if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);var m=document.getElementById('metaThemeColor');if(m)m.content=t==='dark'?'#090e17':'#f8fafc'}}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;900&family=Kantumruy+Pro:wght@300;400;500;600;700&family=Moul&display=swap" rel="stylesheet">
@@ -441,6 +441,10 @@ body.chat-page .iframe-container{top:0;bottom:0}
 .ms-item:active,.ms-profile:active{transform:scale(.985)}
 .ms-item.danger .ms-t{color:#ef4444}.ms-item.danger .ms-ico{background:rgba(239,68,68,.12)}
 }
+@media (max-width:420px){.mnav-inner{padding:8px 4px}.m-nav-item{font-size:10px;gap:3px}.mnav-lbl{max-width:100%;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.2px}.mnav-ico{width:24px;height:24px}}
+.auto-pill{font-size:11px;font-weight:800;padding:3px 10px;border-radius:999px;background:rgba(148,163,184,.25);color:var(--text-muted,#94a3b8);flex-shrink:0}
+.auto-pill.on{background:rgba(16,185,129,.2);color:#10b981}
+.sidebar-theme-btn .auto-pill{color:#cbd5e1}.sidebar-theme-btn .auto-pill.on{color:#34d399}
 /* ===== 🔤 TEXT RESPONSIVE ===== */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .hero-info-texts,.task-text-box{min-width:0}
@@ -532,6 +536,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     </nav>
 
     <div class="sidebar-footer">
+      <button class="sidebar-theme-btn" onclick="toggleThemeAuto()" id="sidebarAutoBtn" title="ប្ដូរ Dark/Light តាមម៉ោងស្វ័យប្រវត្តិ"><span>🕒</span><span class="nav-text">តាមម៉ោង (ស្វ័យប្រវត្តិ)</span><span class="auto-pill" data-auto-theme-state style="margin-left:auto">បិទ</span></button>
       <button class="sidebar-theme-btn" onclick="toggleTheme()" id="sidebarThemeBtn" title="ប្ដូរ Dark/Light Mode"><span id="themeIcon">🌙</span><span class="nav-text" id="themeText">ពន្លឺ / ងងឹត</span></button>
       <button class="sidebar-logout-btn" onclick="doLogout()" title="ចាកចេញពីប្រព័ន្ធ"><span>🚪</span><span class="nav-text">ចាកចេញ</span></button>
     </div>
@@ -654,6 +659,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         <button type="button" class="ms-ib" id="msTheme" onclick="toggleTheme();setTimeout(refreshMoreThemeBtn,50)" aria-label="ប្តូរ Theme">🌙</button>
       </div>
       <div class="ms-profile" onclick="closeMoreSheet();openProfileModal()"><div class="ms-av" id="msAvatar">ស</div><div class="ms-grow"><div class="ms-name" id="msName">...</div><div class="ms-role" id="msRole">គ្រូបង្រៀន</div></div><span class="ms-arrow">›</span></div>
+      <div class="ms-item" onclick="toggleThemeAuto()"><div class="ms-ico">🕒</div><div class="ms-grow"><div class="ms-t">Dark/Light តាមម៉ោង</div><div class="ms-d">ភ្លឺ ៦:០០–១៨:០០ · ងងឹតពេលយប់</div></div><span class="auto-pill" data-auto-theme-state>បិទ</span></div>
       <div id="msList"></div>
     </div>
     <nav class="mobile-bottom-nav" id="mobileNav">
@@ -663,20 +669,20 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
           <span class="mnav-ico"><svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg></span>
           <span class="mnav-lbl">ទំព័រដើម</span>
         </div>
+        <div class="m-nav-item" id="mNavStu" onclick="navigate('addStudent', null)">
+          <span class="mnav-ico"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.4"/><path d="M2.8 20c0-3.4 2.8-5.8 6.2-5.8s6.2 2.4 6.2 5.8"/><path d="M16.5 5.4a3.2 3.2 0 0 1 0 5.8M18.6 14.6c1.7.8 2.9 2.5 2.9 5.4"/></svg></span>
+          <span class="mnav-lbl">ព័ត៌មានសិស្ស</span>
+        </div>
         <div class="m-nav-item" id="mNavAtt" onclick="navigate('attendance', null)">
           <span class="mnav-ico"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/><path d="M9 15l2.2 2.2L15.5 13"/></svg></span>
-          <span class="mnav-lbl">វត្តមាន</span>
+          <span class="mnav-lbl">ស្រង់វត្តមាន</span>
         </div>
         <div class="m-nav-item" id="mNavScores" onclick="navigate('score', null)">
           <span class="mnav-ico"><svg viewBox="0 0 24 24"><rect x="5" y="4.5" width="14" height="16.5" rx="3"/><rect x="9" y="2.5" width="6" height="4" rx="1.5"/><path d="M9 11h.01M9 15h.01M12.5 11H16M12.5 15H16"/></svg></span>
           <span class="mnav-lbl">ស្រង់ពិន្ទុ</span>
         </div>
-        <div class="m-nav-item" id="mNavChat" onclick="navigate('chat', null)">
-          <span class="mnav-ico"><svg viewBox="0 0 24 24"><path d="M20.5 11.5a7.5 7.5 0 0 1-10.9 6.7L4 20l1.7-4.9A7.5 7.5 0 1 1 20.5 11.5z"/><path d="M9 11.5h.01M12.5 11.5h.01M16 11.5h.01"/></svg><span class="nav-badge" data-chat-badge></span></span>
-          <span class="mnav-lbl">សារសន្ទនា</span>
-        </div>
         <div class="m-nav-item" id="mNavMenu" onclick="openSidebarMobile()">
-          <span class="mnav-ico"><svg viewBox="0 0 24 24"><path d="M5.5 12h.01M12 12h.01M18.5 12h.01" stroke-width="3.2"/></svg></span>
+          <span class="mnav-ico"><svg viewBox="0 0 24 24"><path d="M5.5 12h.01M12 12h.01M18.5 12h.01" stroke-width="3.2"/></svg><span class="nav-badge" data-chat-badge></span></span>
           <span class="mnav-lbl">ម៉ឺនុយ</span>
         </div>
       </div>
@@ -2149,8 +2155,24 @@ function applyTheme(theme) {
   if (meta) meta.content = theme === 'dark' ? '#090e17' : '#f8fafc';
   applyDayTheme();
 }
+/* 🕒 Dark/Light ស្វ័យប្រវត្តិតាមម៉ោង (ភ្លឺ ៦:០០–១៨:០០ · ងងឹតក្រៅពីនោះ) */
+function autoThemeNow() { const h = new Date().getHours(); return (h >= 6 && h < 18) ? 'light' : 'dark'; }
+function isThemeAuto() { try { return localStorage.getItem('krou_theme_auto') === '1'; } catch (e) { return false; } }
+function refreshAutoThemeUI() {
+  const on = isThemeAuto();
+  document.querySelectorAll('[data-auto-theme-state]').forEach(el => { el.textContent = on ? 'បើក' : 'បិទ'; el.classList.toggle('on', on); });
+}
+function setThemeAuto(on) {
+  try { localStorage.setItem('krou_theme_auto', on ? '1' : '0'); } catch (e) {}
+  if (on) applyTheme(autoThemeNow());
+  refreshAutoThemeUI();
+}
+function toggleThemeAuto() { setThemeAuto(!isThemeAuto()); if (typeof refreshMoreThemeBtn === 'function') refreshMoreThemeBtn(); }
+setInterval(function () { if (isThemeAuto() && document.documentElement.getAttribute('data-theme') !== autoThemeNow()) { applyTheme(autoThemeNow()); if (typeof refreshMoreThemeBtn === 'function') refreshMoreThemeBtn(); } }, 60000);
+document.addEventListener('visibilitychange', function () { if (!document.hidden && isThemeAuto() && document.documentElement.getAttribute('data-theme') !== autoThemeNow()) applyTheme(autoThemeNow()); });
 function toggleTheme() {
   const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  setThemeAuto(false);
   applyTheme(current === 'dark' ? 'light' : 'dark');
 }
 window.addEventListener('storage', (e) => {
@@ -2213,7 +2235,7 @@ function navigate(page, el) {
   if (target) target.classList.add('active');
 
   document.querySelectorAll('.m-nav-item').forEach(m => m.classList.remove('active'));
-  const mMap = { dashboard: 'mNavDash', attendance: 'mNavAtt', score: 'mNavScores', subject: 'mNavScores', chat: 'mNavChat' };
+  const mMap = { dashboard: 'mNavDash', addStudent: 'mNavStu', attendance: 'mNavAtt', score: 'mNavScores', subject: 'mNavScores' };
   if (mMap[page]) document.getElementById(mMap[page])?.classList.add('active');
   updateMobileNavIndicator();
 
@@ -2287,7 +2309,7 @@ window.addEventListener('hashchange', () => {
 function toggleSidebarCollapse() { document.getElementById('sidebar').classList.toggle('collapsed'); }
 /* ===== 📱 MORE SHEET ===== */
 const MORE_ITEMS = [
-  { page: 'addStudent', t: 'ព័ត៌មានសិស្ស', d: 'បញ្ចូល និងកែប្រែព័ត៌មានសិស្ស', i: '✍️' },
+  { page: 'chat', t: 'សារសន្ទនា', d: 'អាណាព្យាបាល · គ្រូក្នុងសាលា · គ្រូទាំងអស់', i: '💬', badge: true },
   { page: 'card', t: 'កាតសិស្ស (ID Card)', d: 'បង្កើត និងបោះពុម្ពកាតសិស្ស', i: '🪪' },
   { page: 'group', t: 'បែងចែកជាក្រុម', d: 'ចែកសិស្សជាក្រុមសិក្សា', i: '👥' },
   { page: 'book', t: 'ការខ្ចី-សងសៀវភៅ', d: 'តាមដានការខ្ចី និងសងសៀវភៅ', i: '📖' },
@@ -2306,9 +2328,10 @@ function buildMoreSheet() {
   const av = document.getElementById('sidebarAvatar'), msAv = document.getElementById('msAvatar');
   if (av && msAv) msAv.innerHTML = av.innerHTML;
   document.getElementById('msList').innerHTML = MORE_ITEMS.filter(x => !x.admin || IS_ADMIN).map(x =>
-    `<div class="ms-item" onclick="navigate('${x.page}', null)"><div class="ms-ico">${x.i}</div><div class="ms-grow"><div class="ms-t">${x.t}</div><div class="ms-d">${x.d}</div></div><span class="ms-arrow">›</span></div>`
+    `<div class="ms-item" onclick="navigate('${x.page}', null)"><div class="ms-ico">${x.i}</div><div class="ms-grow"><div class="ms-t">${x.t}</div><div class="ms-d">${x.d}</div></div>${x.badge ? '<span class="nav-badge" data-chat-badge style="position:static;margin:0"></span>' : ''}<span class="ms-arrow">›</span></div>`
   ).join('') + `<div class="ms-item danger" onclick="doLogout()"><div class="ms-ico">🚪</div><div class="ms-grow"><div class="ms-t">ចាកចេញ</div></div></div>`;
-  refreshMoreThemeBtn();
+  refreshMoreThemeBtn(); refreshAutoThemeUI();
+  if (typeof setChatUnread === 'function') setChatUnread(chatUnread);
 }
 function openMoreSheet() {
   buildMoreSheet();
@@ -2322,7 +2345,7 @@ function closeMoreSheet() {
   const sh = document.getElementById('moreSheet');
   if (!sh || !sh.classList.contains('open')) return;
   sh.classList.remove('open'); sh.setAttribute('aria-hidden', 'true');
-  const mMap = { dashboard: 'mNavDash', attendance: 'mNavAtt', score: 'mNavScores', subject: 'mNavScores', chat: 'mNavChat' };
+  const mMap = { dashboard: 'mNavDash', addStudent: 'mNavStu', attendance: 'mNavAtt', score: 'mNavScores', subject: 'mNavScores' };
   document.querySelectorAll('.m-nav-item').forEach(m => m.classList.remove('active'));
   if (mMap[currentPage]) document.getElementById(mMap[currentPage])?.classList.add('active');
   updateMobileNavIndicator();
@@ -2947,7 +2970,7 @@ document.getElementById('reportsHubView').addEventListener('scroll', closeRoster
 document.getElementById('loginYear').innerText = new Date().getFullYear();
 window.addEventListener('resize', updateMobileNavIndicator);
 window.addEventListener('DOMContentLoaded', async () => {
-  applyTheme(localStorage.getItem('krou_theme_manual') === 'light' ? 'light' : 'dark');
+  applyTheme(isThemeAuto() ? autoThemeNow() : (localStorage.getItem('krou_theme_manual') === 'light' ? 'light' : 'dark'));
   initDobCalendarSelectors();
   renderRosterFormat();
   applyDayTheme();
@@ -3110,6 +3133,8 @@ setInterval(function () { const el = document.getElementById('dashRoleTopTag'); 
   }
   tick(); setInterval(tick,1000);
 })();
+
+refreshAutoThemeUI();
 </script>
 </body>
 </html>
