@@ -420,6 +420,27 @@ body.chat-page .iframe-container{top:0;bottom:0}
 .rci-name{font-size:13.5px}.rci-arrow{width:28px;height:28px}
 .rf-select{height:42px;font-size:13.5px;padding:0 12px}.rf-open{height:42px;padding:0 14px;font-size:14px}
 }
+
+/* ===== 📱 MORE SHEET (ម៉ឺនុយលើទូរស័ព្ទ) ===== */
+#moreSheet{display:none}
+@media (max-width:768px){
+#moreSheet{display:flex;flex-direction:column;position:fixed;inset:0;z-index:35;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 14px calc(var(--mnav-reserve) + 16px);opacity:0;visibility:hidden;transform:translateY(16px);transition:opacity .22s ease,transform .28s cubic-bezier(.2,.9,.3,1.05),visibility 0s linear .28s}
+#moreSheet.open{opacity:1;visibility:visible;transform:none;transition:opacity .22s ease,transform .28s cubic-bezier(.2,.9,.3,1.05)}
+.ms-top{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;padding:max(12px,env(safe-area-inset-top)) 0 12px;background:var(--bg)}
+.ms-back{width:38px;height:38px;border:none;background:none;color:var(--text);font-size:26px;line-height:1;cursor:pointer;flex-shrink:0}
+.ms-pill{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:42px;padding:0 14px;border-radius:16px;background:var(--surface-card);border:1px solid var(--border);font-size:13.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ms-ib{width:44px;height:42px;border-radius:16px;border:1px solid var(--border);background:var(--surface-card);color:var(--text);font-size:19px;cursor:pointer;flex-shrink:0}
+.ms-profile,.ms-item{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:22px;background:var(--surface-card);border:1px solid var(--border);box-shadow:var(--card-shadow);margin-bottom:12px;cursor:pointer;color:var(--text)}
+.ms-av{width:52px;height:52px;border-radius:50%;background:#059669;color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;flex-shrink:0;overflow:hidden}
+.ms-av img{width:100%;height:100%;object-fit:cover}
+.ms-name{font-size:16px;font-weight:800}.ms-role{font-size:12.5px;color:var(--text-muted);margin-top:2px}
+.ms-grow{flex:1;min-width:0}
+.ms-ico{width:52px;height:52px;border-radius:16px;background:var(--primary-soft);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.ms-t{font-size:15.5px;font-weight:800;line-height:1.35}.ms-d{font-size:12px;color:var(--text-muted);margin-top:3px;line-height:1.5}
+.ms-arrow{color:var(--text-muted);font-size:20px;flex-shrink:0}
+.ms-item:active,.ms-profile:active{transform:scale(.985)}
+.ms-item.danger .ms-t{color:#ef4444}.ms-item.danger .ms-ico{background:rgba(239,68,68,.12)}
+}
 /* ===== 🔤 TEXT RESPONSIVE ===== */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .hero-info-texts,.task-text-box{min-width:0}
@@ -626,7 +647,16 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     </div>
 
     <!-- 📱 Floating glass bottom nav -->
-        <nav class="mobile-bottom-nav" id="mobileNav">
+        <div id="moreSheet" aria-hidden="true">
+      <div class="ms-top">
+        <button type="button" class="ms-back" onclick="closeMoreSheet()" aria-label="ត្រឡប់">‹</button>
+        <div class="ms-pill"><span>🏫</span><span id="msClass">ថ្នាក់...</span></div>
+        <button type="button" class="ms-ib" id="msTheme" onclick="toggleTheme();setTimeout(refreshMoreThemeBtn,50)" aria-label="ប្តូរ Theme">🌙</button>
+      </div>
+      <div class="ms-profile" onclick="closeMoreSheet();openProfileModal()"><div class="ms-av" id="msAvatar">ស</div><div class="ms-grow"><div class="ms-name" id="msName">...</div><div class="ms-role" id="msRole">គ្រូបង្រៀន</div></div><span class="ms-arrow">›</span></div>
+      <div id="msList"></div>
+    </div>
+    <nav class="mobile-bottom-nav" id="mobileNav">
       <div class="mnav-inner" id="mnavInner">
         <span class="mnav-indicator" id="mnavIndicator"></span>
         <div class="m-nav-item active" id="mNavDash" onclick="navigate('dashboard', null)">
@@ -2255,8 +2285,57 @@ window.addEventListener('hashchange', () => {
   if (h && h !== currentPage && CURRENT_USER && CURRENT_USER.username) navigate(h, null);
 });
 function toggleSidebarCollapse() { document.getElementById('sidebar').classList.toggle('collapsed'); }
-function openSidebarMobile() { document.getElementById('sidebar').classList.add('open'); document.getElementById('mobileBackdrop').style.display = 'block'; }
-function closeSidebarMobile() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('mobileBackdrop').style.display = 'none'; }
+/* ===== 📱 MORE SHEET ===== */
+const MORE_ITEMS = [
+  { page: 'addStudent', t: 'ព័ត៌មានសិស្ស', d: 'បញ្ចូល និងកែប្រែព័ត៌មានសិស្ស', i: '✍️' },
+  { page: 'card', t: 'កាតសិស្ស (ID Card)', d: 'បង្កើត និងបោះពុម្ពកាតសិស្ស', i: '🪪' },
+  { page: 'group', t: 'បែងចែកជាក្រុម', d: 'ចែកសិស្សជាក្រុមសិក្សា', i: '👥' },
+  { page: 'book', t: 'ការខ្ចី-សងសៀវភៅ', d: 'តាមដានការខ្ចី និងសងសៀវភៅ', i: '📖' },
+  { page: 'reportsHub', t: 'របាយការណ៍', d: 'បញ្ជីឈ្មោះ · តារាងចំណាត់ថ្នាក់ · ព្រឹត្តិបត្រ · ឯកសារ', i: '📄' },
+  { page: 'teacher', t: 'គ្រប់គ្រងគ្រូ', d: 'គ្រប់គ្រងគណនីគ្រូបង្រៀន', i: '👨‍🏫', admin: true }
+];
+function isMobileView() { return window.matchMedia('(max-width:768px)').matches; }
+function refreshMoreThemeBtn() {
+  const b = document.getElementById('msTheme');
+  if (b) b.textContent = (document.documentElement.getAttribute('data-theme') === 'dark') ? '☀️' : '🌙';
+}
+function buildMoreSheet() {
+  document.getElementById('msClass').textContent = (document.getElementById('sidebarClassYearText')?.textContent || '').trim() || 'ថ្នាក់...';
+  document.getElementById('msName').textContent = document.getElementById('sidebarTeacherName')?.textContent || '';
+  document.getElementById('msRole').textContent = document.getElementById('sidebarTeacherRole')?.textContent || '';
+  const av = document.getElementById('sidebarAvatar'), msAv = document.getElementById('msAvatar');
+  if (av && msAv) msAv.innerHTML = av.innerHTML;
+  document.getElementById('msList').innerHTML = MORE_ITEMS.filter(x => !x.admin || IS_ADMIN).map(x =>
+    `<div class="ms-item" onclick="navigate('${x.page}', null)"><div class="ms-ico">${x.i}</div><div class="ms-grow"><div class="ms-t">${x.t}</div><div class="ms-d">${x.d}</div></div><span class="ms-arrow">›</span></div>`
+  ).join('') + `<div class="ms-item danger" onclick="doLogout()"><div class="ms-ico">🚪</div><div class="ms-grow"><div class="ms-t">ចាកចេញ</div></div></div>`;
+  refreshMoreThemeBtn();
+}
+function openMoreSheet() {
+  buildMoreSheet();
+  const sh = document.getElementById('moreSheet');
+  sh.classList.add('open'); sh.setAttribute('aria-hidden', 'false'); sh.scrollTop = 0;
+  document.querySelectorAll('.m-nav-item').forEach(m => m.classList.remove('active'));
+  document.getElementById('mNavMenu')?.classList.add('active');
+  updateMobileNavIndicator();
+}
+function closeMoreSheet() {
+  const sh = document.getElementById('moreSheet');
+  if (!sh || !sh.classList.contains('open')) return;
+  sh.classList.remove('open'); sh.setAttribute('aria-hidden', 'true');
+  const mMap = { dashboard: 'mNavDash', attendance: 'mNavAtt', score: 'mNavScores', subject: 'mNavScores', chat: 'mNavChat' };
+  document.querySelectorAll('.m-nav-item').forEach(m => m.classList.remove('active'));
+  if (mMap[currentPage]) document.getElementById(mMap[currentPage])?.classList.add('active');
+  updateMobileNavIndicator();
+}
+function openSidebarMobile() {
+  if (isMobileView()) {
+    const sh = document.getElementById('moreSheet');
+    if (sh.classList.contains('open')) closeMoreSheet(); else openMoreSheet();
+    return;
+  }
+  document.getElementById('sidebar').classList.add('open'); document.getElementById('mobileBackdrop').style.display = 'block';
+}
+function closeSidebarMobile() { closeMoreSheet(); document.getElementById('sidebar').classList.remove('open'); document.getElementById('mobileBackdrop').style.display = 'none'; }
 
 /* =========================================================
    💬 CHAT NOTIFIER — unread badge + toast (clears on entering chat)
