@@ -129,7 +129,7 @@ table.kv td{padding:6px 10px;text-align:center}
       <div class="sec"><h3>១.ព័ត៌មានសេវាគ្រូបន្ទុកថ្នាក់ទី <span id="clsTxt"></span></h3><div class="body">
         <table class="kv" id="kv"></table></div></div>
       <div class="sec"><h3>២.(ខ) សិស្សថ្មី សិស្សឡើងថ្នាក់ និង សិស្សត្រួតថ្នាក់</h3>
-        <div class="tip">👉 ចុចលើពាក្យ «សិស្សថ្មី» ឬ «សិស្សត្រួតថ្នាក់» ក្នុងក្បាលតារាង ដើម្បីកែសម្រួលទិន្នន័យសិស្ស</div>
+        <div class="tip">👉 ចុចលើ «សិស្សថ្មី» ដើម្បីជ្រើសសិស្ស · ចុចលើ «សិស្សត្រួតថ្នាក់» ដើម្បីកែចំនួនតាមអាយុ</div>
         <div class="body" style="padding-top:0"><table id="ageT"></table><div id="ageWarn" class="warn"></div></div></div>
     </div>
     <div class="col">
@@ -247,6 +247,8 @@ let itm;function saveInfo(){INFO.__t=Date.now();clearTimeout(itm);setSt('busy','
 },500)}
 
 /* ===== render ===== */
+function repAge(a){const r=(INFO.rep||{})[a]||{};return [num(r.t),Math.min(num(r.f),num(r.t))]}
+function num(v){const n=parseInt(fromKh(v),10);return isNaN(n)||n<0?0:n}
 function count(fn){let t=0,f=0;activeStu().forEach(s=>{if(fn(s)){t++;if(isF(s.gender))f++}});return [t,f]}
 function render(){
   document.getElementById('yrTxt').textContent=CUR.year.split('-').map(toKh).join('-');
@@ -256,12 +258,12 @@ function render(){
   // age table
   const n=v=>v?toKh(v):'០';
   let h=`<thead><tr><th rowspan="3" style="width:13%">អាយុ<br>(ឆ្នាំ)</th><th colspan="6">ចំនួនសិស្ស</th></tr>
-  <tr><th colspan="2" class="clk" onclick="openModal('new')">សិស្សថ្មី</th><th colspan="2" class="clk" onclick="openModal('repeat')">សិស្សត្រួតថ្នាក់</th><th colspan="2">សិស្សសរុប</th></tr>
+  <tr><th colspan="2" class="clk" onclick="openModal('new')">សិស្សថ្មី</th><th colspan="2" class="clk" onclick="openRepeat()">សិស្សត្រួតថ្នាក់</th><th colspan="2">សិស្សសរុប</th></tr>
   <tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(3)}</tr></thead><tbody>`;
   const sum=[0,0,0,0,0,0];
   AGES.forEach(a=>{
     const inAge=s=>{const x=ageOf(s);return x!==null&&(a===15?x>=15:x===a)};
-    const nw=count(s=>inAge(s)&&FLAGS.has(fk(s.student_id||s.id,'new'))),rp=count(s=>inAge(s)&&FLAGS.has(fk(s.student_id||s.id,'repeat'))),tt=count(inAge);
+    const nw=count(s=>inAge(s)&&FLAGS.has(fk(s.student_id||s.id,'new'))),rp=repAge(a),tt=count(inAge);
     const row=[...nw,...rp,...tt];row.forEach((v,i)=>sum[i]+=v);
     h+=`<tr><td class="c">${a===15?'១៥+':toKh(a)}</td>${row.map(v=>`<td class="c">${n(v)}</td>`).join('')}</tr>`;
   });
@@ -295,7 +297,23 @@ document.addEventListener('paste',e=>{if(e.target.matches('.ed')){e.preventDefau
 let MD=null;
 const NAMES={};DIFF.forEach(g=>g.rows.forEach(r=>NAMES[r[0]]=r[1]));NAMES.new='សិស្សថ្មី';NAMES.repeat='សិស្សត្រួតថ្នាក់';
 function openModal(flag){MD=flag;document.getElementById('mdT').textContent=NAMES[flag]+' · ថ្នាក់ទី '+CUR.cls;document.getElementById('mdQ').value='';document.getElementById('ov').classList.add('show');renderModal()}
-function closeModal(){document.getElementById('ov').classList.remove('show');MD=null;render()}
+
+function openRepeat(){
+  MD='repeat';document.getElementById('mdT').textContent='សិស្សត្រួតថ្នាក់ · ថ្នាក់ទី '+CUR.cls;
+  document.getElementById('mdQ').parentNode.style.display='none';
+  document.getElementById('mdC').textContent='បញ្ចូលចំនួនសិស្សត្រួតថ្នាក់ តាមអាយុនីមួយៗ (ស្រី ត្រូវតូចជាង ឬស្មើសរុប)';
+  const rep=INFO.rep||{};
+  document.getElementById('mdL').innerHTML=`<div style="display:grid;grid-template-columns:70px 1fr 1fr;gap:8px;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);padding:0 6px"><span>អាយុ</span><span style="text-align:center">សរុប</span><span style="text-align:center">ស្រី</span></div>`+
+   AGES.map(a=>`<div style="display:grid;grid-template-columns:70px 1fr 1fr;gap:8px;align-items:center;padding:2px 6px"><b>${a===15?'១៥+':toKh(a)} ឆ្នាំ</b><input class="fc" type="number" min="0" inputmode="numeric" placeholder="0" style="text-align:center" value="${(rep[a]||{}).t??''}" oninput="setRep(${a},'t',this)"><input class="fc" type="number" min="0" inputmode="numeric" placeholder="0" style="text-align:center" value="${(rep[a]||{}).f??''}" oninput="setRep(${a},'f',this)"></div>`).join('');
+  document.getElementById('ov').classList.add('show');
+}
+function setRep(a,k,el){
+  if(num(el.value)<0)el.value=0;
+  INFO.rep=INFO.rep||{};INFO.rep[a]=INFO.rep[a]||{t:'',f:''};INFO.rep[a][k]=el.value;
+  const r=INFO.rep[a];el.style.color=(num(r.f)>num(r.t)&&r.f!=='')?'#e11d48':'';
+  saveInfo();render();
+}
+function closeModal(){document.getElementById('mdQ').parentNode.style.display='';document.getElementById('ov').classList.remove('show');MD=null;render()}
 function renderModal(){
   if(!MD)return;const q=document.getElementById('mdQ').value.trim();
   const list=activeStu().filter(s=>!q||String(s.student_name||'').includes(q));
@@ -312,7 +330,7 @@ function initSelectors(){
   for(let i=base+1;i>=base-5;i--){const o=document.createElement('option');o.value=i+'-'+(i+1);o.textContent=toKh(i)+'-'+toKh(i+1);if(i===base)o.selected=true;ys.appendChild(o)}
   setAsOf();
 }
-function setAsOf(){const sy=+document.getElementById('selYear').value.split('-')[0];document.getElementById('asOf').value=sy+'-10-01'}
+function setAsOf(){const n=new Date(),p=x=>String(x).padStart(2,'0');document.getElementById('asOf').value=n.getFullYear()+'-'+p(n.getMonth()+1)+'-'+p(n.getDate())}
 async function initClasses(){
   const cs=document.getElementById('selClass');
   const mine=String(USER.assigned_classes||USER.assigned_class||'').split(/[,;،\/]+/).map(cleanGrade).filter(Boolean);
