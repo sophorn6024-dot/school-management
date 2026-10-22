@@ -590,6 +590,31 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .upd-toast .ux{border:none;background:none;color:var(--text-muted);font-size:20px;cursor:pointer;padding:0 2px}
 @keyframes updIn{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
 @media (max-width:768px){.upd-toast{left:12px;right:12px;bottom:calc(var(--mnav-reserve) + 6px);max-width:none}}
+
+/* ===== CONFIRM DIALOG ===== */
+#askDlg{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(15,23,42,.38);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+#askDlg.show{opacity:1;visibility:visible}
+.ask-box{width:min(100%,340px);background:var(--surface-card,#fff);color:var(--text,#0f172a);border:1px solid var(--border,#e2e8f0);border-radius:24px;padding:28px 22px 18px;text-align:center;box-shadow:0 24px 60px rgba(15,23,42,.28);transform:translateY(14px) scale(.94);transition:transform .3s cubic-bezier(.3,1.4,.5,1)}
+#askDlg.show .ask-box{transform:none}
+.ask-q{font-size:15.5px;font-weight:700;line-height:1.7;margin-bottom:22px}
+.ask-btns{display:flex;gap:10px}
+.ask-btns button{flex:1;height:44px;border-radius:14px;border:0;font:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:transform .15s,background .2s}
+.ask-btns button:active{transform:scale(.96)}
+.ask-no{background:var(--surface-elevated,#f1f5f9);color:var(--text-muted,#64748b)}
+.ask-yes{background:linear-gradient(135deg,var(--primary-soft,#d1fae5),color-mix(in srgb,var(--primary,#059669) 30%,#fff));color:var(--primary,#059669)}
+.ask-yes:hover{background:var(--primary,#059669);color:#fff}
+@media (prefers-reduced-motion:reduce){.ask-box,#askDlg{transition:none}}
+
+/* ===== LOGIN WELCOME ===== */
+.login-welcome{text-align:center;margin:0 0 20px;position:relative;z-index:3}
+.lw-hi{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e0e7ff;font-size:13px;font-weight:700;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:lwIn .7s .1s both cubic-bezier(.2,.9,.3,1.2)}
+.lw-hi .wave{display:inline-block;transform-origin:70% 70%;animation:wave 2.2s ease-in-out infinite 1s}
+.lw-t{font-family:'Khmer OS Muol Light','Moul',cursive;font-weight:normal;font-size:clamp(17px,5.4vw,23px);line-height:1.8;margin-top:10px;background:linear-gradient(90deg,#fde68a,#fbcfe8,#a5f3fc,#fde68a);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:lwIn .8s .25s both cubic-bezier(.2,.9,.3,1.2),lwShine 6s linear infinite}
+.lw-s{font-size:12.5px;color:#c7d2fe;margin-top:2px;animation:lwIn .8s .4s both}
+@keyframes lwIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes lwShine{to{background-position:250% 0}}
+@keyframes wave{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(16deg)}20%,40%{transform:rotate(-10deg)}50%{transform:rotate(8deg)}}
+@media (prefers-reduced-motion:reduce){.lw-hi,.lw-t,.lw-s,.lw-hi .wave{animation:none}}
 </style>
 </head>
 <body>
@@ -597,6 +622,11 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 <div id="authView" style="display:none;">
   <div class="stars"></div>
   <div class="login-wrap">
+    <div class="login-welcome">
+      <div class="lw-hi"><span class="wave">👋</span><span id="loginGreet">សូមស្វាគមន៍</span></div>
+      <div class="lw-t">សូមស្វាគមន៍មកកាន់ប្រព័ន្ធ</div>
+      <div class="lw-s">សូមចូលគណនីរបស់អ្នក ដើម្បីបន្តការងារ</div>
+    </div>
     <div class="mascot" aria-hidden="true">
       <div class="husky">
         <div class="ear left"></div><div class="ear right"></div>
@@ -769,7 +799,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     </div>
 
     <!-- 📱 Floating glass bottom nav -->
-        <div id="moreSheet" aria-hidden="true">
+        <div id="askDlg" aria-hidden="true"><div class="ask-box" role="alertdialog"><div class="ask-q" id="askQ"></div><div class="ask-btns"><button type="button" class="ask-no" id="askNo">បដិសេធ</button><button type="button" class="ask-yes" id="askYes">យល់ព្រម</button></div></div></div>
+<div id="moreSheet" aria-hidden="true">
       <div class="ms-top">
         <button type="button" class="ms-back" onclick="closeMoreSheet()" aria-label="ត្រឡប់">‹</button>
         <div class="ms-pill"><span>🏫</span><span id="msClass">ថ្នាក់...</span></div>
@@ -2140,6 +2171,7 @@ let profilePhotoDeleteRequested = false;
 function cleanGrade(g) { return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').trim(); }
 
 function showAuthScreen() {
+  try { document.getElementById('loginGreet').textContent = timeGreeting() + ' !'; } catch(e) {}
   document.getElementById('authView').style.display = 'flex';
   document.getElementById('mainAppLayout').style.display = 'none';
 }
@@ -2201,8 +2233,14 @@ async function handleLoginSubmit(e) {
   }
 }
 
-function doLogout() {
-  if (!confirm('តើអ្នកពិតជាចង់ចាកចេញពីប្រព័ន្ធមែនទេ?')) return;
+function askConfirm(q){return new Promise(res=>{const d=document.getElementById('askDlg');document.getElementById('askQ').textContent=q;d.classList.add('show');d.setAttribute('aria-hidden','false');
+const done=v=>{d.classList.remove('show');d.setAttribute('aria-hidden','true');document.removeEventListener('keydown',kd);res(v)};
+const kd=e=>{if(e.key==='Escape')done(false);if(e.key==='Enter')done(true)};
+document.addEventListener('keydown',kd);
+document.getElementById('askYes').onclick=()=>done(true);document.getElementById('askNo').onclick=()=>done(false);
+d.onclick=e=>{if(e.target===d)done(false)};});}
+async function doLogout() {
+  if (!(await askConfirm('តើអ្នកពិតជាចង់ចាកចេញពីប្រព័ន្ធមែនទេ?'))) return;
   stopChatNotifier();
   localStorage.removeItem('krou_supabase_user');
   localStorage.removeItem('krou_active_page');
@@ -2987,9 +3025,9 @@ async function onProfilePhotoPicked(ev) {
     alert(err.message || 'មានបញ្ហាក្នុងការបង្រួមរូបថត។');
   }
 }
-function removeProfilePhoto() {
+async function removeProfilePhoto() {
   if (!CURRENT_USER) return;
-  if (!confirm('តើអ្នកពិតជាចង់លុបរូបថតគ្រូនេះមែនទេ?')) return;
+  if (!(await askConfirm('តើអ្នកពិតជាចង់លុបរូបថតគ្រូនេះមែនទេ?'))) return;
   profilePickedPhotoBase64 = null;
   profilePhotoDeleteRequested = true;
   const photoInput = document.getElementById('profilePhotoInput');
