@@ -445,6 +445,55 @@ body.chat-page .iframe-container{top:0;bottom:0}
 .auto-pill{font-size:11px;font-weight:800;padding:3px 10px;border-radius:999px;background:rgba(148,163,184,.25);color:var(--text-muted,#94a3b8);flex-shrink:0}
 .auto-pill.on{background:rgba(16,185,129,.2);color:#10b981}
 .sidebar-theme-btn .auto-pill{color:#cbd5e1}.sidebar-theme-btn .auto-pill.on{color:#34d399}
+
+/* ===== 🎨 ICONS + ANIMATIONS ===== */
+.ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block;overflow:visible}
+.nav-icon-box .ico{width:21px;height:21px}
+.nav-link-btn:hover .nav-icon-box .ico{animation:icoWiggle .6s ease}
+.nav-link-btn.active .nav-icon-box .ico{animation:icoBreath 2.6s ease-in-out infinite}
+.nav-link-btn .nav-icon-box{transition:transform .25s}
+.nav-link-btn:hover .nav-icon-box{transform:scale(1.12)}
+@keyframes icoWiggle{0%{transform:rotate(0)}25%{transform:rotate(-12deg) scale(1.1)}55%{transform:rotate(9deg) scale(1.1)}100%{transform:rotate(0) scale(1)}}
+@keyframes icoBreath{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+/* hero school icon */
+.hero-building-icon{position:relative;animation:heroFloat 4.5s ease-in-out infinite}
+.hero-building-icon::after{content:"";position:absolute;inset:-6px;border-radius:22px;border:2px solid rgba(16,185,129,.45);animation:heroRing 2.8s ease-out infinite;pointer-events:none}
+.hero-building-icon .ico{width:32px;height:32px;stroke:#fff;stroke-width:1.7}
+.hero-building-icon .flag{transform-origin:12px 3px;animation:flagWave 1.8s ease-in-out infinite}
+@keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes heroRing{0%{transform:scale(.92);opacity:.8}100%{transform:scale(1.22);opacity:0}}
+@keyframes flagWave{0%,100%{transform:skewY(0) scaleX(1)}50%{transform:skewY(-9deg) scaleX(.82)}}
+/* chips */
+.chip .ico{width:20px;height:20px}
+.chip.g .ico{animation:icoBreath 2.8s ease-in-out infinite}
+.chip.a .hand{transform-origin:12px 12px;animation:handSpin 12s linear infinite}
+@keyframes handSpin{to{transform:rotate(360deg)}}
+.dc-ico .ico{width:22px;height:22px}
+.dc-day.today{animation:todayGlow 2.6s ease-in-out infinite}
+@keyframes todayGlow{0%,100%{box-shadow:0 6px 14px rgba(16,185,129,.35)}50%{box-shadow:0 6px 22px rgba(16,185,129,.6)}}
+/* shortcuts + tasks + more sheet */
+.shortcut-pill-btn .ico{width:20px;height:20px;color:var(--primary);transition:transform .25s}
+.shortcut-pill-btn:hover .ico{animation:icoWiggle .6s ease}
+.task-icon-purple .ico{width:26px;height:26px;stroke:#fff}
+.task-action-card:hover .task-icon-purple .ico{animation:icoWiggle .6s ease}
+.ms-ico .ico{width:26px;height:26px;color:var(--primary)}
+.ms-item.danger .ms-ico .ico{color:#ef4444}
+.ms-item:active .ms-ico .ico{animation:icoWiggle .5s}
+/* entrance */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+#dashboardView.active .hero-banner-card,#dashboardView.active .section-headline-group,#dashboardView.active .today-tasks-grid>*,#dashboardView.active .shortcuts-pill-grid>*,#dashboardView.active .admin-classes-panel{animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both}
+#dashboardView.active .today-tasks-grid>*:nth-child(1){animation-delay:.08s}
+#dashboardView.active .today-tasks-grid>*:nth-child(2){animation-delay:.16s}
+#dashboardView.active .shortcuts-pill-grid>*:nth-child(1){animation-delay:.12s}
+#dashboardView.active .shortcuts-pill-grid>*:nth-child(2){animation-delay:.18s}
+#dashboardView.active .shortcuts-pill-grid>*:nth-child(3){animation-delay:.24s}
+#dashboardView.active .shortcuts-pill-grid>*:nth-child(4){animation-delay:.3s}
+#dashboardView.active .shortcuts-pill-grid>*:nth-child(5){animation-delay:.36s}
+.report-card-item{animation:fadeUp .45s both}
+.report-card-item:nth-child(2){animation-delay:.05s}.report-card-item:nth-child(3){animation-delay:.1s}.report-card-item:nth-child(4){animation-delay:.15s}.report-card-item:nth-child(5){animation-delay:.2s}
+.mnav-ico svg{transition:transform .3s}
+.m-nav-item.active .mnav-ico svg{animation:icoBreath 2.6s ease-in-out infinite .6s}
+@media (prefers-reduced-motion:reduce){.hero-building-icon,.hero-building-icon::after,.hero-building-icon .flag,.ico,.chip .hand,.dc-day.today,.report-card-item,#dashboardView.active *{animation:none!important}}
 /* ===== 🔤 TEXT RESPONSIVE ===== */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .hero-info-texts,.task-text-box{min-width:0}
@@ -2308,12 +2357,12 @@ window.addEventListener('hashchange', () => {
 function toggleSidebarCollapse() { document.getElementById('sidebar').classList.toggle('collapsed'); }
 /* ===== 📱 MORE SHEET ===== */
 const MORE_ITEMS = [
-  { page: 'chat', t: 'សារសន្ទនា', d: 'អាណាព្យាបាល · គ្រូក្នុងសាលា · គ្រូទាំងអស់', i: '💬', badge: true },
-  { page: 'card', t: 'កាតសិស្ស (ID Card)', d: 'បង្កើត និងបោះពុម្ពកាតសិស្ស', i: '🪪' },
-  { page: 'group', t: 'បែងចែកជាក្រុម', d: 'ចែកសិស្សជាក្រុមសិក្សា', i: '👥' },
-  { page: 'book', t: 'ការខ្ចី-សងសៀវភៅ', d: 'តាមដានការខ្ចី និងសងសៀវភៅ', i: '📖' },
-  { page: 'reportsHub', t: 'របាយការណ៍', d: 'បញ្ជីឈ្មោះ · តារាងចំណាត់ថ្នាក់ · ព្រឹត្តិបត្រ · ឯកសារ', i: '📄' },
-  { page: 'teacher', t: 'គ្រប់គ្រងគ្រូ', d: 'គ្រប់គ្រងគណនីគ្រូបង្រៀន', i: '👨‍🏫', admin: true }
+  { page: 'chat', t: 'សារសន្ទនា', d: 'អាណាព្យាបាល · គ្រូក្នុងសាលា · គ្រូទាំងអស់', i: 'chat', badge: true },
+  { page: 'card', t: 'កាតសិស្ស (ID Card)', d: 'បង្កើត និងបោះពុម្ពកាតសិស្ស', i: 'idcard' },
+  { page: 'group', t: 'បែងចែកជាក្រុម', d: 'ចែកសិស្សជាក្រុមសិក្សា', i: 'group' },
+  { page: 'book', t: 'ការខ្ចី-សងសៀវភៅ', d: 'តាមដានការខ្ចី និងសងសៀវភៅ', i: 'book' },
+  { page: 'reportsHub', t: 'របាយការណ៍', d: 'បញ្ជីឈ្មោះ · តារាងចំណាត់ថ្នាក់ · ព្រឹត្តិបត្រ · ឯកសារ', i: 'report' },
+  { page: 'teacher', t: 'គ្រប់គ្រងគ្រូ', d: 'គ្រប់គ្រងគណនីគ្រូបង្រៀន', i: 'teacher', admin: true }
 ];
 function isMobileView() { return window.matchMedia('(max-width:768px)').matches; }
 function refreshMoreThemeBtn() { refreshAutoThemeUI(); }
@@ -2324,8 +2373,8 @@ function buildMoreSheet() {
   const av = document.getElementById('sidebarAvatar'), msAv = document.getElementById('msAvatar');
   if (av && msAv) msAv.innerHTML = av.innerHTML;
   document.getElementById('msList').innerHTML = MORE_ITEMS.filter(x => !x.admin || IS_ADMIN).map(x =>
-    `<div class="ms-item" onclick="navigate('${x.page}', null)"><div class="ms-ico">${x.i}</div><div class="ms-grow"><div class="ms-t">${x.t}</div><div class="ms-d">${x.d}</div></div>${x.badge ? '<span class="nav-badge" data-chat-badge style="position:static;margin:0"></span>' : ''}<span class="ms-arrow">›</span></div>`
-  ).join('') + `<div class="ms-item danger" onclick="doLogout()"><div class="ms-ico">🚪</div><div class="ms-grow"><div class="ms-t">ចាកចេញ</div></div></div>`;
+    `<div class="ms-item" onclick="navigate('${x.page}', null)"><div class="ms-ico">${ICONS[x.i] || x.i}</div><div class="ms-grow"><div class="ms-t">${x.t}</div><div class="ms-d">${x.d}</div></div>${x.badge ? '<span class="nav-badge" data-chat-badge style="position:static;margin:0"></span>' : ''}<span class="ms-arrow">›</span></div>`
+  ).join('') + `<div class="ms-item danger" onclick="doLogout()"><div class="ms-ico">${ICONS.logout}</div><div class="ms-grow"><div class="ms-t">ចាកចេញ</div></div></div>`;
   refreshMoreThemeBtn(); refreshAutoThemeUI();
   if (typeof setChatUnread === 'function') setChatUnread(chatUnread);
 }
@@ -3131,6 +3180,39 @@ setInterval(function () { const el = document.getElementById('dashRoleTopTag'); 
 })();
 
 refreshAutoThemeUI();
+
+/* ===== 🎨 ICON LIBRARY (SVG line icons) ===== */
+const ICONS = {
+  school:'<svg class="ico" viewBox="0 0 24 24"><path class="flag" d="M12 2.8V6.2l3.2-1.3L12 3.6" fill="rgba(255,255,255,.35)"/><path d="M12 6v1.6"/><path d="M3.5 21V11.2L12 7.6l8.5 3.6V21"/><path d="M2.5 21h19"/><path d="M9.6 21v-4.2a2.4 2.4 0 0 1 4.8 0V21"/><circle cx="12" cy="11.6" r="1.1"/><path d="M6 14.2h.01M18 14.2h.01"/></svg>',
+  dashboard:'<svg class="ico" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="9" rx="2"/><rect x="13.5" y="3.5" width="7" height="5" rx="2"/><rect x="13.5" y="11.5" width="7" height="9" rx="2"/><rect x="3.5" y="15.5" width="7" height="5" rx="2"/></svg>',
+  student:'<svg class="ico" viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.4"/><path d="M3.5 20c0-3.5 2.9-6 6.5-6 1.2 0 2.3.3 3.2.8"/><path d="M15.5 20.5l.5-2.6 4.1-4.1a1.4 1.4 0 0 1 2 2l-4.1 4.1z"/></svg>',
+  idcard:'<svg class="ico" viewBox="0 0 24 24"><rect x="2.8" y="5" width="18.4" height="14" rx="3"/><circle cx="8.6" cy="11" r="2.1"/><path d="M5.6 16c.4-1.6 1.7-2.5 3-2.5s2.6.9 3 2.5"/><path d="M14.5 10h4M14.5 13.5h3"/></svg>',
+  group:'<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="7.6" r="3"/><circle cx="5.6" cy="10" r="2.3"/><circle cx="18.4" cy="10" r="2.3"/><path d="M6.8 19.5c0-3 2.4-5 5.2-5s5.2 2 5.2 5"/><path d="M1.8 18.5c.1-2.2 1.6-3.7 3.6-3.9M22.2 18.5c-.1-2.2-1.6-3.7-3.6-3.9"/></svg>',
+  book:'<svg class="ico" viewBox="0 0 24 24"><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5z"/><path d="M12 6.5v13"/></svg>',
+  attendance:'<svg class="ico" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/><path d="M9 15l2.2 2.2L15.5 13"/></svg>',
+  score:'<svg class="ico" viewBox="0 0 24 24"><rect x="5" y="4.5" width="14" height="16.5" rx="3"/><rect x="9" y="2.5" width="6" height="4" rx="1.5"/><path d="M9 17v-3M12 17v-6M15 17v-4"/></svg>',
+  chat:'<svg class="ico" viewBox="0 0 24 24"><path d="M20.5 11.5a7.5 7.5 0 0 1-10.9 6.7L4 20l1.7-4.9A7.5 7.5 0 1 1 20.5 11.5z"/><path d="M9 11.5h.01M12.5 11.5h.01M16 11.5h.01"/></svg>',
+  report:'<svg class="ico" viewBox="0 0 24 24"><path d="M14 3H7.5A2.5 2.5 0 0 0 5 5.5v13A2.5 2.5 0 0 0 7.5 21h9a2.5 2.5 0 0 0 2.5-2.5V8z"/><path d="M14 3v5h5"/><path d="M9 17v-2.5M12 17v-4.5M15 17v-3"/></svg>',
+  teacher:'<svg class="ico" viewBox="0 0 24 24"><rect x="2.8" y="3.5" width="18.4" height="10" rx="2"/><path d="M12 13.5v2.5M8 21l4-5 4 5"/><circle cx="12" cy="8.5" r="1.8"/></svg>',
+  history:'<svg class="ico" viewBox="0 0 24 24"><path d="M3.8 12a8.2 8.2 0 1 0 2.5-5.9L3.8 8.6"/><path d="M3.8 4v4.6h4.6"/><path d="M12 7.8V12l2.8 1.8"/></svg>',
+  rank:'<svg class="ico" viewBox="0 0 24 24"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 5.5H4.5v1.2a3 3 0 0 0 3 3M17 5.5h2.5v1.2a3 3 0 0 1-3 3"/><path d="M12 13v4M8.5 20.5h7M9.5 17h5"/></svg>',
+  logout:'<svg class="ico" viewBox="0 0 24 24"><path d="M9.5 20.5H6A2.5 2.5 0 0 1 3.5 18V6A2.5 2.5 0 0 1 6 3.5h3.5"/><path d="M16 16.5l4.5-4.5L16 7.5M20.5 12h-11"/></svg>',
+  users:'<svg class="ico" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.2 2.7-5.5 6-5.5s6 2.3 6 5.5"/><path d="M16 5.2a3 3 0 0 1 0 5.6M18 14.8c1.8.7 3 2.4 3 5.2"/></svg>',
+  clock:'<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><g class="hand"><path d="M12 12V7.5"/></g><path d="M12 12l3 2"/></svg>',
+  calendar:'<svg class="ico" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg>'
+};
+function applyIcons() {
+  const set = (sel, key) => document.querySelectorAll(sel).forEach(el => { el.innerHTML = ICONS[key]; });
+  set('.hero-building-icon', 'school');
+  set('.chip.g', 'users'); set('.chip.a', 'clock'); set('.dc-ico', 'calendar');
+  const navMap = { dashboard: 'dashboard', addStudent: 'student', card: 'idcard', group: 'group', book: 'book', attendance: 'attendance', score: 'score', chat: 'chat', reportsHub: 'report', teacher: 'teacher' };
+  document.querySelectorAll('.nav-link-btn[data-page]').forEach(b => { const k = navMap[b.dataset.page]; const box = b.querySelector('.nav-icon-box'); if (k && box) box.innerHTML = ICONS[k]; });
+  const sc = { "navigate('score', null)": 'score', "navigate('attendance', null)": 'attendance', "navigate('rank', null)": 'rank', "navigate('addStudent', null)": 'users', 'openStudentProfileViewer()': 'history' };
+  document.querySelectorAll('.shortcut-pill-btn').forEach(b => { const k = sc[b.getAttribute('onclick')]; const sp = b.querySelector('span'); if (k && sp) sp.innerHTML = ICONS[k]; });
+  document.querySelectorAll('.task-icon-purple').forEach(el => { el.innerHTML = ICONS.score; });
+  const lo = document.querySelector('.sidebar-logout-btn > span:first-child'); if (lo) lo.innerHTML = ICONS.logout;
+}
+applyIcons();
 </script>
 </body>
 </html>
