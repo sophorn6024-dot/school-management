@@ -174,7 +174,7 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .reports-hub-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px}
 .reports-hub-title{font-size:19px;color:var(--primary);display:flex;align-items:center;gap:10px;font-weight:700}
 .btn-back-home{background:var(--surface-card);border:1px solid var(--border);color:var(--text);padding:8px 16px;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px}
-.reports-grid-clean{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.reports-grid-clean{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:16px}
 .report-card-item{background:var(--surface-card);border:1px solid var(--border);border-radius:20px;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:var(--card-shadow);transition:all .25s cubic-bezier(.4,0,.2,1)}
 .report-card-item:hover{transform:translateY(-3px);border-color:var(--primary)}
 .rci-left{display:flex;align-items:center;gap:14px}
@@ -296,6 +296,16 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .rf-open svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .rf-open:hover{background:#059669;color:#fff}
 .rf-open:active{transform:scale(.96)}
+.rci-inline{cursor:default;padding:14px 16px;gap:10px}
+.rci-inline:hover{transform:none;border-color:var(--border)}
+.rci-inline .rci-left{min-width:0;flex:1;gap:12px}
+.rci-inline .rci-name{line-height:1.5;min-width:0;white-space:nowrap;font-size:clamp(11.5px,3.1vw,13px)}
+.rci-inline .rci-icon{width:40px;height:40px;font-size:19px;border-radius:12px}
+.rci-inline .rci-left{gap:10px}
+@media (max-width:480px){.rci-inline{padding:12px 12px}.rci-inline .rci-icon{width:36px;height:36px;font-size:17px}.rf-open.rf-open-sm{padding:0 11px;font-size:13px}}
+.rci-inline .rf-row{flex-shrink:0}
+.rf-open.rf-open-sm{height:38px;padding:0 14px;font-size:13.5px;border-radius:12px;gap:6px}
+.rf-open.rf-open-sm svg{width:17px;height:17px}
 [data-theme="dark"] .rf-open{color:#34d399;background:rgba(52,211,153,.14)}
 [data-theme="dark"] .rf-open:hover{background:#059669;color:#fff}
 .rf-popup{position:fixed;z-index:10030;background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:6px;box-shadow:0 16px 44px rgba(0,0,0,.35);animation:rfIn .16s ease-out}
@@ -304,7 +314,7 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .rf-item.active{background:var(--primary-soft);color:var(--primary)}
 .rf-item svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 @keyframes rfIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-@media (max-width:1024px){.reports-grid-clean{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:1024px){.reports-grid-clean{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:900px){.hero-banner-card{flex-direction:column;align-items:flex-start}.hero-banner-right{width:100%;justify-content:flex-start}.today-tasks-grid{grid-template-columns:1fr}.admin-classes-grid{grid-template-columns:repeat(2,1fr)}.pv-info-grid{grid-template-columns:1fr}}
 @media (max-width:768px){
 .sidebar{position:fixed;inset:0;width:100%!important;height:100dvh;transform:translateY(18px) scale(.98);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .25s ease,transform .3s cubic-bezier(.2,.9,.3,1.05),visibility 0s linear .3s;z-index:90;box-shadow:none;border:none}
@@ -320,7 +330,7 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 #dashboardView,#reportsHubView{padding:16px 14px calc(var(--mnav-reserve) + 12px)}
 .iframe-container{bottom:var(--mnav-reserve)}
 .hero-stat-card,.hero-today-card{flex:1;min-width:0}
-.reports-grid-clean{grid-template-columns:1fr}}
+.reports-grid-clean{grid-template-columns:minmax(0,1fr)}}
 @media (prefers-reduced-motion:reduce){.mobile-bottom-nav,.m-nav-item.active .mnav-ico,.nav-badge,.husky,.paw{animation:none!important}.mnav-indicator,.mnav-ico,.chat-toast{transition:none!important}}
 
 /* ===== 📅 DASHBOARD CALENDAR (desktop only) ===== */
@@ -534,6 +544,19 @@ body.chat-page .iframe-container{top:0;bottom:0}
 [data-theme="light"] .sidebar-logout-btn{background:rgba(239,68,68,.08);color:#dc2626;border-color:rgba(239,68,68,.25)}
 [data-theme="light"] .sidebar-footer{border-top-color:rgba(15,23,42,.08)}
 [data-theme="light"] .sb-close-m{color:#334155!important;background:rgba(15,23,42,.06)!important}
+
+/* ===== 🎨 ACCENT COLORS PER BUTTON (ស្រាលៗ ឆ្លាស់គ្នា) ===== */
+.nav-link-btn.active{background:linear-gradient(135deg,var(--a0,#bbf7d0),color-mix(in srgb,var(--a1,#86efac) 62%,var(--a0,#bbf7d0)))!important;color:var(--a2,#166534)!important;border:1px solid rgba(255,255,255,.7)!important;box-shadow:0 6px 16px color-mix(in srgb,var(--a1,#86efac) 50%,transparent)!important}
+.nav-link-btn.active .nav-text{color:var(--a2,#166534)}
+.nav-link-btn:hover:not(.active){background:color-mix(in srgb,var(--a1,#94a3b8) 22%,transparent)!important}
+[data-theme="light"] .nav-link-btn.active{color:var(--a2)!important}
+[data-theme="light"] .nav-link-btn:hover:not(.active){color:#0f172a}
+.nav-link-btn:active{background:color-mix(in srgb,var(--a1,#94a3b8) 38%,transparent)!important}
+.shortcut-pill-btn:hover,.shortcut-pill-btn:active{background:linear-gradient(135deg,var(--a0,#fff),color-mix(in srgb,var(--a1,#fff) 55%,#fff))!important;border-color:var(--a1,var(--primary))!important;color:var(--a2,var(--primary))!important}
+.m-nav-item.active{color:var(--a2,var(--primary))}
+.ms-item:active{background:linear-gradient(135deg,var(--a0,#fff),color-mix(in srgb,var(--a1,#fff) 50%,#fff))!important;border-color:var(--a1,var(--border))!important}
+.ms-item:active .ms-t{color:var(--a2,inherit)}
+.task-action-card:active,.report-card-item:active{background:color-mix(in srgb,var(--primary) 10%,var(--surface-card))}
 /* ===== 🔤 TEXT RESPONSIVE ===== */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .hero-info-texts,.task-text-box{min-width:0}
@@ -716,17 +739,17 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
                 </button>
               </div>
             </div>
-            <div class="report-card-item" onclick="navigate('rank', null)"><div class="rci-left"><div class="rci-icon">🏆</div><div class="rci-name">តារាងចំណាត់ថ្នាក់</div></div><div class="rci-arrow">➔</div></div>
-            <div class="report-card-item" onclick="navigate('honor', null)"><div class="rci-left"><div class="rci-icon">🌟</div><div class="rci-name">តារាងកិត្តិយស</div></div><div class="rci-arrow">➔</div></div>
-            <div class="report-card-item" onclick="navigate('certificate', null)"><div class="rci-left"><div class="rci-icon">🎖️</div><div class="rci-name">បណ្ណសរសើរ</div></div><div class="rci-arrow">➔</div></div>
-            <div class="report-card-item" onclick="navigate('report', null)"><div class="rci-left"><div class="rci-icon">📋</div><div class="rci-name">សៀវភៅតាមដាន</div></div><div class="rci-arrow">➔</div></div>
-            <div class="report-card-item" onclick="navigate('remesterrecord', null)"><div class="rci-left"><div class="rci-icon">📘</div><div class="rci-name">សៀវភៅសិក្ខាគារិក</div></div><div class="rci-arrow">➔</div></div>
-            <div class="report-card-item" onclick="navigate('report_card', null)"><div class="rci-left"><div class="rci-icon">📂 </div><div class="rci-name">ព្រឹត្តិបត្រពិន្ទុ</div></div><div class="rci-arrow">➔</div></div>
-            <div class="report-card-item" onclick="navigate('student_age_stats', null)"><div class="rci-left"><div class="rci-icon">📈</div><div class="rci-name">ស្ថិតិសិស្សតាមអាយុ នាដើមឆ្នាំ</div></div><div class="rci-arrow">➔</div></div>
-            <div class="report-card-item" onclick="navigate('class_inventory', null)"><div class="rci-left"><div class="rci-icon">📚</div><div class="rci-name">បញ្ជីសារពើភ័ណ្ឌ</div></div><div class="rci-arrow">➔</div></div>
-            <div class="report-card-item" onclick="navigate('annual_subject_grade', null)"><div class="rci-left"><div class="rci-icon">🗂️</div><div class="rci-name">តារាងនិទ្ទេស ខ្មែរ-គណិត ប្រចាំឆ្នាំ</div></div><div class="rci-arrow">➔</div></div>
-            <div class="report-card-item" onclick="navigate('classroom_rules', null)"><div class="rci-left"><div class="rci-icon">📑 </div><div class="rci-name">បទបញ្ជាផ្ទៃក្នុង</div></div><div class="rci-arrow">➔</div></div>
-            <div class="report-card-item" onclick="navigate('absence_notice', null)"><div class="rci-left"><div class="rci-icon">📬​</div><div class="rci-name">ជូនដំណឹងសិស្សអវត្តមាន</div></div><div class="rci-arrow">➔</div></div>
+            <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">🏆</div><div class="rci-name">តារាងចំណាត់ថ្នាក់</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('rank', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
+            <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">🌟</div><div class="rci-name">តារាងកិត្តិយស</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('honor', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
+            <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">🎖️</div><div class="rci-name">បណ្ណសរសើរ</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('certificate', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
+            <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">📋</div><div class="rci-name">សៀវភៅតាមដាន</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('report', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
+            <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">📘</div><div class="rci-name">សៀវភៅសិក្ខាគារិក</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('remesterrecord', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
+            <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">📂 </div><div class="rci-name">ព្រឹត្តិបត្រពិន្ទុ</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('report_card', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
+            <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">📈</div><div class="rci-name">ស្ថិតិសិស្សតាមអាយុ នាដើមឆ្នាំ</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('student_age_stats', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
+            <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">📚</div><div class="rci-name">បញ្ជីសារពើភ័ណ្ឌ</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('class_inventory', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
+            <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">🗂️</div><div class="rci-name">តារាងនិទ្ទេស ខ្មែរ-គណិត ប្រចាំឆ្នាំ</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('annual_subject_grade', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
+            <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">📑 </div><div class="rci-name">បទបញ្ជាផ្ទៃក្នុង</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('classroom_rules', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
+            <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">📬​</div><div class="rci-name">ជូនដំណឹងសិស្សអវត្តមាន</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('absence_notice', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
           </div>
         </div>
       </div>
@@ -2313,6 +2336,8 @@ function updateMobileNavIndicator() {
   if (!act || !act.offsetWidth) { ind.classList.remove('on'); ind.dataset.placed = ''; return; }
   const first = !ind.dataset.placed;
   if (first) ind.classList.add('no-anim');
+  const a0 = act.style.getPropertyValue('--a0'), a1 = act.style.getPropertyValue('--a1');
+  if (a0 && a1) { ind.style.background = `linear-gradient(135deg, ${a0}, ${a1})`; ind.style.boxShadow = `0 0 0 5px ${a0}66, 0 8px 18px ${a1}55`; }
   ind.style.width = (act.offsetWidth - 6) + 'px';
   ind.style.transform = 'translateX(' + (act.offsetLeft + 3) + 'px)';
   if (first) { void ind.offsetWidth; ind.classList.remove('no-anim'); ind.dataset.placed = '1'; }
@@ -2425,7 +2450,7 @@ function buildMoreSheet() {
   const av = document.getElementById('sidebarAvatar'), msAv = document.getElementById('msAvatar');
   if (av && msAv) msAv.innerHTML = av.innerHTML;
   document.getElementById('msList').innerHTML = MORE_ITEMS.filter(x => !x.admin || IS_ADMIN).map(x =>
-    `<div class="ms-item" onclick="navigate('${x.page}', null)"><div class="ms-ico">${ico3d(x.i)}</div><div class="ms-grow"><div class="ms-t">${x.t}</div><div class="ms-d">${x.d}</div></div>${x.badge ? '<span class="nav-badge" data-chat-badge style="position:static;margin:0"></span>' : ''}<span class="ms-arrow">›</span></div>`
+    `<div class="ms-item" style="--a0:${(TILE3D[x.i]||[])[0]};--a1:${(TILE3D[x.i]||[])[1]};--a2:${(TILE3D[x.i]||[])[2]}" onclick="navigate('${x.page}', null)"><div class="ms-ico">${ico3d(x.i)}</div><div class="ms-grow"><div class="ms-t">${x.t}</div><div class="ms-d">${x.d}</div></div>${x.badge ? '<span class="nav-badge" data-chat-badge style="position:static;margin:0"></span>' : ''}<span class="ms-arrow">›</span></div>`
   ).join('') + `<div class="ms-item danger" onclick="doLogout()"><div class="ms-ico">${ico3d('logout')}</div><div class="ms-grow"><div class="ms-t">ចាកចេញ</div></div></div>`;
   refreshMoreThemeBtn(); refreshAutoThemeUI();
   if (typeof setChatUnread === 'function') setChatUnread(chatUnread);
@@ -3262,7 +3287,7 @@ const TILE3D = {
   report:['#e0e7ff','#a5b4fc','#4338ca'], teacher:['#fce7f3','#f9a8d4','#be185d'], history:['#cffafe','#67e8f9','#0e7490'], rank:['#fef9c3','#fde047','#a16207'],
   logout:['#fee2e2','#fca5a5','#b91c1c'], users:['#d1fae5','#6ee7b7','#047857'], menu:['#f1f5f9','#cbd5e1','#475569']
 };
-function ico3d(key) {
+function ico3dTile(key) {
   const g = ICONS[key] || ICONS.dashboard, c = TILE3D[key] || TILE3D.dashboard, id = 'g3' + (++_g3);
   const inner = g.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
   return `<svg class="ico3" viewBox="0 0 28 28" aria-hidden="true"><defs>
@@ -3275,6 +3300,112 @@ function ico3d(key) {
 <rect x="1.5" y="1.5" width="25" height="25" rx="8" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width=".9"/>
 <g transform="translate(6.2 6.4) scale(.67)" fill="none" stroke="${c[2]}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 1px 0 rgba(255,255,255,.6))">${inner}</g></svg>`;
 }
+/* ===== 🧊 ILLUSTRATED 3D ICONS (48x48) ===== */
+const ART = (() => {
+  let n = 0;
+  const lg = (id, a, b, v = true) => `<linearGradient id="${id}" x1="0" y1="0" x2="${v ? 0 : 1}" y2="${v ? 1 : 1}"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
+  const gloss = id => `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>`;
+  const wrap = (body, defs) => `<svg class="ico3" viewBox="0 0 48 48" aria-hidden="true"><defs>${defs}</defs>${body}</svg>`;
+  const make = {
+    dashboard(p) {
+      const sq = (x, y, c1, c2, k) => `<rect x="${x}" y="${y}" width="17" height="17" rx="5.5" fill="url(#${p}${k})"/><rect x="${x + 1}" y="${y + 1}" width="15" height="8" rx="4" fill="url(#${p}g)"/>`;
+      return wrap(sq(5, 5, 0, 0, 'a') + sq(26, 5, 0, 0, 'b') + sq(5, 26, 0, 0, 'c') + sq(26, 26, 0, 0, 'd'),
+        lg(p + 'a', '#93c5fd', '#3b82f6') + lg(p + 'b', '#f9a8d4', '#ec4899') + lg(p + 'c', '#fde68a', '#f59e0b') + lg(p + 'd', '#86efac', '#22c55e') + gloss(p + 'g'));
+    },
+    student(p) {
+      return wrap(`<path d="M7 45c0-9.5 7.5-15 17-15s17 5.5 17 15z" fill="url(#${p}s)"/>
+<path d="M19 30.5 24 38l5-7.5" fill="#fff" opacity=".9"/><rect x="20.5" y="25" width="7" height="7" rx="3" fill="#f2b48b"/>
+<circle cx="24" cy="21" r="9.5" fill="url(#${p}k)"/>
+<path d="M14.5 20.5c.5-5.5 4.5-8.5 9.5-8.5s9 3 9.5 8.5c-3-2.6-6-3.6-9.5-3.6s-6.500 1-9.500 3.600z" fill="#4b3a5c"/>
+<circle cx="20.3" cy="22.5" r="1.2" fill="#3b2f4a"/><circle cx="27.7" cy="22.5" r="1.2" fill="#3b2f4a"/><path d="M21.5 26c1.4 1.3 3.600 1.300 5 0" stroke="#c2410c" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+<circle cx="18" cy="25" r="1.8" fill="#fb7185" opacity=".35"/><circle cx="30" cy="25" r="1.8" fill="#fb7185" opacity=".35"/>
+<path d="M13 13.500v4c0 2.500 5 4.500 11 4.500s11-2 11-4.500v-4z" fill="#334155"/>
+<path d="M24 4.500 44 11.500 24 18.500 4 11.500z" fill="url(#${p}c)"/><path d="M24 4.500 44 11.500 24 14 4 11.500z" fill="#fff" opacity=".18"/>
+<path d="M40.500 12.500v8" stroke="#fbbf24" stroke-width="1.600" stroke-linecap="round"/><circle cx="40.500" cy="22" r="2" fill="#fbbf24"/>`,
+        lg(p + 's', '#fdba74', '#f97316') + lg(p + 'k', '#ffe2c4', '#f4b183') + lg(p + 'c', '#64748b', '#1e293b'));
+    },
+    idcard(p) {
+      return wrap(`<path d="M17 2.500 24 14l7-11.500" fill="none" stroke="#f87171" stroke-width="3.200" stroke-linejoin="round"/>
+<rect x="19" y="9" width="10" height="6" rx="2.200" fill="#cbd5e1"/><rect x="21.500" y="10.500" width="5" height="2" rx="1" fill="#94a3b8"/>
+<rect x="6" y="13" width="36" height="31" rx="7" fill="url(#${p}a)"/><rect x="7" y="14" width="34" height="13" rx="6" fill="url(#${p}g)"/>
+<circle cx="17" cy="26" r="5.200" fill="#fff" opacity=".95"/><circle cx="17" cy="24.500" r="2.200" fill="#5eead4"/><path d="M12.500 30.500c.6-2.600 2.400-3.700 4.500-3.700s3.900 1.100 4.500 3.700z" fill="#5eead4"/>
+<rect x="26" y="21.500" width="11" height="3.200" rx="1.600" fill="#fff" opacity=".95"/><rect x="26" y="27.500" width="8" height="3.200" rx="1.600" fill="#fff" opacity=".7"/><rect x="11" y="35.500" width="26" height="3.200" rx="1.600" fill="#fff" opacity=".5"/>`,
+        lg(p + 'a', '#5eead4', '#0d9488') + gloss(p + 'g'));
+    },
+    group(p) {
+      const person = (cx, cy, r, hair, shirt, skin) => `<path d="M${cx - r * 1.500} ${cy + r * 3.400}c0-${r * 1.900} ${r * 0.600}-${r * 2.600} ${r * 1.500}-${r * 2.600}s${r * 1.500} ${r * 0.700} ${r * 1.500} ${r * 2.600}z" fill="url(#${p}${shirt})"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="url(#${p}${skin})"/><path d="M${cx - r} ${cy - 0.5}c0-${r * 0.9} ${r * 0.4}-${r * 1.200} ${r}-${r * 1.200}s${r} .3 ${r} ${r * 1.200}c-${r * 0.5}-${r * 0.500}-${r * 1.200}-${r * 0.700}-${r}-${r * 0.700}s-${r * 0.500} .2-${r} ${r * 0.700}z" fill="${hair}"/><circle cx="${cx - r * 0.35}" cy="${cy + r * 0.2}" r="${r * 0.11}" fill="#3b2f4a"/><circle cx="${cx + r * 0.35}" cy="${cy + r * 0.2}" r="${r * 0.11}" fill="#3b2f4a"/>`;
+      return wrap(person(13, 19, 5.500, '#5b21b6', 'v', 'k') + person(35, 19, 5.500, '#0f766e', 't', 'k') + person(24, 16, 7, '#7c2d12', 'o', 'k'),
+        lg(p + 'v', '#c4b5fd', '#7c3aed') + lg(p + 't', '#5eead4', '#0d9488') + lg(p + 'o', '#fdba74', '#f97316') + lg(p + 'k', '#ffe2c4', '#f4b183'));
+    },
+    book(p) {
+      return wrap(`<path d="M3 11c7-3 15-2 21 2 6-4 14-5 21-2v29c-7-2.500-15-1.500-21 2.500-6-4-14-5-21-2.500z" fill="url(#${p}c)"/>
+<path d="M5.500 9.500c6.500-2 14-1 18.500 2.500v28c-4.500-3-12-4-18.500-2.500z" fill="url(#${p}p)"/><path d="M42.500 9.500c-6.500-2-14-1-18.500 2.500v28c4.500-3 12-4 18.500-2.500z" fill="url(#${p}q)"/>
+<path d="M9 16c4-.8 8-.3 11 1.500M9 21.500c4-.8 8-.3 11 1.500M9 27c4-.8 8-.3 11 1.500" stroke="#bfdbfe" stroke-width="1.600" stroke-linecap="round" fill="none"/>
+<path d="M28 17.500c3-1.800 7-2.300 11-1.500M28 23c3-1.800 7-2.300 11-1.500" stroke="#bfdbfe" stroke-width="1.600" stroke-linecap="round" fill="none"/>
+<path d="M31 6h6v13l-3-2.600-3 2.600z" fill="#f43f5e"/>`,
+        lg(p + 'c', '#4ade80', '#15803d') + lg(p + 'p', '#ffffff', '#e0f2fe', false) + lg(p + 'q', '#f8fafc', '#dbeafe', false));
+    },
+    attendance(p) {
+      return wrap(`<rect x="14" y="3" width="5" height="10" rx="2.500" fill="#94a3b8"/><rect x="29" y="3" width="5" height="10" rx="2.500" fill="#94a3b8"/>
+<rect x="5" y="8" width="38" height="36" rx="8" fill="url(#${p}w)"/><path d="M5 16c0-4.500 3.500-8 8-8h22c4.500 0 8 3.500 8 8v3H5z" fill="url(#${p}r)"/>
+<rect x="6" y="9" width="36" height="8" rx="4" fill="url(#${p}g)"/>
+<g fill="#cbd5e1"><rect x="10" y="24" width="5" height="5" rx="1.600"/><rect x="18.500" y="24" width="5" height="5" rx="1.600"/><rect x="27" y="24" width="5" height="5" rx="1.600"/><rect x="10" y="32.500" width="5" height="5" rx="1.600"/><rect x="18.500" y="32.500" width="5" height="5" rx="1.600"/></g>
+<circle cx="35" cy="35" r="10" fill="url(#${p}k)"/><circle cx="35" cy="35" r="10" fill="none" stroke="#fff" stroke-width="2"/><path d="M30.200 35.200l3.300 3.300 6.300-6.700" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`,
+        lg(p + 'w', '#ffffff', '#e2e8f0') + lg(p + 'r', '#fda4af', '#f43f5e') + lg(p + 'k', '#86efac', '#16a34a') + gloss(p + 'g'));
+    },
+    score(p) {
+      return wrap(`<rect x="7" y="6" width="34" height="39" rx="7" fill="url(#${p}b)"/><rect x="17" y="3" width="14" height="8" rx="3.500" fill="#94a3b8"/><rect x="20" y="5" width="8" height="3" rx="1.500" fill="#e2e8f0"/>
+<rect x="11" y="12" width="26" height="29" rx="4" fill="#fff"/>
+<rect x="15" y="16.500" width="14" height="2.600" rx="1.300" fill="#cbd5e1"/><rect x="15" y="21.500" width="9" height="2.600" rx="1.300" fill="#e2e8f0"/>
+<rect x="15" y="32" width="5" height="6" rx="1.500" fill="url(#${p}x)"/><rect x="21.500" y="27" width="5" height="11" rx="1.500" fill="url(#${p}y)"/><rect x="28" y="29.500" width="5" height="8.500" rx="1.500" fill="url(#${p}z)"/>`,
+        lg(p + 'b', '#fcd34d', '#f59e0b') + lg(p + 'x', '#93c5fd', '#3b82f6') + lg(p + 'y', '#86efac', '#22c55e') + lg(p + 'z', '#f9a8d4', '#ec4899'));
+    },
+    chat(p) {
+      return wrap(`<path d="M13 5h17c5.500 0 9 3.500 9 9v5c0 5.500-3.500 9-9 9h-8l-7 5.500V28h-2c-5.500 0-9-3.500-9-9v-5c0-5.500 3.500-9 9-9z" fill="url(#${p}a)"/><path d="M13 5h17c5.500 0 9 3.500 9 9v1H4v-1c0-5.500 3.500-9 9-9z" fill="#fff" opacity=".28"/>
+<path d="M19 22h16c5.500 0 9 3.500 9 8v3c0 4.500-3.500 8-9 8h-1v5l-6.500-5H19c-5.500 0-9-3.500-9-8v-3c0-4.500 3.500-8 9-8z" fill="url(#${p}b)"/>
+<circle cx="20" cy="31.500" r="2.200" fill="#fff"/><circle cx="27" cy="31.500" r="2.200" fill="#fff"/><circle cx="34" cy="31.500" r="2.200" fill="#fff"/>
+<rect x="11" y="11" width="14" height="2.800" rx="1.400" fill="#fff" opacity=".9"/><rect x="11" y="16.500" width="9" height="2.800" rx="1.400" fill="#fff" opacity=".7"/>`,
+        lg(p + 'a', '#7dd3fc', '#0ea5e9') + lg(p + 'b', '#f0abfc', '#c026d3'));
+    },
+    report(p) {
+      return wrap(`<path d="M12 3h17l11 11v26a5 5 0 0 1-5 5H12a5 5 0 0 1-5-5V8a5 5 0 0 1 5-5z" fill="url(#${p}a)"/><path d="M29 3l11 11H33a4 4 0 0 1-4-4z" fill="#fff" opacity=".55"/>
+<circle cx="21" cy="26" r="8" fill="#fff"/><path d="M21 26V18a8 8 0 0 1 8 8z" fill="url(#${p}b)"/><path d="M21 26l5.700 5.700A8 8 0 0 1 13 26z" fill="url(#${p}c)"/>
+<rect x="13" y="37" width="22" height="2.800" rx="1.400" fill="#fff" opacity=".85"/><rect x="31" y="21" width="5" height="2.600" rx="1.300" fill="#fff" opacity=".8"/><rect x="31" y="26" width="5" height="2.600" rx="1.300" fill="#fff" opacity=".6"/>`,
+        lg(p + 'a', '#a5b4fc', '#6366f1') + lg(p + 'b', '#fbbf24', '#f59e0b') + lg(p + 'c', '#f472b6', '#ec4899'));
+    },
+    teacher(p) {
+      return wrap(`<rect x="3" y="7" width="42" height="30" rx="6" fill="url(#${p}w)"/><rect x="7" y="11" width="34" height="22" rx="3.500" fill="url(#${p}g)"/>
+<path d="M12 28l4-9 4 9M13.500 25h5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity=".95"/><path d="M25 19h10M25 24h7" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/>
+<rect x="9" y="38" width="30" height="4.500" rx="2.200" fill="url(#${p}w)"/><rect x="31" y="35.500" width="6" height="2.500" rx="1" fill="#fff"/>
+<path d="M8 8h32c2 0 3 .8 3 2" stroke="#fff" stroke-opacity=".4" stroke-width="1.200" fill="none"/>`,
+        lg(p + 'w', '#fcd34d', '#b45309') + lg(p + 'g', '#34d399', '#047857'));
+    },
+    history(p) {
+      return wrap(`<circle cx="25" cy="26" r="17" fill="url(#${p}r)"/><circle cx="25" cy="26" r="13.500" fill="url(#${p}f)"/>
+<path d="M25 17.500V26l6 3.500" stroke="#0e7490" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="25" cy="26" r="1.800" fill="#0e7490"/>
+<g fill="#67e8f9"><circle cx="25" cy="14.800" r="1.100"/><circle cx="25" cy="37.200" r="1.100"/><circle cx="13.800" cy="26" r="1.100"/><circle cx="36.200" cy="26" r="1.100"/></g>
+<path d="M4 17a21 21 0 0 1 6-7.500" stroke="#f59e0b" stroke-width="3.500" stroke-linecap="round" fill="none"/><path d="M3 8.500l1 9.500 8.500-3.500z" fill="#f59e0b"/>
+<path d="M9 14c4-6 10-9 16-9" stroke="#fff" stroke-opacity=".5" stroke-width="1.500" fill="none" stroke-linecap="round"/>`,
+        lg(p + 'r', '#67e8f9', '#0891b2') + lg(p + 'f', '#ffffff', '#e0f2fe'));
+    },
+    rank(p) {
+      return wrap(`<path d="M12 12H6c0 7 3 11 8 12M36 12h6c0 7-3 11-8 12" stroke="url(#${p}h)" stroke-width="3.500" fill="none" stroke-linecap="round"/>
+<path d="M12 5h24v13c0 8-5 13-12 13S12 26 12 18z" fill="url(#${p}a)"/><path d="M12 5h24v7H12z" fill="#fff" opacity=".28"/>
+<path d="M24 11l2.200 4.600 5 .7-3.600 3.500.9 5L24 22.500l-4.500 2.300.9-5-3.600-3.500 5-.7z" fill="#fff" opacity=".92"/>
+<rect x="21" y="30" width="6" height="7" fill="url(#${p}h)"/><rect x="13" y="37" width="22" height="7" rx="3" fill="url(#${p}b)"/><rect x="17" y="39.500" width="14" height="2" rx="1" fill="#fff" opacity=".6"/>`,
+        lg(p + 'a', '#fde047', '#f59e0b') + lg(p + 'h', '#facc15', '#d97706') + lg(p + 'b', '#fb923c', '#ea580c'));
+    },
+    logout(p) {
+      return wrap(`<path d="M10 7a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4v34a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4z" fill="url(#${p}a)"/><path d="M10 7a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4v5H10z" fill="#fff" opacity=".35"/>
+<circle cx="24" cy="24" r="1.800" fill="#fff"/>
+<path d="M22 24h20M35 17l7.500 7-7.500 7" stroke="url(#${p}b)" stroke-width="4.500" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`,
+        lg(p + 'a', '#fecaca', '#f87171') + lg(p + 'b', '#fb7185', '#e11d48'));
+    }
+  };
+  return key => { const f = make[key]; return f ? f('a' + (++n)) : null; };
+})();
+
+function ico3d(key){ return ART(key) || ico3dTile(key); }
 const SCHOOL3D = `<svg class="school3" viewBox="0 0 64 64" aria-hidden="true"><defs>
 <linearGradient id="sc1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fef3c7"/><stop offset="1" stop-color="#fcd34d"/></linearGradient>
 <linearGradient id="sc2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fda4af"/><stop offset="1" stop-color="#fb7185"/></linearGradient>
@@ -3290,18 +3421,22 @@ const SCHOOL3D = `<svg class="school3" viewBox="0 0 64 64" aria-hidden="true"><d
 <rect x="26.5" y="38" width="11" height="18" rx="3.5" fill="url(#sc3)"/><circle cx="35" cy="47.5" r=".9" fill="#fde68a"/>
 <rect x="13.5" y="35" width="9" height="9" rx="2.2" fill="url(#sc4)"/><rect x="41.5" y="35" width="9" height="9" rx="2.2" fill="url(#sc4)"/>
 <path d="M18 35v9M13.5 39.5h9M46 35v9M41.5 39.5h9" stroke="#fff" stroke-width="1" opacity=".8"/></svg>`;
+function setAccent(el, key) {
+  const c = TILE3D[key]; if (!el || !c) return;
+  el.style.setProperty('--a0', c[0]); el.style.setProperty('--a1', c[1]); el.style.setProperty('--a2', c[2]);
+}
 function applyIcons() {
   const set = (sel, key) => document.querySelectorAll(sel).forEach(el => { el.innerHTML = ICONS[key]; });
   document.querySelectorAll('.hero-building-icon').forEach(el => { el.innerHTML = SCHOOL3D; });
   set('.chip.g', 'users'); set('.chip.a', 'clock'); set('.dc-ico', 'calendar');
   const navMap = { dashboard: 'dashboard', addStudent: 'student', card: 'idcard', group: 'group', book: 'book', attendance: 'attendance', score: 'score', chat: 'chat', reportsHub: 'report', teacher: 'teacher' };
-  document.querySelectorAll('.nav-link-btn[data-page]').forEach(b => { const k = navMap[b.dataset.page]; const box = b.querySelector('.nav-icon-box'); if (k && box) box.innerHTML = ico3d(k); });
+  document.querySelectorAll('.nav-link-btn[data-page]').forEach(b => { const k = navMap[b.dataset.page]; const box = b.querySelector('.nav-icon-box'); if (k && box) { box.innerHTML = ico3d(k); setAccent(b, k); } });
   const sc = { "navigate('score', null)": 'score', "navigate('attendance', null)": 'attendance', "navigate('rank', null)": 'rank', "navigate('addStudent', null)": 'student', 'openStudentProfileViewer()': 'history' };
-  document.querySelectorAll('.shortcut-pill-btn').forEach(b => { const k = sc[b.getAttribute('onclick')]; const sp = b.querySelector('span'); if (k && sp) sp.innerHTML = ico3d(k); });
+  document.querySelectorAll('.shortcut-pill-btn').forEach(b => { const k = sc[b.getAttribute('onclick')]; const sp = b.querySelector('span'); if (k && sp) { sp.innerHTML = ico3d(k); setAccent(b, k); } });
   document.querySelectorAll('.task-icon-purple').forEach(el => { el.innerHTML = ico3d('score'); });
   const lo = document.querySelector('.sidebar-logout-btn > span:first-child'); if (lo) lo.innerHTML = ico3d('logout');
   const bar = { mNavDash: 'dashboard', mNavStu: 'student', mNavAtt: 'attendance', mNavScores: 'score', mNavMenu: 'menu' };
-  Object.keys(bar).forEach(id => { const ic = document.querySelector('#' + id + ' .mnav-ico'); if (!ic) return; const badge = ic.querySelector('.nav-badge'); ic.innerHTML = ico3d(bar[id]); if (badge) ic.appendChild(badge); });
+  Object.keys(bar).forEach(id => { setAccent(document.getElementById(id), bar[id]); const ic = document.querySelector('#' + id + ' .mnav-ico'); if (!ic) return; const badge = ic.querySelector('.nav-badge'); ic.innerHTML = ico3d(bar[id]); if (badge) ic.appendChild(badge); });
 }
 applyIcons();
 </script>
