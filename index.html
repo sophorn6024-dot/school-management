@@ -494,6 +494,46 @@ body.chat-page .iframe-container{top:0;bottom:0}
 .mnav-ico svg{transition:transform .3s}
 .m-nav-item.active .mnav-ico svg{animation:icoBreath 2.6s ease-in-out infinite .6s}
 @media (prefers-reduced-motion:reduce){.hero-building-icon,.hero-building-icon::after,.hero-building-icon .flag,.ico,.chip .hand,.dc-day.today,.report-card-item,#dashboardView.active *{animation:none!important}}
+/* ===== 🧊 3D ICON STYLES ===== */
+.ico3{width:30px;height:30px;display:block;filter:drop-shadow(0 4px 6px rgba(15,23,42,.18));transition:transform .25s cubic-bezier(.3,1.5,.5,1),filter .25s}
+.nav-icon-box{width:30px!important;height:30px}
+.nav-link-btn:hover .ico3{transform:translateY(-2px) scale(1.12) rotate(-4deg);filter:drop-shadow(0 7px 8px rgba(0,0,0,.35))}
+.nav-link-btn.active .ico3{animation:icoBob 2.6s ease-in-out infinite}
+@keyframes icoBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px) scale(1.06)}}
+.shortcut-pill-btn .ico3{width:28px;height:28px}
+.shortcut-pill-btn:hover .ico3{transform:translateY(-2px) scale(1.14) rotate(-5deg)}
+.task-icon-purple{background:transparent!important;width:54px;height:54px}
+.task-icon-purple .ico3{width:52px;height:52px}
+.task-action-card:hover .task-icon-purple .ico3{transform:translateY(-3px) scale(1.08) rotate(-5deg)}
+.ms-ico{background:transparent!important;width:56px;height:56px}
+.ms-ico .ico3{width:52px;height:52px}
+.ms-item:active .ms-ico .ico3{transform:scale(.9)}
+.sidebar-logout-btn .ico3{width:24px;height:24px}
+.mnav-ico .ico3{width:28px;height:28px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.28))}
+.m-nav-item:not(.active) .mnav-ico .ico3{opacity:.92}
+.m-nav-item.active .mnav-ico .ico3{animation:icoBob 2.4s ease-in-out infinite}
+.mnav-ico{width:28px;height:28px}
+/* 3D school */
+.hero-building-icon{background:transparent!important;box-shadow:none!important;width:70px;height:70px;border-radius:20px}
+.hero-building-icon::after{display:none}
+.school3{width:70px;height:70px;display:block;filter:drop-shadow(0 8px 10px rgba(0,0,0,.28))}
+.school3 .flag{transform-origin:32px 6px;animation:flagWave 1.8s ease-in-out infinite}
+@media (max-width:480px){.hero-building-icon{width:54px;height:54px}.school3{width:54px;height:54px}}
+
+/* ===== 🌤️ LIGHT SIDEBAR ===== */
+[data-theme="light"] .sidebar{color:#1e293b;box-shadow:6px 0 24px rgba(15,23,42,.08)}
+[data-theme="light"] .user-display-name{color:#0f172a}
+[data-theme="light"] .user-display-role{color:#64748b}
+[data-theme="light"] .collapse-arrow-btn{background:rgba(15,23,42,.06);border-color:rgba(15,23,42,.1);color:#475569}
+[data-theme="light"] .class-pill-left{color:#0f172a}
+[data-theme="light"] .class-pill-chevron{color:#64748b}
+[data-theme="light"] .nav-link-btn{color:#475569}
+[data-theme="light"] .nav-link-btn:hover{background:rgba(15,23,42,.06);color:#0f172a}
+[data-theme="light"] .nav-link-btn.active{color:#fff}
+[data-theme="light"] .sidebar-theme-btn{background:rgba(255,255,255,.8);border-color:rgba(15,23,42,.1);color:#1e293b}
+[data-theme="light"] .sidebar-logout-btn{background:rgba(239,68,68,.08);color:#dc2626;border-color:rgba(239,68,68,.25)}
+[data-theme="light"] .sidebar-footer{border-top-color:rgba(15,23,42,.08)}
+[data-theme="light"] .sb-close-m{color:#334155!important;background:rgba(15,23,42,.06)!important}
 /* ===== 🔤 TEXT RESPONSIVE ===== */
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .hero-info-texts,.task-text-box{min-width:0}
@@ -2011,6 +2051,18 @@ function applyDayTheme() {
   root.style.setProperty('--primary', sp.primary);
   root.style.setProperty('--primary-hover', sp.hover);
   root.style.setProperty('--primary-soft', sp.soft);
+  /* របាចំហៀង + របាខាងក្រោម៖ gradient ស្រាលៗ */
+  if (isDark) {
+    root.style.setProperty('--sidebar-navy', `linear-gradient(180deg, ${sp.tint(0.14, '#10192b')} 0%, ${sp.tint(0.07, '#0c1424')} 100%)`);
+    root.style.setProperty('--sidebar-card-navy', sp.tint(0.12, '#162238'));
+    root.style.setProperty('--sidebar-border', 'rgba(255,255,255,.09)');
+    root.style.setProperty('--mnav-bg', `linear-gradient(135deg, ${sp.tint(0.16, '#14213a')}e6, ${sp.tint(0.07, '#0c1524')}eb)`);
+  } else {
+    root.style.setProperty('--sidebar-navy', `linear-gradient(180deg, ${sp.tint(0.16, '#ffffff')} 0%, ${sp.tint(0.06, '#ffffff')} 100%)`);
+    root.style.setProperty('--sidebar-card-navy', 'rgba(255,255,255,.75)');
+    root.style.setProperty('--sidebar-border', sp.soft);
+    root.style.setProperty('--mnav-bg', `linear-gradient(135deg, ${sp.tint(0.2, '#ffffff')}e6, ${sp.tint(0.07, '#ffffff')}eb)`);
+  }
   /* ផ្ទាំងស្វាគមន៍៖ ផ្ទៃស្រាលៗ + អក្សរងាយមើល */
   if (isDark) {
     root.style.setProperty('--hero-bg', `linear-gradient(135deg, ${sp.tint(0.16, '#0f1b2d')} 0%, ${sp.tint(0.07, '#0c1524')} 100%)`);
@@ -2373,8 +2425,8 @@ function buildMoreSheet() {
   const av = document.getElementById('sidebarAvatar'), msAv = document.getElementById('msAvatar');
   if (av && msAv) msAv.innerHTML = av.innerHTML;
   document.getElementById('msList').innerHTML = MORE_ITEMS.filter(x => !x.admin || IS_ADMIN).map(x =>
-    `<div class="ms-item" onclick="navigate('${x.page}', null)"><div class="ms-ico">${ICONS[x.i] || x.i}</div><div class="ms-grow"><div class="ms-t">${x.t}</div><div class="ms-d">${x.d}</div></div>${x.badge ? '<span class="nav-badge" data-chat-badge style="position:static;margin:0"></span>' : ''}<span class="ms-arrow">›</span></div>`
-  ).join('') + `<div class="ms-item danger" onclick="doLogout()"><div class="ms-ico">${ICONS.logout}</div><div class="ms-grow"><div class="ms-t">ចាកចេញ</div></div></div>`;
+    `<div class="ms-item" onclick="navigate('${x.page}', null)"><div class="ms-ico">${ico3d(x.i)}</div><div class="ms-grow"><div class="ms-t">${x.t}</div><div class="ms-d">${x.d}</div></div>${x.badge ? '<span class="nav-badge" data-chat-badge style="position:static;margin:0"></span>' : ''}<span class="ms-arrow">›</span></div>`
+  ).join('') + `<div class="ms-item danger" onclick="doLogout()"><div class="ms-ico">${ico3d('logout')}</div><div class="ms-grow"><div class="ms-t">ចាកចេញ</div></div></div>`;
   refreshMoreThemeBtn(); refreshAutoThemeUI();
   if (typeof setChatUnread === 'function') setChatUnread(chatUnread);
 }
@@ -3197,20 +3249,59 @@ const ICONS = {
   history:'<svg class="ico" viewBox="0 0 24 24"><path d="M3.8 12a8.2 8.2 0 1 0 2.5-5.9L3.8 8.6"/><path d="M3.8 4v4.6h4.6"/><path d="M12 7.8V12l2.8 1.8"/></svg>',
   rank:'<svg class="ico" viewBox="0 0 24 24"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 5.5H4.5v1.2a3 3 0 0 0 3 3M17 5.5h2.5v1.2a3 3 0 0 1-3 3"/><path d="M12 13v4M8.5 20.5h7M9.5 17h5"/></svg>',
   logout:'<svg class="ico" viewBox="0 0 24 24"><path d="M9.5 20.5H6A2.5 2.5 0 0 1 3.5 18V6A2.5 2.5 0 0 1 6 3.5h3.5"/><path d="M16 16.5l4.5-4.5L16 7.5M20.5 12h-11"/></svg>',
+  menu:'<svg class="ico" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/></svg>',
   users:'<svg class="ico" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.2 2.7-5.5 6-5.5s6 2.3 6 5.5"/><path d="M16 5.2a3 3 0 0 1 0 5.6M18 14.8c1.8.7 3 2.4 3 5.2"/></svg>',
   clock:'<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><g class="hand"><path d="M12 12V7.5"/></g><path d="M12 12l3 2"/></svg>',
   calendar:'<svg class="ico" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg>'
 };
+/* ===== 🧊 3D GLOSSY ICONS (SVG gradient tiles) ===== */
+let _g3 = 0;
+const TILE3D = {
+  dashboard:['#dbeafe','#93c5fd','#1d4ed8'], student:['#ffedd5','#fdba74','#c2410c'], idcard:['#ccfbf1','#5eead4','#0f766e'], group:['#ede9fe','#c4b5fd','#6d28d9'],
+  book:['#dcfce7','#86efac','#15803d'], attendance:['#ffe4e6','#fda4af','#be123c'], score:['#fef3c7','#fcd34d','#b45309'], chat:['#e0f2fe','#7dd3fc','#0369a1'],
+  report:['#e0e7ff','#a5b4fc','#4338ca'], teacher:['#fce7f3','#f9a8d4','#be185d'], history:['#cffafe','#67e8f9','#0e7490'], rank:['#fef9c3','#fde047','#a16207'],
+  logout:['#fee2e2','#fca5a5','#b91c1c'], users:['#d1fae5','#6ee7b7','#047857'], menu:['#f1f5f9','#cbd5e1','#475569']
+};
+function ico3d(key) {
+  const g = ICONS[key] || ICONS.dashboard, c = TILE3D[key] || TILE3D.dashboard, id = 'g3' + (++_g3);
+  const inner = g.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
+  return `<svg class="ico3" viewBox="0 0 28 28" aria-hidden="true"><defs>
+<linearGradient id="${id}a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient>
+<linearGradient id="${id}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<linearGradient id="${id}c" x1="0" y1="0" x2="0" y2="1"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".1"/></linearGradient></defs>
+<rect x="1.5" y="1.5" width="25" height="25" rx="8" fill="url(#${id}a)"/>
+<rect x="1.5" y="1.5" width="25" height="25" rx="8" fill="url(#${id}c)"/>
+<path d="M3 11C3 6 6 2.5 11 2.5h6c5 0 8 3.5 8 8.5 0 1.5-6 3-11 3S3 12.5 3 11z" fill="url(#${id}b)"/>
+<rect x="1.5" y="1.5" width="25" height="25" rx="8" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width=".9"/>
+<g transform="translate(6.2 6.4) scale(.67)" fill="none" stroke="${c[2]}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 1px 0 rgba(255,255,255,.6))">${inner}</g></svg>`;
+}
+const SCHOOL3D = `<svg class="school3" viewBox="0 0 64 64" aria-hidden="true"><defs>
+<linearGradient id="sc1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fef3c7"/><stop offset="1" stop-color="#fcd34d"/></linearGradient>
+<linearGradient id="sc2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fda4af"/><stop offset="1" stop-color="#fb7185"/></linearGradient>
+<linearGradient id="sc3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#93c5fd"/><stop offset="1" stop-color="#60a5fa"/></linearGradient>
+<linearGradient id="sc4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0f2fe"/><stop offset="1" stop-color="#7dd3fc"/></linearGradient></defs>
+<ellipse cx="32" cy="57.5" rx="22" ry="3.2" fill="#000" opacity=".22"/>
+<rect x="9" y="27" width="46" height="29" rx="4" fill="url(#sc1)"/>
+<rect x="9" y="27" width="46" height="6" fill="#fff" opacity=".25"/>
+<path d="M4.5 29.5 32 11l27.5 18.5z" fill="url(#sc2)"/>
+<path d="M4.5 29.5 32 11l27.5 18.5" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="1.2" stroke-linejoin="round"/>
+<circle cx="32" cy="22.5" r="4.6" fill="#fff"/><circle cx="32" cy="22.5" r="4.6" fill="none" stroke="#fbbf24" stroke-width="1.2"/><path d="M32 20v2.7l1.8 1" stroke="#be123c" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+<path d="M32 11V4" stroke="#78350f" stroke-width="1.6" stroke-linecap="round"/><path class="flag" d="M32.6 4.2h8.6l-2.2 2.4 2.2 2.4h-8.6z" fill="#ef4444"/>
+<rect x="26.5" y="38" width="11" height="18" rx="3.5" fill="url(#sc3)"/><circle cx="35" cy="47.5" r=".9" fill="#fde68a"/>
+<rect x="13.5" y="35" width="9" height="9" rx="2.2" fill="url(#sc4)"/><rect x="41.5" y="35" width="9" height="9" rx="2.2" fill="url(#sc4)"/>
+<path d="M18 35v9M13.5 39.5h9M46 35v9M41.5 39.5h9" stroke="#fff" stroke-width="1" opacity=".8"/></svg>`;
 function applyIcons() {
   const set = (sel, key) => document.querySelectorAll(sel).forEach(el => { el.innerHTML = ICONS[key]; });
-  set('.hero-building-icon', 'school');
+  document.querySelectorAll('.hero-building-icon').forEach(el => { el.innerHTML = SCHOOL3D; });
   set('.chip.g', 'users'); set('.chip.a', 'clock'); set('.dc-ico', 'calendar');
   const navMap = { dashboard: 'dashboard', addStudent: 'student', card: 'idcard', group: 'group', book: 'book', attendance: 'attendance', score: 'score', chat: 'chat', reportsHub: 'report', teacher: 'teacher' };
-  document.querySelectorAll('.nav-link-btn[data-page]').forEach(b => { const k = navMap[b.dataset.page]; const box = b.querySelector('.nav-icon-box'); if (k && box) box.innerHTML = ICONS[k]; });
-  const sc = { "navigate('score', null)": 'score', "navigate('attendance', null)": 'attendance', "navigate('rank', null)": 'rank', "navigate('addStudent', null)": 'users', 'openStudentProfileViewer()': 'history' };
-  document.querySelectorAll('.shortcut-pill-btn').forEach(b => { const k = sc[b.getAttribute('onclick')]; const sp = b.querySelector('span'); if (k && sp) sp.innerHTML = ICONS[k]; });
-  document.querySelectorAll('.task-icon-purple').forEach(el => { el.innerHTML = ICONS.score; });
-  const lo = document.querySelector('.sidebar-logout-btn > span:first-child'); if (lo) lo.innerHTML = ICONS.logout;
+  document.querySelectorAll('.nav-link-btn[data-page]').forEach(b => { const k = navMap[b.dataset.page]; const box = b.querySelector('.nav-icon-box'); if (k && box) box.innerHTML = ico3d(k); });
+  const sc = { "navigate('score', null)": 'score', "navigate('attendance', null)": 'attendance', "navigate('rank', null)": 'rank', "navigate('addStudent', null)": 'student', 'openStudentProfileViewer()': 'history' };
+  document.querySelectorAll('.shortcut-pill-btn').forEach(b => { const k = sc[b.getAttribute('onclick')]; const sp = b.querySelector('span'); if (k && sp) sp.innerHTML = ico3d(k); });
+  document.querySelectorAll('.task-icon-purple').forEach(el => { el.innerHTML = ico3d('score'); });
+  const lo = document.querySelector('.sidebar-logout-btn > span:first-child'); if (lo) lo.innerHTML = ico3d('logout');
+  const bar = { mNavDash: 'dashboard', mNavStu: 'student', mNavAtt: 'attendance', mNavScores: 'score', mNavMenu: 'menu' };
+  Object.keys(bar).forEach(id => { const ic = document.querySelector('#' + id + ' .mnav-ico'); if (!ic) return; const badge = ic.querySelector('.nav-badge'); ic.innerHTML = ico3d(bar[id]); if (badge) ic.appendChild(badge); });
 }
 applyIcons();
 </script>
