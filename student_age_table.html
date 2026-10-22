@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="km" data-theme="light">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>តារាងចំនួនសិស្សតាមអាយុ</title>
+<link href="https://fonts.googleapis.com/css2?family=Moul&family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#eef2f9;--tb:rgba(255,255,255,.96);--line:#e2e8f0;--text:#0f172a;--muted:#64748b;--card:#fff;--in:#fff;--inl:#cbd5e1;--ac:#4f46e5;--acs:#e0e7ff;--ok:#059669;--oks:#d1fae5;--bad:#e11d48;--bads:#ffe4e6;color-scheme:light}
+[data-theme=dark]{--bg:#0b1220;--tb:rgba(15,23,42,.95);--line:#1e293b;--text:#f1f5f9;--muted:#9aa3b2;--card:#111e33;--in:#162642;--inl:#2b4468;--ac:#a5b4fc;--acs:#27306b;--ok:#34d399;--oks:#12392f;--bad:#fb7185;--bads:#3b1520;color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Battambang','Kantumruy Pro',sans-serif;font-size:14px;padding-bottom:60px}
+.tb{position:sticky;top:0;z-index:50;background:var(--tb);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px 10px}
+.pill label{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.fc{font:600 13px 'Kantumruy Pro','Battambang',sans-serif;background:var(--in);color:var(--text);border:1.5px solid var(--inl);border-radius:9px;padding:5px 8px;height:34px;outline:none;min-width:0}
+.fc:focus{border-color:var(--ac)}
+.btn{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px;border:0;border-radius:12px;font:700 13px 'Kantumruy Pro','Battambang',sans-serif;cursor:pointer;background:var(--acs);color:var(--ac);transition:transform .15s,filter .2s}
+.btn:active{transform:scale(.96)}.btn:hover{filter:brightness(.96)}
+.btn.ok{background:var(--oks);color:var(--ok)}
+.sp{flex:1}
+.st{font-size:12px;font-weight:700;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.st i{width:8px;height:8px;border-radius:50%;background:#94a3b8;display:inline-block}
+.st.ok i{background:#10b981}.st.err i{background:#f43f5e}.st.busy i{background:#f59e0b;animation:pl 1s infinite}
+@keyframes pl{50%{opacity:.3}}
+.banner{display:none;margin:10px 14px 0;padding:12px 14px;border-radius:14px;background:#fef3c7;color:#92400e;font-size:13px;line-height:1.7;border:1px solid #fcd34d}
+.banner button{margin-left:8px;background:#f59e0b;color:#fff;border:0;border-radius:9px;padding:4px 12px;font:700 12px 'Kantumruy Pro',sans-serif;cursor:pointer}
+.stage{padding:16px;display:flex;justify-content:center;overflow-x:auto}
+.page{width:210mm;min-height:297mm;background:#fff;color:#0f172a;padding:9mm 9mm 12mm;box-shadow:0 12px 44px rgba(15,23,42,.18);position:relative;flex-shrink:0;border-radius:4px}
+.logo{position:absolute;right:9mm;top:6mm;width:56px;height:56px;border:2.5px solid #3730a3;border-radius:50%;display:flex;align-items:center;justify-content:center;font:italic 700 20px Georgia,serif;color:#3730a3}
+.ttl{font-family:'Moul',serif;text-align:center;font-size:21px;color:#1e3a8a;line-height:1.8;padding:0 60px}
+.sub{font-family:'Moul',serif;text-align:center;font-size:15px;color:#1e3a8a}
+.info{margin:14px 6px 12px;display:flex;flex-direction:column;gap:8px;font-size:14px;color:#475569}
+.info .r{display:flex;flex-wrap:wrap;gap:6px 40px}
+.ed{outline:none;border-bottom:1px dotted #94a3b8;min-width:70px;display:inline-block;padding:0 4px;color:#0f172a}
+.ed:focus{background:#eef2ff;border-bottom-color:#4f46e5}
+.ed:empty:before{content:attr(data-ph);color:#cbd5e1}
+.cols{display:grid;grid-template-columns:1fr 1.02fr;gap:12px;align-items:start}
+.col{display:flex;flex-direction:column;gap:12px}
+.sec{background:#fff;border:1px solid #dbe3f3;border-radius:16px;overflow:hidden;box-shadow:0 6px 18px rgba(30,58,138,.12)}
+.sec>h3{margin:0;background:linear-gradient(135deg,#3b4cb8,#27348b);color:#fff;font-family:'Battambang',sans-serif;font-weight:700;font-size:13.5px;line-height:1.7;text-align:center;padding:9px 12px}
+.sec .body{padding:8px}
+.tip{display:flex;align-items:center;gap:6px;justify-content:center;color:#db2777;font-size:11.5px;font-weight:700;text-align:center;padding:6px 8px 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{border:1px solid #e3e9f5;padding:0}
+thead th{background:#e8edfb;color:#27348b;font-weight:700;text-align:center;padding:5px 4px}
+th.clk{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
+th.clk:hover{background:#d9e1fb}
+td.c{text-align:center;padding:5px 3px;height:30px}
+td.c.hl{color:#4f46e5;font-weight:700}
+tr.g td{background:#eef2ff;font-weight:700;color:#27348b}
+tr.g td.nm{cursor:default}
+tr.t td{background:#e5e9fb;font-weight:700;color:#27348b}
+td.nm{padding:5px 9px;text-align:left}
+td.nm.lk{cursor:pointer}
+td.nm.lk:hover{background:#eef2ff;color:#4f46e5}
+td.nm.lk:after{content:' ✎';opacity:0;font-size:11px;color:#4f46e5}
+td.nm.lk:hover:after{opacity:1}
+table.kv th{width:46%;text-align:left;background:#f8faff;color:#64748b;font-weight:500;padding:6px 10px}
+table.kv td{padding:6px 10px;text-align:center}
+.warn{font-size:11.5px;color:#b45309;line-height:1.7;padding:6px 4px 0}
+@media print{.warn{display:none}}
+.foot{margin-top:18px;display:flex;justify-content:flex-end}
+.sign{text-align:center;font-size:13px;line-height:2.1;min-width:300px}
+.sign .ed{min-width:180px}
+/* modal */
+.ov{position:fixed;inset:0;z-index:200;background:rgba(15,23,42,.45);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:16px}
+.ov.show{display:flex}
+.md{width:min(100%,520px);max-height:88vh;background:var(--card);color:var(--text);border-radius:22px;border:1px solid var(--line);box-shadow:0 24px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;overflow:hidden;animation:pop .25s cubic-bezier(.3,1.4,.5,1)}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.95)}}
+.md header{padding:16px 18px 10px;display:flex;align-items:center;gap:10px}
+.md header h4{flex:1;font-size:15px;line-height:1.5}
+.md .x{width:34px;height:34px;border:0;border-radius:10px;background:var(--acs);color:var(--ac);font-size:18px;cursor:pointer}
+.md .sr{margin:0 18px 8px}.md .sr input{width:100%}
+.md .cnt{margin:0 18px 8px;font-size:12px;color:var(--muted)}
+.md .list{overflow:auto;padding:0 12px 12px;display:flex;flex-direction:column;gap:6px}
+.it{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:13px;border:1.5px solid var(--line);background:var(--in);cursor:pointer;transition:all .15s;user-select:none}
+.it:hover{border-color:var(--ac)}
+.it.on{background:var(--oks);border-color:var(--ok)}
+.it .ck{width:22px;height:22px;border-radius:7px;border:2px solid var(--inl);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;flex-shrink:0}
+.it.on .ck{background:var(--ok);border-color:var(--ok)}
+.it .n{flex:1;font-weight:600;line-height:1.4}.it .m{font-size:11.5px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 18px;border-radius:14px;font-size:13px;font-weight:700;z-index:300;display:none}
+.auth{display:none;min-height:70vh;align-items:center;justify-content:center;text-align:center;padding:24px}
+.auth div{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:34px 26px;max-width:380px}
+@media(max-width:860px){.stage{padding:8px}.page{zoom:.46}}
+@media(max-width:600px){.page{zoom:.42}}
+@media print{
+  @page{size:210mm 297mm;margin:0}
+  body{background:#fff;padding:0}.tb,.banner,.tip,.ov,.toast{display:none!important}
+  .stage{padding:0;display:block;overflow:visible}.page{box-shadow:none;zoom:1!important;border-radius:0}
+  .ed{border-bottom:0}.ed:empty:before{content:''}
+  td.nm.lk:after{display:none}th.clk{text-decoration:none}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<div class="auth" id="auth"><div><h2 style="color:#e11d48;font-size:18px;margin-bottom:8px">សូមចូលប្រើប្រព័ន្ធជាមុន</h2><p style="color:var(--muted);line-height:1.7;margin-bottom:18px">ទំព័រនេះត្រូវការចូលគណនីតាមរយៈទំព័រដើម។</p><button class="btn" onclick="goIndex()">ទៅទំព័រចូលប្រើ</button></div></div>
+
+<div id="app" style="display:none">
+<div class="tb">
+  <button class="btn" onclick="goBack()">‹ ត្រឡប់</button>
+  <span class="pill"><label>ឆ្នាំសិក្សា</label><select class="fc" id="selYear" onchange="reload()"></select></span>
+  <span class="pill"><label>ថ្នាក់</label><select class="fc" id="selClass" onchange="reload()"></select></span>
+  <span class="pill"><label>អាយុគិតត្រឹម</label><input class="fc" type="date" id="asOf" onchange="reload(true)"></span>
+  <span class="sp"></span>
+  <span class="st" id="st"><i></i><span>...</span></span>
+  <button class="btn" onclick="doPrint()">🖨️ បោះពុម្ព</button>
+  <button class="btn ok" onclick="doPdf()">⬇ PDF</button>
+</div>
+<div class="banner" id="banner"></div>
+
+<div class="stage"><div class="page" id="page">
+  <div class="logo">Pri</div>
+  <div class="ttl">តារាងចំនួនសិស្សតាមអាយុ(សម្រាប់គ្រូ)</div>
+  <div class="sub">ឆ្នាំសិក្សា <span id="yrTxt"></span></div>
+  <div style="text-align:center;font-size:12px;color:#64748b;margin-top:4px">អាយុគិតត្រឹមថ្ងៃទី <span id="asTxt"></span> (គណនាពីថ្ងៃខែឆ្នាំកំណើតក្នុងព័ត៌មានសិស្ស)</div>
+  <div class="info">
+    <div class="r"><span>រាជធានី/ខេត្ត <span class="ed" contenteditable data-k="prov" data-ph="..............."></span></span><span>ស្រុក/ខណ្ឌ <span class="ed" contenteditable data-k="dist" data-ph="..............."></span></span></div>
+    <div class="r"><span>សាលាបឋមសិក្សា <b><span class="ed" contenteditable data-k="school" data-ph="...............">កំពង់ល្ពៅ</span></b></span></div>
+  </div>
+  <div class="cols">
+    <div class="col">
+      <div class="sec"><h3>១.ព័ត៌មានសេវាគ្រូបន្ទុកថ្នាក់ទី <span id="clsTxt"></span></h3><div class="body">
+        <table class="kv" id="kv"></table></div></div>
+      <div class="sec"><h3>២.(ខ) សិស្សថ្មី សិស្សឡើងថ្នាក់ និង សិស្សត្រួតថ្នាក់</h3>
+        <div class="tip">👉 ចុចលើពាក្យ «សិស្សថ្មី» ឬ «សិស្សត្រួតថ្នាក់» ក្នុងក្បាលតារាង ដើម្បីកែសម្រួលទិន្នន័យសិស្ស</div>
+        <div class="body" style="padding-top:0"><table id="ageT"></table><div id="ageWarn" class="warn"></div></div></div>
+    </div>
+    <div class="col">
+      <div class="sec"><h3>៣.ចំនួនសិស្សជួបការលំបាកតាមថ្នាក់ (សិស្សម្នាក់អាចរាប់ច្រើនដងបាន តាមភាពជាក់ស្តែង បើសិស្សនោះពិការ ឬមានប៉ះពាល់ចំណុចច្រើនក្នុងបរិយាយ)</h3>
+        <div class="tip">👉 ចុចលើបរិយាយនីមួយៗ ដើម្បីមើល និងកែសម្រួលទិន្នន័យសិស្ស</div>
+        <div class="body" style="padding-top:0"><table id="diffT"></table></div></div>
+    </div>
+  </div>
+  <div class="foot"><div class="sign">
+    <div><span class="ed" contenteditable data-k="d1" data-ph="ថ្ងៃ... ខែ... ឆ្នាំ... ពុទ្ធសករាជ ..."></span></div>
+    <div>ធ្វើនៅ<span class="ed" contenteditable data-k="place" data-ph="...............">កំពង់ល្ពៅ</span> <span class="ed" contenteditable data-k="d2" data-ph="ថ្ងៃទី... ខែ... ឆ្នាំ..."></span></div>
+    <div>គ្រូទទួលបន្ទុកថ្នាក់</div>
+    <div style="height:44px"></div>
+    <div><b><span class="ed" contenteditable data-k="teacher" data-ph="ឈ្មោះគ្រូ"></span></b></div>
+  </div></div>
+</div></div>
+</div>
+
+<div class="ov" id="ov" onclick="if(event.target===this)closeModal()"><div class="md">
+  <header><h4 id="mdT"></h4><button class="x" onclick="closeModal()">✕</button></header>
+  <div class="sr"><input class="fc" id="mdQ" placeholder="ស្វែងរកឈ្មោះសិស្ស..." oninput="renderModal()" style="width:100%"></div>
+  <div class="cnt" id="mdC"></div>
+  <div class="list" id="mdL"></div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const sb=supabase.createClient("https://nggnuobnrxiqjtcwlvwk.supabase.co","sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML");
+const TABLE='student_age_flags';
+const SQL=`create table if not exists public.student_age_flags (
+  id bigserial primary key,
+  school_year text not null,
+  class text not null,
+  student_id text not null,
+  flag text not null,
+  value text,
+  updated_at timestamptz default now(),
+  unique (school_year, class, student_id, flag)
+);
+alter table public.student_age_flags enable row level security;
+create policy "student_age_flags_all" on public.student_age_flags for all using (true) with check (true);`;
+const KD='០១២៣៤៥៦៧៨៩';
+const toKh=v=>String(v??'').replace(/[0-9]/g,d=>KD[d]);
+const fromKh=v=>String(v??'').replace(/[០-៩]/g,d=>KD.indexOf(d));
+const cleanGrade=g=>String(g||'').replace(/^ថ្នាក់ទី\s*/,'').trim();
+const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function readSession(){try{return JSON.parse(localStorage.getItem('krou_supabase_user')||'null')}catch(e){return null}}
+const USER=readSession();
+const IS_ADMIN=String((USER&&USER.role)||'').toLowerCase().trim()==='admin';
+function goIndex(){try{if(window.parent!==window){window.parent.location.href='index.html';return}}catch(e){}location.href='index.html'}
+function goBack(){try{if(window.parent&&window.parent!==window){window.parent.postMessage({type:'NAVIGATE',page:'reportsHub'},'*');return}}catch(e){}location.href='index.html#reportsHub'}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light')}
+applyTheme(localStorage.getItem('krou_theme_manual')||'light');
+window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme))applyTheme(e.data.theme||e.data)});
+window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual')applyTheme(e.newValue)});
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2600)}
+function setSt(k,msg){const s=document.getElementById('st');s.className='st '+k;s.lastChild.textContent=msg}
+
+const AGES=[6,7,8,9,10,11,12,13,14,15];
+const DIFF=[
+ {t:'សិស្សពិការ',k:'dis',rows:[['dis_move','ពិបាកក្នុងការធ្វើចលនា'],['dis_hear','ពិបាកក្នុងការស្តាប់'],['dis_speak','ពិបាកក្នុងការនិយាយ'],['dis_see','ពិបាកក្នុងការមើល'],['dis_organ','ពិបាកសរីរាង្គខាងក្នុង'],['dis_mind','ពិបាកសតិបញ្ញា'],['dis_emo','ពិបាកផ្លូវចិត្ត'],['dis_other','ពិបាកផ្សេងៗ(ក្រៅពីខាងលើ)']]},
+ {t:'សិស្សជួបការលំបាកផ្នែកសុខភាព',k:'hlt',rows:[['h_nutri','ខ្វះអាហារូបត្ថម្ភធ្ងន់ធ្ងរ'],['h_chronic','ជម្ងឺប្រចាំកាយ'],['h_hiv','កុមាររងគ្រោះដោយ HIV']]},
+ {t:'សិស្សជួបការលំបាក',k:'hard',rows:[['x_move','មកពីគ្រួសារផ្លាស់ប្តូរទីលំនៅ'],['x_orphan','កុមារកំព្រា'],['x_violence','កុមាររងអំពើហិង្សា'],['x_labor','កុមាររងការកេងប្រវ័ញ្ចពលកម្ម'],['x_poor','កុមារមកពីគ្រួសារក្រីក្រ']]}
+];
+const KV=[['name','ឈ្មោះជាអក្សរខ្មែរ'],['sex','ភេទ'],['age','អាយុ'],['eth','ជនជាតិដើមភាគតិច'],['edu','កម្រិតវប្បធម៌'],['svc','រយៈពេលបម្រើការងារ'],['sal','កម្រិតកំប្រាក់']];
+
+let STU=[],FLAGS=new Set(),INFO={},DBOK=true,CUR={year:'',cls:''};
+const fk=(sid,f)=>sid+'|'+f;
+
+const KM=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+function parseDob(v){
+  if(!v)return null;
+  if(v instanceof Date)return isNaN(v)?null:v;
+  const s=fromKh(String(v).trim());
+  let m=s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);if(m)return mk(+m[1],+m[2],+m[3]);
+  m=s.match(/^(\d{1,2})[\/\-.\s](\d{1,2})[\/\-.\s](\d{4})/);if(m)return mk(+m[3],+m[2],+m[1]);
+  m=s.match(/(\d{1,2})\s*(?:ខែ)?\s*(មករា|កុម្ភៈ|មីនា|មេសា|ឧសភា|មិថុនា|កក្កដា|សីហា|កញ្ញា|តុលា|វិច្ឆិកា|ធ្នូ)\s*(?:ឆ្នាំ)?\s*(\d{4})/);
+  if(m)return mk(+m[3],KM.indexOf(m[2])+1,+m[1]);
+  return null;
+}
+function mk(y,mo,d){if(mo<1||mo>12||d<1||d>31||y<1900)return null;return new Date(y,mo-1,d)}
+function ageAt(d,r){let a=r.getFullYear()-d.getFullYear(),md=r.getMonth()-d.getMonth();if(md<0||(md===0&&r.getDate()<d.getDate()))a--;return a}
+function isF(g){const s=String(g||'').trim();return s==='ស'||s.includes('ស្រី')||/^f/i.test(s)}
+function refDate(){const v=document.getElementById('asOf').value;const [y,m,d]=v.split('-').map(Number);return new Date(y,m-1,d)}
+function activeStu(){return STU.filter(s=>!String(s.dropout_semester||'').trim())}
+function ageOf(s){const d=parseDob(s.dob);return d?ageAt(d,refDate()):null}
+
+/* ===== DB ===== */
+function lsKey(){return 'ageTbl_v1:'+CUR.year+':'+CUR.cls}
+function lsLoad(){try{return JSON.parse(localStorage.getItem(lsKey())||'{}')}catch(e){return {}}}
+function lsSave(){try{localStorage.setItem(lsKey(),JSON.stringify({flags:[...FLAGS],info:INFO}))}catch(e){}}
+function showSetup(msg){const b=document.getElementById('banner');b.style.display='block';b.innerHTML='⚠️ '+msg+' <button onclick="copySql()">ចម្លង SQL</button> <span style="font-size:12px">(បិទភ្ជាប់ក្នុង Supabase → SQL Editor រួចចុច Run រួចផ្ទុកទំព័រម្ដងទៀត)</span>'}
+function copySql(){navigator.clipboard&&navigator.clipboard.writeText(SQL).then(()=>toast('បានចម្លង SQL'),()=>prompt('ចម្លង SQL',SQL))||0}
+async function loadFlags(){
+  FLAGS=new Set();INFO={};
+  const {data,error}=await sb.from(TABLE).select('student_id,flag,value').eq('school_year',CUR.year).eq('class',CUR.cls);
+  if(error){DBOK=false;showSetup('មិនទាន់មានតារាង <b>student_age_flags</b> ក្នុង Database — កំពុងរក្សាទុកក្នុងឧបករណ៍នេះសិន។');const l=lsLoad();(l.flags||[]).forEach(x=>FLAGS.add(x));INFO=l.info||{};return}
+  DBOK=true;document.getElementById('banner').style.display='none';
+  (data||[]).forEach(r=>{if(r.student_id==='__form__'&&r.flag==='info'){try{INFO=JSON.parse(r.value||'{}')}catch(e){}}else FLAGS.add(fk(r.student_id,r.flag))});
+}
+async function setFlag(sid,flag,on){
+  const key=fk(sid,flag);on?FLAGS.add(key):FLAGS.delete(key);
+  if(!DBOK){lsSave();return true}
+  setSt('busy','កំពុងរក្សាទុក...');
+  let r;
+  if(on)r=await sb.from(TABLE).upsert({school_year:CUR.year,class:CUR.cls,student_id:String(sid),flag,updated_at:new Date().toISOString()},{onConflict:'school_year,class,student_id,flag'});
+  else r=await sb.from(TABLE).delete().eq('school_year',CUR.year).eq('class',CUR.cls).eq('student_id',String(sid)).eq('flag',flag);
+  if(r.error){setSt('err','រក្សាទុកមិនបាន');on?FLAGS.delete(key):FLAGS.add(key);toast('❌ '+r.error.message);return false}
+  setSt('ok','បានរក្សាទុក');return true;
+}
+let itm;function saveInfo(){INFO.__t=Date.now();clearTimeout(itm);setSt('busy','កំពុងរក្សាទុក...');itm=setTimeout(async()=>{
+  if(!DBOK){lsSave();setSt('ok','បានរក្សាទុក (ក្នុងឧបករណ៍)');return}
+  const {error}=await sb.from(TABLE).upsert({school_year:CUR.year,class:CUR.cls,student_id:'__form__',flag:'info',value:JSON.stringify(INFO),updated_at:new Date().toISOString()},{onConflict:'school_year,class,student_id,flag'});
+  error?(setSt('err','រក្សាទុកមិនបាន'),toast('❌ '+error.message)):setSt('ok','បានរក្សាទុក');
+},500)}
+
+/* ===== render ===== */
+function count(fn){let t=0,f=0;activeStu().forEach(s=>{if(fn(s)){t++;if(isF(s.gender))f++}});return [t,f]}
+function render(){
+  document.getElementById('yrTxt').textContent=CUR.year.split('-').map(toKh).join('-');
+  document.getElementById('clsTxt').textContent=CUR.cls;{const r=refDate();document.getElementById('asTxt').textContent=toKh(r.getDate())+' '+KM[r.getMonth()]+' '+toKh(r.getFullYear())}
+  document.querySelectorAll('.ed[data-k]').forEach(el=>{const v=INFO[el.dataset.k];if(v!==undefined)el.textContent=v});
+  document.getElementById('kv').innerHTML=KV.map(([k,l])=>`<tr><th>${l}</th><td><span class="ed" contenteditable data-kv="${k}" data-ph="" style="min-width:90px;border-bottom:0">${esc(INFO['kv_'+k]??'')}</span></td></tr>`).join('');
+  // age table
+  const n=v=>v?toKh(v):'០';
+  let h=`<thead><tr><th rowspan="3" style="width:13%">អាយុ<br>(ឆ្នាំ)</th><th colspan="6">ចំនួនសិស្ស</th></tr>
+  <tr><th colspan="2" class="clk" onclick="openModal('new')">សិស្សថ្មី</th><th colspan="2" class="clk" onclick="openModal('repeat')">សិស្សត្រួតថ្នាក់</th><th colspan="2">សិស្សសរុប</th></tr>
+  <tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(3)}</tr></thead><tbody>`;
+  const sum=[0,0,0,0,0,0];
+  AGES.forEach(a=>{
+    const inAge=s=>{const x=ageOf(s);return x!==null&&(a===15?x>=15:x===a)};
+    const nw=count(s=>inAge(s)&&FLAGS.has(fk(s.student_id||s.id,'new'))),rp=count(s=>inAge(s)&&FLAGS.has(fk(s.student_id||s.id,'repeat'))),tt=count(inAge);
+    const row=[...nw,...rp,...tt];row.forEach((v,i)=>sum[i]+=v);
+    h+=`<tr><td class="c">${a===15?'១៥+':toKh(a)}</td>${row.map(v=>`<td class="c">${n(v)}</td>`).join('')}</tr>`;
+  });
+  h+=`<tr class="t"><td class="c">សរុប</td>${sum.map(v=>`<td class="c">${n(v)}</td>`).join('')}</tr></tbody>`;
+  document.getElementById('ageT').innerHTML=h;
+  const noDob=activeStu().filter(s=>ageOf(s)===null).length,out=activeStu().filter(s=>{const x=ageOf(s);return x!==null&&x<6}).length;
+  document.getElementById('ageWarn').innerHTML=(noDob?`<div>⚠️ សិស្ស ${toKh(noDob)} នាក់ គ្មានថ្ងៃខែឆ្នាំកំណើតត្រឹមត្រូវ (មិនរាប់ក្នុងតារាងអាយុ)</div>`:'')+(out?`<div>ℹ️ សិស្ស ${toKh(out)} នាក់ អាយុក្រោម ៦ ឆ្នាំ (មិនរាប់ក្នុងតារាង)</div>`:'');
+  // diff
+  let d=`<thead><tr><th rowspan="2">បរិយាយ</th><th colspan="2">ចំណុចជួបការលំបាក</th></tr><tr><th style="width:56px">សរុប</th><th style="width:56px">ស្រី</th></tr></thead><tbody>`;
+  let gT=0,gF=0;
+  DIFF.forEach(g=>{
+    const keys=g.rows.map(r=>r[0]);
+    const gc=count(s=>keys.some(k=>FLAGS.has(fk(s.student_id||s.id,k))));
+    const cs=g.rows.map(r=>count(s=>FLAGS.has(fk(s.student_id||s.id,r[0]))));
+    const st=cs.reduce((a,c)=>a+c[0],0),sf=cs.reduce((a,c)=>a+c[1],0);
+    gT+=st;gF+=sf;
+    d+=`<tr class="g"><td class="nm">${g.t}</td><td class="c">${n(st)}</td><td class="c">${n(sf)}</td></tr>`;
+    g.rows.forEach((r,i)=>{d+=`<tr><td class="nm lk" onclick="openModal('${r[0]}')">${r[1]}</td><td class="c ${cs[i][0]?'hl':''}">${n(cs[i][0])}</td><td class="c ${cs[i][1]?'hl':''}">${n(cs[i][1])}</td></tr>`});
+  });
+  d+=`<tr class="t"><td class="nm" style="text-align:center">សរុប</td><td class="c">${n(gT)}</td><td class="c">${n(gF)}</td></tr></tbody>`;
+  document.getElementById('diffT').innerHTML=d;
+}
+document.addEventListener('input',e=>{
+  const t=e.target;if(t.dataset&&t.dataset.k){INFO[t.dataset.k]=t.textContent;saveInfo()}
+  else if(t.dataset&&t.dataset.kv){INFO['kv_'+t.dataset.kv]=t.textContent;saveInfo()}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.ed'))e.preventDefault()});
+document.addEventListener('paste',e=>{if(e.target.matches('.ed')){e.preventDefault();document.execCommand('insertText',false,(e.clipboardData.getData('text')||'').replace(/\n/g,' '))}});
+
+/* ===== modal ===== */
+let MD=null;
+const NAMES={};DIFF.forEach(g=>g.rows.forEach(r=>NAMES[r[0]]=r[1]));NAMES.new='សិស្សថ្មី';NAMES.repeat='សិស្សត្រួតថ្នាក់';
+function openModal(flag){MD=flag;document.getElementById('mdT').textContent=NAMES[flag]+' · ថ្នាក់ទី '+CUR.cls;document.getElementById('mdQ').value='';document.getElementById('ov').classList.add('show');renderModal()}
+function closeModal(){document.getElementById('ov').classList.remove('show');MD=null;render()}
+function renderModal(){
+  if(!MD)return;const q=document.getElementById('mdQ').value.trim();
+  const list=activeStu().filter(s=>!q||String(s.student_name||'').includes(q));
+  document.getElementById('mdC').textContent='បានជ្រើស '+toKh([...activeStu()].filter(s=>FLAGS.has(fk(s.student_id||s.id,MD))).length)+' នាក់ ក្នុងចំណោម '+toKh(activeStu().length)+' នាក់ · ចុចលើឈ្មោះដើម្បីជ្រើស/ដក';
+  document.getElementById('mdL').innerHTML=list.map(s=>{const sid=s.student_id||s.id,on=FLAGS.has(fk(sid,MD)),a=ageOf(s);
+    return `<div class="it ${on?'on':''}" onclick="toggleStu('${esc(String(sid)).replace(/'/g,'')}')"><span class="ck">${on?'✓':''}</span><span class="n">${esc(s.student_name||'')}<div class="m">${isF(s.gender)?'ស្រី':'ប្រុស'}${a!==null?' · អាយុ '+toKh(a)+' ឆ្នាំ':''}</div></span></div>`}).join('')||'<div style="text-align:center;color:var(--muted);padding:20px">មិនមានសិស្ស</div>';
+}
+async function toggleStu(sid){const on=!FLAGS.has(fk(sid,MD));const ok=await setFlag(sid,MD,on);if(ok){renderModal();render()}}
+
+/* ===== load ===== */
+function initSelectors(){
+  const y=new Date().getFullYear(),m=new Date().getMonth(),base=m>=8?y:y-1;
+  const ys=document.getElementById('selYear');
+  for(let i=base+1;i>=base-5;i--){const o=document.createElement('option');o.value=i+'-'+(i+1);o.textContent=toKh(i)+'-'+toKh(i+1);if(i===base)o.selected=true;ys.appendChild(o)}
+  setAsOf();
+}
+function setAsOf(){const sy=+document.getElementById('selYear').value.split('-')[0];document.getElementById('asOf').value=sy+'-10-01'}
+async function initClasses(){
+  const cs=document.getElementById('selClass');
+  const mine=String(USER.assigned_classes||USER.assigned_class||'').split(/[,;،\/]+/).map(cleanGrade).filter(Boolean);
+  let list=mine;
+  if(IS_ADMIN||!mine.length){
+    const {data}=await sb.from('students').select('grade');
+    const set=new Set((data||[]).map(s=>cleanGrade(s.grade)).filter(Boolean));
+    list=[...set].sort((a,b)=>a.localeCompare(b,'km'));
+  }
+  cs.innerHTML=list.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  const last=localStorage.getItem('ageTbl_lastClass');if(last&&list.includes(last))cs.value=last;
+}
+let first=true;
+async function reload(keepAsOf){
+  if(!keepAsOf&&!first)setAsOf();
+  CUR.year=document.getElementById('selYear').value;CUR.cls=document.getElementById('selClass').value;
+  if(!CUR.cls){setSt('err','គ្មានថ្នាក់');return}
+  try{localStorage.setItem('ageTbl_lastClass',CUR.cls)}catch(e){}
+  setSt('busy','កំពុងទាញទិន្នន័យ...');
+  try{
+    const {data,error}=await sb.from('students').select('id, student_id, student_name, gender, dob, grade, dropout_semester').order('id',{ascending:true});
+    if(error)throw error;
+    STU=(data||[]).filter(s=>cleanGrade(s.grade)===CUR.cls);
+    await loadFlags();
+    // teacher name default
+    if(!INFO.teacher&&!IS_ADMIN&&USER.teacher_name)INFO.teacher=USER.teacher_name;
+    if(!INFO.kv_name&&!IS_ADMIN&&USER.teacher_name)INFO.kv_name=USER.teacher_name;
+    if(IS_ADMIN&&!INFO.teacher){try{const {data:us}=await sb.from('users').select('teacher_name, assigned_classes, role');const t=(us||[]).find(u=>String(u.assigned_classes||'').split(/[,;،\/]+/).map(cleanGrade).includes(CUR.cls)&&String(u.role||'').toLowerCase()!=='admin');if(t){INFO.teacher=t.teacher_name;if(!INFO.kv_name)INFO.kv_name=t.teacher_name}}catch(e){}}
+    document.querySelectorAll('.ed[data-k]').forEach(el=>{if(INFO[el.dataset.k]===undefined)el.textContent=el.dataset.def||el.textContent});
+    render();setSt(DBOK?'ok':'err',DBOK?'ភ្ជាប់ Database រួច':'រក្សាទុកក្នុងឧបករណ៍');
+  }catch(err){setSt('err','កំហុស');toast('❌ '+err.message)}
+  first=false;
+}
+function doPrint(){window.focus();setTimeout(()=>{try{window.print()}catch(e){window.parent.print()}},100)}
+async function doPdf(){
+  if(!window.html2canvas||!window.jspdf){toast('មិនអាចផ្ទុក library PDF បានទេ');return}
+  const el=document.getElementById('page'),z=el.style.zoom;el.style.zoom='1';
+  try{
+    if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+    const c=await html2canvas(el,{scale:3,backgroundColor:'#fff',useCORS:true});
+    const {jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');
+    pdf.addImage(c.toDataURL('image/png'),'PNG',0,0,210,Math.min(297,c.height*210/c.width),undefined,'FAST');
+    pdf.save('តារាងចំនួនសិស្សតាមអាយុ_'+CUR.cls+'.pdf');
+  }catch(err){toast('❌ PDF៖ '+err.message)}
+  el.style.zoom=z;
+}
+(async function boot(){
+  if(!USER||!USER.username){document.getElementById('auth').style.display='flex';return}
+  document.getElementById('app').style.display='block';
+  initSelectors();await initClasses();await reload(true);
+})();
+</script>
+</body>
+</html>
