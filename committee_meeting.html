@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="km" data-theme="light">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>គណៈកម្មការគ្រប់គ្រងថ្នាក់ និងកំណត់ហេតុប្រជុំ</title>
+<link href="https://fonts.googleapis.com/css2?family=Moul&family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#eef2f9;--tb:rgba(255,255,255,.96);--line:#dfe6f1;--text:#0f172a;--muted:#64748b;--card:#fff;--in:#f8fafc;--inl:#cbd5e1;--ac:#4f46e5;--acs:#e0e7ff;--ok:#059669;--oks:#d1fae5;--bad:#e11d48;--bads:#ffe4e6;--thead:#eef2ff;--hd:#fff;color-scheme:light}
+[data-theme=dark]{--bg:#0a1220;--tb:rgba(17,26,43,.96);--line:#24344f;--text:#f1f5f9;--muted:#9aa8bd;--card:#16233a;--in:#0f1b30;--inl:#34496b;--ac:#7dd3fc;--acs:#173a57;--ok:#34d399;--oks:#12392f;--bad:#fb7185;--bads:#3b1520;--thead:#101c31;color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:'Battambang','Kantumruy Pro',sans-serif;font-size:14px;padding-bottom:90px}
+button{font-family:inherit}
+svg.i{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.tb{position:sticky;top:0;z-index:50;background:var(--tb);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px 10px}
+.pill label{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.fc{font:500 13px 'Battambang','Kantumruy Pro',sans-serif;background:var(--in);color:var(--text);border:1.5px solid var(--inl);border-radius:9px;padding:5px 9px;height:34px;outline:none;min-width:0}
+.fc:focus{border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 22%,transparent)}
+textarea.fc{height:auto;min-height:74px;padding:8px 10px;line-height:1.7;resize:vertical;width:100%}
+.btn{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border:0;border-radius:12px;font:700 13px 'Battambang','Kantumruy Pro',sans-serif;cursor:pointer;background:var(--acs);color:var(--ac);transition:transform .15s,filter .2s;white-space:nowrap}
+.btn:active{transform:scale(.96)}.btn:hover{filter:brightness(1.07)}
+.btn.ok{background:var(--oks);color:var(--ok)}
+.btn.pri{background:#0369a1;color:#fff}
+.btn.gh{background:var(--card);color:var(--text);border:1px solid var(--line)}
+.btn.red{background:var(--bads);color:var(--bad)}
+.btn.sm{height:32px;padding:0 11px;font-size:12.5px;border-radius:10px}
+.sp{flex:1}
+.wrap{max-width:1180px;margin:0 auto;padding:14px}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px 20px;box-shadow:0 8px 28px rgba(15,23,42,.08)}
+.hero .h1{display:flex;align-items:center;gap:14px}
+.hero .ico{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#14b8a6,#0ea5e9);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 8px 18px rgba(14,165,233,.35)}
+.hero .ico svg{width:26px;height:26px}
+.hero h1{font-size:18px;line-height:1.6;font-weight:700}
+.hero .s{font-size:12.5px;color:var(--muted);margin-top:2px}
+.hero .cap{text-align:center;color:var(--muted);font-size:12.5px;margin:14px 0 10px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.acts .btn{height:42px;padding:0 16px;border-radius:14px;background:color-mix(in srgb,var(--ac) 14%,var(--card));color:var(--ac)}
+.acts .btn.x{background:var(--oks);color:var(--ok)}
+.tabs{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:14px;padding:11px 18px;font:700 13.5px 'Battambang',sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.tab.on{background:color-mix(in srgb,var(--ac) 16%,var(--card));border-color:var(--ac);color:var(--ac)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px 18px;box-shadow:0 8px 28px rgba(15,23,42,.06)}
+.ph2{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.ph2 h2{font-size:15.5px;line-height:1.6}
+.chip{display:inline-flex;align-items:center;background:var(--acs);color:var(--ac);border-radius:999px;padding:3px 12px;font-size:12.5px;font-weight:700}
+.hint{font-size:12px;color:var(--muted);margin:10px 0}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+table.ed{width:100%;border-collapse:collapse;min-width:1060px}
+table.ed th{background:var(--thead);color:var(--text);font-size:12.5px;font-weight:700;padding:10px 6px;text-align:center;border-bottom:1.5px solid var(--line);white-space:nowrap}
+table.ed th.g{background:color-mix(in srgb,#10b981 16%,var(--thead))}
+table.ed td{border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:6px 5px;vertical-align:middle;text-align:center}
+table.ed td:last-child{border-right:0}
+table.ed td.no{color:var(--muted);width:44px}
+table.ed td.sel{background:color-mix(in srgb,var(--ac) 18%,transparent)}
+table.ed input.fc,table.ed .csb{width:100%;height:36px}
+table.ed td[data-c="0"] input{min-width:130px}
+table.ed td[data-c="4"] input{min-width:100px}
+table.ed td[data-c="5"] .csb{min-width:170px;max-width:230px}
+.ph{width:54px;height:54px;border-radius:50%;border:1.5px dashed var(--inl);background:var(--in);color:var(--muted);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;padding:0}
+.ph img{width:100%;height:100%;object-fit:cover}
+.ph svg{width:22px;height:22px}
+.del{width:34px;height:34px;border-radius:10px;border:0;background:transparent;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.del:hover{background:var(--bads);color:var(--bad)}
+.cust{margin-top:5px}
+.foot{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.locked input.fc,.locked textarea.fc{pointer-events:none;opacity:.85}
+.locked .csb,.locked .ph,.locked .del,.locked .addbtn{pointer-events:none;opacity:.55}
+.mcard{border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:12px;background:var(--in)}
+.mcard .mh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.mcard .mh b{font-size:14.5px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.mgrid label,.lbl{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:0 0 4px}
+.att{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+.at{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:6px 13px 6px 8px;font:600 12.5px 'Battambang',sans-serif;cursor:pointer;color:var(--text)}
+.at i{width:20px;height:20px;border-radius:50%;border:2px solid var(--inl);display:inline-flex;align-items:center;justify-content:center;font-style:normal;font-size:11px;color:#fff}
+.at.on{background:var(--oks);border-color:var(--ok)}.at.on i{background:var(--ok);border-color:var(--ok)}
+.empty{text-align:center;color:var(--muted);padding:34px 10px;line-height:1.9}
+/* preview */
+#pv{display:none}
+.pvbar{position:sticky;top:0;z-index:60;background:#1f2328;color:#f1f5f9;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pvbar .btn{background:#363c45;color:#f1f5f9}
+.pvbar .btn.pri{background:#0a84c9}
+.pvbar .lb{flex-shrink:0;font-size:12.5px;font-weight:700;color:#e2e8f0;white-space:nowrap}
+.pvbar .fc,.pvbar .csb{background:#1f2328;color:#e2e8f0;border:1px solid #4b5563;height:38px;border-radius:10px;font-weight:600}
+.pvbar .dot{width:7px;height:7px;border-radius:50%;background:#818cf8;display:inline-block}
+.stage{padding:18px 8px;display:flex;flex-direction:column;align-items:center;gap:18px;background:#4a5057;min-height:70vh}
+.pvz{transform-origin:top center}
+.sheet{width:210mm;min-height:297mm;background:#fff;color:#0f172a;padding:var(--mt,10mm) var(--ms,12mm) var(--mb,10mm);box-shadow:0 12px 40px rgba(0,0,0,.4);font-size:calc(14.5px*var(--fz,1));line-height:1.75;font-family:'Battambang','Kantumruy Pro',sans-serif;position:relative}
+.sheet .inner{width:100%}
+.moul{font-family:'Moul','Khmer OS Muol Light',serif;font-weight:400}
+.kh1{text-align:center;font-size:1.45em;line-height:1.7}
+.kh2{text-align:center;font-size:1.12em;line-height:1.7;margin-top:.1em}
+.orn{display:flex;align-items:center;justify-content:center;gap:10px;margin:.15em 0 .5em;color:#334155}
+.orn:before,.orn:after{content:'';width:68px;border-top:1.5px solid #334155}
+.org{font-family:'Moul',serif;font-size:.88em;line-height:1.65;margin-top:.3em}
+.dtl{text-align:center;font-family:'Moul',serif;font-size:1.28em;line-height:1.8;margin-top:.2em}
+.yr{text-align:center;font-size:1.08em;margin-bottom:.4em}
+table.dt{width:100%;border-collapse:collapse;font-size:1em;margin:.4em 0}
+table.dt th,table.dt td{border:1px solid #1f2937;padding:.28em .5em;vertical-align:middle}
+table.dt th{background:#eaeefb;text-align:center;font-weight:700}
+table.dt td.c{text-align:center}
+table.dt tr.grp td{background:#eaeefb;font-weight:700}
+table.dt tr.sub td{background:#f4f6fc;font-weight:700;text-align:center}
+table.dt td.mt{text-align:center;color:#64748b;font-style:italic}
+.sig{display:flex;justify-content:space-between;gap:12px;margin-top:1.1em;align-items:flex-start}
+.sg{text-align:center;line-height:1.9;min-width:0}
+.sg .tt{font-family:'Moul',serif;font-size:.95em}
+.sg .gap{height:3.4em}
+.sg.blue{color:#1d4ed8}
+.dots{display:inline-block;min-width:9em;border-bottom:0;letter-spacing:.06em}
+.lt p{text-indent:2em;text-align:justify;margin:.3em 0}
+.lt .ref{margin:.4em 0}
+.lt h4{font-family:'Moul',serif;font-weight:400;text-align:center;font-size:1em;margin:.7em 0 .15em}
+.lt ol{list-style:none;margin:.2em 0 0}
+.lt ol li{padding-left:1.7em;text-indent:-1.7em;text-align:justify;margin:.1em 0}
+.mn .meta{margin:.3em 0}
+.mn h4{font-family:'Moul',serif;font-weight:400;font-size:1em;margin:.7em 0 .2em}
+.mn .box{border:1px solid #94a3b8;border-radius:.4em;padding:.4em .7em;min-height:3.6em;white-space:pre-wrap;text-align:justify}
+.mn .box.big{min-height:7em}
+/* org chart */
+.chart{--c1:#1e3a8a;--c2:#0f766e;--c3:#475569;--cb:#fff;--cd:#cbd5e1;--cl:#8b9bb4;--cp:#e2e8f0;--rad:.7em;--pr:50%;--dut:#475569}
+.sheet[data-th=classic] .chart{--c1:#2f5597;--c2:#4472c4;--c3:#5b9bd5;--cb:#e2efd9;--cd:#5b7fbf;--cl:#2f5aa8;--cp:#deeaf6;--rad:0;--pr:.5em;--dut:#1f2937}
+.sheet[data-th=mono] .chart{--c1:#111;--c2:#2b2b2b;--c3:#4a4a4a;--cb:#fff;--cd:#111;--cl:#111;--cp:#eee;--rad:.2em;--dut:#111}
+.sheet[data-th=gold] .chart{--c1:#7c2d12;--c2:#b45309;--c3:#92400e;--cb:#fffbeb;--cd:#e5c07b;--cl:#a16207;--cp:#fef3c7;--rad:.7em;--dut:#5b3a0f}
+.sheet[data-th=green] .chart{--c1:#14532d;--c2:#15803d;--c3:#3f6212;--cb:#f0fdf4;--cd:#bbf7d0;--cl:#4d7c0f;--cp:#dcfce7;--rad:.7em;--dut:#14532d}
+.chart{display:flex;flex-direction:column;align-items:center;margin-top:.6em}
+.cd{background:var(--cb);border:1px solid var(--cd);border-radius:var(--rad);overflow:hidden;text-align:center;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(15,23,42,.1);position:relative;width:100%}
+.cd .hd{color:#fff;font-weight:700;padding:.35em .3em;font-size:1.02em;line-height:1.5}
+.cd.k1 .hd{background:var(--c1);font-size:1.1em}.cd.k2 .hd{background:var(--c2)}.cd.k3 .hd{background:var(--c3);font-size:.95em}
+.cd .bd{padding:.3em .4em .55em;display:flex;flex-direction:column;align-items:center;flex:1}
+.cd .pp{width:5.4em;height:5.4em;border-radius:var(--pr);background:var(--cp);border:2px solid color-mix(in srgb,var(--cd) 70%,#fff);margin-top:-0.4em;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;top:-.15em}
+.cd.k1 .pp{width:6.4em;height:6.4em}.cd.k3 .pp{width:4.9em;height:4.9em}
+.cd .pp img{width:100%;height:100%;object-fit:cover}
+.cd .pp svg{width:55%;height:55%;fill:none;stroke:color-mix(in srgb,var(--c3) 55%,#fff);stroke-width:1.5}
+.cd .nm{font-weight:700;margin-top:.4em;font-size:.98em;line-height:1.5;min-height:1.5em;letter-spacing:.02em}
+.cd .nm.e{font-weight:400;letter-spacing:.1em;color:#111}
+.cd .du{font-size:.8em;line-height:1.55;color:var(--dut);margin-top:.15em}
+.cd.k3 .du{font-size:.74em}
+.cw1{width:62%}
+.lv{display:flex;width:100%;justify-content:center}
+.stem{width:0;height:1.05em;border-left:2px solid var(--cl);position:relative}
+.br{display:flex;flex-direction:column;align-items:center;min-width:0}
+.br2{display:flex;width:100%}
+.br2>.br{flex:1 1 0;padding:0 .35em}
+.kids{display:flex;width:100%;justify-content:center}
+.kd{flex:1 1 0;max-width:36%;min-width:0;position:relative;padding:1.2em .3em 0}
+.br>.kd,.dtk>.kd{max-width:none}
+.kd:before{content:'';position:absolute;top:0;left:0;right:0;border-top:2px solid var(--cl)}
+.kd:first-child:before{left:50%}.kd:last-child:before{right:50%}.kd:only-child:before{display:none}
+.kd:after{content:'';position:absolute;top:0;left:50%;height:calc(1.2em - 5px);border-left:2px solid var(--cl)}
+.kd i.ar{position:absolute;top:calc(1.2em - 6px);left:50%;transform:translateX(-50%);border:5px solid transparent;border-top:6px solid var(--cl);border-bottom:0}
+.kd:only-child:after{height:calc(1.2em - 5px)}
+.kids{align-items:stretch}.kd{display:flex;flex-direction:column}.kd>.cd{flex:1}
+.dtk{display:flex;flex-direction:column;align-items:center;width:100%}
+.br>.vl{position:absolute;top:0;left:50%;height:calc(1.2em - 5px);border-left:2px solid var(--cl)}
+.br>.hl{position:absolute;top:0;border-top:2px solid var(--cl)}
+.br>i.ar{position:absolute;top:calc(1.2em - 6px);left:50%;transform:translateX(-50%);border:5px solid transparent;border-top:6px solid var(--cl);border-bottom:0}
+.br2>.br{padding-left:.35em;padding-right:.35em}
+/* dialogs & misc */
+.ov{position:fixed;inset:0;z-index:200;background:rgba(10,18,32,.55);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:16px}
+.ov.show{display:flex}
+.md{width:min(100%,540px);max-height:88vh;background:var(--card);color:var(--text);border-radius:22px;border:1px solid var(--line);box-shadow:0 24px 60px rgba(0,0,0,.4);display:flex;flex-direction:column;overflow:hidden;animation:pop .22s cubic-bezier(.3,1.4,.5,1)}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.96)}}
+.md header{padding:16px 18px 10px;display:flex;align-items:center;gap:10px}
+.md header h4{flex:1;font-size:15px;line-height:1.5}
+.md .x{width:34px;height:34px;border:0;border-radius:10px;background:var(--acs);color:var(--ac);font-size:16px;cursor:pointer}
+.md .bd2{overflow:auto;padding:4px 18px 18px;display:flex;flex-direction:column;gap:10px}
+.md .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.md .ft{padding:12px 18px 16px;display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--line)}
+.it{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:13px;border:1.5px solid var(--line);background:var(--in);cursor:pointer;user-select:none}
+.it.on{background:var(--oks);border-color:var(--ok)}
+.it .ck{width:22px;height:22px;border-radius:7px;border:2px solid var(--inl);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;flex-shrink:0}
+.it.on .ck{background:var(--ok);border-color:var(--ok)}
+.it .n{flex:1;font-weight:600;line-height:1.4}.it .m{font-size:11.5px;color:var(--muted)}
+.ask{width:min(92vw,360px);text-align:center;padding:26px 22px 20px}
+.ask .q{font-size:15.5px;font-weight:700;line-height:1.7;margin-bottom:18px}
+.ask .bt{display:flex;gap:10px}.ask .bt .btn{flex:1;justify-content:center;height:44px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 18px;border-radius:14px;font-size:13px;font-weight:700;z-index:5000;display:none}
+.auth{display:none;min-height:70vh;align-items:center;justify-content:center;text-align:center;padding:24px}
+.auth div{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:34px 26px;max-width:380px}
+#mnav{position:fixed;left:0;right:0;bottom:0;z-index:70;background:var(--tb);backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom));display:none;gap:7px}
+#mnav button{height:46px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font:700 13px 'Battambang',sans-serif;min-width:46px}
+#mnav button.w{flex:1;background:#0369a1;color:#fff;border-color:#0369a1}
+#mnav.show{display:flex}
+.set label{font-size:12px;font-weight:700;color:var(--muted);display:block;margin-bottom:3px}
+.set .fc{width:100%}
+@media(max-width:700px){.wrap{padding:10px}.hero{padding:14px}.hero h1{font-size:15.5px}.acts .btn{flex:1 1 44%;justify-content:center}}
+@media print{
+  @page{size:A4 portrait;margin:var(--pgm,0)}
+  html,body{background:#fff!important;padding:0!important}
+  .tb,.pvbar,#ed,.ov,.toast,#mnav,.cal-modal,.cal-modal-backdrop,#csPop,.auth{display:none!important}
+  #pv{display:block!important}
+  .stage{display:block!important;padding:0!important;background:#fff!important;min-height:0!important}
+  .pvz{zoom:1!important;transform:none!important;width:auto!important;height:auto!important}
+  .sheet{box-shadow:none!important;margin:0!important;padding:0!important;width:auto!important;min-height:0!important;break-after:page;page-break-after:always}
+  .sheet:last-child{break-after:auto;page-break-after:auto}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+<style>
+    /* ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ */
+    .cal-modal-backdrop {
+      display: none; position: fixed; inset: 0; z-index: 2900; background: rgba(0,0,0,0.65);
+    }
+    .cal-modal-backdrop.show { display: block; }
+    .cal-modal {
+      display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 440px; max-width: calc(100vw - 20px); background: #ffffff; border-radius: 20px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6); padding: 18px 20px; z-index: 3000; color: #1f2433;
+      user-select: none;
+    }
+    .cal-modal.show { display: block; animation: popIn .15s ease-out; }
+    
+    .cal-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .cal-nav select { border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 10px; padding: 6px 10px; height: 38px; font-weight: bold; flex: 1; }
+    .cal-btn-ico { width: 38px; height: 38px; border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: bold; }
+    .cal-btn-ico:hover { border-color: #0284c7; }
+
+    .cal-monthhead { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; margin-bottom: 6px; }
+    .cal-monthhead .m { font-family: 'Khmer OS Muol Light', 'Moul', cursive; font-size: 16px; color: #1e3a8a; }
+    .cal-monthhead .s { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+    .cal-dow, .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+      gap: 3px;
+      width: 100%;
+    }
+    .cal-dow { text-align: center; font-size: 13px; font-weight: bold; color: #64748b; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
+    .cal-dow div:first-child { color: #c62828; }
+    
+    .cal-cell {
+      position: relative;
+      min-height: 52px;
+      padding: 3px 2px;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      background: #ffffff;
+      text-align: center;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      transition: all .12s;
+      min-width: 0 !important;
+      overflow: hidden !important;
+      box-sizing: border-box;
+    }
+    .cal-cell:hover { border-color: #0284c7; background: #f0f9ff; }
+    .cal-cell.today { background: #e8eefc; border-color: #3b82f6; }
+    .cal-cell.sel { outline: 2.5px solid #1e3a8a; background: #eff6ff !important; }
+    .cal-cell.sun .g { color: #c62828; }
+    .cal-cell.other { opacity: 0.35; }
+    .cal-cell .g { font-size: 14px; font-weight: bold; line-height: 1.2; }
+    .cal-cell .l {
+      font-size: 9.5px;
+      color: #64748b;
+      line-height: 1.1;
+      margin-top: 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .cal-cell .l b { color: #1e3a8a; }
+    .cal-cell.sil .l b { color: #a8650a; font-weight: bold; }
+    .cal-cell .mo { position: absolute; top: 2px; right: 2px; font-size: 10px; }
+    .cal-cell .h {
+      font-size: 8.5px;
+      line-height: 1.1;
+      border-radius: 3px;
+      padding: 1px 2px;
+      margin-top: 2px;
+      background: #fde9e7;
+      color: #c62828;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100%;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .cal-legend { display: flex; gap: 10px; flex-wrap: wrap; padding: 8px 6px; color: #64748b; font-size: 11px; border-top: 1px solid #e2e8f0; margin-top: 6px; }
+    .cal-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; }
+
+</style>
+<style>
+/* custom dropdown (Battambang) */
+.csb{display:inline-flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;font-family:'Battambang',sans-serif!important;font-weight:500;text-align:left;white-space:nowrap;max-width:100%;background:var(--in);color:var(--text);border:1.5px solid var(--inl);border-radius:9px;padding:0 10px;height:34px;font-size:13px}
+.csb:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px color-mix(in srgb,var(--ac) 25%,transparent)}
+.csb .cl{overflow:hidden;text-overflow:ellipsis}
+.csb .ca{width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);opacity:.55;flex-shrink:0}
+.csb.empty .cl{color:var(--muted)}
+.cal-b{flex:1;height:38px;border:1px solid #cbd5e1;background:#f8fafc;color:#1f2433;border-radius:10px;font-weight:700;padding:0 10px;min-width:0}
+#csPop{position:fixed;z-index:4000;display:none;background:var(--card,#fff);color:var(--text,#0f172a);border:1px solid var(--line,#e2e8f0);border-radius:16px;box-shadow:0 18px 44px rgba(15,23,42,.38);padding:6px;overflow:auto;font-family:'Battambang',sans-serif;max-width:min(560px,94vw);animation:pop .15s ease-out}
+.csi{padding:10px 14px;border-radius:10px;cursor:pointer;font-size:14.5px;font-family:'Battambang',sans-serif;line-height:1.55;white-space:normal}
+.csi:hover{background:var(--acs,#e0e7ff)}
+.csi.on{background:color-mix(in srgb,var(--ac,#4f46e5) 22%,transparent);color:var(--ac,#4f46e5);font-weight:700}
+.csi.on:after{content:' ✓'}
+select{font-family:'Battambang',sans-serif!important}
+.cal-modal{color:#1f2433;color-scheme:light}
+.cal-modal select,.cal-modal option{color:#1f2433!important;background:#f8fafc!important}
+.cal-cell{color:#1f2433;font-family:'Battambang',sans-serif}.cal-cell .g{color:#1f2433}.cal-cell.sun .g{color:#c62828}
+.cal-btn-ico{color:#1f2433}.cal-cell.other{opacity:.4}.cal-cell .h{font-size:8px}
+@keyframes popIn{from{opacity:0;transform:translate(-50%,-48%)}to{opacity:1;transform:translate(-50%,-50%)}}
+.pill-btn{border:0;border-radius:10px;padding:0 14px;font:700 13px Battambang,sans-serif;cursor:pointer;background:#eef2ff;color:#4f46e5}.pill-btn.primary{background:#4f46e5;color:#fff}
+</style>
+</head>
+<body>
+<div class="auth" id="auth"><div><h2 style="color:#e11d48;font-size:18px;margin-bottom:8px">សូមចូលប្រើប្រព័ន្ធជាមុន</h2><p style="color:var(--muted);line-height:1.7;margin-bottom:18px">ទំព័រនេះត្រូវការចូលគណនីជាមុនសិន។</p><button class="btn pri" onclick="goIndex()">ទៅទំព័រចូល</button></div></div>
+
+<div id="app" style="display:none">
+<!-- ===== EDITOR ===== -->
+<div id="ed">
+  <div class="tb">
+    <button class="btn" onclick="goBack()"><svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>ត្រឡប់</button>
+    <span class="pill"><label>ឆ្នាំសិក្សា</label><select class="fc" id="selYear" onchange="reload()"></select></span>
+    <span class="pill"><label>ថ្នាក់</label><select class="fc" id="selClass" onchange="reload()"></select></span>
+    <span class="pill"><label>ថ្ងៃបោះឆ្នោត</label><button type="button" class="fc" id="electBtn" onclick="pickElect()" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px"></button></span>
+  </div>
+  <div class="wrap">
+    <div class="hero">
+      <div class="h1"><div class="ico"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M16.5 14.2c2.6.2 4.5 2.2 4.5 4.8"/></svg></div>
+        <div><h1>បញ្ជីវត្តមានអ្នកចូលរួមប្រជុំ និងគណៈកម្មការគ្រប់គ្រងសាលា និងថ្នាក់</h1><div class="s" id="heroSub"></div></div></div>
+      <div class="cap">ឯកសារប្រជុំដើមឆ្នាំ · ជ្រើសរើស គ.គ.ថ.</div>
+      <div class="acts">
+        <button class="btn" onclick="openPv('list')"><svg class="i" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg>បញ្ជីរួម</button>
+        <button class="btn" onclick="openPv('letter')"><svg class="i" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg>លិខិតបង្គាប់ការ</button>
+        <button class="btn" onclick="openPv('minutes')"><svg class="i" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg>កំណត់ហេតុប្រជុំ</button>
+        <button class="btn" onclick="openPv('chart')"><svg class="i" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg>រចនាសម្ព័ន្ធ</button>
+        <button class="btn x" onclick="doExcel()"><svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>Excel</button>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab" id="tabM" onclick="setTab('m')">កត់ប្រជុំ</button>
+      <button class="tab" id="tabC" onclick="setTab('c')">គណៈកម្មការគ្រប់គ្រងថ្នាក់ (គ.គ.ថ.)</button>
+    </div>
+    <div id="tabBody"></div>
+  </div>
+</div>
+
+<!-- ===== PREVIEW ===== -->
+<div id="pv">
+  <div class="pvbar" id="pvbar">
+    <button class="btn" onclick="closePv()"><svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>ត្រឡប់</button>
+    <button class="btn" id="pvXls" onclick="doExcel()"><svg class="i" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>ទាញយក Excel</button>
+    <select class="fc" id="pvTheme" onchange="setTheme(this.value)"><option value="modern">ទំនើប</option><option value="classic">ក្លាសិក</option><option value="mono">សខ្មៅ</option><option value="gold">មាស</option><option value="green">បៃតង</option></select>
+    <select class="fc" id="pvMtg" onchange="PV.mtg=this.value;renderPv()"></select>
+    <select class="fc" id="pvScope" onchange="PV.scope=this.value;renderPv()"></select>
+    <span class="lb">ថ្ងៃអ្នកធ្វើចុះហត្ថលេខា</span><button class="fc" id="pvSign" onclick="pickSign()" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px"></button>
+    <span class="lb">ថ្ងៃនាយកចុះហត្ថលេខា</span><button class="fc" id="pvPd" onclick="pickPd()" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px"></button>
+    <button class="btn" id="pvSet" onclick="openSet()"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>កំណត់ទំព័រ<span class="dot" id="setDot" style="display:none"></span></button>
+    <button class="btn" onclick="doPdf()"><svg class="i" viewBox="0 0 24 24"><path d="M12 3v12M7 11l5 5 5-5M5 21h14"/></svg>ទាញយក PDF</button>
+    <button class="btn pri" onclick="doPrint()"><svg class="i" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6a1 1 0 0 1-1 1h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg>បោះពុម្ព</button>
+  </div>
+  <div class="stage" id="stage"><div class="pvz" id="pvz"></div></div>
+</div>
+</div>
+
+<div id="mnav">
+  <button onclick="navMove(-1,0)"><svg class="i" viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+  <button onclick="navMove(0,-1)"><svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+  <button class="w" onclick="navMove(1,0)"><svg class="i" viewBox="0 0 24 24"><path d="M20 5v6a3 3 0 0 1-3 3H5M9 10l-4 4 4 4"/></svg>ចុះក្រោម</button>
+  <button class="w" onclick="navMove(0,1)"><svg class="i" viewBox="0 0 24 24"><path d="M4 12h14M13 6l6 6-6 6M21 5v14"/></svg>ទៅមុខ</button>
+  <button onclick="document.activeElement&&document.activeElement.blur();hideNav()"><svg class="i" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></button>
+</div>
+
+<!-- generic modal -->
+<div class="ov" id="ov" onclick="if(event.target===this)closeMd()"><div class="md" id="md"></div></div>
+<input type="file" id="photoIn" accept="image/*" style="display:none">
+  <!-- ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ -->
+  <div class="cal-modal-backdrop" id="calBackdrop" onclick="closeCalendarPopup()"></div>
+  <div class="cal-modal" id="calModal">
+    <div id="calRoleLbl" style="text-align:center;font-weight:800;font-size:13px;color:#0369a1;margin-bottom:8px;"></div>
+    <div class="cal-nav">
+      <button class="cal-btn-ico" type="button" onclick="shiftCalendarMonth(-1)">‹</button>
+      <select id="calSelMonth" onchange="changeCalendarSelect()"></select>
+      <select id="calSelYear" onchange="changeCalendarSelect()"></select>
+      <button class="cal-btn-ico" type="button" onclick="shiftCalendarMonth(1)">›</button>
+    </div>
+    <div class="cal-monthhead">
+      <div class="m" id="calMTitle"></div>
+      <div class="s" id="calMSub"></div>
+    </div>
+    <div class="cal-dow">
+      <div>អា</div><div>ច</div><div>អ</div><div>ព</div><div>ព្រ</div><div>សុ</div><div>ស</div>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div class="cal-legend">
+      <span><i style="background:#fde9e7"></i>ថ្ងៃឈប់សម្រាក</span>
+      <span><i style="background:#fbefd5"></i>ថ្ងៃសីល</span>
+      <span>🌕 ពេញបូណ៌មី · 🌑 ចុងខែ · 🌓🌗 ថ្ងៃសីល ៨</span>
+    </div>
+    <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+      <button type="button" class="pill-btn" style="background:#eff6ff; color:#0284c7; border:none; height:34px;" onclick="selectCalendarToday()">ថ្ងៃនេះ</button>
+      <button type="button" class="pill-btn" id="calBtnBlank" style="background:#fef2f2; color:#dc2626; border:none; height:34px;" onclick="calBlankDate()">ទុកទទេ</button>
+      <button type="button" class="pill-btn primary" style="height:34px;" onclick="closeCalendarPopup()">បិទ</button>
+    </div>
+  </div>
+
+<div id="selPop"></div>
+<div id="csPop"></div>
+<div class="toast" id="toast"></div>
+
+
+<div id="csPop"></div>
+<div class="toast" id="toast"></div>
+  <script>
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    define([], factory);
+  } else if (typeof module === 'object' && module.exports) {
+    module.exports = factory();
+  } else {
+    var exp = factory();
+    root.momentkh = exp;
+    root.MoonPhase = exp.MoonPhase;
+    root.MonthIndex = exp.MonthIndex;
+    root.AnimalYear = exp.AnimalYear;
+    root.AnimalYearEmojis = exp.AnimalYearEmojis;
+    root.Sak = exp.Sak;
+    root.DayOfWeek = exp.DayOfWeek;
+  }
+}(typeof self !== 'undefined' ? self : this, function () {
+  var module = { exports: {} };
+  var exports = module.exports;
+  "use strict";
+
+  var MoonPhase;
+  (function (MoonPhase) {
+      MoonPhase[MoonPhase["Waxing"] = 0] = "Waxing";
+      MoonPhase[MoonPhase["Waning"] = 1] = "Waning";
+  })(MoonPhase || (exports.MoonPhase = MoonPhase = {}));
+
+  var MonthIndex;
+  (function (MonthIndex) {
+      MonthIndex[MonthIndex["Migasir"] = 0] = "Migasir";
+      MonthIndex[MonthIndex["Boss"] = 1] = "Boss";
+      MonthIndex[MonthIndex["Meak"] = 2] = "Meak";
+      MonthIndex[MonthIndex["Phalkun"] = 3] = "Phalkun";
+      MonthIndex[MonthIndex["Cheit"] = 4] = "Cheit";
+      MonthIndex[MonthIndex["Pisakh"] = 5] = "Pisakh";
+      MonthIndex[MonthIndex["Jesth"] = 6] = "Jesth";
+      MonthIndex[MonthIndex["Asadh"] = 7] = "Asadh";
+      MonthIndex[MonthIndex["Srap"] = 8] = "Srap";
+      MonthIndex[MonthIndex["Phatrabot"] = 9] = "Phatrabot";
+      MonthIndex[MonthIndex["Assoch"] = 10] = "Assoch";
+      MonthIndex[MonthIndex["Kadeuk"] = 11] = "Kadeuk";
+      MonthIndex[MonthIndex["Pathamasadh"] = 12] = "Pathamasadh";
+      MonthIndex[MonthIndex["Tutiyasadh"] = 13] = "Tutiyasadh";
+  })(MonthIndex || (exports.MonthIndex = MonthIndex = {}));
+
+  var AnimalYear;
+  (function (AnimalYear) {
+      AnimalYear[AnimalYear["Chhut"] = 0] = "Chhut";
+      AnimalYear[AnimalYear["Chlov"] = 1] = "Chlov";
+      AnimalYear[AnimalYear["Khal"] = 2] = "Khal";
+      AnimalYear[AnimalYear["Thos"] = 3] = "Thos";
+      AnimalYear[AnimalYear["Rong"] = 4] = "Rong";
+      AnimalYear[AnimalYear["Masagn"] = 5] = "Masagn";
+      AnimalYear[AnimalYear["Momee"] = 6] = "Momee";
+      AnimalYear[AnimalYear["Momae"] = 7] = "Momae";
+      AnimalYear[AnimalYear["Vok"] = 8] = "Vok";
+      AnimalYear[AnimalYear["Roka"] = 9] = "Roka";
+      AnimalYear[AnimalYear["Cho"] = 10] = "Cho";
+      AnimalYear[AnimalYear["Kor"] = 11] = "Kor";
+  })(AnimalYear || (exports.AnimalYear = AnimalYear = {}));
+
+  var Sak;
+  (function (Sak) {
+      Sak[Sak["SamridhiSak"] = 0] = "SamridhiSak";
+      Sak[Sak["AekSak"] = 1] = "AekSak";
+      Sak[Sak["ToSak"] = 2] = "ToSak";
+      Sak[Sak["TreiSak"] = 3] = "TreiSak";
+      Sak[Sak["ChattvaSak"] = 4] = "ChattvaSak";
+      Sak[Sak["PanchaSak"] = 5] = "PanchaSak";
+      Sak[Sak["ChhaSak"] = 6] = "ChhaSak";
+      Sak[Sak["SappaSak"] = 7] = "SappaSak";
+      Sak[Sak["AtthaSak"] = 8] = "AtthaSak";
+      Sak[Sak["NappaSak"] = 9] = "NappaSak";
+  })(Sak || (exports.Sak = Sak = {}));
+
+  var DayOfWeek;
+  (function (DayOfWeek) {
+      DayOfWeek[DayOfWeek["Sunday"] = 0] = "Sunday";
+      DayOfWeek[DayOfWeek["Monday"] = 1] = "Monday";
+      DayOfWeek[DayOfWeek["Tuesday"] = 2] = "Tuesday";
+      DayOfWeek[DayOfWeek["Wednesday"] = 3] = "Wednesday";
+      DayOfWeek[DayOfWeek["Thursday"] = 4] = "Thursday";
+      DayOfWeek[DayOfWeek["Friday"] = 5] = "Friday";
+      DayOfWeek[DayOfWeek["Saturday"] = 6] = "Saturday";
+  })(DayOfWeek || (exports.DayOfWeek = DayOfWeek = {}));
+
+  const LunarMonthNames = [
+      'មិគសិរ', 'បុស្ស', 'មាឃ', 'ផល្គុន', 'ចេត្រ', 'ពិសាខ',
+      'ជេស្ឋ', 'អាសាឍ', 'ស្រាពណ៍', 'ភទ្របទ', 'អស្សុជ', 'កត្ដិក',
+      'បឋមាសាឍ', 'ទុតិយាសាឍ'
+  ];
+  const AnimalYearNames = [
+      'ជូត', 'ឆ្លូវ', 'ខាល', 'ថោះ', 'រោង', 'ម្សាញ់',
+      'មមី', 'មមែ', 'វក', 'រកា', 'ច', 'កុរ'
+  ];
+  const SakNames = [
+      'សំរឹទ្ធិស័ក', 'ឯកស័ក', 'ទោស័ក', 'ត្រីស័ក', 'ចត្វាស័ក',
+      'បញ្ចស័ក', 'ឆស័ក', 'សប្តស័ក', 'អដ្ឋស័ក', 'នព្វស័ក'
+  ];
+  const WeekdayNames = [
+      'អាទិត្យ', 'ចន្ទ', 'អង្គារ', 'ពុធ', 'ព្រហស្បតិ៍', 'សុក្រ', 'សៅរ៍'
+  ];
+  const MoonPhaseNames = ['កើត', 'រោច'];
+
+  function isGregorianLeapYear(year) {
+      return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+  }
+  function getDaysInGregorianMonth(year, month) {
+      const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      if (month === 2 && isGregorianLeapYear(year)) return 29;
+      return daysInMonth[month - 1];
+  }
+  function gregorianToJulianDay(year, month, day) {
+      const a = Math.floor((14 - month) / 12);
+      const y = year + 4800 - a;
+      const m = month + 12 * a - 3;
+      return day + Math.floor((153 * m + 2) / 5) + 365 * y +
+          Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+  }
+  function julianDayToGregorian(jdn) {
+      const a = jdn + 32044;
+      const b = Math.floor((4 * a + 3) / 146097);
+      const c = a - Math.floor((146097 * b) / 4);
+      const d = Math.floor((4 * c + 3) / 1461);
+      const e = c - Math.floor((1461 * d) / 4);
+      const m = Math.floor((5 * e + 2) / 153);
+      const day = e - Math.floor((153 * m + 2) / 5) + 1;
+      const month = m + 3 - 12 * Math.floor(m / 10);
+      const year = 100 * b + d - 4800 + Math.floor(m / 10);
+      return { year, month, day };
+  }
+  function getDayOfWeek(year, month, day) {
+      const jdn = gregorianToJulianDay(year, month, day);
+      return (jdn + 1) % 7;
+  }
+  function adToJs(adYear) { return adYear - 638; }
+  function beToJs(beYear) { return beYear - 1182; }
+
+  function getAharkun(beYear) { return Math.floor((beYear * 292207 + 499) / 800) + 4; }
+  function getAharkunMod(beYear) { return (beYear * 292207 + 499) % 800; }
+  function getKromthupul(beYear) { return 800 - getAharkunMod(beYear); }
+  function getAvoman(beYear) { return (getAharkun(beYear) * 11 + 25) % 692; }
+  function getBodithey(beYear) {
+      const aharkun = getAharkun(beYear);
+      return (Math.floor((aharkun * 11 + 25) / 692) + aharkun + 29) % 30;
+  }
+  function isKhmerSolarLeap(beYear) { return getKromthupul(beYear) <= 207; }
+  function isKhmerLeapDayByCalculation(beYear) {
+      const avoman = getAvoman(beYear);
+      const isSolarLeap = isKhmerSolarLeap(beYear);
+      if (avoman === 0 && getAvoman(beYear - 1) === 137) return true;
+      else if (isSolarLeap) return avoman < 127;
+      else if (avoman === 137 && getAvoman(beYear + 1) === 0) return false;
+      else if (avoman < 138) return true;
+      return false;
+  }
+  function isKhmerLeapMonth(beYear) {
+      const bodithey = getBodithey(beYear);
+      const boditheyNextYear = getBodithey(beYear + 1);
+      if (bodithey === 25 && boditheyNextYear === 5) return false;
+      return (bodithey === 24 && boditheyNextYear === 6) || (bodithey >= 25) || (bodithey < 6);
+  }
+  function getLeapType(beYear) {
+      if (isKhmerLeapMonth(beYear)) return 1;
+      else if (isKhmerLeapDayByCalculation(beYear)) return 2;
+      else if (isKhmerLeapMonth(beYear - 1)) {
+          let previousYear = beYear - 1;
+          while (true) {
+              if (isKhmerLeapDayByCalculation(previousYear)) return 2;
+              previousYear -= 1;
+              if (!isKhmerLeapMonth(previousYear)) return 0;
+          }
+      }
+      return 0;
+  }
+  function getNumberOfDaysInKhmerMonth(monthIndex, beYear) {
+      const leapType = getLeapType(beYear);
+      if (monthIndex === MonthIndex.Jesth && leapType === 2) return 30;
+      if (monthIndex === MonthIndex.Pathamasadh || monthIndex === MonthIndex.Tutiyasadh) return leapType === 1 ? 30 : 0;
+      return monthIndex % 2 === 0 ? 29 : 30;
+  }
+  function getNumberOfDaysInKhmerYear(beYear) {
+      const leapType = getLeapType(beYear);
+      if (leapType === 1) return 384;
+      if (leapType === 2) return 355;
+      return 354;
+  }
+  function nextMonthOf(monthIndex, beYear) {
+      const leapType = getLeapType(beYear);
+      if (monthIndex === MonthIndex.Jesth && leapType === 1) return MonthIndex.Pathamasadh;
+      if (monthIndex === MonthIndex.Kadeuk) return MonthIndex.Migasir;
+      if (monthIndex === MonthIndex.Pathamasadh) return MonthIndex.Tutiyasadh;
+      if (monthIndex === MonthIndex.Tutiyasadh) return MonthIndex.Srap;
+      return (monthIndex + 1);
+  }
+
+  function getAharkunJs(jsYear) { return Math.floor((jsYear * 292207 + 373) / 800) + 1; }
+  function getAvomanJs(jsYear) { return (getAharkunJs(jsYear) * 11 + 650) % 692; }
+  function getKromthupulJs(jsYear) { return 800 - ((292207 * jsYear + 373) % 800); }
+  function getBoditheyJs(jsYear) {
+      const aharkun = getAharkunJs(jsYear);
+      return (aharkun + Math.floor((11 * aharkun + 650) / 692)) % 30;
+  }
+  function isAdhikameas(jsYear) {
+      const bodithey = getBoditheyJs(jsYear);
+      const boditheyNext = getBoditheyJs(jsYear + 1);
+      if (bodithey === 24 && boditheyNext === 6) return true;
+      if (bodithey === 25 && boditheyNext === 5) return false;
+      return bodithey > 24 || bodithey < 6;
+  }
+  function isChantrathimeas(jsYear) {
+      const avoman = getAvomanJs(jsYear);
+      const avomanNext = getAvomanJs(jsYear + 1);
+      const avomanPrev = getAvomanJs(jsYear - 1);
+      const isSolarLeap = getKromthupulJs(jsYear) <= 207;
+      if (avoman === 0 && avomanPrev === 137) return true;
+      if (isSolarLeap) return avoman < 127;
+      if (avoman === 137 && avomanNext === 0) return false;
+      if (!isSolarLeap && avoman < 138) return true;
+      if (avomanPrev === 137 && avoman === 0) return true;
+      return false;
+  }
+  function has366Days(jsYear) { return getKromthupulJs(jsYear) <= 207; }
+  function getSunInfo(jsYear, sotin) {
+      const infoOfPrevYear = { kromathopol: getKromthupulJs(jsYear - 1) };
+      const r2 = 800 * sotin + infoOfPrevYear.kromathopol;
+      const reasey = Math.floor(r2 / 24350);
+      const r3 = r2 % 24350;
+      const angsar = Math.floor(r3 / 811);
+      const r4 = r3 % 811;
+      const l1 = Math.floor(r4 / 14);
+      const libda = l1 - 3;
+      const sunAverageAsLibda = (30 * 60 * reasey) + (60 * angsar) + libda;
+      const s1 = ((30 * 60 * 2) + (60 * 20));
+      let leftOver = sunAverageAsLibda - s1;
+      if (sunAverageAsLibda < s1) leftOver += (30 * 60 * 12);
+      const kaen = Math.floor(leftOver / (30 * 60));
+      let rs = -1;
+      if ([0, 1, 2].includes(kaen)) rs = kaen;
+      else if ([3, 4, 5].includes(kaen)) rs = (30 * 60 * 6) - leftOver;
+      else if ([6, 7, 8].includes(kaen)) rs = leftOver - (30 * 60 * 6);
+      else if ([9, 10, 11].includes(kaen)) rs = ((30 * 60 * 11) + (60 * 29) + 60) - leftOver;
+      const lastLeftOver = {
+          reasey: Math.floor(rs / (30 * 60)),
+          angsar: Math.floor((rs % (30 * 60)) / 60),
+          libda: rs % 60
+      };
+      let khan, pouichalip;
+      if (lastLeftOver.angsar >= 15) {
+          khan = 2 * lastLeftOver.reasey + 1;
+          pouichalip = 60 * (lastLeftOver.angsar - 15) + lastLeftOver.libda;
+      } else {
+          khan = 2 * lastLeftOver.reasey;
+          pouichalip = 60 * lastLeftOver.angsar + lastLeftOver.libda;
+      }
+      const chhayaSunMap = [
+          { multiplicity: 35, chhaya: 0 }, { multiplicity: 32, chhaya: 35 },
+          { multiplicity: 27, chhaya: 67 }, { multiplicity: 22, chhaya: 94 },
+          { multiplicity: 13, chhaya: 116 }, { multiplicity: 5, chhaya: 129 }
+      ];
+      const chhayaSun = khan <= 5 ? chhayaSunMap[khan] : { multiplicity: 0, chhaya: 134 };
+      const q = Math.floor((pouichalip * chhayaSun.multiplicity) / 900);
+      const pholAsLibda = q + chhayaSun.chhaya;
+      const sunInaugurationAsLibda = kaen <= 5 ? sunAverageAsLibda - pholAsLibda : sunAverageAsLibda + pholAsLibda;
+      return {
+          sunInaugurationAsLibda,
+          reasey: Math.floor(sunInaugurationAsLibda / (30 * 60)),
+          angsar: Math.floor((sunInaugurationAsLibda % (30 * 60)) / 60),
+          libda: sunInaugurationAsLibda % 60
+      };
+  }
+  function getNewYearInfo(jsYear) {
+      const sotins = has366Days(jsYear - 1) ? [363, 364, 365, 366] : [362, 363, 364, 365];
+      const newYearsDaySotins = sotins.map(sotin => getSunInfo(jsYear, sotin));
+      let timeOfNewYear = { hour: 0, minute: 0 };
+      for (const sotin of newYearsDaySotins) {
+          if (sotin.angsar === 0) {
+              const minutes = (24 * 60) - (sotin.libda * 24);
+              timeOfNewYear = { hour: Math.floor(minutes / 60) % 24, minute: minutes % 60 };
+              break;
+          }
+      }
+      const numberOfVanabatDays = (newYearsDaySotins[0].angsar === 0) ? 2 : 1;
+      return { timeOfNewYear, numberOfVanabatDays, newYearsDaySotins };
+  }
+
+  class KhmerDate {
+      constructor(day, moonPhase, monthIndex, beYear) {
+          this.day = day; this.moonPhase = moonPhase; this.monthIndex = monthIndex; this.beYear = beYear;
+      }
+      getDayNumber() {
+          return this.moonPhase === MoonPhase.Waxing ? this.day - 1 : 15 + (this.day - 1);
+      }
+      static fromDayNumber(dayNum) {
+          return dayNum < 15 ? { day: dayNum + 1, moonPhase: MoonPhase.Waxing } : { day: (dayNum - 15) + 1, moonPhase: MoonPhase.Waning };
+      }
+  }
+
+  function getMaybeBEYear(year, month) { return month <= 4 ? year + 543 : year + 544; }
+  const visakhaBocheaCache = {};
+  const newYearInfoCache = {};
+
+  function getPisakhaBochea(year, isSearching = false) {
+      if (visakhaBocheaCache[year]) return visakhaBocheaCache[year];
+      for (let searchMonth = 4; searchMonth <= 6; searchMonth++) {
+          const daysInMonth = new Date(year, searchMonth, 0).getDate();
+          for (let searchDay = 1; searchDay <= daysInMonth; searchDay++) {
+              const result = gregorianToKhmerInternal(year, searchMonth, searchDay, 12, 0, 0, true);
+              if (result.khmer.monthIndex === MonthIndex.Pisakh && result._khmerDateObj.getDayNumber() === 15) {
+                  const timestamp = new Date(year, searchMonth - 1, searchDay, 0, 0, 0, 0).getTime();
+                  visakhaBocheaCache[year] = timestamp;
+                  return timestamp;
+              }
+          }
+      }
+      const fallback = new Date(year, 3, 15, 0, 0, 0, 0).getTime();
+      visakhaBocheaCache[year] = fallback;
+      return fallback;
+  }
+
+  function gregorianToKhmerInternal(year, month, day, hour = 0, minute = 0, second = 0, isSearching = false) {
+      let epochJdn = gregorianToJulianDay(1900, 1, 1);
+      const targetJdn = gregorianToJulianDay(year, month, day);
+      let khmerMonth = 1;
+      let khmerDayNumber = 0;
+      let diffDays = targetJdn - epochJdn;
+
+      if (diffDays > 0) {
+          while (true) {
+              const epochGreg = julianDayToGregorian(epochJdn);
+              const nextYearBE = getMaybeBEYear(epochGreg.year + 1, epochGreg.month);
+              const daysInNextYear = getNumberOfDaysInKhmerYear(nextYearBE);
+              if (diffDays > daysInNextYear) { diffDays -= daysInNextYear; epochJdn += daysInNextYear; } else break;
+          }
+      } else if (diffDays < 0) {
+          while (diffDays < 0) {
+              const epochGreg = julianDayToGregorian(epochJdn);
+              const currentYearBE = getMaybeBEYear(epochGreg.year, epochGreg.month);
+              const daysInCurrentYear = getNumberOfDaysInKhmerYear(currentYearBE);
+              diffDays += daysInCurrentYear; epochJdn -= daysInCurrentYear;
+          }
+      }
+      while (diffDays > 0) {
+          const epochGreg = julianDayToGregorian(epochJdn);
+          const currentBE = getMaybeBEYear(epochGreg.year, epochGreg.month);
+          const daysInMonth = getNumberOfDaysInKhmerMonth(khmerMonth, currentBE);
+          if (diffDays > daysInMonth) { diffDays -= daysInMonth; epochJdn += daysInMonth; } else break;
+      }
+      khmerDayNumber = diffDays;
+      const finalBE = getMaybeBEYear(year, month);
+      const totalDaysInMonth = getNumberOfDaysInKhmerMonth(khmerMonth, finalBE);
+      if (khmerDayNumber >= totalDaysInMonth) {
+          khmerDayNumber = khmerDayNumber % totalDaysInMonth;
+          khmerMonth = nextMonthOf(khmerMonth, finalBE);
+      }
+      const khmerDayInfo = KhmerDate.fromDayNumber(khmerDayNumber);
+      let beYear;
+      if (isSearching) {
+          beYear = month <= 4 ? year + 543 : year + 544;
+      } else {
+          const inputTimestamp = new Date(year, month - 1, day, hour, minute, second).getTime();
+          const beYearTransitionTimestamp = getPisakhaBochea(year);
+          beYear = inputTimestamp >= beYearTransitionTimestamp ? year + 544 : year + 543;
+      }
+      let jsYear = beToJs(beYear);
+      let animalYearIndex = ((beYear + 4) % 12 + 12) % 12;
+      if (!isSearching) {
+          const newYearInfo = getNewYearFullInfo(year);
+          const inputTimestamp = new Date(year, month - 1, day, hour, minute, second).getTime();
+          const visakhaBocheaTimestamp = getPisakhaBochea(year);
+          if (inputTimestamp >= newYearInfo.newYearMoment.getTime() && inputTimestamp <= visakhaBocheaTimestamp) animalYearIndex = (animalYearIndex + 1) % 12;
+          if (inputTimestamp >= newYearInfo.lerngSakMoment.getTime() && inputTimestamp <= visakhaBocheaTimestamp) jsYear++;
+      }
+      const sakIndex = ((jsYear % 10) + 10) % 10;
+      const dayOfWeek = getDayOfWeek(year, month, day);
+      const khmerDate = new KhmerDate(khmerDayInfo.day, khmerDayInfo.moonPhase, khmerMonth, beYear);
+      return {
+          gregorian: { year, month, day, hour, minute, second, dayOfWeek },
+          khmer: {
+              day: khmerDayInfo.day,
+              moonPhase: khmerDayInfo.moonPhase,
+              moonPhaseName: MoonPhaseNames[khmerDayInfo.moonPhase],
+              monthIndex: khmerMonth,
+              monthName: LunarMonthNames[khmerMonth],
+              beYear: beYear,
+              animalYearName: AnimalYearNames[animalYearIndex],
+              sakName: SakNames[sakIndex],
+              dayOfWeekName: WeekdayNames[dayOfWeek]
+          },
+          _khmerDateObj: khmerDate
+      };
+  }
+
+  function getNewYearFullInfo(ceYear) {
+      if (newYearInfoCache[ceYear]) return newYearInfoCache[ceYear];
+      const jsYear = adToJs(ceYear);
+      let newYearInfo = getNewYearInfo(jsYear);
+      let bodithey = getBoditheyJs(jsYear);
+      if (isAdhikameas(jsYear - 1) && isChantrathimeas(jsYear - 1)) bodithey = (bodithey + 1) % 30;
+      const lunarDateLerngSak = { day: bodithey >= 6 ? bodithey - 1 : bodithey, month: bodithey >= 6 ? 4 : 5 };
+      const numberNewYearDay = newYearInfo.newYearsDaySotins[0].angsar === 0 ? 4 : 3;
+      const epochLerngSakGreg = { year: ceYear, month: 4, day: 17 };
+      const khEpoch = gregorianToKhmerInternal(ceYear, 4, 17, 12, 0, 0, true)._khmerDateObj;
+      const diffFromEpoch = ((khEpoch.monthIndex - 4) * 29 + khEpoch.getDayNumber()) - ((lunarDateLerngSak.month - 4) * 29 + lunarDateLerngSak.day);
+      const daysToSubtract = diffFromEpoch + numberNewYearDay - 1;
+      const epochJdn = gregorianToJulianDay(epochLerngSakGreg.year, epochLerngSakGreg.month, epochLerngSakGreg.day);
+      let newYearJdn = epochJdn - daysToSubtract;
+      const newYearDate = julianDayToGregorian(newYearJdn);
+      const newYearMoment = new Date(newYearDate.year, newYearDate.month - 1, newYearDate.day, newYearInfo.timeOfNewYear.hour, newYearInfo.timeOfNewYear.minute);
+      const lerngSakJdn = newYearJdn + numberNewYearDay - 1;
+      const lerngSakDate = julianDayToGregorian(lerngSakJdn);
+      const lerngSakMoment = new Date(lerngSakDate.year, lerngSakDate.month - 1, lerngSakDate.day, 0, 0, 0);
+      const result = { newYearMoment, lerngSakMoment };
+      newYearInfoCache[ceYear] = result;
+      return result;
+  }
+
+  function fromGregorian(year, month, day, hour = 0, minute = 0, second = 0) {
+      return gregorianToKhmerInternal(year, month, day, hour, minute, second, false);
+  }
+
+  exports.default = { fromGregorian, MoonPhase, MonthIndex, AnimalYear, Sak, DayOfWeek };
+  return exports.default;
+}));
+  </script>
+  <script>
+    var KD='០១២៣៤៥៦៧៨៩';
+    function kn(n){return String(n).replace(/\d/g,function(c){return KD[c];});}
+    var GM=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+    var DOW=['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
+    var DOWS=['អា','ច','អ','ព','ព្រ','សុ','ស'];
+    var MN={0:'មិគសិរ',1:'បុស្ស',2:'មាឃ',3:'ផល្គុន',4:'ចេត្រ',5:'ពិសាខ',6:'ជេស្ឋ',7:'អាសាឍ',8:'ស្រាពណ៍',9:'ភទ្របទ',10:'អស្សុជ',11:'កត្តិក',12:'បឋមាសាឍ',13:'ទុតិយាសាឍ'};
+    var FIXED={'1-1':'ទិវាចូលឆ្នាំសកល','1-7':'ទិវាជ័យជម្នះលើរបបប្រល័យពូជសាសន៍','3-8':'ទិវានារីអន្តរជាតិ','5-1':'ទិវាពលកម្មអន្តរជាតិ','5-14':'ព្រះរាជពិធីបុណ្យចម្រើនព្រះជន្ម ព្រះមហាក្សត្រ','6-18':'ព្រះរាជពិធីបុណ្យចម្រើនព្រះជន្ម ព្រះវររាជមាតា','9-24':'ទិវាប្រកាសរដ្ឋធម្មនុញ្ញ','10-15':'ទិវាគោរពព្រះវិញ្ញាណក្ខន្ធ ព្រះបរមរតនកោដ្ឋ','10-29':'ព្រះរាជពិធីគ្រងព្រះបរមរាជសម្បត្តិ','11-9':'ពិធីបុណ្យឯករាជ្យជាតិ','12-29':'ទិវាសន្តិភាព'};
+
+    var calCache={};
+    function info(y,m,d){
+      var key=y*10000+m*100+d; if(calCache[key]) return calCache[key];
+      var r=momentkh.fromGregorian(y,m,d), k=r.khmer;
+      var o={y:y,m:m,d:d,dow:r.gregorian.dayOfWeek,kd:k.day,ph:k.moonPhase,mi:k.monthIndex,
+             mname:MN[k.monthIndex]||k.monthName,be:k.beYear,animal:k.animalYearName,sak:k.sakName};
+      calCache[key]=o; return o;
+    }
+    function addDays(y,m,d,n){var t=new Date(y,m-1,d+n);return [t.getFullYear(),t.getMonth()+1,t.getDate()];}
+    function isLast(o){var n=addDays(o.y,o.m,o.d,1),x=info(n[0],n[1],n[2]);return x.kd===1&&x.ph===0;}
+    function lunarText(o){return kn(o.kd)+(o.ph===0?'កើត':'រោច');}
+    function holy(o){
+      if(o.ph===0&&(o.kd===8||o.kd===15)) return true;
+      if(o.ph===1&&(o.kd===8||o.kd===14||o.kd===15)) return true;
+      return false;
+    }
+    function moon(o){
+      if(o.ph===0&&o.kd===15) return '🌕';
+      if(o.ph===0&&o.kd===8) return '🌓';
+      if(o.ph===1&&o.kd===8) return '🌗';
+      if(isLast(o)) return '🌑';
+      return '';
+    }
+    function hols(o){
+      var out=[], f=FIXED[o.m+'-'+o.d];
+      if(f) out.push({t:f,k:'nat'});
+      if(o.m===4&&o.d>=14&&o.d<=16) out.push({t:['ពិធីបុណ្យចូលឆ្នាំ ទី១','ពិធីបុណ្យចូលឆ្នាំ ទី២','ពិធីបុណ្យចូលឆ្នាំ ទី៣'][o.d-14],k:'nat'});
+      var ph=o.ph,d=o.kd,mi=o.mi;
+      if(ph===0&&d===15&&mi===3) out.push({t:'ពិធីបុណ្យមាឃបូជា',k:'bud'});
+      if(ph===0&&d===15&&mi===5) out.push({t:'ពិធីបុណ្យវិសាខបូជា',k:'nat'});
+      if(ph===1&&d===4&&mi===5)  out.push({t:'ព្រះរាជពិធីច្រត់ព្រះនង្គ័ល',k:'nat'});
+      if(ph===1&&mi===9&&(d===14||d===15)) out.push({t:'ពិធីបុណ្យភ្ជុំបិណ្ឌ',k:'nat'});
+      if(ph===0&&d===1&&mi===10) out.push({t:'ពិធីបុណ្យភ្ជុំបិណ្ឌ',k:'nat'});
+      if(mi===11&&((ph===0&&(d===14||d===15))||(ph===1&&d===1))) out.push({t:'ពិធីបុណ្យអុំទូក',k:'nat'});
+      if(ph===0&&d===15&&mi===10) out.push({t:'ថ្ងៃចេញវស្សា',k:'bud'});
+      return out;
+    }
+    function fullText(o){
+      return 'ថ្ងៃ'+DOW[o.dow]+' '+lunarText(o)+' ខែ'+o.mname+' ឆ្នាំ'+o.animal+' '+o.sak+' ពុទ្ធសករាជ '+kn(o.be);
+    }
+    // 🌟 កាលបរិច្ឆេទសូរិយគតិ៖ «កំពង់ល្ពៅ ថ្ងៃទី...» គ្មានឈ្មោះថ្ងៃនៃសប្តាហ៍ឡើយ
+    function gText(o){
+      return 'កំពង់ល្ពៅ ថ្ងៃទី' + kn(o.d) + ' ខែ' + GM[o.m - 1] + ' ឆ្នាំ' + kn(o.y);
+    }
+  </script>
+
+<script>
+const sb=window.supabase?supabase.createClient("https://nggnuobnrxiqjtcwlvwk.supabase.co","sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML"):null;
+const KHD='០១២៣៤៥៦៧៨៩';
+const toKh=v=>String(v??'').replace(/[0-9]/g,d=>KHD[d]);
+const fromKh=v=>String(v??'').replace(/[០-៩]/g,d=>KHD.indexOf(d));
+const cleanGrade=g=>String(g||'').replace(/^ថ្នាក់ទី\s*/,'').trim();
+const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const $=id=>document.getElementById(id);
+function readSession(){try{return JSON.parse(localStorage.getItem('krou_supabase_user')||'null')}catch(e){return null}}
+const USER=readSession();
+const IS_ADMIN=String((USER&&USER.role)||'').toLowerCase().trim()==='admin';
+function goIndex(){try{if(window.parent!==window){window.parent.location.href='index.html';return}}catch(e){}location.href='index.html'}
+function goBack(){try{if(window.parent&&window.parent!==window){window.parent.postMessage({type:'NAVIGATE',page:'reportsHub'},'*');return}}catch(e){}location.href='index.html#reportsHub'}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light')}
+applyTheme(localStorage.getItem('krou_theme_manual')||'light');
+window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme))applyTheme(e.data.theme||e.data)});
+window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual')applyTheme(e.newValue)});
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2400)}
+
+/* ===== icons ===== */
+const IC={
+  cam:'<svg class="i" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  trash:'<svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg>',
+  plus:'<svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',
+  lock:'<svg class="i" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  unlock:'<svg class="i" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></svg>',
+  cal:'<svg class="i" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>',
+  users:'<svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.4"/><path d="M16.5 14.2c2.6.2 4.5 2.2 4.5 4.8"/></svg>',
+  save:'<svg class="i" viewBox="0 0 24 24"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>'
+};
+const PERSON='<svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.5 20c0-4.1 3.4-7 7.5-7s7.5 2.9 7.5 7"/></svg>';
+
+/* ===== constants ===== */
+const ROLES=['ប្រធាន','អនុប្រធាន','សមាជិក'];
+const SEXES=['មិនកំណត់','ប្រុស','ស្រី'];
+const TYPES=['មិនកំណត់','មាតាបិតា','ក្រុមប្រឹក្សាឃុំ','មេភូមិ','សហគមន៍','គ្រូ','សិស្ស','អាជ្ញាធរ','ផ្សេងៗ'];
+const UNDER=[['auto','ស្វ័យប្រវត្តិ'],['1','អនុប្រធានទី១'],['2','អនុប្រធានទី២']];
+const DUTIES=[
+ 'ទទួលខុសត្រូវរួម កិច្ចប្រតិបត្តិការក្នុងដំណើរការគ្រប់គ្រងថ្នាក់រៀន',
+ 'ទទួលខុសត្រូវការធ្វើផែនការ និងថវិការបស់ថ្នាក់រៀន',
+ 'ទទួលខុសត្រូវហេដ្ឋារចនាសម្ព័ន្ធ និងបរិស្ថានសិក្សាក្នុងថ្នាក់រៀន',
+ 'ទទួលខុសត្រូវការធ្វើតេស្តសិស្សក្នុងថ្នាក់រៀន',
+ 'ទទួលខុសត្រូវកិច្ចសហការ និងកៀរគរជំនួយរបស់មាតាបិតា សហគមន៍',
+ 'ទទួលខុសត្រូវគណនេយ្យភាព និងការផ្សព្វផ្សាយទិន្នន័យរបស់ថ្នាក់រៀន',
+ 'ទទួលខុសត្រូវការជួយសិស្សមកពីគ្រួសារជួបការលំបាក និងមានអំពើហិង្សា',
+ 'ទទួលខុសត្រូវសកម្មភាពរបស់ក្រុមប្រឹក្សាកុមារក្នុងថ្នាក់រៀន',
+ 'ទទួលខុសត្រូវលើការរកមូលនិធិនៅថ្នាក់រៀនពីសហគមន៍'
+];
+const CUSTOM_LBL='ផ្សេងៗ ៖ វាយភារកិច្ចខ្លួនឯង';
+const TASKS=[
+ 'កំណត់តម្រូវការ និងបញ្ហាប្រឈមទាក់ទងនឹងការរៀន និងបង្រៀនក្នុងថ្នាក់រៀន',
+ 'កសាងផែនការអភិវឌ្ឍថ្នាក់រៀន ផែនការបង្រៀន និងផែនការសិស្សរៀន',
+ 'កៀរគរធនធានសម្ភារៈ និងថវិកាពីមាតាបិតា អ្នកអាណាព្យាបាល និងសប្បុរសជននានា សម្រាប់អភិវឌ្ឍថ្នាក់រៀន និងដំណើរការរៀន និងបង្រៀន',
+ 'ផ្តើមគំនិតក្នុងការកែលម្អថ្នាក់រៀន និងជួយផលិតសម្ភារៈរៀន និងបង្រៀន',
+ 'ចូលរួមរៀបចំ និងសង្កេតមើលដំណើរការធ្វើតេស្តសិស្ស ប្រចាំខែ ត្រីមាស និងឆ្នាំ',
+ 'សហការជាមួយគ្រូបន្ទុកថ្នាក់ជួយអប់រំមាតាបិតា អ្នកអាណាព្យាបាលសិស្ស ឱ្យជួយជំរុញកូនឱ្យមករៀនទៀងទាត់ រៀនបន្ថែម ធ្វើលំហាត់ ទាំងនៅផ្ទះ និងនៅក្លឹបសិក្សាក្នុងសហគមន៍',
+ 'ដោះស្រាយបញ្ហាទាក់ទងនឹងការរៀន និងបង្រៀន ជាពិសេសសម្រាប់កុមារជួបការលំបាកក្នុងការសិក្សា',
+ 'តាមដាន និងផ្តល់ព័ត៌មានត្រឡប់ចំពោះការរៀន និងបង្រៀន ការធ្វើតេស្តសិស្ស និងលទ្ធផលនៃការសិក្សារបស់សិស្សក្នុងថ្នាក់រៀន',
+ 'បែងចែកវេនប្រចាំការនៅថ្នាក់រៀន ដើម្បីពិនិត្យមើលអំពីដំណើរការរៀនរបស់កូនៗ'
+];
+const PAGE0={office:'ការិយាល័យអប់រំ យុវជន និងកីឡា',school:'សាលាបឋមសិក្សាកំពង់ល្ពៅ',place:'កំពង់ល្ពៅ',principal:'',mt:10,mb:10,ms:12,fz:100};
+
+/* ===== state & storage ===== */
+let CUR={year:'',cls:''},D=null,GL={page:{...PAGE0},pDate:''},CLASSES=[],USERS=[],TAB='c';
+const uid=()=>Math.random().toString(36).slice(2,9);
+function newData(){return {members:[],meetings:[],locked:false,signDate:'',elect:'',theme:'modern',teacher:''}}
+const keyOf=(cls)=>'cmt_v1:'+(USER.username||'')+':'+CUR.year+':'+cls;
+const gkey=()=>'cmt_g_v1:'+(USER.username||'');
+function loadOf(cls){try{const d=JSON.parse(localStorage.getItem(keyOf(cls))||'null');return Object.assign(newData(),d||{})}catch(e){return newData()}}
+function saveNow(){try{localStorage.setItem(keyOf(CUR.cls),JSON.stringify(D));return true}catch(e){toast('⚠️ ទំហំផ្ទុកពេញ (រូបថតធំពេក)');return false}}
+let _st;function save(){clearTimeout(_st);_st=setTimeout(saveNow,250)}
+function loadG(){try{const g=JSON.parse(localStorage.getItem(gkey())||'null');if(g){GL.pDate=g.pDate||'';GL.page=Object.assign({},PAGE0,g.page||{})}}catch(e){}}
+function saveG(){try{localStorage.setItem(gkey(),JSON.stringify(GL))}catch(e){}}
+
+/* ===== date helpers ===== */
+const _n=new Date();
+const calToday={y:_n.getFullYear(),m:_n.getMonth()+1,d:_n.getDate()};
+const isoOf=(y,m,d)=>y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+const isoParts=v=>/^\d{4}-\d{2}-\d{2}$/.test(v||'')?v.split('-').map(Number):null;
+const todayIso=()=>isoOf(calToday.y,calToday.m,calToday.d);
+function dLabel(v,blank){const p=isoParts(v);return p?kn(p[2])+' '+GM[p[1]-1]+' '+kn(p[0]):(blank||'ជ្រើសថ្ងៃ')}
+const solarTxt=p=>GL.page.place+' ថ្ងៃទី'+kn(p[2])+' ខែ'+GM[p[1]-1]+' ឆ្នាំ'+kn(p[0]);
+const solarBlank=()=>GL.page.place+' ថ្ងៃទី......... ខែ......... ឆ្នាំ២០.........';
+function lunarOf(iso){const p=isoParts(iso);return p?fullText(info(p[0],p[1],p[2])):''}
+
+/* ===== calendar (generic) ===== */
+let CAL={cb:null,allowBlank:false,view:{y:calToday.y,m:calToday.m},sel:null,blank:false};
+function openCal(label,iso,allowBlank,cb){
+  const p=isoParts(iso)||[calToday.y,calToday.m,calToday.d];
+  CAL={cb,allowBlank,view:{y:p[0],m:p[1]},sel:isoParts(iso)?{y:p[0],m:p[1],d:p[2]}:null,blank:!iso&&allowBlank};
+  $('calRoleLbl').textContent=label;$('calBtnBlank').style.display=allowBlank?'':'none';
+  $('calBackdrop').classList.add('show');$('calModal').classList.add('show');initCalendarPopup();
+}
+function closeCalendarPopup(){$('calBackdrop').classList.remove('show');$('calModal').classList.remove('show')}
+function initCalendarPopup(){
+  $('calSelMonth').innerHTML=GM.map((n,i)=>`<option value="${i+1}">${n}</option>`).join('');
+  let yh='';for(let y=2000;y<=calToday.y+15;y++)yh+=`<option value="${y}">${kn(y)}</option>`;
+  $('calSelYear').innerHTML=yh;renderCalendarGrid();
+}
+function changeCalendarSelect(){CAL.view.m=+$('calSelMonth').value;CAL.view.y=+$('calSelYear').value;renderCalendarGrid()}
+function shiftCalendarMonth(n){const t=new Date(CAL.view.y,CAL.view.m-1+n,1);CAL.view={y:t.getFullYear(),m:t.getMonth()+1};renderCalendarGrid()}
+function renderCalendarGrid(){
+  const y=CAL.view.y,m=CAL.view.m,first=new Date(y,m-1,1).getDay(),dim=new Date(y,m,0).getDate(),total=Math.ceil((first+dim)/7)*7;
+  $('calSelMonth').value=m;$('calSelYear').value=y;enhanceAll();
+  const months=[],be=[],an=[];let html='';const sel=CAL.sel;
+  for(let i=0;i<total;i++){
+    const p=addDays(y,m,1,i-first),inM=(p[0]===y&&p[1]===m),o=info(p[0],p[1],p[2]);
+    if(inM){if(!months.includes(o.mname))months.push(o.mname);if(!be.includes(o.be))be.push(o.be);const a=o.animal+' '+o.sak;if(!an.includes(a))an.push(a)}
+    const hs=hols(o),isToday=(calToday.y===o.y&&calToday.m===o.m&&calToday.d===o.d),isSel=!!sel&&sel.y===o.y&&sel.m===o.m&&sel.d===o.d,isSil=holy(o);
+    const cls='cal-cell'+(inM?'':' other')+(o.dow===0?' sun':'')+(isToday?' today':'')+(isSel?' sel':'')+(isSil?' sil':'');
+    const mo=moon(o),lt=(isSil&&!(o.kd===1&&o.ph===0)?'<b>'+lunarText(o)+'</b>':lunarText(o))+((o.kd===1&&o.ph===0)||(o.d===1&&inM)?' ខែ'+o.mname:'');
+    html+=`<button type="button" class="${cls}" onclick="pickCalDate(${o.y},${o.m},${o.d})"><span class="g">${kn(o.d)}</span>${mo?'<span class="mo">'+mo+'</span>':''}<span class="l">${lt}</span>${hs.length?'<span class="h '+hs[0].k+'">'+hs[0].t+'</span>':''}</button>`;
+  }
+  $('calGrid').innerHTML=html;
+  $('calMTitle').textContent='ខែ'+GM[m-1]+' ឆ្នាំ'+kn(y);
+  $('calMSub').textContent='ចន្ទគតិ៖ ខែ'+months.join(' – ខែ')+' · ព.ស. '+be.map(kn).join(' – ')+' · ឆ្នាំ'+an.join(' → ');
+}
+function pickCalDate(y,m,d){const cb=CAL.cb;closeCalendarPopup();cb&&cb(isoOf(y,m,d))}
+function selectCalendarToday(){pickCalDate(calToday.y,calToday.m,calToday.d)}
+function calBlankDate(){const cb=CAL.cb;closeCalendarPopup();cb&&cb('')}
+
+/* ===== custom select ===== */
+function csSync(sel){const b=sel._cs;if(!b)return;const o=sel.options[sel.selectedIndex];b.querySelector('.cl').textContent=o?o.textContent:'';b.classList.toggle('empty',!sel.value)}
+function csEnhance(sel){
+  if(sel.dataset.native)return;
+  if(!sel._cs){
+    const b=document.createElement('button');b.type='button';
+    b.className='csb '+(sel.closest('.cal-nav')?'cal-b':'');
+    if(sel.dataset.f)b.dataset.f=sel.dataset.f;
+    b.innerHTML='<span class="cl"></span><i class="ca"></i>';
+    sel.style.display='none';sel.insertAdjacentElement('afterend',b);sel._cs=b;
+    b.addEventListener('click',e=>{e.stopPropagation();csOpen(sel)});
+    b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '||e.key==='ArrowDown'){e.preventDefault();e.stopPropagation();csOpen(sel)}});
+  }
+  csSync(sel);
+}
+function enhanceAll(root){(root||document).querySelectorAll('select').forEach(csEnhance)}
+function csClose(){const p=$('csPop');p.style.display='none';p.innerHTML='';p._for=null}
+function csOpen(sel){
+  const p=$('csPop');
+  if(p.style.display==='block'&&p._for===sel){csClose();return}
+  p._for=sel;
+  p.innerHTML=[...sel.options].map((o,i)=>`<div class="csi ${i===sel.selectedIndex?'on':''}" data-i="${i}">${esc(o.textContent)}</div>`).join('');
+  const r=sel._cs.getBoundingClientRect();
+  p.style.display='block';p.style.minWidth=Math.max(r.width,150)+'px';
+  const vh=window.innerHeight,h=Math.min(p.scrollHeight,Math.max(180,vh*.5));
+  p.style.maxHeight=Math.min(vh*.6,360)+'px';
+  let top=r.bottom+6;if(top+h>vh-8&&r.top>h+8)top=r.top-h-6;
+  let left=Math.min(Math.max(8,r.left),window.innerWidth-p.offsetWidth-8);
+  p.style.top=Math.max(8,top)+'px';p.style.left=left+'px';
+  const on=p.querySelector('.on');if(on)p.scrollTop=on.offsetTop-p.clientHeight/2+on.offsetHeight/2;
+  p.onclick=e=>{const it=e.target.closest('.csi');if(!it)return;e.stopPropagation();sel.selectedIndex=+it.dataset.i;csSync(sel);csClose();sel.dispatchEvent(new Event('change',{bubbles:true}))};
+}
+document.addEventListener('click',e=>{if(!e.target.closest('#csPop'))csClose()});
+window.addEventListener('resize',csClose);
+window.addEventListener('scroll',e=>{const t=e.target;if(t&&t.id==='csPop')return;csClose()},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')csClose()});
+
+/* ===== dialogs ===== */
+function closeMd(){$('ov').classList.remove('show');$('md').innerHTML='';$('md').className='md'}
+function ask(q,okLbl){
+  return new Promise(res=>{
+    $('md').className='md ask';
+    $('md').innerHTML=`<div class="q">${esc(q)}</div><div class="bt"><button class="btn gh" id="askN">ទេ</button><button class="btn red" id="askY">${okLbl||'បាទ/ចាស'}</button></div>`;
+    $('ov').classList.add('show');
+    $('askN').onclick=()=>{closeMd();res(false)};$('askY').onclick=()=>{closeMd();res(true)};
+  });
+}
+
+/* ===== members ===== */
+const sexOf=m=>m.sex==='ប្រុស'||m.sex==='ស្រី'?m.sex:'';
+const rank=m=>ROLES.indexOf(m.role);
+function sortedMembers(d){return d.members.map((m,i)=>[m,i]).sort((a,b)=>rank(a[0])-rank(b[0])||a[1]-b[1]).map(x=>x[0])}
+function addMember(extra){
+  D.members.push(Object.assign({id:uid(),name:'',sex:'មិនកំណត់',role:D.members.some(m=>m.role==='ប្រធាន')?'សមាជិក':'ប្រធាន',type:'មិនកំណត់',phone:'',duty:'',cust:false,under:'auto',photo:''},extra||{}));
+}
+function dutyOptions(m){
+  const o=[['','ភារកិច្ច ៖ ស្វ័យប្រវត្តិតាមតួនាទី'],...DUTIES.map(d=>[d,d]),['__c',CUSTOM_LBL]];
+  const sel=m.cust||(m.duty&&!DUTIES.includes(m.duty))?'__c':m.duty;
+  return {o,sel};
+}
+function selHtml(f,opts,val,i){return `<select class="fc" data-f="${f}" data-i="${i}">${opts.map(([v,t])=>`<option value="${esc(v)}" ${v===val?'selected':''}>${esc(t)}</option>`).join('')}</select>`}
+function memberRow(m,i){
+  const d=dutyOptions(m),isMem=m.role==='សមាជិក';
+  const showC=d.sel==='__c';
+  return `<tr data-i="${i}">
+  <td class="no">${toKh(i+1)}</td>
+  <td data-c="p"><button type="button" class="ph" data-i="${i}" onclick="pickPhoto(${i})" title="រូបថត">${m.photo?`<img src="${m.photo}" alt="">`:IC.cam}</button></td>
+  <td data-c="0"><input class="fc cell" data-f="name" data-i="${i}" value="${esc(m.name)}" placeholder="ឈ្មោះ:" autocomplete="off"></td>
+  <td data-c="1">${selHtml('sex',SEXES.map(x=>[x,x]),m.sex||'មិនកំណត់',i)}</td>
+  <td data-c="2">${selHtml('role',ROLES.map(x=>[x,x]),m.role,i)}</td>
+  <td data-c="3">${selHtml('type',TYPES.map(x=>[x,x]),m.type||'មិនកំណត់',i)}</td>
+  <td data-c="4"><input class="fc cell" data-f="phone" data-i="${i}" value="${esc(m.phone)}" placeholder="ទូរស័ព្ទ" inputmode="tel" autocomplete="off"></td>
+  <td data-c="5">${selHtml('duty',d.o,d.sel,i)}${showC?`<input class="fc cell cust" data-f="dutytxt" data-i="${i}" value="${esc(m.duty)}" placeholder="វាយភារកិច្ច...">`:''}</td>
+  <td data-c="6">${isMem?selHtml('under',UNDER,m.under||'auto',i):'<span style="color:var(--muted)">—</span>'}</td>
+  <td><button type="button" class="del" onclick="delMember(${i})" title="លុប">${IC.trash}</button></td></tr>`;
+}
+function renderMembers(){
+  const tb=$('mBody');if(!tb)return;
+  tb.innerHTML=D.members.length?D.members.map(memberRow).join(''):`<tr><td colspan="10" class="empty">មិនទាន់មានសមាជិកទេ — ចុច «បន្ថែមសមាជិក» ឬ «ជ្រើសពីឪពុកម្តាយសិស្ស»</td></tr>`;
+  enhanceAll(tb);paintSel();
+}
+async function delMember(i){
+  const m=D.members[i];
+  if(m&&(m.name||m.phone)&&!(await ask('លុបសមាជិក «'+(m.name||'គ្មានឈ្មោះ')+'» ?')))return;
+  const id=m.id;D.members.splice(i,1);D.meetings.forEach(x=>{if(x.att)delete x.att[id]});
+  saveNow();renderMembers();updHero();
+}
+function setField(m,f,v){
+  if(f==='name'||f==='phone')m[f]=v;
+  else if(f==='sex'){if(SEXES.includes(v))m.sex=v}
+  else if(f==='role'){if(ROLES.includes(v))m.role=v}
+  else if(f==='type'){if(TYPES.includes(v))m.type=v}
+  else if(f==='dutytxt'){m.duty=v;m.cust=true}
+  else if(f==='duty'){if(v==='__c'){m.cust=true}else{m.duty=v;m.cust=false}}
+  else if(f==='under'){if(['auto','1','2'].includes(v))m.under=v}
+}
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.matches&&t.matches('input.cell[data-f]')){const m=D.members[+t.dataset.i];if(m){setField(m,t.dataset.f,t.value);save()}}
+  else if(t.dataset&&t.dataset.mf){const x=D.meetings.find(z=>z.id===t.dataset.mid);if(x){x[t.dataset.mf]=t.value;save()}}
+});
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.matches&&t.matches('select[data-f]')){
+    const m=D.members[+t.dataset.i];if(!m)return;
+    setField(m,t.dataset.f,t.value);saveNow();
+    if(['role','duty'].includes(t.dataset.f))renderMembers();
+    updHero();
+  }
+});
+function updHero(){
+  const total=CLASSES.length||1;let have=0;
+  CLASSES.forEach(c=>{const d=c===CUR.cls?D:loadOf(c);if(d.members.length)have++});
+  $('heroSub').textContent='ឆ្នាំសិក្សា '+CUR.year+' · ថ្នាក់មាន គ.គ.ថ. '+have+'/'+total;
+  const el=$('mCount');if(el)el.textContent='ប្រជុំ '+toKh(D.meetings.length)+' ដង';
+}
+/* photo */
+let _phIdx=-1;
+function pickPhoto(i){_phIdx=i;$('photoIn').value='';$('photoIn').click()}
+$('photoIn').addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0];if(!f||_phIdx<0)return;
+  const rd=new FileReader();
+  rd.onload=()=>{const im=new Image();im.onload=()=>{
+    const S=260,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');
+    const s=Math.min(im.width,im.height),sx=(im.width-s)/2,sy=(im.height-s)/2;x.drawImage(im,sx,sy,s,s,0,0,S,S);
+    const m=D.members[_phIdx];if(m){m.photo=c.toDataURL('image/jpeg',.82);saveNow();renderMembers()}
+  };im.src=rd.result};
+  rd.readAsDataURL(f);
+});
+
+/* ===== cell navigation / selection / paste ===== */
+const COLS=['name','sex','role','type','phone','duty','under'];
+let ANCH=null,SEL=null;
+function cellEl(r,c){const tr=$('mBody')&&$('mBody').querySelector(`tr[data-i="${r}"]`);if(!tr)return null;const td=tr.querySelector(`td[data-c="${c}"]`);return td&&td.querySelector('input.cell:not(.cust),.csb')}
+function focusCell(r,c){
+  if(r<0||c<0||c>6||r>=D.members.length)return false;
+  const el=cellEl(r,c);if(!el)return focusCell(r,c+1);
+  el.focus();try{el.select&&el.select()}catch(e){}ANCH={r,c};return true;
+}
+function curRC(){const a=document.activeElement,td=a&&a.closest&&a.closest('td[data-c]');if(!td||td.dataset.c==='p')return null;const tr=td.closest('tr');return{r:+tr.dataset.i,c:+td.dataset.c}}
+function navMove(dr,dc){
+  const p=curRC()||ANCH;if(!p)return;
+  if(dr===1&&p.r===D.members.length-1){addMember();saveNow();renderMembers();updHero();focusCell(p.r+1,p.c);return}
+  let r=p.r+dr,c=p.c+dc;
+  if(dc>0&&c>6){c=0;r++}if(dc<0&&c<0){c=6;r--}
+  if(r>=D.members.length){addMember();saveNow();renderMembers();updHero()}
+  focusCell(Math.max(0,r),c);
+}
+document.addEventListener('keydown',e=>{
+  const t=e.target;
+  if(t.matches&&t.matches('input.cell:not(.cust)')&&e.key==='Enter'){e.preventDefault();navMove(1,0)}
+});
+document.addEventListener('focusin',e=>{
+  const td=e.target.closest&&e.target.closest('#mBody td[data-c]');
+  if(td&&td.dataset.c!=='p'){ANCH={r:+td.closest('tr').dataset.i,c:+td.dataset.c};showNav()}
+  else if(!e.target.closest('#mnav'))hideNav();
+});
+function showNav(){if(window.matchMedia('(max-width:900px),(pointer:coarse)').matches)$('mnav').classList.add('show')}
+function hideNav(){$('mnav').classList.remove('show')}
+document.addEventListener('click',e=>{
+  const td=e.target.closest&&e.target.closest('#mBody td[data-c]');
+  if(!td||td.dataset.c==='p'){if(!e.target.closest('#mnav')&&!e.target.closest('#csPop')){if(SEL){SEL=null;paintSel()}}return}
+  const p={r:+td.closest('tr').dataset.i,c:+td.dataset.c};
+  if(e.shiftKey&&ANCH){SEL={r1:Math.min(ANCH.r,p.r),r2:Math.max(ANCH.r,p.r),c1:Math.min(ANCH.c,p.c),c2:Math.max(ANCH.c,p.c)};paintSel();e.preventDefault()}
+  else{ANCH=p;if(SEL){SEL=null;paintSel()}}
+},true);
+function paintSel(){
+  document.querySelectorAll('#mBody td.sel').forEach(x=>x.classList.remove('sel'));
+  if(!SEL)return;
+  for(let r=SEL.r1;r<=SEL.r2;r++)for(let c=SEL.c1;c<=SEL.c2;c++){const tr=$('mBody').querySelector(`tr[data-i="${r}"]`);const td=tr&&tr.querySelector(`td[data-c="${c}"]`);if(td)td.classList.add('sel')}
+}
+function cellVal(m,c){
+  const f=COLS[c];if(f==='under')return m.role==='សមាជិក'?(UNDER.find(u=>u[0]===(m.under||'auto'))||[0,''])[1]:'';
+  return m[f]||'';
+}
+document.addEventListener('copy',e=>{
+  if(!SEL||!$('mBody'))return;
+  const rows=[];for(let r=SEL.r1;r<=SEL.r2;r++){const m=D.members[r];if(!m)continue;const row=[];for(let c=SEL.c1;c<=SEL.c2;c++)row.push(cellVal(m,c));rows.push(row.join('\t'))}
+  e.clipboardData.setData('text/plain',rows.join('\n'));e.preventDefault();toast('បានចម្លង '+toKh(rows.length)+' ជួរ');
+});
+document.addEventListener('paste',e=>{
+  if(!$('mBody')||D.locked)return;
+  const a=document.activeElement;if(!a||!a.closest||!a.closest('#mBody'))return;
+  const txt=(e.clipboardData.getData('text/plain')||'');
+  if(!/[\t\n]/.test(txt.replace(/\n$/,'')))return;
+  const p=curRC()||ANCH;if(!p)return;e.preventDefault();
+  const lines=txt.replace(/\r/g,'').replace(/\n$/,'').split('\n');
+  lines.forEach((ln,ri)=>{
+    const r=p.r+ri;while(D.members.length<=r)addMember({role:'សមាជិក'});
+    ln.split('\t').forEach((v,ci)=>{
+      const c=p.c+ci;if(c>6)return;const f=COLS[c],m=D.members[r];v=v.trim();
+      if(f==='under'){const u=UNDER.find(x=>x[1]===v||x[0]===v);if(u)m.under=u[0]}
+      else if(f==='duty'){m.duty=v;m.cust=!!v&&!DUTIES.includes(v)}
+      else setField(m,f,v);
+    });
+  });
+  saveNow();renderMembers();updHero();toast('បានបិទភ្ជាប់');
+});
+
+/* ===== parents import ===== */
+async function openParents(){
+  if(!sb){toast('មិនអាចភ្ជាប់ Database');return}
+  $('md').className='md';$('md').innerHTML=`<header><h4>ជ្រើសឪពុកម្តាយសិស្ស · ថ្នាក់ទី ${esc(toKh(CUR.cls))}</h4><button class="x" onclick="closeMd()">✕</button></header><div class="bd2"><div class="hint" id="parCnt">កំពុងទាញទិន្នន័យ...</div><div id="parL" style="display:flex;flex-direction:column;gap:6px"></div></div><div class="ft"><button class="btn gh" onclick="closeMd()">បិទ</button><button class="btn pri" onclick="addParents()">បន្ថែមដែលបានជ្រើស</button></div>`;
+  $('ov').classList.add('show');
+  try{
+    const {data,error}=await sb.from('students').select('student_name,father_name,mother_name,phone,grade,dropout_semester').order('id',{ascending:true});
+    if(error)throw error;
+    const have=new Set(D.members.map(m=>m.name.trim()));
+    PAR=[];
+    (data||[]).filter(s=>cleanGrade(s.grade)===CUR.cls&&!String(s.dropout_semester||'').trim()).forEach(s=>{
+      if(s.father_name&&s.father_name.trim())PAR.push({name:s.father_name.trim(),sex:'ប្រុស',phone:s.phone||'',stu:s.student_name,rel:'ឪពុក',on:false});
+      if(s.mother_name&&s.mother_name.trim())PAR.push({name:s.mother_name.trim(),sex:'ស្រី',phone:s.phone||'',stu:s.student_name,rel:'ម្តាយ',on:false});
+    });
+    PAR=PAR.filter(p=>!have.has(p.name));
+    renderPar();
+  }catch(err){$('parCnt').textContent='❌ '+err.message}
+}
+let PAR=[];
+function renderPar(){
+  $('parCnt').textContent=PAR.length?'បានជ្រើស '+toKh(PAR.filter(p=>p.on).length)+' នាក់ ក្នុងចំណោម '+toKh(PAR.length)+' · ចុចលើឈ្មោះដើម្បីជ្រើស':'គ្មានឈ្មោះឪពុកម្តាយថ្មីក្នុង Database ទេ';
+  $('parL').innerHTML=PAR.map((p,i)=>`<div class="it ${p.on?'on':''}" onclick="PAR[${i}].on=!PAR[${i}].on;renderPar()"><span class="ck">${p.on?'✓':''}</span><span class="n">${esc(p.name)}<div class="m">${p.rel}របស់ ${esc(p.stu||'')}${p.phone?' · '+esc(p.phone):''}</div></span></div>`).join('');
+}
+function addParents(){
+  const sel=PAR.filter(p=>p.on);
+  sel.forEach(p=>addMember({name:p.name,sex:p.sex,phone:p.phone,type:'មាតាបិតា',role:D.members.some(m=>m.role==='ប្រធាន')?'សមាជិក':'ប្រធាន'}));
+  saveNow();closeMd();renderMembers();updHero();toast('✓ បានបន្ថែម '+toKh(sel.length)+' នាក់');
+}
+
+/* ===== tabs ===== */
+function setTab(t){TAB=t;renderTab()}
+function renderTab(){
+  $('tabM').classList.toggle('on',TAB==='m');$('tabC').classList.toggle('on',TAB==='c');
+  if(TAB==='c'){
+    $('tabBody').innerHTML=`<div class="panel ${D.locked?'locked':''}" id="cPanel">
+      <div class="ph2"><h2>គណៈកម្មការគ្រប់គ្រងថ្នាក់ (គ.គ.ថ.) ថ្នាក់ទី${esc(toKh(CUR.cls))}</h2><span class="chip" id="mCount"></span><span class="sp"></span>
+        <button class="btn gh" onclick="toggleLock()" style="pointer-events:auto;opacity:1">${D.locked?IC.lock+'ដោះសោ':IC.unlock+'ចាក់សោ'}</button></div>
+      <div class="hint">បញ្ជាក្រឡា៖ Enter ↓ · Tab → · Shift + click ជ្រើសជាច្រើនក្រឡា · Ctrl + C / V ចម្លង/បិទភ្ជាប់ (ពី Excel បាន)</div>
+      <div class="tw"><table class="ed"><thead><tr><th>ល.រ.</th><th>រូបថត</th><th>ឈ្មោះ:</th><th>ភេទ</th><th>តួនាទី</th><th>ប្រភេទ</th><th>ទូរស័ព្ទ</th><th class="g">ភារកិច្ច</th><th class="g">ក្រោមអនុប្រធាន</th><th></th></tr></thead><tbody id="mBody"></tbody></table></div>
+      <div class="foot"><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn addbtn" style="background:var(--acs)" onclick="addMember();saveNow();renderMembers();updHero();focusCell(D.members.length-1,0)">${IC.plus}បន្ថែមសមាជិក</button><button class="btn addbtn gh" onclick="openParents()">${IC.users}ជ្រើសពីឪពុកម្តាយសិស្ស</button></div>
+        <button class="btn pri" onclick="if(saveNow())toast('✓ បានរក្សាទុកសមាជិក')">${IC.save}រក្សាទុកសមាជិក</button></div></div>`;
+    renderMembers();
+  }else{
+    renderMeetings();
+  }
+  updHero();
+}
+function toggleLock(){D.locked=!D.locked;saveNow();renderTab()}
+
+/* ===== meetings ===== */
+function newMeeting(){
+  D.meetings.push({id:uid(),date:todayIso(),time:'',place:GL.page.school.replace(/^សាលា/,'សាលា')||'',title:'កិច្ចប្រជុំ គ.គ.ថ.',agenda:'',notes:'',decision:'',att:{}});
+  saveNow();renderMeetings();updHero();
+}
+function renderMeetings(){
+  const m=D.members;
+  const cards=D.meetings.map((x,i)=>{
+    const n=m.filter(z=>x.att[z.id]).length;
+    return `<div class="mcard" data-mid="${x.id}">
+      <div class="mh"><b>កិច្ចប្រជុំលើកទី ${toKh(i+1)}</b><span class="chip">ចូលរួម ${toKh(n)}/${toKh(m.length)}</span><span class="sp"></span>
+        <button class="btn sm gh" onclick="pickMtgDate('${x.id}')">${IC.cal}<span>${esc(dLabel(x.date))}</span></button>
+        <button class="btn sm red" onclick="delMeeting('${x.id}')">${IC.trash}លុប</button></div>
+      <div class="mgrid">
+        <div><label>ប្រធានបទ</label><input class="fc" style="width:100%" data-mf="title" data-mid="${x.id}" value="${esc(x.title)}"></div>
+        <div><label>ម៉ោង</label><input class="fc" style="width:100%" data-mf="time" data-mid="${x.id}" value="${esc(x.time)}" placeholder="ឧ. ០៨:០០ ព្រឹក"></div>
+        <div><label>ទីកន្លែង</label><input class="fc" style="width:100%" data-mf="place" data-mid="${x.id}" value="${esc(x.place)}"></div>
+      </div>
+      <div class="mgrid" style="margin-top:10px">
+        <div><label>របៀបវារៈ</label><textarea class="fc" data-mf="agenda" data-mid="${x.id}">${esc(x.agenda)}</textarea></div>
+        <div><label>ខ្លឹមសារពិភាក្សា</label><textarea class="fc" data-mf="notes" data-mid="${x.id}">${esc(x.notes)}</textarea></div>
+        <div><label>សេចក្តីសម្រេច</label><textarea class="fc" data-mf="decision" data-mid="${x.id}">${esc(x.decision)}</textarea></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:12px"><span class="lbl" style="margin:0">វត្តមានអ្នកចូលរួម</span><button class="btn sm" onclick="attAll('${x.id}')">ជ្រើសទាំងអស់</button><button class="btn sm gh" onclick="attNone('${x.id}')">សម្អាត</button></div>
+      <div class="att">${m.length?m.map(z=>`<button type="button" class="at ${x.att[z.id]?'on':''}" onclick="toggleAtt('${x.id}','${z.id}')"><i>${x.att[z.id]?'✓':''}</i>${esc(z.name||'គ្មានឈ្មោះ')}<small style="color:var(--muted)">${esc(z.role)}</small></button>`).join(''):'<span class="hint">សូមបន្ថែមសមាជិកក្នុងផ្ទាំង គ.គ.ថ. ជាមុន</span>'}</div>
+    </div>`}).join('');
+  $('tabBody').innerHTML=`<div class="panel"><div class="ph2"><h2>កត់ត្រាកិច្ចប្រជុំ គ.គ.ថ. ថ្នាក់ទី${esc(toKh(CUR.cls))}</h2><span class="chip" id="mCount"></span><span class="sp"></span><button class="btn pri" onclick="newMeeting()">${IC.plus}កិច្ចប្រជុំថ្មី</button></div>
+    ${cards||'<div class="empty">មិនទាន់មានកិច្ចប្រជុំទេ<br>ចុច «កិច្ចប្រជុំថ្មី» ដើម្បីចាប់ផ្តើមកត់ត្រា វត្តមាន និងកំណត់ហេតុ</div>'}</div>`;
+  updHero();
+}
+function pickMtgDate(id){const x=D.meetings.find(z=>z.id===id);openCal('📅 ថ្ងៃប្រជុំ',x.date,false,v=>{x.date=v;saveNow();renderMeetings()})}
+async function delMeeting(id){if(!(await ask('លុបកិច្ចប្រជុំនេះ ?')))return;D.meetings=D.meetings.filter(z=>z.id!==id);saveNow();renderMeetings()}
+function toggleAtt(id,mid){const x=D.meetings.find(z=>z.id===id);x.att[mid]=!x.att[mid];saveNow();renderMeetings()}
+function attAll(id){const x=D.meetings.find(z=>z.id===id);D.members.forEach(z=>x.att[z.id]=true);saveNow();renderMeetings()}
+function attNone(id){const x=D.meetings.find(z=>z.id===id);x.att={};saveNow();renderMeetings()}
+function pickElect(){openCal('🗳 ថ្ងៃបោះឆ្នោតជ្រើសរើស គ.គ.ថ.',D.elect,true,v=>{D.elect=v;saveNow();$('electBtn').innerHTML=IC.cal+'<span>'+esc(dLabel(D.elect,'មិនដាក់'))+'</span>'})}
+
+/* ===== document builders ===== */
+let PV={type:'list',scope:'',mtg:''};
+function teacherOf(cls,d){
+  if(d&&d.teacher)return d.teacher;
+  const norm=v=>String(v||'').split(/[,;،\/]+/).map(cleanGrade).filter(Boolean);
+  let u=USERS.find(x=>String(x.role||'').toLowerCase().trim()!=='admin'&&norm(x.assigned_classes).includes(cls));
+  if(!u&&!IS_ADMIN)u=USERS.find(x=>x.username===USER.username);
+  return (u&&u.teacher_name)||(!IS_ADMIN&&USER.teacher_name)||'';
+}
+function pgVars(){const p=GL.page;return `--mt:${p.mt}mm;--mb:${p.mb}mm;--ms:${p.ms}mm;--fz:${(p.fz/100).toFixed(3)}`}
+function sheet(inner,cls,th){return `<div class="sheet ${cls||''}" ${th?`data-th="${th}"`:''} style="${pgVars()}"><div class="inner">${inner}</div></div>`}
+function head(title,sub){
+  const p=GL.page;
+  return `<div class="kh1 moul">ព្រះរាជាណាចក្រកម្ពុជា</div><div class="kh2 moul">ជាតិ សាសនា ព្រះមហាក្សត្រ</div><div class="orn">❖</div>
+  <div class="org">${esc(p.office)}<br>${esc(p.school)}</div>
+  <div class="dtl">${title}</div>${sub?`<div class="yr">${sub}</div>`:''}`;
+}
+const yrTxt=()=>toKh(CUR.year);
+function signBlock(cls,d,opts){
+  opts=opts||{};
+  const p=GL.page,sd=d.signDate||todayIso(),sp=isoParts(sd),pp=isoParts(GL.pDate);
+  const tn=teacherOf(cls,d);
+  const left=`<div class="sg" style="min-width:34%">
+    <div>${pp?esc(solarTxt(pp)):esc(solarBlank())}</div>
+    <div class="tt" style="color:#1d4ed8">${opts.pTitle||'នាយកសាលា'}</div><div class="gap" style="height:4.4em"></div>
+    <div style="font-weight:700">${p.principal?esc(p.principal):'<span class="dots">...........................</span>'}</div></div>`;
+  const right=`<div class="sg">
+    <div>${esc(lunarOf(sd))}</div><div>${esc(solarTxt(sp))}</div>
+    <div class="tt" style="color:#1d4ed8">${opts.tTitle||'គ្រូទទួលបន្ទុកថ្នាក់'}</div><div class="gap" style="height:4.4em"></div>
+    <div style="font-weight:700">${tn?esc(tn):'<span class="dots">...........................</span>'}</div></div>`;
+  return `<div class="sig">${left}${right}</div>`;
+}
+function classesFor(){
+  const have=CLASSES.filter(c=>(c===CUR.cls?D:loadOf(c)).members.length);
+  return have;
+}
+function scopeList(){
+  const h=classesFor();
+  if(PV.scope==='all'){return (h.length?h:[CUR.cls])}
+  return [PV.scope||CUR.cls];
+}
+const dataOf=c=>c===CUR.cls?D:loadOf(c);
+function docList(){
+  const list=scopeList(),total=CLASSES.length||1,have=classesFor().length;
+  let rows='';
+  list.forEach(c=>{
+    const d=dataOf(c),ms=sortedMembers(d);
+    rows+=`<tr class="grp"><td colspan="4">គណៈកម្មការគ្រប់គ្រងថ្នាក់ (គ.គ.ថ.) ថ្នាក់ទី${esc(toKh(c))}</td></tr>`;
+    if(!ms.length)rows+=`<tr><td colspan="4" class="mt">មិនទាន់មានសមាជិក ។</td></tr>`;
+    ms.forEach(m=>{rows+=`<tr><td>${esc(m.name)}</td><td>${esc(m.role)}</td><td>${esc(m.type&&m.type!=='មិនកំណត់'?m.type:'')}</td><td>${esc(m.phone)}</td></tr>`});
+    if(d.meetings.length){
+      rows+=`<tr class="sub"><td colspan="4">កិច្ចប្រជុំ</td></tr>`;
+      d.meetings.forEach((x,i)=>{const n=d.members.filter(z=>x.att[z.id]).length;
+        rows+=`<tr><td>${toKh(i+1)}. ${esc(x.title||'')}<br><small>${esc(dLabel(x.date,''))}</small></td><td>${esc(x.agenda)}</td><td>${esc(x.decision)}</td><td class="c">${toKh(n)}/${toKh(d.members.length)}</td></tr>`});
+    }
+  });
+  const html=head('គណៈកម្មការគ្រប់គ្រងសាលា និងថ្នាក់','ឆ្នាំសិក្សា '+yrTxt()+' · ថ្នាក់មាន គ.គ.ថ. '+toKh(have)+'/'+toKh(total))+
+   `<table class="dt"><thead><tr><th style="width:27%">ឈ្មោះ / កិច្ចប្រជុំ</th><th style="width:27%">តួនាទី / របៀបវារៈ</th><th style="width:30%">ប្រភេទ / សេចក្តីសម្រេច</th><th style="width:16%">ទូរស័ព្ទ / ចូលរួម</th></tr></thead><tbody>${rows}</tbody></table>`+signBlock(CUR.cls,D);
+  return [sheet(html,'')];
+}
+function docLetter(){
+  return scopeList().map(c=>{
+    const d=dataOf(c),ms=sortedMembers(d),ep=isoParts(d.elect);
+    const refDate=ep?'ថ្ងៃទី'+kn(ep[2])+' ខែ'+GM[ep[1]-1]+' ឆ្នាំ'+kn(ep[0]):'ថ្ងៃទី......... ខែ......... ឆ្នាំ.........';
+    const rows=ms.length?ms.map((m,i)=>`<tr><td class="c">${toKh(i+1)}</td><td>${esc(m.name)}</td><td class="c">${esc(sexOf(m))}</td><td class="c">${esc(m.role==='សមាជិក'?(m.duty&&m.cust?m.duty:'សមាជិក'):m.role+' គ.គ.ថ.')}</td></tr>`).join(''):`<tr><td colspan="4" class="mt">មិនទាន់មានសមាជិក ។</td></tr>`;
+    const cl=esc(toKh(c));
+    const html=head('លិខិតបង្គាប់ការសម្រាប់គណៈកម្មការគ្រប់គ្រងថ្នាក់រៀន ថ្នាក់ទី'+cl,'ឆ្នាំសិក្សា '+yrTxt())+`<div class="lt">
+    <div class="ref"><b>យោង ៖</b> លទ្ធផលនៃការបោះឆ្នោតជ្រើសរើសគណៈកម្មការគ្រប់គ្រងថ្នាក់រៀន ថ្នាក់ទី${cl} ចុះ${refDate} ។</div>
+    <p>គណៈកម្មការគ្រប់គ្រងសាលារៀន និងគណៈគ្រប់គ្រងសាលា${esc(GL.page.school.replace(/^សាលា/,'សាលា'))} តែងតាំងលោក លោកស្រី ជាមាតាបិតាស្ម័គ្រចិត្ត ដែលបានទទួលសំឡេងឆ្នោតជាសមាជិកគណៈកម្មការគ្រប់គ្រងថ្នាក់រៀន ដូចមានរាយនាមខាងក្រោម ដើម្បីសហការគ្នា និងគាំទ្រគ្រូបន្ទុកថ្នាក់ក្នុងការដោះស្រាយបញ្ហា និងឆ្លើយតបតម្រូវការសិក្សារបស់សិស្សបានទាន់ពេលវេលា ។</p>
+    <h4>សមាសភាព</h4><div>សមាសភាពគណៈកម្មការគ្រប់គ្រងថ្នាក់រៀន ថ្នាក់ទី${cl} មានរាយនាមដូចខាងក្រោម ៖</div>
+    <table class="dt"><thead><tr><th style="width:8%">ល.រ</th><th>គោត្តនាម និងនាម</th><th style="width:12%">ភេទ</th><th style="width:34%">តួនាទីក្នុង គ.គ.ថ.</th></tr></thead><tbody>${rows}</tbody></table>
+    <h4>គួនាទី និងភារកិច្ច</h4><div>គណៈកម្មការគ្រប់គ្រងថ្នាក់រៀនមានភារកិច្ចដូចខាងក្រោម ៖</div>
+    <ol>${TASKS.map((t,i)=>`<li>${toKh(i+1)}. ${t}</li>`).join('')}</ol></div>
+    <div class="sig" style="margin-top:1.3em"><div></div><div class="sg" style="font-size:.92em"><div>${esc(solarTxt(isoParts(d.signDate||todayIso())))}</div></div></div>
+    <div class="sig" style="margin-top:.2em">
+      <div class="sg"><div class="tt">អនុម័តដោយ</div><div>នាយកសាលា</div><div class="gap"></div><div style="font-weight:700">${GL.page.principal?esc(GL.page.principal):'<span class="dots">.....................</span>'}</div></div>
+      <div class="sg"><div class="tt">បានឃើញ និងឯកភាព</div><div>ប្រធាន គ.គ.ស.</div><div class="gap"></div><div><span class="dots">.....................</span></div></div>
+      <div class="sg" style="color:#1d4ed8"><div class="tt">រៀបចំដោយ</div><div>គ្រូទទួលបន្ទុកថ្នាក់</div><div class="gap"></div><div style="font-weight:700">${teacherOf(c,d)?esc(teacherOf(c,d)):'<span class="dots">.....................</span>'}</div></div>
+    </div>`;
+    return sheet(html,'one');
+  });
+}
+function docMinutes(){
+  return scopeList().map(c=>{
+    const d=dataOf(c),ms=sortedMembers(d);
+    const x=(PV.mtg&&d.meetings.find(z=>z.id===PV.mtg))||d.meetings[d.meetings.length-1]||{date:'',time:'',place:'',title:'',agenda:'',notes:'',decision:'',att:{}};
+    const cl=esc(toKh(c)),att=x.att||{};
+    const rows=ms.length?ms.map((m,i)=>`<tr><td class="c">${toKh(i+1)}</td><td>${esc(m.name)}</td><td class="c">${esc(sexOf(m))}</td><td class="c">${esc(m.role)}</td><td class="c">${att[m.id]?'✓ ចូលរួម':(d.meetings.length&&x.id?'អវត្តមាន':'')}</td><td style="width:18%"></td></tr>`).join(''):`<tr><td colspan="6" class="mt">មិនទាន់មានសមាជិក ។</td></tr>`;
+    const dp=isoParts(x.date);
+    const html=head('កំណត់ហេតុប្រជុំ​គណៈកម្មការគ្រប់គ្រងថ្នាក់រៀន ថ្នាក់ទី'+cl,'ឆ្នាំសិក្សា '+yrTxt())+`<div class="mn">
+      <div class="meta"><b>ប្រធានបទ ៖</b> ${esc(x.title||'')||'<span class="dots">..........................................</span>'}</div>
+      <div class="meta"><b>ថ្ងៃប្រជុំ ៖</b> ${dp?esc(lunarOf(x.date))+' ត្រូវនឹង'+esc(solarTxt(dp).replace(GL.page.place+' ','')):'<span class="dots">..........................................</span>'}</div>
+      <div class="meta"><b>ម៉ោង ៖</b> ${esc(x.time||'')||'<span class="dots">..............</span>'} &nbsp;&nbsp; <b>ទីកន្លែង ៖</b> ${esc(x.place||'')||'<span class="dots">..............</span>'}</div>
+      <h4>១. សមាសភាពចូលរួម</h4>
+      <table class="dt"><thead><tr><th style="width:7%">ល.រ</th><th>គោត្តនាម និងនាម</th><th style="width:9%">ភេទ</th><th style="width:18%">តួនាទី</th><th style="width:15%">វត្តមាន</th><th>ហត្ថលេខា</th></tr></thead><tbody>${rows}</tbody></table>
+      <h4>២. របៀបវារៈ</h4><div class="box">${esc(x.agenda||'')}</div>
+      <h4>៣. ខ្លឹមសារពិភាក្សា</h4><div class="box big">${esc(x.notes||'')}</div>
+      <h4>៤. សេចក្តីសម្រេច</h4><div class="box">${esc(x.decision||'')}</div></div>`+signBlock(c,d,{tTitle:'អ្នកកត់ត្រា / គ្រូទទួលបន្ទុកថ្នាក់'});
+    return sheet(html,'');
+  });
+}
+/* ===== org chart ===== */
+function arrange(ms){
+  const empty=!ms.length;
+  let chair=ms.find(m=>m.role==='ប្រធាន')||null;
+  let vices=ms.filter(m=>m.role==='អនុប្រធាន');
+  const mems=ms.filter(m=>m.role==='សមាជិក');
+  if(empty){vices=[null,null]}
+  const br=vices.map(v=>({v,kids:[]}));
+  const place=[];
+  if(empty){for(let i=0;i<6;i++)place.push({m:null,idx:i});}
+  else mems.forEach((m,i)=>place.push({m,idx:i}));
+  if(!br.length)return {chair,br:[],direct:place};
+  const target=Math.ceil(place.length/br.length)||1;
+  place.forEach(p=>{
+    let bi=-1;
+    if(p.m&&(p.m.under==='1'||p.m.under==='2')){bi=Math.min(+p.m.under-1,br.length-1)}
+    else{bi=br.findIndex(b=>b.kids.length<target);if(bi<0){bi=0;br.forEach((b,k)=>{if(b.kids.length<br[bi].kids.length)bi=k})}}
+    br[bi].kids.push(p);
+  });
+  return {chair,br,direct:[]};
+}
+function cardH(m,k,du,role){
+  const du2=m&&m.duty?m.duty:'';
+  const nm=m&&m.name?`<div class="nm">${esc(m.name)}</div>`:`<div class="nm e">...........................</div>`;
+  return `<div class="cd ${k}"><div class="hd">${role}</div><div class="bd"><div class="pp">${m&&m.photo?`<img src="${m.photo}" alt="">`:PERSON}</div>${nm}<div class="du">${esc(du2||du)}</div></div></div>`;
+}
+function docChart(){
+  return scopeList().map(c=>{
+    const d=dataOf(c),ms=sortedMembers(d),A=arrange(ms);
+    const th=d.theme||'modern';
+    const kidsHtml=(arr,vi)=>arr.map((p,j)=>{
+      const m=p.m;let du;
+      if(vi===0)du=DUTIES[3+(j%3)];else if(vi===1)du=DUTIES[6+(j%3)];else du=DUTIES[3+(p.idx%6)];
+      return `<div class="kd"><i class="ar"></i>${cardH(m,'k3',du,'សមាជិក')}</div>`;
+    }).join('');
+    let body='';
+    const chairH=`<div class="cw1">${cardH(A.chair,'k1',DUTIES[0],'ប្រធាន គ.គ.ថ.')}</div>`;
+    if(A.br.length){
+      const n=A.br.length;
+      body=`<div class="dtk">${chairH}<div class="stem"></div><div class="br2">${A.br.map((b,vi)=>`<div class="br" style="position:relative;padding-top:1.2em"><i class="ar"></i><div class="vl"></div><div class="hl" style="${n===1?'display:none;':''}${vi===0?'left:50%;right:0':vi===n-1?'left:0;right:50%':'left:0;right:0'}"></div>${cardH(b.v,'k2',DUTIES[1+Math.min(vi,1)],'អនុប្រធាន')}${b.kids.length?`<div class="stem"></div><div class="kids">${kidsHtml(b.kids,vi)}</div>`:''}</div>`).join('')}</div></div>`;
+    }else{
+      body=`<div class="dtk">${chairH}${A.direct.length?`<div class="stem"></div><div class="kids" style="width:100%">${kidsHtml(A.direct,2)}</div>`:''}</div>`;
+    }
+    const sd=d.signDate||todayIso(),sp=isoParts(sd),pp=isoParts(GL.pDate);
+    const html=`<div class="kh1 moul">ព្រះរាជាណាចក្រកម្ពុជា</div><div class="kh2 moul">ជាតិ សាសនា ព្រះមហាក្សត្រ</div><div class="orn">❖</div>
+      <div class="org">${esc(GL.page.office)}<br>${esc(GL.page.school)}</div>
+      <div class="dtl" style="margin-top:.1em">រចនាសម្ព័ន្ធគណៈកម្មការគ្រប់គ្រងថ្នាក់រៀន ថ្នាក់ទី${esc(toKh(c))}</div><div class="yr">ឆ្នាំសិក្សា ${yrTxt()}</div>
+      <div class="chart">${body}</div>
+      <div style="display:flex;justify-content:flex-end;margin-top:1em"><div class="sg" style="min-width:48%"><div>${esc(lunarOf(sd))}</div><div>${esc(solarTxt(sp))}</div>
+      <div class="tt" style="color:#1d4ed8;font-weight:700">នាយកសាលា</div><div class="gap" style="height:3.2em"></div><div style="color:#1d4ed8;font-weight:700">${GL.page.principal?esc(GL.page.principal):'<span class="dots">...........................</span>'}</div></div></div>`;
+    return sheet(html,'one',th);
+  });
+}
+const DOCS={list:docList,letter:docLetter,minutes:docMinutes,chart:docChart};
+
+/* ===== preview ===== */
+function openPv(type){
+  saveNow();PV.type=type;PV.scope=CUR.cls;PV.mtg='';
+  $('ed').style.display='none';$('pv').style.display='block';window.scrollTo(0,0);
+  const h=classesFor();
+  $('pvScope').innerHTML=(CLASSES.length>1?`<option value="all">ទាំងអស់ (${toKh(Math.max(h.length,1))})</option>`:'')+CLASSES.map(c=>`<option value="${esc(c)}">ថ្នាក់ទី ${esc(toKh(c))}</option>`).join('');
+  $('pvScope').value=CUR.cls;$('pvTheme').value=D.theme||'modern';
+  renderMtgOpts();enhanceAll($('pvbar'));
+  const vis=(el,v)=>{(el._cs||el).style.display=v?'':'none';if(el._cs)el.style.display='none'};
+  $('pvXls').style.display=(type==='chart')?'none':'';
+  vis($('pvTheme'),type==='chart');vis($('pvMtg'),type==='minutes');vis($('pvScope'),CLASSES.length>1);
+  $('pvPd').style.display=type==='chart'?'none':'';$('pvPd').previousElementSibling.style.display=type==='chart'?'none':'';
+  renderPv();
+}
+function closePv(){$('pv').style.display='none';$('ed').style.display='block';renderTab()}
+function renderPv(){
+  const p=GL.page;
+  $('pvSign').innerHTML=IC.cal+'<span>'+esc(D.signDate?dLabel(D.signDate):'ជ្រើសថ្ងៃ')+'</span>';
+  $('pvPd').innerHTML=IC.cal+'<span>'+esc(GL.pDate?dLabel(GL.pDate):'មិនដាក់')+'</span>';
+  renderMtgOpts();const sc=$('pvScope');if(sc._cs)csSync(sc);if($('pvMtg')._cs)csSync($('pvMtg'));
+  $('setDot').style.display=['office','school','place','mt','mb','ms','fz'].some(k=>p[k]!==PAGE0[k])?'inline-block':'none';
+  const sheets=DOCS[PV.type]();
+  $('pvz').innerHTML=sheets.join('<div style="height:18px"></div>');
+  setPgStyle();fitScreen();
+}
+function renderMtgOpts(){
+  const mt=$('pvMtg');
+  mt.innerHTML=(D.meetings.length?D.meetings.map((x,i)=>`<option value="${x.id}">ប្រជុំលើកទី ${toKh(i+1)}${x.date?' · '+dLabel(x.date):''}</option>`).join(''):'<option value="">គ្មានកិច្ចប្រជុំ</option>');
+  if(!PV.mtg&&D.meetings.length)PV.mtg=D.meetings[D.meetings.length-1].id;
+  mt.value=PV.mtg;
+}
+function setPgStyle(){
+  let s=$('pgStyle');if(!s){s=document.createElement('style');s.id='pgStyle';document.head.appendChild(s)}
+  const p=GL.page;s.textContent=`@media print{@page{size:A4 portrait;margin:${p.mt}mm ${p.ms}mm ${p.mb}mm}}`;
+}
+function fitScreen(){
+  const z=$('pvz');if(!z)return;z.style.zoom='';
+  const w=Math.min(window.innerWidth-16,794);
+  if(window.innerWidth<830){z.style.zoom=(w/794).toFixed(3)}
+}
+window.addEventListener('resize',()=>{if($('pv').style.display==='block')fitScreen()});
+function setTheme(v){D.theme=v;saveNow();renderPv()}
+function pickSign(){openCal('✍ ថ្ងៃខែហត្ថលេខា · អ្នកធ្វើ',D.signDate||todayIso(),true,v=>{D.signDate=v;saveNow();renderPv()})}
+function pickPd(){openCal('✍ ថ្ងៃខែហត្ថលេខា · នាយកសាលា',GL.pDate,true,v=>{GL.pDate=v;saveG();renderPv()})}
+
+/* ===== page settings ===== */
+function openSet(){
+  const p=GL.page;
+  $('md').className='md';
+  $('md').innerHTML=`<header><h4>កំណត់ទំព័រ</h4><button class="x" onclick="closeMd()">✕</button></header><div class="bd2 set">
+   <div><label>ការិយាល័យ</label><input class="fc" id="sOff" value="${esc(p.office)}"></div>
+   <div><label>ឈ្មោះសាលា</label><input class="fc" id="sSch" value="${esc(p.school)}"></div>
+   <div class="row2"><div><label>ទីតាំងធ្វើនៅ</label><input class="fc" id="sPlc" value="${esc(p.place)}"></div><div><label>ឈ្មោះនាយកសាលា</label><input class="fc" id="sPri" value="${esc(p.principal)}"></div></div>
+   <div><label>ឈ្មោះគ្រូទទួលបន្ទុកថ្នាក់ (ទុកទទេ = ទាញពី Database)</label><input class="fc" id="sTea" value="${esc(D.teacher||'')}" placeholder="${esc(teacherOf(CUR.cls,{teacher:''}))}"></div>
+   <div class="row2"><div><label>គែមលើ (mm)</label><input class="fc" type="number" id="sMt" value="${p.mt}" min="0" max="40"></div><div><label>គែមក្រោម (mm)</label><input class="fc" type="number" id="sMb" value="${p.mb}" min="0" max="40"></div></div>
+   <div class="row2"><div><label>គែមឆ្វេង/ស្តាំ (mm)</label><input class="fc" type="number" id="sMs" value="${p.ms}" min="0" max="40"></div><div><label>ទំហំអក្សរ (%)</label><input class="fc" type="number" id="sFz" value="${p.fz}" min="70" max="140" step="5"></div></div>
+  </div><div class="ft"><button class="btn gh" onclick="resetSet()">កំណត់ដើមវិញ</button><button class="btn pri" onclick="applySet()">យល់ព្រម</button></div>`;
+  $('ov').classList.add('show');
+}
+function applySet(){
+  const n=(id,a,b,d)=>{const v=parseFloat($(id).value);return isNaN(v)?d:Math.min(b,Math.max(a,v))};
+  GL.page={office:$('sOff').value.trim(),school:$('sSch').value.trim(),place:$('sPlc').value.trim()||PAGE0.place,principal:$('sPri').value.trim(),mt:n('sMt',0,40,10),mb:n('sMb',0,40,10),ms:n('sMs',0,40,12),fz:n('sFz',70,140,100)};
+  D.teacher=$('sTea').value.trim();saveG();saveNow();closeMd();renderPv();
+}
+function resetSet(){GL.page=Object.assign({},PAGE0,{principal:GL.page.principal});D.teacher='';saveG();saveNow();closeMd();renderPv()}
+
+/* ===== print / pdf / excel ===== */
+function fitAll(){
+  const p=GL.page,mm=96/25.4,wmm=210-2*p.ms,target=(297-p.mt-p.mb-2)*mm;
+  document.querySelectorAll('.sheet.one .inner').forEach(inn=>{
+    inn.style.zoom='';inn.style.width='';let z=1;
+    for(let i=0;i<8;i++){inn.style.zoom=z;inn.style.width=(wmm/z)+'mm';const h=inn.scrollHeight*z;if(h<=target)break;z*=target/h*.985}
+  });
+}
+function unfit(){document.querySelectorAll('.sheet .inner').forEach(i=>{i.style.zoom='';i.style.width=''})}
+window.addEventListener('beforeprint',()=>{if($('pv').style.display==='block')fitAll()});
+window.addEventListener('afterprint',unfit);
+function doPrint(){window.focus();setTimeout(()=>{try{window.print()}catch(e){window.parent.print()}},100)}
+async function doPdf(){
+  if(!window.html2canvas||!window.jspdf){toast('មិនអាចផ្ទុក library PDF បានទេ');return}
+  toast('កំពុងបង្កើត PDF...');
+  const z=$('pvz'),zz=z.style.zoom;z.style.zoom='1';
+  try{
+    if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+    const {jsPDF}=window.jspdf,pdf=new jsPDF('p','mm','a4');let first=true;
+    for(const sh of document.querySelectorAll('.sheet')){
+      const c=await html2canvas(sh,{scale:2.4,backgroundColor:'#fff',useCORS:true});
+      const pageH=c.width*297/210,one=sh.classList.contains('one');
+      const n=one?1:Math.max(1,Math.ceil(c.height/pageH-0.02));
+      for(let k=0;k<n;k++){
+        if(!first)pdf.addPage();first=false;
+        if(one){let ih=c.height*210/c.width,iw=210;if(ih>297){iw=210*297/ih;ih=297}pdf.addImage(c.toDataURL('image/jpeg',.95),'JPEG',(210-iw)/2,0,iw,ih,undefined,'FAST')}
+        else{const sl=document.createElement('canvas');sl.width=c.width;sl.height=Math.min(pageH,c.height-k*pageH);const x=sl.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,sl.width,sl.height);x.drawImage(c,0,k*pageH,c.width,sl.height,0,0,c.width,sl.height);pdf.addImage(sl.toDataURL('image/jpeg',.95),'JPEG',0,0,210,sl.height*210/c.width,undefined,'FAST')}
+      }
+    }
+    pdf.save('គ.គ.ថ._'+CUR.cls+'_'+PV.type+'.pdf');
+  }catch(err){toast('❌ PDF៖ '+err.message)}
+  z.style.zoom=zz;
+}
+function doExcel(){
+  const list=(PV&&$('pv').style.display==='block'&&PV.scope==='all')?classesFor():[CUR.cls];
+  const mem=[['ថ្នាក់','ល.រ.','ឈ្មោះ','ភេទ','តួនាទី','ប្រភេទ','ទូរស័ព្ទ','ភារកិច្ច']],mt=[['ថ្នាក់','លើកទី','ថ្ងៃ','ម៉ោង','ទីកន្លែង','ប្រធានបទ','របៀបវារៈ','ខ្លឹមសារ','សេចក្តីសម្រេច','ចូលរួម','សរុប']];
+  list.forEach(c=>{const d=dataOf(c);
+    sortedMembers(d).forEach((m,i)=>mem.push([c,i+1,m.name,sexOf(m),m.role,m.type==='មិនកំណត់'?'':m.type,m.phone,m.duty||'']));
+    d.meetings.forEach((x,i)=>mt.push([c,i+1,x.date,x.time,x.place,x.title,x.agenda,x.notes,x.decision,d.members.filter(z=>x.att[z.id]).length,d.members.length]));
+  });
+  try{
+    if(window.XLSX){const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(mem),'សមាជិក');XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(mt),'កិច្ចប្រជុំ');XLSX.writeFile(wb,'គ.គ.ថ._'+CUR.year+'.xlsx');return}
+  }catch(e){}
+  const csv='﻿'+mem.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='គ.គ.ថ._'+CUR.year+'.csv';a.click();
+}
+
+/* ===== boot ===== */
+function initSelectors(){
+  const y=new Date().getFullYear(),m=new Date().getMonth(),base=m>=8?y:y-1,ys=$('selYear');
+  for(let i=base+1;i>=base-5;i--){const o=document.createElement('option');o.value=i+'-'+(i+1);o.textContent=i+'-'+(i+1);if(i===base)o.selected=true;ys.appendChild(o)}
+}
+async function initClasses(){
+  const cs=$('selClass');
+  const mine=String(USER.assigned_classes||USER.assigned_class||'').split(/[,;،\/]+/).map(cleanGrade).filter(Boolean);
+  let list=mine;
+  if((IS_ADMIN||!mine.length)&&sb){
+    try{const {data}=await sb.from('students').select('grade');list=[...new Set((data||[]).map(s=>cleanGrade(s.grade)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'km'))}catch(e){}
+  }
+  CLASSES=list;
+  cs.innerHTML=list.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  const last=localStorage.getItem('cmt_lastClass');if(last&&list.includes(last))cs.value=last;
+}
+async function loadUsers(){
+  if(!sb)return;
+  try{const {data}=await sb.from('users').select('teacher_name, username, assigned_classes, role');USERS=data||[]}catch(e){}
+}
+function reload(){
+  CUR.year=$('selYear').value;CUR.cls=$('selClass').value;
+  try{localStorage.setItem('cmt_lastClass',CUR.cls)}catch(e){}
+  D=loadOf(CUR.cls);
+  $('electBtn').innerHTML=IC.cal+'<span>'+esc(dLabel(D.elect,'មិនដាក់'))+'</span>';
+  renderTab();enhanceAll($('ed'));
+}
+(async function boot(){
+  if(!USER||!USER.username){$('auth').style.display='flex';return}
+  $('app').style.display='block';
+  loadG();initSelectors();await initClasses();enhanceAll($('ed'));
+  if(!CLASSES.length){CLASSES=['—'];$('selClass').innerHTML='<option value="—">—</option>'}
+  reload();loadUsers();
+})();
+
+</script>
+</body>
+</html>
