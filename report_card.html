@@ -115,6 +115,7 @@
       background: #0f172a;
       padding: 10px 16px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
       gap: 8px;
@@ -124,10 +125,16 @@
     }
 
     .tb-row-1, .tb-row-2 {
-      display: inline-flex;
+      display: flex;
+      flex-wrap: wrap;
       align-items: center;
+      justify-content: center;
       gap: 8px;
+      max-width: 100%;
     }
+    .tb-row-2 > #csReportType, .tb-row-2 > #csMonth, .tb-row-2 > #csSemester { flex: 0 0 auto !important; }
+    .tb-row-2 > .tb-group { flex: 0 0 auto !important; }
+    .tb-row-2 > .tb-group .pill-btn { width: auto !important; }
 
     .tb-group {
       display: inline-flex;
@@ -1991,27 +1998,8 @@
           }
         });
 
-        /* ⚠️ បើគ្មានពិន្ទុសម្រាប់ខែ/ឆមាសដែលបានជ្រើស → ស្វែងរកខែដែលមានពិន្ទុ ហើយជូនដំណឹង */
-        const hasAny = (reportMode === 'monthly') ? Object.keys(scoreMap).length
-                      : (Object.keys(scoreMapS1).length + Object.keys(scoreMapS2).length);
-        if (!hasAny) {
-          const avail = [...new Set((scData || []).map(r => String(r.period || '').trim()).filter(Boolean))];
-          if (reportMode === 'monthly' && avail.length && !window.__fbTried) {
-            const alt = GM.find(m => avail.some(p => normP(p) === normP(m)));
-            if (alt) {
-              window.__fbTried = true;
-              selectedMonth = alt;
-              try { CS.month.setValue(alt); } catch (e) {}
-              showToastRC('ខែ ' + normP(selectedMonthOld()) + ' មិនទាន់មានពិន្ទុ — បង្ហាញខែ ' + alt + ' វិញ');
-              await loadRealDataForClass(cls);
-              window.__fbTried = false;
-              return;
-            }
-          }
-          window.__noScoreNote = (scData && scData.length)
-            ? 'មានពិន្ទុតែក្នុង៖ ' + avail.join(', ') + ' (មិនត្រូវនឹងការជ្រើសរើស)'
-            : 'មិនទាន់មានពិន្ទុក្នុងប្រព័ន្ធសម្រាប់ថ្នាក់ទី ' + pure + ' (ប្រភេទ ' + dataType + ') ទេ — សូមបញ្ចូលពិន្ទុក្នុង Form បញ្ចូលពិន្ទុជាមុន';
-        } else { window.__noScoreNote = ''; }
+        /* ខែ/ឆមាសដែលគ្មានពិន្ទុ ក៏បង្ហាញដែរ (មិនលោតទៅខែផ្សេង) */
+        window.__noScoreNote = '';
 
         // ៤. ទាញយកអវត្តមាន
         const { data: attData } = await sb
