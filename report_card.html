@@ -1,545 +1,108 @@
 <!DOCTYPE html>
-<html lang="km">
+<html lang="km" data-theme="light">
 <head>
-  <base target="_top">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>ព្រឹត្តិបត្រពិន្ទុ - សាលាបឋមសិក្សាកំពង់ល្ពៅ</title>
-
-  <!-- 🔤 Google Fonts Khmer -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;900&family=Moul&family=Siemreap&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-  <!-- 📊 Excel & PDF Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-  <!-- ⚡ Supabase JS Client (v2) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Khmer OS Battambang', 'Battambang', sans-serif;
-    }
-
-    select, option, input, button {
-      font-family: 'Khmer OS Battambang', 'Battambang', sans-serif !important;
-      font-weight: 700 !important;
-    }
-
-    /* 🌟 ការពារ Font Awesome Icons មិនឱ្យបាត់ */
-    i[class*="fa-"], .fa, .fas, .far, .fa-solid, .fa-regular {
-      font-family: "Font Awesome 6 Free" !important;
-      font-style: normal !important;
-      font-variant: normal !important;
-      text-rendering: auto !important;
-      -webkit-font-smoothing: antialiased !important;
-      display: inline-block !important;
-      line-height: 1 !important;
-    }
-    .fa-solid, .fas { font-weight: 900 !important; }
-    .fa-regular, .far { font-weight: 400 !important; }
-
-    body {
-      background: #1e293b;
-      color: #0f172a;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding-bottom: 60px;
-      overflow-x: hidden;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .f-moul {
-      font-family: 'Khmer OS Muol Light', 'Moul', cursive !important;
-      font-weight: normal;
-    }
-    .f-siemreap {
-      font-family: 'Khmer OS Siemreap', 'Siemreap', sans-serif !important;
-    }
-
-    /* 🔒 AUTH DENIED WRAPPER */
-    #authDeniedWrap {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 85vh;
-      text-align: center;
-      padding: 30px 20px;
-      width: 100%;
-    }
-    .auth-card {
-      background: #0f172a;
-      border: 1.5px solid #334155;
-      border-radius: 24px;
-      padding: 38px 28px;
-      max-width: 430px;
-      width: 100%;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.6);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #f8fafc;
-    }
-    .auth-icon {
-      width: 64px; height: 64px; border-radius: 20px;
-      background: rgba(239, 68, 68, 0.15); color: #ef4444;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 30px; margin-bottom: 14px;
-    }
-    .auth-card h2 { font-size: 17.5px; margin-bottom: 8px; color: #ef4444; }
-    .auth-card p { font-size: 13px; color: #94a3b8; line-height: 1.6; margin-bottom: 22px; }
-    .btn-login-redirect {
-      background: linear-gradient(135deg, #0284c7, #2563eb);
-      color: #ffffff; padding: 10px 24px; border-radius: 12px;
-      font-weight: 700; font-size: 13px; text-decoration: none;
-      display: inline-flex; align-items: center; gap: 8px; border: none; cursor: pointer;
-    }
-
-    /* =========================================================
-       🎛️ TOP TOOLBAR
-    ========================================================= */
-    .top-toolbar {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      width: 100%;
-      background: #0f172a;
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-      border-bottom: 1px solid #334155;
-      overflow: visible !important;
-    }
-
-    .tb-row-1, .tb-row-2 {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .tb-group {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      position: relative;
-    }
-
-    .pill-btn {
-      background: #1e293b;
-      color: #f8fafc;
-      border: 1px solid #475569;
-      height: 36px;
-      padding: 0 13px;
-      border-radius: 18px;
-      font-size: 12.5px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-      outline: none;
-      white-space: nowrap;
-    }
-    .pill-btn:hover {
-      background: #334155;
-      border-color: #64748b;
-    }
-    .pill-btn.primary {
-      background: #00875a;
-      color: #ffffff;
-      border-color: #00875a;
-    }
-    .pill-btn.primary:hover { background: #00734c; }
-
-    /* =========================================================
-       🌟 CUSTOM SELECT
-    ========================================================= */
-    .cselect {
-      position: relative;
-      display: inline-flex;
-    }
-    .cs-btn {
-      background: #1e293b;
-      color: #f8fafc;
-      border: 1px solid #475569;
-      height: 36px;
-      padding: 0 13px;
-      border-radius: 18px;
-      font-size: 12.5px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      transition: all 0.15s ease;
-      outline: none;
-      white-space: nowrap;
-      width: 100%;
-    }
-    .cs-btn:hover { background: #334155; border-color: #64748b; }
-    .cs-btn:disabled { opacity: 0.55; cursor: not-allowed; }
-    .cs-label {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 140px;
-    }
-    .cs-chev {
-      font-size: 10px;
-      color: #38bdf8;
-      transition: transform 0.2s ease;
-    }
-    .cs-btn.open .cs-chev,
-    .pill-btn.open .fa-chevron-down { transform: rotate(180deg); }
-    .pill-btn .fa-chevron-down { transition: transform 0.2s ease; }
-
-    .cselect.month .cs-btn {
-      color: #38bdf8;
-      border-color: #0284c7;
-      background: #0b1f33;
-    }
-    .cselect.month .cs-btn:hover { background: #10304d; }
-
-    .student-nav-group {
-      display: inline-flex;
-      align-items: center;
-      background: #1e293b;
-      border-radius: 18px;
-      border: 1px solid #475569;
-      height: 36px;
-      padding: 0 4px;
-    }
-    .student-nav-btn {
-      background: none;
-      border: none;
-      color: #f8fafc;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-    }
-    .student-nav-btn:hover { background: #334155; }
-    .student-nav-group .cs-btn {
-      background: transparent;
-      border: none;
-      height: 28px;
-      padding: 0 6px;
-      border-radius: 14px;
-    }
-    .student-nav-group .cs-btn:hover { background: #334155; }
-    .student-nav-group .cs-label { max-width: 120px; }
-
-    /* =========================================================
-       🪟 DROPDOWN POPUP
-    ========================================================= */
-    .dropdown-popup {
-      display: none;
-      position: fixed;
-      min-width: 190px;
-      max-height: 300px;
-      overflow-y: auto;
-      background: #ffffff;
-      border: none;
-      border-radius: 22px;
-      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.45);
-      padding: 6px;
-      z-index: 99999;
-      animation: popIn 0.15s ease-out;
-      scrollbar-width: thin;
-      scrollbar-color: #cbd5e1 transparent;
-    }
-    .dropdown-popup::-webkit-scrollbar { width: 5px; }
-    .dropdown-popup::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-    .dropdown-popup.show { display: block; }
-    @keyframes popIn {
-      from { opacity: 0; transform: translateY(-6px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .dropdown-item {
-      padding: 14px 18px;
-      border-radius: 16px;
-      color: #1e293b;
-      font-size: 14.5px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      white-space: nowrap;
-    }
-    .dropdown-item:hover { background: #f1f5f9; }
-    .dropdown-item.active { background: #d9f0fa; color: #0284c7; }
-    .dropdown-item .fa-check { display: none; font-size: 14px; }
-    .dropdown-item.active .fa-check { display: inline; }
-
-    /* ☀️ ម៉ូដភ្លឺ (តាម Theme របស់ form មេ) */
-    [data-theme="light"] body { background: #e2e8f0; }
-    [data-theme="light"] .top-toolbar { background: #ffffff; border-bottom-color: #cbd5e1; box-shadow: 0 4px 16px rgba(15,23,42,.08); }
-    [data-theme="light"] .pill-btn, [data-theme="light"] .cs-btn, [data-theme="light"] .student-nav-group { background: #f1f5f9; color: #0f172a; border-color: #cbd5e1; }
-    [data-theme="light"] .student-nav-group .cs-btn { background: transparent; border: none; }
-    [data-theme="light"] .pill-btn:hover, [data-theme="light"] .cs-btn:hover, [data-theme="light"] .student-nav-btn:hover { background: #e2e8f0; border-color: #94a3b8; }
-    [data-theme="light"] .student-nav-btn { color: #0f172a; }
-    [data-theme="light"] .pill-btn.primary { background: #00875a; color: #fff; border-color: #00875a; }
-    [data-theme="light"] .cselect.month .cs-btn { background: #e0f2fe; color: #0369a1; border-color: #0284c7; }
-    [data-theme="light"] .empty-state-card { background: #ffffff; color: #0f172a; }
-
-    @media screen and (max-width: 768px) {
-      .top-toolbar {
-        padding: 8px 10px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        width: 100%;
-      }
-      .tb-row-1, .tb-row-2 {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 6px;
-        width: 100%;
-      }
-      .btn-label { display: none !important; }
-      .pill-btn {
-        width: 36px; height: 36px; padding: 0;
-        justify-content: center; border-radius: 50%;
-      }
-      .tb-group .fa-chevron-down { display: none; }
-      .cs-btn { height: 34px; padding: 0 10px; font-size: 11.5px; }
-      .cs-label { max-width: 95px; }
-      .student-nav-group .cs-label { max-width: 95px; }
-      .tb-row-1 .cselect { flex: 0 1 auto; }
-      .tb-row-2 .cselect { flex: 1; }
-      .tb-row-2 .pill-btn { flex: 1; border-radius: 18px; }
-      .tb-row-2 .pill-btn.primary { flex: 1.2; }
-      .dropdown-item { font-size: 14px; padding: 12px 16px; }
-    }
-
-    /* =========================================================
-       📄 PAPER STAGE & SCALING SYSTEM (AUTO RESPONSIVE)
-    ========================================================= */
-    .paper-stage-wrapper {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      padding: 20px 10px;
-      overflow-x: hidden;
-    }
-
-    .paper-stage {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 24px;
-      transform-origin: top center;
-      transition: transform 0.15s ease;
-    }
-
-    .report-sheet {
-      background: #ffffff;
-      width: 210mm;
-      min-height: 295mm;
-      padding: 12mm 15mm 12mm;
-      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      color: #000;
-      box-sizing: border-box;
-    }
-
-    .sheet-national-header { text-align: center; margin-bottom: 4px; }
-    .nat-title-1 { font-size: 14.5px; margin-bottom: 2px; }
-    .nat-title-2 { font-size: 13px; margin-bottom: 2px; }
-    .nat-symbol { font-size: 10.5px; letter-spacing: 2.5px; }
-
-    .sheet-sub-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-top: 4px;
-      margin-bottom: 8px;
-    }
-    .left-dept-info { text-align: left; font-size: 12px; line-height: 1.45; }
-    .left-dept-info div:first-child { font-weight: 700; }
-    .left-dept-info div:last-child { font-weight: 700; }
-
-    .center-doc-title { text-align: center; flex: 1; margin-right: 70px; }
-    .doc-main-title { font-size: 16.5px; color: #000; margin-bottom: 2px; }
-    .doc-academic-year { font-size: 13px; font-weight: 600; }
-
-    .student-meta-line {
-      text-align: center;
-      font-size: 12.5px;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-    .student-meta-line span.hl-val { font-weight: 700; }
-    .student-meta-line span.hl-rank { color: #dc2626; font-weight: 800; }
-
-    /* ── Table Styling ── */
-    .report-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: center;
-      font-size: 11px;
-      border: 1px solid #000;
-      margin-bottom: 12px;
-    }
-    .report-table th, .report-table td {
-      border: 1px solid #000;
-      padding: 4px 3px;
-      vertical-align: middle;
-      height: var(--row-h, 25px);
-      white-space: nowrap;
-    }
-    .report-table thead th {
-      background: #e2e8f0;
-      font-weight: 700;
-      font-size: 11.5px;
-      white-space: nowrap;
-    }
-
-    .report-table td.sub-name {
-      text-align: center;
-      font-weight: 700;
-      white-space: nowrap !important;
-      padding: 4px 6px;
-    }
-    .report-table td.bold-val { font-weight: 700; }
-
-    .gr-A { color: #0284c7; font-weight: 800; }
-    .gr-B { color: #b45309; font-weight: 800; }
-    .gr-C { color: #16a34a; font-weight: 800; }
-    .gr-D { color: #2563eb; font-weight: 800; }
-    .gr-E { color: #7c3aed; font-weight: 800; }
-    .gr-F { color: #dc2626; font-weight: 800; }
-
-    .summary-cell-text { font-size: 11px; font-weight: 700; padding: 5px 3px; white-space: nowrap; }
-
-    /* ── Signatures & Footer ── */
-    .sheet-signatures-area {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-top: 0;
-      padding: 6mm 4px 0;
-      width: 100%;
-      font-size: 11px;
-    }
-    .sig-col {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-
-    .sig-col.left-col { width: 28%; margin-top: 50px; }
-    .sig-col.mid-col  { width: 30%; margin-top: 28px; }
-    .sig-col.right-col { width: 42%; margin-top: 0; }
-
-    .sig-title-moul { font-size: 11.5px; color: #000; margin-bottom: 3px; }
-    .sig-role { font-weight: 700; font-size: 11.5px; margin-bottom: 45px; }
-    .sig-name { font-weight: 700; font-size: 12.5px; }
-    .sig-solar-date { font-size: 11px; font-weight: 700; margin-top: 3px; white-space: nowrap; }
-
-    .clean-lunar-text {
-      font-size: 11px;
-      font-weight: bold;
-      color: #000;
-      text-align: center;
-      width: 100%;
-      line-height: 1.35;
-      white-space: normal;
-      word-break: break-word;
-    }
-
-    .parent-dotted-lines {
-      width: 100%;
-      border-bottom: 1px dotted #000;
-      height: 14px;
-      margin-top: 10px;
-    }
-
-    /* 2 នាក់ • សន្លឹកផ្តេក A4 */
-    .paper-stage.layout-2col .report-sheet-container-2col {
-      position: relative;
-      background: #ffffff;
-      width: 297mm;
-      height: 209mm;
-      padding: 7mm 9mm;
-      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45);
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      column-gap: 12mm;
-      overflow: hidden;
-    }
-    .paper-stage.layout-2col .report-sheet-container-2col::before {
-      content: '';
-      position: absolute;
-      top: 6mm; bottom: 6mm; left: 50%;
-      border-left: 1px dashed #94a3b8;
-    }
-    .paper-stage.layout-2col .report-sheet {
-      width: 100%;
-      min-height: 0;
-      height: 100%;
-      box-shadow: none;
-      padding: 0;
-      font-size: 9px;
-      overflow: hidden;
-    }
-    .paper-stage.layout-2col .nat-title-1 { font-size: 12px; margin-bottom: 1px; }
-    .paper-stage.layout-2col .nat-title-2 { font-size: 11px; margin-bottom: 1px; }
-    .paper-stage.layout-2col .nat-symbol { font-size: 9px; letter-spacing: 1.5px; }
-    .paper-stage.layout-2col .doc-main-title { font-size: 12.5px; margin-bottom: 1px; }
-    .paper-stage.layout-2col .doc-academic-year { font-size: 10px; }
-    .paper-stage.layout-2col .left-dept-info { font-size: 9.5px; line-height: 1.3; }
-    .paper-stage.layout-2col .center-doc-title { margin-right: 40px; }
-    .paper-stage.layout-2col .sheet-sub-header { margin-bottom: 5px; }
-    .paper-stage.layout-2col .student-meta-line { font-size: 10px; margin-bottom: 4px; }
-
-    .paper-stage.layout-2col .report-table { font-size: 9.5px; margin-bottom: 5px; }
-    .paper-stage.layout-2col .report-table th,
-    .paper-stage.layout-2col .report-table td {
-      padding: 1px 2px;
-      white-space: nowrap !important;
-    }
-    .paper-stage.layout-2col .report-table thead th {
-      width: auto !important;
-      font-size: 9.5px;
-      white-space: normal !important;
-      line-height: 1.25;
-    }
-    .paper-stage.layout-2col .summary-cell-text { font-size: 9.3px; padding: 2px; }
-    .paper-stage.layout-2col .sheet-signatures-area { font-size: 9px; padding-top: 3mm; }
-    .paper-stage.layout-2col .sig-col.left-col { width: 27%; margin-top: 30px; }
-    .paper-stage.layout-2col .sig-col.mid-col  { width: 29%; margin-top: 14px; }
-    .paper-stage.layout-2col .sig-col.right-col { width: 44%; margin-top: 0; }
-    .paper-stage.layout-2col .sig-title-moul { font-size: 9px; }
-    .paper-stage.layout-2col .sig-role { font-size: 9px; margin-bottom: 22px; }
-    .paper-stage.layout-2col .sig-name { font-size: 9.5px; }
-    .paper-stage.layout-2col .clean-lunar-text { font-size: 8.2px; }
-    .paper-stage.layout-2col .sig-solar-date { font-size: 8.5px; }
-    .paper-stage.layout-2col .parent-dotted-lines { height: 9px; margin-top: 5px; }
-
+<base target="_top">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>តារាងចំនួនសិស្សតាមអាយុ</title>
+<link href="https://fonts.googleapis.com/css2?family=Moul&family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#eef2f9;--tb:rgba(255,255,255,.96);--line:#e2e8f0;--text:#0f172a;--muted:#64748b;--card:#fff;--in:#fff;--inl:#cbd5e1;--ac:#4f46e5;--acs:#e0e7ff;--ok:#059669;--oks:#d1fae5;--bad:#e11d48;--bads:#ffe4e6;color-scheme:light}
+[data-theme=dark]{--bg:#0b1220;--tb:rgba(15,23,42,.95);--line:#1e293b;--text:#f1f5f9;--muted:#9aa3b2;--card:#111e33;--in:#162642;--inl:#2b4468;--ac:#a5b4fc;--acs:#27306b;--ok:#34d399;--oks:#12392f;--bad:#fb7185;--bads:#3b1520;color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Battambang','Kantumruy Pro',sans-serif;font-size:14px;padding-bottom:60px}
+.tb{position:sticky;top:0;z-index:50;background:var(--tb);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px 10px}
+.pill label{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.fc{font:600 13px 'Kantumruy Pro','Battambang',sans-serif;background:var(--in);color:var(--text);border:1.5px solid var(--inl);border-radius:9px;padding:5px 8px;height:34px;outline:none;min-width:0}
+.fc:focus{border-color:var(--ac)}
+.btn{display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 14px;border:0;border-radius:12px;font:700 13px 'Kantumruy Pro','Battambang',sans-serif;cursor:pointer;background:var(--acs);color:var(--ac);transition:transform .15s,filter .2s}
+.btn:active{transform:scale(.96)}.btn:hover{filter:brightness(.96)}
+.btn.ok{background:var(--oks);color:var(--ok)}
+.sp{flex:1}
+.st{font-size:12px;font-weight:700;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
+.st i{width:8px;height:8px;border-radius:50%;background:#94a3b8;display:inline-block}
+.st.ok i{background:#10b981}.st.err i{background:#f43f5e}.st.busy i{background:#f59e0b;animation:pl 1s infinite}
+@keyframes pl{50%{opacity:.3}}
+.banner{display:none;margin:10px 14px 0;padding:12px 14px;border-radius:14px;background:#fef3c7;color:#92400e;font-size:13px;line-height:1.7;border:1px solid #fcd34d}
+.banner button{margin-left:8px;background:#f59e0b;color:#fff;border:0;border-radius:9px;padding:4px 12px;font:700 12px 'Kantumruy Pro',sans-serif;cursor:pointer}
+.stage{padding:16px;display:flex;justify-content:center;overflow-x:auto}
+.page{width:210mm;min-height:297mm;background:#fff;color:#0f172a;padding:9mm 9mm 12mm;box-shadow:0 12px 44px rgba(15,23,42,.18);position:relative;flex-shrink:0;border-radius:4px}
+.logo{position:absolute;right:9mm;top:6mm;width:56px;height:56px;border:2.5px solid #3730a3;border-radius:50%;display:flex;align-items:center;justify-content:center;font:italic 700 20px Georgia,serif;color:#3730a3}
+.ttl{font-family:'Moul',serif;text-align:center;font-size:21px;color:#1e3a8a;line-height:1.8;padding:0 60px}
+.sub{font-family:'Moul',serif;text-align:center;font-size:15px;color:#1e3a8a}
+.info{margin:14px 6px 12px;display:flex;flex-direction:column;gap:8px;font-size:14px;color:#475569}
+.info .r{display:flex;flex-wrap:wrap;gap:6px 40px}
+.ed{outline:none;border-bottom:1px dotted #94a3b8;min-width:70px;display:inline-block;padding:0 4px;color:#0f172a}
+.ed:focus{background:#eef2ff;border-bottom-color:#4f46e5}
+.ed:empty:before{content:attr(data-ph);color:#cbd5e1}
+.cols{display:grid;grid-template-columns:1fr 1.02fr;gap:12px;align-items:stretch}
+.col{display:flex;flex-direction:column;gap:12px}
+.col>.sec{display:flex;flex-direction:column}
+.col>.sec:last-child{flex:1}
+.col>.sec:last-child>.body{flex:1;display:flex;flex-direction:column}
+.col>.sec:last-child>.body>table{flex:1;height:100%}
+.sec{background:#fff;border:1px solid #dbe3f3;border-radius:16px;overflow:hidden;box-shadow:0 6px 18px rgba(30,58,138,.12)}
+.sec>h3{margin:0;background:linear-gradient(135deg,#3b4cb8,#27348b);color:#fff;font-family:'Battambang',sans-serif;font-weight:700;font-size:13.5px;line-height:1.7;text-align:center;padding:9px 12px}
+.sec .body{padding:8px}
+.tip{display:flex;align-items:center;gap:6px;justify-content:center;color:#db2777;font-size:11.5px;font-weight:700;text-align:center;padding:6px 8px 8px;line-height:1.6}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{border:1px solid #e3e9f5;padding:0}
+thead th{background:#e8edfb;color:#27348b;font-weight:700;text-align:center;padding:5px 4px}
+th.clk{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
+th.clk:hover{background:#d9e1fb}
+td.c{text-align:center;padding:5px 3px;height:30px}
+td.c.hl{color:#4f46e5;font-weight:700}
+tr.g td{background:#eef2ff;font-weight:700;color:#27348b}
+tr.g td.nm{cursor:default}
+tr.t td{background:#e5e9fb;font-weight:700;color:#27348b}
+td.nm{padding:5px 9px;text-align:left}
+td.nm.lk{cursor:pointer}
+td.nm.lk:hover{background:#eef2ff;color:#4f46e5}
+td.nm.lk:after{content:' ✎';opacity:0;font-size:11px;color:#4f46e5}
+td.nm.lk:hover:after{opacity:1}
+table.kv th{width:46%;text-align:left;background:#f8faff;color:#64748b;font-weight:500;padding:6px 10px}
+table.kv td{padding:6px 10px;text-align:center}
+.warn{font-size:11.5px;color:#b45309;line-height:1.7;padding:6px 4px 0}
+@media print{.warn{display:none}}
+.foot{margin-top:18px;display:flex;justify-content:space-between;align-items:flex-start}
+.sign-l{min-width:200px;margin-left:30px}
+.sign{text-align:center;font-size:13px;line-height:2.1;min-width:0;white-space:nowrap}
+.sign .ed{min-width:120px}
+/* modal */
+.ov{position:fixed;inset:0;z-index:200;background:rgba(15,23,42,.45);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:16px}
+.ov.show{display:flex}
+.md{width:min(100%,520px);max-height:88vh;background:var(--card);color:var(--text);border-radius:22px;border:1px solid var(--line);box-shadow:0 24px 60px rgba(0,0,0,.35);display:flex;flex-direction:column;overflow:hidden;animation:pop .25s cubic-bezier(.3,1.4,.5,1)}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.95)}}
+.md header{padding:16px 18px 10px;display:flex;align-items:center;gap:10px}
+.md header h4{flex:1;font-size:15px;line-height:1.5}
+.md .x{width:34px;height:34px;border:0;border-radius:10px;background:var(--acs);color:var(--ac);font-size:18px;cursor:pointer}
+.md .sr{margin:0 18px 8px}.md .sr input{width:100%}
+.md .cnt{margin:0 18px 8px;font-size:12px;color:var(--muted)}
+.md .list{overflow:auto;padding:0 12px 12px;display:flex;flex-direction:column;gap:6px}
+.it{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:13px;border:1.5px solid var(--line);background:var(--in);cursor:pointer;transition:all .15s;user-select:none}
+.it:hover{border-color:var(--ac)}
+.it.on{background:var(--oks);border-color:var(--ok)}
+.it .ck{width:22px;height:22px;border-radius:7px;border:2px solid var(--inl);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;flex-shrink:0}
+.it.on .ck{background:var(--ok);border-color:var(--ok)}
+.it .n{flex:1;font-weight:600;line-height:1.4}.it .m{font-size:11.5px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 18px;border-radius:14px;font-size:13px;font-weight:700;z-index:300;display:none}
+.auth{display:none;min-height:70vh;align-items:center;justify-content:center;text-align:center;padding:24px}
+.auth div{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:34px 26px;max-width:380px}
+@media(max-width:860px){.stage{padding:8px}.page{zoom:.46}}
+@media(max-width:600px){.page{zoom:.42}}
+@media print{
+  @page{size:210mm 297mm;margin:0}
+  body{background:#fff;padding:0}.tb,.banner,.tip,.ov,.toast{display:none!important}
+  html,body{height:auto;overflow:visible}
+  .stage{padding:0;display:block;overflow:visible}.page{box-shadow:none;border-radius:0;margin:0 auto;min-height:0!important;height:297mm;overflow:hidden;padding:8mm 8mm 6mm;page-break-after:avoid;break-after:avoid}
+  .ed{border-bottom:0}.ed:empty:before{content:''}
+  td.nm.lk:after{display:none}th.clk{text-decoration:none}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
     /* ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ */
     .cal-modal-backdrop {
       display: none; position: fixed; inset: 0; z-index: 2900; background: rgba(0,0,0,0.65);
@@ -688,127 +251,112 @@
       }
       .paper-stage.layout-2col .report-sheet { width: 100% !important; height: 100% !important; }
     }
-  </style>
+@keyframes popIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+}
+.pill-btn{border:0;border-radius:10px;padding:0 14px;font:700 13px Battambang,sans-serif;cursor:pointer;background:#eef2ff;color:#4f46e5}.pill-btn.primary{background:#4f46e5;color:#fff}
+.cal-cell .h{font-size:8px}
+.dtbtn{display:inline-flex;align-items:center;gap:6px;border:1.5px dashed #818cf8;background:#eef2ff;color:#4f46e5;border-radius:10px;padding:3px 12px;font:700 12px Battambang,sans-serif;cursor:pointer;margin-bottom:4px}
+.dtbtn:hover{background:#e0e7ff}
+@media print{.dtbtn,.cal-modal,.cal-modal-backdrop{display:none!important}}
+select.edu{appearance:none;-webkit-appearance:none;border:0;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2364748b' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 4px center;font:inherit;color:#0f172a;text-align:center;text-align-last:center;width:100%;padding:2px 16px;cursor:pointer;outline:none}
+select.edu:focus{background-color:#eef2ff}
+@media print{select.edu{background-image:none;padding:2px}select.edu:invalid{color:transparent}}
+select,select option,select optgroup,.cal-nav select,.fc{font-family:'Battambang','Kantumruy Pro',sans-serif!important}
+select,.fc{font-weight:400}
+select option{font-size:14px;font-weight:400}
+.cal-modal{color:#1f2433;color-scheme:light}
+.cal-modal select,.cal-modal option{color:#1f2433!important;background:#f8fafc!important}
+.cal-cell{color:#1f2433;font-family:'Battambang',sans-serif}
+.cal-cell .g{color:#1f2433}.cal-cell.sun .g{color:#c62828}
+.cal-btn-ico{color:#1f2433}
+.cal-cell.other{opacity:.4}
+
+/* ===== Dropdown ផ្ទាល់ខ្លួន (Battambang) ===== */
+#selPop{position:fixed;z-index:3500;display:none;min-width:160px;max-height:min(60vh,380px);overflow:auto;background:#fff;color:#0f172a;border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 18px 44px rgba(15,23,42,.28);padding:6px;font-family:'Battambang',sans-serif;animation:popIn .15s ease-out}
+[data-theme=dark] #selPop{background:#1b2740;color:#f1f5f9;border-color:#2b4468}
+#selPop .si{padding:10px 14px;border-radius:10px;font-family:'Battambang',sans-serif;font-size:14.5px;cursor:pointer;line-height:1.5;display:flex;align-items:center;justify-content:space-between;gap:10px}
+#selPop .si:hover{background:#eef2ff}[data-theme=dark] #selPop .si:hover{background:#27306b}
+#selPop .si.on{background:#4f46e5;color:#fff;font-weight:700}
+#selPop .si.on:after{content:'✓'}
+
+/* ===== Custom dropdown (Battambang ទាំងបញ្ជី) ===== */
+.csb{display:inline-flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;font-family:'Battambang',sans-serif!important;font-weight:400;text-align:left;white-space:nowrap;max-width:100%}
+.csb .cl{overflow:hidden;text-overflow:ellipsis}
+.csb .ca{width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);opacity:.55;flex-shrink:0}
+.edu-b{width:100%;justify-content:center;border:0;background:transparent;color:#0f172a;font-size:13px;padding:2px 6px;min-height:24px}
+.edu-b:hover{background:#eef2ff}
+.edu-b.empty .cl{color:#94a3b8}
+.cal-b{flex:1;height:38px;border:1px solid #cbd5e1;background:#f8fafc;color:#1f2433;border-radius:10px;font-weight:700;padding:0 10px;min-width:0}
+#csPop{position:fixed;z-index:4000;display:none;background:var(--card,#fff);color:var(--text,#0f172a);border:1px solid var(--line,#e2e8f0);border-radius:16px;box-shadow:0 18px 44px rgba(15,23,42,.28);padding:6px;overflow:auto;font-family:'Battambang',sans-serif;animation:pop .15s ease-out}
+.csi{padding:10px 14px;border-radius:10px;cursor:pointer;font-size:14.5px;font-family:'Battambang',sans-serif;line-height:1.5}
+.csi:hover{background:var(--acs,#e0e7ff)}
+.csi.on{background:var(--ac,#4f46e5);color:#fff;font-weight:700}
+@media print{.csb .ca{display:none}.edu-b.empty .cl{color:transparent}.edu-b:hover{background:none}#csPop{display:none!important}}
+</style>
 </head>
 <body>
+<div class="auth" id="auth"><div><h2 style="color:#e11d48;font-size:18px;margin-bottom:8px">សូមចូលប្រើប្រព័ន្ធជាមុន</h2><p style="color:var(--muted);line-height:1.7;margin-bottom:18px">ទំព័រនេះត្រូវការចូលគណនីតាមរយៈទំព័រដើម។</p><button class="btn" onclick="goIndex()">ទៅទំព័រចូលប្រើ</button></div></div>
 
-  <!-- 🔒 AUTH DENIED -->
-  <div id="authDeniedWrap">
-    <div class="auth-card">
-      <div class="auth-icon"><i class="fa-solid fa-lock"></i></div>
-      <h2 class="f-moul">សូមចូលប្រើប្រាស់ជាមុនសិន!</h2>
-      <p>លោកអ្នកមិនទាន់បាន Login ចូលក្នុងប្រព័ន្ធនៅឡើយទេ។ សូម Login ដើម្បីមើល និងបោះពុម្ពព្រឹត្តិបត្រពិន្ទុ។</p>
-      <a href="index.html" target="_top" class="btn-login-redirect" onclick="goToIndex(event)">
-        <i class="fa-solid fa-key"></i> <span>ទៅកាន់ទំព័រដើម</span>
-      </a>
+<div id="app" style="display:none">
+<div class="tb">
+  <button class="btn" onclick="goBack()">‹ ត្រឡប់</button>
+  <span class="pill"><label>ឆ្នាំសិក្សា</label><select class="fc" id="selYear" onchange="reload()"></select></span>
+  <span class="pill"><label>ថ្នាក់</label><select class="fc" id="selClass" onchange="reload()"></select></span>
+  <span class="pill"><label>អាយុគិតត្រឹម</label><input type="hidden" id="asOf"><button type="button" class="fc" id="asOfBtn" onclick="openCal('asof')" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px">📅 <span></span></button></span>
+  <span class="sp"></span>
+    <button class="btn" onclick="doPrint()">🖨️ បោះពុម្ព</button>
+  <button class="btn ok" onclick="doPdf()">⬇ PDF</button>
+</div>
+
+
+<div class="stage"><div class="page" id="page">
+  <div class="logo">Pri</div>
+  <div class="ttl">តារាងចំនួនសិស្សតាមអាយុ(សម្រាប់គ្រូ)</div>
+  <div class="sub">ឆ្នាំសិក្សា <span id="yrTxt"></span></div>
+  <div style="text-align:center;font-size:12px;color:#64748b;margin-top:4px">អាយុគិតត្រឹមថ្ងៃទី <span id="asTxt"></span> (គណនាពីថ្ងៃខែឆ្នាំកំណើតក្នុងព័ត៌មានសិស្ស)</div>
+  <div class="info">
+    <div class="r"><span>រាជធានី/ខេត្ត <span class="ed" contenteditable data-k="prov" data-ph="..............."></span></span><span>ស្រុក/ខណ្ឌ <span class="ed" contenteditable data-k="dist" data-ph="..............."></span></span></div>
+    <div class="r"><span>សាលាបឋមសិក្សា <b><span class="ed" contenteditable data-k="school" data-ph="...............">កំពង់ល្ពៅ</span></b></span></div>
+  </div>
+  <div class="cols">
+    <div class="col">
+      <div class="sec"><h3>១.ព័ត៌មានសេវាគ្រូបន្ទុកថ្នាក់ទី <span id="clsTxt"></span></h3><div class="body">
+        <table class="kv" id="kv"></table></div></div>
+      <div class="sec"><h3>២.(ខ) សិស្សថ្មី សិស្សឡើងថ្នាក់ និង សិស្សត្រួតថ្នាក់</h3>
+        <div class="tip">👉 សិស្សថ្មី = សិស្សសរុប ដកសិស្សត្រួតថ្នាក់ · ចុចលើ «សិស្សត្រួតថ្នាក់» ដើម្បីជ្រើសឈ្មោះសិស្ស</div>
+        <div class="body" style="padding-top:0"><table id="ageT"></table><div id="ageWarn" class="warn"></div></div></div>
+    </div>
+    <div class="col">
+      <div class="sec"><h3>៣.ចំនួនសិស្សជួបការលំបាកតាមថ្នាក់ (សិស្សម្នាក់អាចរាប់ច្រើនដងបាន តាមភាពជាក់ស្តែង បើសិស្សនោះពិការ ឬមានប៉ះពាល់ចំណុចច្រើនក្នុងបរិយាយ)</h3>
+        <div class="tip">👉 ចុចលើបរិយាយនីមួយៗ ដើម្បីមើល និងកែសម្រួលទិន្នន័យសិស្ស</div>
+        <div class="body" style="padding-top:0"><table id="diffT"></table></div></div>
     </div>
   </div>
+  <div class="foot"><div class="sign sign-l">
+    <div style="height:62px"></div>
+    <div>បានឃើញ និងឯកភាព</div>
+    <div>នាយកសាលា</div>
+    <div style="height:40px"></div>
+    <div><b><span class="ed" contenteditable data-k="principal" data-ph="ឈ្មោះនាយក"></span></b></div>
+  </div><div class="sign">
+    <div><button type="button" class="dtbtn" onclick="openCal('sign')">📅 ជ្រើសថ្ងៃខែ</button></div>
+    <div id="signLunar"></div>
+    <div>ធ្វើនៅកំពង់ល្ពៅ <span id="signSolar"></span></div>
+    <div>គ្រូទទួលបន្ទុកថ្នាក់</div>
+    <div style="height:44px"></div>
+    <div><b><span class="ed" contenteditable data-k="teacher" data-ph="ឈ្មោះគ្រូ"></span></b></div>
+  </div></div>
+</div></div>
+</div>
 
-  <!-- =========================================================
-       1. TOOLBAR ផ្នែកខាងលើ
-  ========================================================= -->
-  <div class="top-toolbar" id="mainToolbar" style="display:none;">
-
-    <!-- ជួរទី១ -->
-    <div class="tb-row-1">
-      <button type="button" class="pill-btn" onclick="goBackToReports()" title="ត្រឡប់ទៅបញ្ជីរបាយការណ៍">
-        <i class="fa-solid fa-arrow-left"></i>
-        <span class="btn-label">ត្រឡប់</span>
-      </button>
-
-      <!-- 🌟 ជ្រើសរើសថ្នាក់ (Admin ប៉ុណ្ណោះ) -->
-      <div id="csClass" style="display:none;"></div>
-
-      <!-- រុករកសិស្ស -->
-      <div class="student-nav-group">
-        <button type="button" class="student-nav-btn" onclick="prevStudent()" title="សិស្សមុន">‹</button>
-        <div id="csStudent"></div>
-        <button type="button" class="student-nav-btn" onclick="nextStudent()" title="សិស្សបន្ទាប់">›</button>
-      </div>
-
-      <!-- ប្តូរទម្រង់សន្លឹក (១ នាក់ ឬ ២ នាក់) -->
-      <div class="tb-group">
-        <button type="button" class="pill-btn" onclick="toggleDropdown('layoutDropdown', this)" title="ប្តូរទម្រង់សន្លឹក">
-          <i class="fa-solid fa-file-lines" style="color:#a855f7;"></i>
-          <span class="btn-label" id="currentLayoutText">1 នាក់ • បញ្ឈរ</span>
-          <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 2px;"></i>
-        </button>
-
-        <div class="dropdown-popup" id="layoutDropdown">
-          <div class="dropdown-item active" onclick="setLayoutMode('1_portrait', '1 នាក់ • បញ្ឈរ', this)">
-            <span>1 នាក់ • សន្លឹកបញ្ឈរ</span> <i class="fa-solid fa-check"></i>
-          </div>
-          <div class="dropdown-item" onclick="setLayoutMode('2_landscape', '2 នាក់ • ផ្តេក A4', this)">
-            <span>2 នាក់ • សន្លឹកផ្តេក A4</span> <i class="fa-solid fa-check"></i>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ជួរទី២ -->
-    <div class="tb-row-2">
-      <!-- 🌟 ប្រភេទព្រឹត្តិបត្រ -->
-      <div id="csReportType" style="flex:1; display:flex;"></div>
-
-      <!-- 🌟 ជ្រើសរើសខែ / ឆមាស -->
-      <div id="csMonth" style="flex:1; display:flex;"></div>
-      <div id="csSemester" style="flex:1; display:none;"></div>
-
-      <!-- និទ្ទេស -->
-      <div class="tb-group" style="flex:1;">
-        <button type="button" class="pill-btn" onclick="toggleDropdown('gradeDropdown', this)" title="ប្តូរនិទ្ទេស (A-F ឬ ខ្មែរ)" style="width:100%;">
-          <i class="fa-solid fa-language" style="color:#10b981;"></i>
-          <span class="btn-label" id="currentGradeText">A–F</span>
-          <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 2px;"></i>
-        </button>
-
-        <div class="dropdown-popup" id="gradeDropdown">
-          <div class="dropdown-item active" onclick="setGradeFormat('AF', 'A–F', this)">
-            <span>និទ្ទេស A–F</span> <i class="fa-solid fa-check"></i>
-          </div>
-          <div class="dropdown-item" onclick="setGradeFormat('KH', 'ខ្មែរ', this)">
-            <span>និទ្ទេស ខ្មែរ (ល្អប្រសើរ...)</span> <i class="fa-solid fa-check"></i>
-          </div>
-        </div>
-      </div>
-
-      <!-- 📅 ប៊ូតុងបើកប្រតិទិនចន្ទគតិខ្មែរ -->
-      <button type="button" class="pill-btn" id="btnOpenCal" onclick="openKhmerCalendar('teacher')" title="ថ្ងៃខែហត្ថលេខា គ្រូ">
-        <i class="fa-regular fa-calendar-days" style="color:#60a5fa;"></i>
-        <span class="btn-label">គ្រូ</span> <span class="btn-label" id="lblBtnDate">កាលបរិច្ឆេទ</span>
-      </button>
-      <button type="button" class="pill-btn" id="btnOpenCalP" onclick="openKhmerCalendar('principal')" title="ថ្ងៃខែហត្ថលេខា នាយក">
-        <i class="fa-regular fa-calendar-days" style="color:#f59e0b;"></i>
-        <span class="btn-label">នាយក</span> <span class="btn-label" id="lblBtnDateP">មិនដាក់</span>
-      </button>
-
-      <!-- PDF -->
-      <button type="button" class="pill-btn" onclick="downloadPDF()" title="ទាញយក PDF">
-        <i class="fa-solid fa-download"></i>
-        <span class="btn-label">PDF</span>
-      </button>
-
-      <!-- បោះពុម្ព -->
-      <button type="button" class="pill-btn primary" onclick="printReport()" title="បោះពុម្ព">
-        <i class="fa-solid fa-print"></i>
-        <span class="btn-label">បោះពុម្ព</span>
-      </button>
-    </div>
-
-  </div>
-
-  <!-- =========================================================
-       2. សន្លឹកព្រឹត្តិបត្រពិន្ទុ (PAPER WORKSPACE)
-  ========================================================= -->
-  <div class="paper-stage-wrapper" id="paperStageWrapper" style="display:none;">
-    <div class="paper-stage" id="paperWorkspace">
-      <div class="empty-state-card">
-        <i class="fa-solid fa-spinner fa-spin fa-2x" style="color:#0284c7; margin-bottom:12px;"></i>
-        <div>កំពុងទាញយកទិន្នន័យពី Database...</div>
-      </div>
-    </div>
-  </div>
-
+<div class="ov" id="ov" onclick="if(event.target===this)closeModal()"><div class="md">
+  <header><h4 id="mdT"></h4><button class="x" onclick="closeModal()">✕</button></header>
+  <div class="sr"><input class="fc" id="mdQ" placeholder="ស្វែងរកឈ្មោះសិស្ស..." oninput="renderModal()" style="width:100%"></div>
+  <div class="cnt" id="mdC"></div>
+  <div class="list" id="mdL"></div>
+</div></div>
   <!-- ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ -->
   <div class="cal-modal-backdrop" id="calBackdrop" onclick="closeCalendarPopup()"></div>
   <div class="cal-modal" id="calModal">
@@ -839,9 +387,10 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ MOMENTKH KHMER CALENDAR LIBRARY (ចម្លងពីឯកសារដែលអ្នកផ្ញើមក ១០០%)
-  ══════════════════════════════════════════════════════════════════════════ -->
+<div id="selPop"></div>
+<div id="csPop"></div>
+<div class="toast" id="toast"></div>
+
   <script>
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
@@ -1267,10 +816,6 @@
   return exports.default;
 }));
   </script>
-
-  <!-- ══════════════════════════════════════════════════════════════════════════
-       ⚡ CALENDAR ENGINE HELPER FUNCTIONS (ចម្លងពីឯកសារប្រតិទិនដើម ១០០%)
-  ══════════════════════════════════════════════════════════════════════════ -->
   <script>
     var KD='០១២៣៤៥៦៧៨៩';
     function kn(n){return String(n).replace(/\d/g,function(c){return KD[c];});}
@@ -1325,1321 +870,356 @@
       return 'កំពង់ល្ពៅ ថ្ងៃទី' + kn(o.d) + ' ខែ' + GM[o.m - 1] + ' ឆ្នាំ' + kn(o.y);
     }
   </script>
-
-  <!-- =========================================================
-       3. JAVASCRIPT: SUPABASE & DYNAMIC REAL DATA
-  ========================================================= -->
-  <script>
-    const SUPABASE_URL = "https://nggnuobnrxiqjtcwlvwk.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    function readSession() {
-      try { return JSON.parse(localStorage.getItem('krou_supabase_user') || 'null'); } catch(e) { return null; }
-    }
-    const CURRENT_USER = readSession();
-
-    /* 🌗 Theme តាម form មេ (Dark/Light) */
-    function applyTheme(t) { document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
-    applyTheme(new URLSearchParams(location.search).get('theme') || localStorage.getItem('krou_theme_manual') || 'dark');
-    window.addEventListener('message', e => { if (e.data && (e.data.type === 'THEME_CHANGE' || e.data.theme)) applyTheme(e.data.theme || e.data); });
-    window.addEventListener('storage', e => { if (e.key === 'krou_theme_manual') applyTheme(e.newValue); });
-    const USER_ROLE = CURRENT_USER?.role || "teacher";
-    const IS_ADMIN = String(USER_ROLE).toLowerCase().trim() === 'admin';
-
-    function cleanGrade(g) {
-      return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').replace(/[()\-_\s]/g, '').trim();
-    }
-
-    function getTeacherClass() {
-      const c = CURRENT_USER?.assigned_classes || CURRENT_USER?.assigned_class || CURRENT_USER?.grade || CURRENT_USER?.class || "";
-      return cleanGrade(c);
-    }
-
-    function checkAuthentication() {
-      if (!CURRENT_USER || !CURRENT_USER.username) {
-        document.getElementById('authDeniedWrap').style.display = 'flex';
-        document.getElementById('mainToolbar').style.display = 'none';
-        document.getElementById('paperStageWrapper').style.display = 'none';
-        return false;
-      }
-      document.getElementById('authDeniedWrap').style.display = 'none';
-      document.getElementById('mainToolbar').style.display = 'flex';
-      document.getElementById('paperStageWrapper').style.display = 'flex';
-      return true;
-    }
-
-    function goToIndex(e) {
-      if (e) e.preventDefault();
-      window.location.href = 'index.html';
-    }
-
-    function goBackToReports() {
-      closeAllDropdowns();
-      try {
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({ type: 'NAVIGATE', page: 'reportsHub' }, '*');
-          return;
-        }
-      } catch (e) {}
-      window.location.href = 'index.html#reportsHub';
-    }
-
-    const ALL_MONTHS = ['វិច្ឆិកា','ធ្នូ','មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា'];
-    const DEFAULT_MONTHLY_TEMPLATE = [
-      {
-        parentName: 'ភាសាខ្មែរ', isGroup: true,
-        children: [
-          { name: 'សមត្ថភាពស្ដាប់', code: 'kh_listen', max: 10 },
-          { name: 'សមត្ថភាពសរសេរ', code: 'kh_write',  max: 10 },
-          { name: 'សមត្ថភាពអាន',   code: 'kh_read',   max: 10 },
-          { name: 'សមត្ថភាពនិយាយ', code: 'kh_speak',  max: 10 }
-        ]
-      },
-      {
-        parentName: 'គណិតវិទ្យា', isGroup: true,
-        children: [
-          { name: 'ចំនួន',          code: 'm_num',     max: 10 },
-          { name: 'រង្វាស់រង្វាល់', code: 'm_measure', max: 10 },
-          { name: 'ធរណីមាត្រ',     code: 'm_geo',     max: 10 },
-          { name: 'ពិជគណិត',       code: 'm_algebra', max: 10 },
-          { name: 'ស្ថិតិ',          code: 'm_stat',    max: 10 }
-        ]
-      },
-      { parentName: 'វិទ្យាសាស្ត្រ', isGroup: false, code: 'science', max: 10 },
-      { parentName: 'សិក្សាសង្គម',   isGroup: false, code: 'social',  max: 10 },
-      {
-        parentName: 'អប់រំកាយសុខភាព សិល្បៈ', isGroup: true,
-        children: [
-          { name: 'គេហវិទ្យា-អប់រំសិល្បៈ', code: 'a_craft',  max: 10 },
-          { name: 'អប់រំកាយ-កីឡា',         code: 'a_pe',     max: 10 },
-          { name: 'សុខភាព-អនាម័យ',         code: 'a_health', max: 10 },
-          { name: 'អប់រំបំណិនជីវិត',       code: 'a_env',    max: 10 }
-        ]
-      },
-      { parentName: 'ភាសាបរទេស', isGroup: false, code: 'foreign', max: 10 }
-    ];
-
-    const DEFAULT_SEMESTER_TEMPLATE = [
-      { name: 'អំណាន',                  code: 'read',      max: 10 },
-      { name: 'ស្ដាប់ និងនិយាយ',         code: 'listen',    max: 10 },
-      { name: 'សរសេរតាមអាន',            code: 'dictation', max: 10 },
-      { name: 'តែងសេចក្ដី',              code: 'essay',     max: 10 },
-      { name: 'គណិតវិទ្យា',              code: 'math',      max: 10 },
-      { name: 'វិទ្យាសាស្ត្រ',            code: 'science',   max: 10 },
-      { name: 'សិក្សាសង្គម',              code: 'social',    max: 10 },
-      { name: 'គេហវិទ្យា-អប់រំសិល្បៈ',  code: 'homeArts',  max: 10 },
-      { name: 'អប់រំកាយ-សុខភាព',        code: 'pe',        max: 10 },
-      { name: 'អប់រំបំណិនជីវិត',        code: 'ethics',    max: 10 },
-      { name: 'ភាសាបរទេស',              code: 'foreign',   max: 10 }
-    ];
-
-    // 🌟 លំនាំដើម បង្ហាញ «ប្រចាំខែ» និង «ខែបច្ចុប្បន្ន»
-    let reportMode = 'monthly';
-    const nowInit = new Date();
-    let selectedMonth = GM[nowInit.getMonth()]; // ខែបច្ចុប្បន្ន
-    let selectedSemester = 'ឆមាសទី១';
-    let layoutMode = '1_portrait';
-    let gradeMode = 'AF';
-    let currentClassName = '';
-    let studentsList = [];
-    let currentStudentIndex = 0;
-
-    let teacherLunarDate = "";
-    let teacherSolarDate = "";
-    let principalDateHtml = "";
-    let teacherName = CURRENT_USER?.teacher_name || "សេង សុភាន់";
-
-    const currentYear = nowInit.getFullYear();
-    const academicYearStr = `${currentYear}-${currentYear + 1}`;
-
-    const GRADE_KH_MAP = {
-      'A': 'ល្អប្រសើរ',
-      'B': 'ល្អណាស់',
-      'C': 'ល្អ',
-      'D': 'បង្គួរ',
-      'E': 'មធ្យម',
-      'F': 'ខ្សោយ'
-    };
-
-    function formatGrade(code) {
-      if (!code || code === '-') return '-';
-      return (gradeMode === 'KH') ? (GRADE_KH_MAP[code] || code) : code;
-    }
-
-    function calculateGrade(avg) {
-      if (avg >= 9) return 'A';
-      if (avg >= 8) return 'B';
-      if (avg >= 7) return 'C';
-      if (avg >= 6) return 'D';
-      if (avg >= 5) return 'E';
-      return 'F';
-    }
-
-    function normP(s) { return String(s || '').replace(/\s+/g, ''); }
-    function selectedMonthOld() { return selectedMonth; }
-    function showToastRC(msg) {
-      var t = document.createElement('div');
-      t.textContent = msg;
-      t.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 16px;border-radius:12px;z-index:9999;font-size:13px;max-width:90vw;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4)';
-      document.body.appendChild(t); setTimeout(function(){ t.remove(); }, 3500);
-    }
-    function getSubjectScore(scoreObj, sub) {
-      if (!scoreObj || typeof scoreObj !== 'object') return null;
-      const candidates = [
-        sub.code,
-        sub.key,
-        sub.id ? String(sub.id) : null,
-        sub.id ? `sub_${sub.id}` : null,
-        sub.name
-      ].filter(Boolean);
-
-      for (const k of candidates) {
-        if (scoreObj[k] !== undefined && scoreObj[k] !== null && scoreObj[k] !== '') {
-          const num = parseFloat(scoreObj[k]);
-          if (!isNaN(num)) return num;
-        }
-      }
-      return null;
-    }
-
-    /* ══════════════ 🌟 CUSTOM SELECT ENGINE (កូដដើមរបស់អ្នក ១០០%) ══════════════ */
-    function createCSelect(containerId, cfg = {}) {
-      const root = document.getElementById(containerId);
-      const state = {
-        options: [],
-        value: '',
-        disabled: false,
-        placeholder: cfg.placeholder || '',
-        onChange: cfg.onChange || function() {}
-      };
-
-      root.classList.add('cselect');
-      if (cfg.className) root.classList.add(cfg.className);
-      root.innerHTML = `
-        <button type="button" class="cs-btn">
-          <span class="cs-label"></span>
-          <i class="fa-solid fa-chevron-down cs-chev"></i>
-        </button>`;
-
-      const btn = root.querySelector('.cs-btn');
-      const label = root.querySelector('.cs-label');
-
-      const pop = document.createElement('div');
-      pop.className = 'dropdown-popup cs-popup';
-      document.body.appendChild(pop);
-
-      function renderLabel() {
-        const cur = state.options.find(o => String(o.value) === String(state.value));
-        label.textContent = cur ? (cur.btnLabel || cur.label) : state.placeholder;
-      }
-
-      function renderPopup() {
-        pop.innerHTML = '';
-        state.options.forEach(o => {
-          const item = document.createElement('div');
-          item.className = 'dropdown-item' + (String(o.value) === String(state.value) ? ' active' : '');
-          item.innerHTML = `<span>${o.label}</span><i class="fa-solid fa-check"></i>`;
-          item.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const changed = String(state.value) !== String(o.value);
-            state.value = o.value;
-            renderLabel();
-            closeAllDropdowns();
-            if (changed) state.onChange(o.value);
-          });
-          pop.appendChild(item);
-        });
-      }
-
-      function open() {
-        if (state.disabled) return;
-        closeAllDropdowns();
-        renderPopup();
-
-        const r = btn.getBoundingClientRect();
-        pop.style.minWidth = Math.max(r.width, 150) + 'px';
-        pop.style.top = (r.bottom + 6) + 'px';
-        pop.style.maxHeight = Math.max(140, Math.min(300, window.innerHeight - r.bottom - 16)) + 'px';
-        pop.classList.add('show');
-        btn.classList.add('open');
-
-        const pw = pop.offsetWidth;
-        let left = r.left;
-        if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
-        pop.style.left = Math.max(8, left) + 'px';
-
-        const act = pop.querySelector('.dropdown-item.active');
-        if (act) pop.scrollTop = act.offsetTop - (pop.clientHeight / 2) + (act.clientHeight / 2);
-      }
-
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (pop.classList.contains('show')) closeAllDropdowns();
-        else open();
-      });
-
-      return {
-        setOptions(list) { state.options = list || []; renderLabel(); },
-        setValue(v) { state.value = v; renderLabel(); },
-        getValue() { return state.value; },
-        setDisabled(d) { state.disabled = !!d; btn.disabled = !!d; },
-        setPlaceholder(t) { state.placeholder = t; renderLabel(); },
-        show(display) { root.style.display = display || 'flex'; },
-        hide() { root.style.display = 'none'; }
-      };
-    }
-
-    const CS = {};
-
-    function toggleDropdown(id, btn) {
-      const el = document.getElementById(id);
-      if (!el) return;
-      const isShown = el.classList.contains('show');
-      closeAllDropdowns();
-      if (!isShown) {
-        el.classList.add('show');
-        if (btn) {
-          btn.classList.add('open');
-          const r = btn.getBoundingClientRect();
-          el.style.top = (r.bottom + 6) + 'px';
-          let left = r.left;
-          if (left + 220 > window.innerWidth) left = window.innerWidth - 226;
-          el.style.left = Math.max(8, left) + 'px';
-        }
-      }
-    }
-
-    function closeAllDropdowns() {
-      document.querySelectorAll('.dropdown-popup').forEach(d => d.classList.remove('show'));
-      document.querySelectorAll('.cs-btn.open, .pill-btn.open').forEach(b => b.classList.remove('open'));
-    }
-
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.tb-group') && !e.target.closest('.cselect') && !e.target.closest('.dropdown-popup')) {
-        closeAllDropdowns();
-      }
-    });
-
-    window.addEventListener('scroll', (e) => {
-      if (e.target && e.target.closest && e.target.closest('.dropdown-popup')) return;
-      closeAllDropdowns();
-    }, true);
-    window.addEventListener('resize', closeAllDropdowns);
-
-    function setLayoutMode(mode, label, el) {
-      layoutMode = mode;
-      document.getElementById('currentLayoutText').innerText = label;
-      document.querySelectorAll('#layoutDropdown .dropdown-item').forEach(i => i.classList.remove('active'));
-      el.classList.add('active');
-      closeAllDropdowns();
-      renderReportWorkspace();
-    }
-
-    function setGradeFormat(fmt, label, el) {
-      gradeMode = fmt;
-      document.getElementById('currentGradeText').innerText = label;
-      document.querySelectorAll('#gradeDropdown .dropdown-item').forEach(i => i.classList.remove('active'));
-      el.classList.add('active');
-      closeAllDropdowns();
-      renderReportWorkspace();
-    }
-
-    function onReportTypeChange(val) {
-      reportMode = val;
-      if (val === 'monthly') { CS.month.show('flex'); CS.semester.hide(); }
-      else if (val === 'semester') { CS.month.hide(); CS.semester.show('flex'); }
-      else { CS.month.hide(); CS.semester.hide(); }
-      loadRealDataForClass(currentClassName);
-    }
-
-    function onSemesterChange(val) {
-      selectedSemester = val;
-      loadRealDataForClass(currentClassName);
-    }
-
-    function onMonthChange(val) {
-      selectedMonth = val;
-      loadRealDataForClass(currentClassName);
-    }
-
-    function initCustomSelects() {
-      CS.cls = createCSelect('csClass', {
-        placeholder: 'ថ្នាក់ទី...',
-        onChange: (v) => onClassChange(v)
-      });
-
-      CS.student = createCSelect('csStudent', {
-        placeholder: 'គ្មានសិស្ស',
-        onChange: (v) => onStudentSelect(v)
-      });
-
-      CS.type = createCSelect('csReportType', {
-        onChange: (v) => onReportTypeChange(v)
-      });
-      CS.type.setOptions([
-        { value: 'monthly',  label: 'ព្រឹត្តិបត្រខែ' },
-        { value: 'semester', label: 'ព្រឹត្តិបត្រឆមាស' },
-        { value: 'yearly',   label: 'ព្រឹត្តិបត្រប្រចាំឆ្នាំ' }
-      ]);
-      CS.type.setValue('monthly');
-
-      CS.month = createCSelect('csMonth', {
-        className: 'month',
-        onChange: (v) => onMonthChange(v)
-      });
-      CS.month.setOptions(ALL_MONTHS.map(m => ({ value: m, label: m })));
-      // 🌟 ជ្រើសរើសខែបច្ចុប្បន្នជាលំនាំដើម
-      CS.month.setValue(selectedMonth);
-
-      CS.semester = createCSelect('csSemester', {
-        className: 'month',
-        onChange: (v) => onSemesterChange(v)
-      });
-      CS.semester.setOptions([
-        { value: 'ឆមាសទី១', label: 'ឆមាសទី១' },
-        { value: 'ឆមាសទី២', label: 'ឆមាសទី២' }
-      ]);
-      CS.semester.setValue(selectedSemester);
-      CS.semester.hide();
-    }
-
-    /* ══════════════ 📱 AUTO RESPONSIVE SCALER FOR ALL DEVICES ══════════════ */
-    function autoScalePaper() {
-      const stage = document.getElementById('paperWorkspace');
-      const wrapper = document.getElementById('paperStageWrapper');
-      if (!stage || !wrapper) return;
-
-      const isPortrait = (layoutMode === '1_portrait');
-      const targetW = isPortrait ? 794 : 1123;
-      const targetH = isPortrait ? 1123 : 794;
-
-      const availW = wrapper.clientWidth - 16;
-      let scale = 1;
-
-      if (availW < targetW) {
-        scale = availW / targetW;
-        scale = Math.max(0.35, Math.min(1, scale));
-      } else {
-        scale = 1;
-      }
-
-      stage.style.transform = `scale(${scale})`;
-      stage.style.transformOrigin = 'top center';
-
-      const totalSheets = stage.children.length || 1;
-      wrapper.style.minHeight = `${(targetH * scale * totalSheets) + 30}px`;
-    }
-
-    window.addEventListener('resize', autoScalePaper);
-
-    /* ══════════════ 📅 KHMER CALENDAR MODAL CONTROLLER ══════════════ */
-    var calView = { y: currentYear, m: nowInit.getMonth() + 1 };
-    var calSel = { y: currentYear, m: nowInit.getMonth() + 1, d: nowInit.getDate() };
-    var calToday = { y: currentYear, m: nowInit.getMonth() + 1, d: nowInit.getDate() };
-
-    /* ថ្ងៃខែហត្ថលេខា គ្រូ + នាយក (នាយកលំនាំដើម = ទទេ) */
-    var SIGN_KEY = 'reportCardSignDates_v1', calRole = 'teacher';
-    var SIGN_ROLE_TXT = { teacher: 'គ្រូទទួលបន្ទុកថ្នាក់', principal: 'នាយកសាលា' };
-    var signStore = { teacher: { blank: false, date: '' }, principal: { blank: true, date: '' } };
-    try {
-      var _o = JSON.parse(localStorage.getItem(SIGN_KEY) || 'null');
-      if (_o) ['teacher', 'principal'].forEach(function(r) {
-        if (_o[r] && typeof _o[r].blank === 'boolean') signStore[r] = { blank: _o[r].blank, date: /^\d{4}-\d{2}-\d{2}$/.test(_o[r].date || '') ? _o[r].date : '' };
-      });
-    } catch (e) {}
-    function saveSignStore() { try { localStorage.setItem(SIGN_KEY, JSON.stringify(signStore)); } catch (e) {} }
-    function signDay(role) {
-      var s = signStore[role];
-      if (s.date) { var p = s.date.split('-').map(Number); return { y: p[0], m: p[1], d: p[2] }; }
-      return { y: calToday.y, m: calToday.m, d: calToday.d };
-    }
-    function refreshSignTexts() {
-      var t = signDay('teacher'), p = signDay('principal'), ot = info(t.y, t.m, t.d), op = info(p.y, p.m, p.d);
-      if (signStore.teacher.blank) {
-        teacherLunarDate = 'ថ្ងៃ.................... ខែ.......... ឆ្នាំ........... ពុទ្ធសករាជ ' + kn(ot.be);
-        teacherSolarDate = 'កំពង់ល្ពៅ ថ្ងៃទី...... ខែ...... ឆ្នាំ' + kn(t.y);
-      } else { teacherLunarDate = fullText(ot); teacherSolarDate = gText(ot); }
-      principalDateHtml = signStore.principal.blank ? ''
-        : '<div>' + fullText(op) + '</div><div class="sig-solar-date" style="margin-top:2px;">ថ្ងៃទី' + kn(p.d) + ' ខែ' + GM[p.m - 1] + ' ឆ្នាំ' + kn(p.y) + '</div>';
-      document.getElementById('lblBtnDate').innerText = signStore.teacher.blank ? 'ទទេ' : 'ថ្ងៃទី' + kn(t.d) + ' ' + GM[t.m - 1];
-      document.getElementById('lblBtnDateP').innerText = signStore.principal.blank ? 'មិនដាក់' : 'ថ្ងៃទី' + kn(p.d) + ' ' + GM[p.m - 1];
-      document.querySelectorAll('.doc-lunar-date').forEach(el => el.innerText = teacherLunarDate);
-      document.querySelectorAll('.doc-solar-date').forEach(el => el.innerText = teacherSolarDate);
-      document.querySelectorAll('.doc-principal-date').forEach(el => el.innerHTML = principalDateHtml);
-    }
-    function applySelectedDate() { refreshSignTexts(); }
-
-    function openKhmerCalendar(role) {
-      calRole = role || 'teacher';
-      calSel = signDay(calRole); calView = { y: calSel.y, m: calSel.m };
-      document.getElementById('calRoleLbl').textContent = '✍ ថ្ងៃខែហត្ថលេខា · ' + SIGN_ROLE_TXT[calRole];
-      document.getElementById('calBtnBlank').textContent = calRole === 'principal' ? 'មិនដាក់' : 'ទុកទទេ';
-      document.getElementById('calBackdrop').classList.add('show');
-      document.getElementById('calModal').classList.add('show');
-      initCalendarPopup();
-    }
-    function closeCalendarPopup() {
-      document.getElementById('calBackdrop').classList.remove('show');
-      document.getElementById('calModal').classList.remove('show');
-    }
-
-    function initCalendarPopup() {
-      var sm = document.getElementById('calSelMonth');
-      var sy = document.getElementById('calSelYear');
-      sm.innerHTML = GM.map((n, i) => `<option value="${i+1}" ${i+1 === calView.m ? 'selected' : ''}>${n}</option>`).join('');
-      var yh = '';
-      for (var y = 2020; y <= new Date().getFullYear() + 15; y++) yh += `<option value="${y}" ${y === calView.y ? 'selected' : ''}>${kn(y)}</option>`;
-      sy.innerHTML = yh;
-      renderCalendarGrid();
-    }
-
-    function changeCalendarSelect() {
-      calView.m = +document.getElementById('calSelMonth').value;
-      calView.y = +document.getElementById('calSelYear').value;
-      renderCalendarGrid();
-    }
-
-    function shiftCalendarMonth(n) {
-      var t = new Date(calView.y, calView.m - 1 + n, 1);
-      calView = { y: t.getFullYear(), m: t.getMonth() + 1 };
-      renderCalendarGrid();
-    }
-
-    function renderCalendarGrid() {
-      var y = calView.y, m = calView.m;
-      var first = new Date(y, m - 1, 1).getDay();
-      var dim = new Date(y, m, 0).getDate();
-      document.getElementById('calSelMonth').value = m;
-      document.getElementById('calSelYear').value = y;
-
-      var total = Math.ceil((first + dim) / 7) * 7;
-      var months = [], be = [], an = [];
-      var html = '';
-
-      for (var i = 0; i < total; i++) {
-        var p = addDays(y, m, 1, i - first);
-        var inM = (p[0] === y && p[1] === m);
-        var o = info(p[0], p[1], p[2]);
-
-        if (inM) {
-          if (months.indexOf(o.mname) < 0) months.push(o.mname);
-          if (be.indexOf(o.be) < 0) be.push(o.be);
-          var a = o.animal + ' ' + o.sak;
-          if (an.indexOf(a) < 0) an.push(a);
-        }
-
-        var hs = hols(o), hol = hs.length > 0;
-        var isToday = (calToday.y === o.y && calToday.m === o.m && calToday.d === o.d);
-        var isSel = !signStore[calRole].blank && (calSel.y === o.y && calSel.m === o.m && calSel.d === o.d);
-        var isSil = holy(o);
-        var cls = 'cal-cell' + (inM ? '' : ' other') + (o.dow === 0 ? ' sun' : '') + (isToday ? ' today' : '') + (isSel ? ' sel' : '') + (isSil ? ' sil' : '');
-        var mo = moon(o);
-        var lt = (isSil && !(o.kd === 1 && o.ph === 0) ? '<b>' + lunarText(o) + '</b>' : lunarText(o)) + ((o.kd === 1 && o.ph === 0) || (o.d === 1 && inM) ? ' ខែ' + o.mname : '');
-
-        html += '<button type="button" class="' + cls + '" onclick="pickCalDate(' + o.y + ',' + o.m + ',' + o.d + ')">'
-          + '<span class="g">' + kn(o.d) + '</span>'
-          + (mo ? '<span class="mo">' + mo + '</span>' : '')
-          + '<span class="l">' + lt + '</span>'
-          + (hol ? '<span class="h ' + hs[0].k + '">' + hs[0].t + '</span>' : '')
-          + '</button>';
-      }
-
-      document.getElementById('calGrid').innerHTML = html;
-      document.getElementById('calMTitle').textContent = 'ខែ' + GM[m - 1] + ' ឆ្នាំ' + kn(y);
-      document.getElementById('calMSub').textContent = 'ចន្ទគតិ៖ ខែ' + months.join(' – ខែ') + ' · ព.ស. ' + be.map(kn).join(' – ') + ' · ឆ្នាំ' + an.join(' → ');
-    }
-
-    function setSignDate(y, m, d) {
-      signStore[calRole] = { blank: false, date: y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0') };
-      saveSignStore(); refreshSignTexts(); closeCalendarPopup();
-    }
-    function pickCalDate(y, m, d) { setSignDate(y, m, d); }
-    function selectCalendarToday() { setSignDate(calToday.y, calToday.m, calToday.d); }
-    function calBlankDate() { signStore[calRole].blank = true; saveSignStore(); refreshSignTexts(); closeCalendarPopup(); }
-
-    /* ══════════════ 🏫 FETCH REAL DATA FROM SUPABASE (កូដដើមរបស់អ្នក ១០០%) ══════════════ */
-    async function initClassDropdown() {
-      const teacherClass = getTeacherClass();
-
-      // គណនាកាលបរិច្ឆេទថ្ងៃនេះតាម MomentKH
-      refreshSignTexts();
-
-      try {
-        if (!IS_ADMIN && teacherClass) {
-          CS.cls.hide();
-          currentClassName = teacherClass;
-          await loadRealDataForClass(currentClassName);
-          return;
-        }
-
-        CS.cls.show('flex');
-        CS.cls.setPlaceholder('កំពុងទាញយក...');
-
-        const { data, error } = await sb.from('students').select('grade').limit(5000);
-        if (error) throw error;
-
-        let rawClasses = Array.from(new Set((data || []).map(d => cleanGrade(d.grade)).filter(Boolean)));
-        rawClasses.sort((a,b) => a.localeCompare(b, 'km', { numeric: true }));
-        if (!rawClasses.length) rawClasses = ['១', '២', '៣', '៤(ក)', '៤(ខ)', '៥', '៦'];
-
-        CS.cls.setOptions(rawClasses.map(c => ({ value: c, label: `ថ្នាក់ទី ${c}` })));
-        const initial = (teacherClass && rawClasses.includes(teacherClass)) ? teacherClass : (rawClasses[0] || '៤(ក)');
-        CS.cls.setValue(initial);
-        currentClassName = initial;
-
-        await loadRealDataForClass(currentClassName);
-
-      } catch (err) {
-        CS.cls.setPlaceholder('កំហុសទាញយកថ្នាក់');
-      }
-    }
-
-    function onClassChange(val) {
-      currentClassName = val;
-      loadRealDataForClass(val);
-    }
-
-    async function loadRealDataForClass(cls) {
-      const pure = cleanGrade(cls) || getTeacherClass();
-      if (!pure) return;
-
-      currentClassName = pure;
-
-      document.getElementById('paperWorkspace').innerHTML = `
-        <div class="empty-state-card">
-          <i class="fa-solid fa-spinner fa-spin fa-2x" style="color:#0284c7; margin-bottom:12px;"></i>
-          <div>កំពុងទាញយកទិន្នន័យថ្នាក់ទី ${pure}...</div>
-        </div>`;
-
-      // ទាញយកឈ្មោះគ្រូប្រចាំថ្នាក់
-      try {
-        const { data: users } = await sb.from('users').select('*');
-        const teacher = (users || []).find(u => cleanGrade(u.assigned_classes || u.assigned_class) === pure);
-        if (teacher && teacher.teacher_name) teacherName = teacher.teacher_name;
-      } catch(e) {}
-
-      try {
-        // ១. ទាញយកសិស្សពិត
-        const { data: allSt, error: stErr } = await sb.from('students').select('*').order('id', { ascending: true });
-        if (stErr) throw stErr;
-
-        const stData = (allSt || []).filter(s => cleanGrade(s.grade) === pure);
-
-        if (!stData || stData.length === 0) {
-          studentsList = [];
-          populateStudentSelect();
-          document.getElementById('paperWorkspace').innerHTML = `
-            <div class="empty-state-card">
-              <i class="fa-solid fa-user-slash fa-2x" style="color:#f59e0b; margin-bottom:12px;"></i>
-              <div>មិនទាន់មានទិន្នន័យសិស្សក្នុងថ្នាក់ទី ${pure} នៅឡើយទេ</div>
-            </div>`;
-          return;
-        }
-
-        const dataType = (reportMode === 'yearly') ? 'semester' : reportMode;
-
-        // ២. ទាញយកមុខវិជ្ជា
-        /* ទាញតាម subject_type រួចតម្រងថ្នាក់ក្នុង JS (ទប់ស្កាត់ចន្លោះ/ទម្រង់ថ្នាក់ខុសគ្នា ដូច "៦ ក" vs "៦ក") */
-        const { data: _allSub } = await sb
-          .from('subjects')
-          .select('*')
-          .eq('subject_type', dataType)
-          .order('sort_order', { ascending: true })
-          .order('id', { ascending: true });
-        const dbSubData = (_allSub || []).filter(r => {
-          const c = cleanGrade(r.assigned_class);
-          return c === pure || c.toLowerCase() === 'all' || c === 'ទាំងអស់';
-        });
-
-        // ៣. ទាញយកពិន្ទុ
-        const classVariants = [pure, 'ថ្នាក់ទី' + pure, 'ថ្នាក់ទី ' + pure, 'ថ្នាក់' + pure, 'ថ្នាក់ ' + pure];
-        /* ទាញតាមលេខសម្គាល់សិស្ស (មិនពឹងលើឈ្មោះថ្នាក់ ដែលអាចរក្សាទុកខុសទម្រង់) */
-        const stIds = [];
-        stData.forEach(s => { [s.student_id, s.id].forEach(v => { if (v !== null && v !== undefined && v !== '') stIds.push(String(v).trim()); }); });
-        const { data: scData, error: scErr } = await sb
-          .from('scores')
-          .select('*')
-          .in('student_id', [...new Set(stIds)])
-          .eq('score_type', dataType);
-        if (scErr) throw scErr;
-
-        const scoreMap = {};
-        const scoreMapS1 = {};
-        const scoreMapS2 = {};
-
-        (scData || []).forEach(row => {
-          let scObj = row.scores || {};
-          if (typeof scObj === 'string') {
-            try { scObj = JSON.parse(scObj); } catch(e) { scObj = {}; }
-          }
-          const sid = String(row.student_id).trim();
-          const per = normP(row.period);
-          if (reportMode === 'monthly') {
-            if (per === normP(selectedMonth)) {
-              scoreMap[sid] = scObj;
-            }
-          } else {
-            if (per === normP('ឆមាសទី១') || per === normP('ឆមាសទី1')) scoreMapS1[sid] = scObj;
-            if (per === normP('ឆមាសទី២') || per === normP('ឆមាសទី2')) scoreMapS2[sid] = scObj;
-          }
-        });
-
-        /* ⚠️ បើគ្មានពិន្ទុសម្រាប់ខែ/ឆមាសដែលបានជ្រើស → ស្វែងរកខែដែលមានពិន្ទុ ហើយជូនដំណឹង */
-        const hasAny = (reportMode === 'monthly') ? Object.keys(scoreMap).length
-                      : (Object.keys(scoreMapS1).length + Object.keys(scoreMapS2).length);
-        if (!hasAny) {
-          const avail = [...new Set((scData || []).map(r => String(r.period || '').trim()).filter(Boolean))];
-          if (reportMode === 'monthly' && avail.length && !window.__fbTried) {
-            const alt = GM.find(m => avail.some(p => normP(p) === normP(m)));
-            if (alt) {
-              window.__fbTried = true;
-              selectedMonth = alt;
-              try { CS.month.setValue(alt); } catch (e) {}
-              showToastRC('ខែ ' + normP(selectedMonthOld()) + ' មិនទាន់មានពិន្ទុ — បង្ហាញខែ ' + alt + ' វិញ');
-              await loadRealDataForClass(cls);
-              window.__fbTried = false;
-              return;
-            }
-          }
-          window.__noScoreNote = (scData && scData.length)
-            ? 'មានពិន្ទុតែក្នុង៖ ' + avail.join(', ') + ' (មិនត្រូវនឹងការជ្រើសរើស)'
-            : 'មិនទាន់មានពិន្ទុក្នុងប្រព័ន្ធសម្រាប់ថ្នាក់ទី ' + pure + ' (ប្រភេទ ' + dataType + ') ទេ — សូមបញ្ចូលពិន្ទុក្នុង Form បញ្ចូលពិន្ទុជាមុន';
-        } else { window.__noScoreNote = ''; }
-
-        // ៤. ទាញយកអវត្តមាន
-        const { data: attData } = await sb
-          .from('attendance')
-          .select('student_id, status')
-          .in('student_id', [...new Set(stIds)]);
-
-        const unexcusedMap = {};
-        const excusedMap = {};
-        const unexcusedCodes = ['A', 'អ', 'អត់ច្បាប់', 'អវត្តមាន', 'ABSENT', 'UNEXCUSED'];
-        const excusedCodes = ['C', 'ច', 'ច្បាប់', 'មានច្បាប់', 'EXCUSED', 'PERMISSION'];
-
-        (attData || []).forEach(a => {
-          const sid = String(a.student_id).trim();
-          const st = String(a.status || '').trim().toUpperCase();
-          if (unexcusedCodes.includes(st)) unexcusedMap[sid] = (unexcusedMap[sid] || 0) + 1;
-          if (excusedCodes.includes(st)) excusedMap[sid] = (excusedMap[sid] || 0) + 1;
-        });
-
-        // ៥. រៀបចំទិន្នន័យ
-        studentsList = stData.map(st => {
-          const sid1 = String(st.student_id || '').trim();
-          const sid2 = String(st.id || '').trim();
-
-          const sc = scoreMap[sid1] || scoreMap[sid2] || {};
-          const sc1 = scoreMapS1[sid1] || scoreMapS1[sid2] || {};
-          const sc2 = scoreMapS2[sid1] || scoreMapS2[sid2] || {};
-
-          let totalScore = 0;
-          let activeSubjectCount = 0;
-
-          if (reportMode === 'monthly') {
-            let rawGroups = [];
-            if (dbSubData && dbSubData.length > 0) {
-              const parents = dbSubData.filter(s => !s.parent_id);
-              parents.forEach(p => {
-                const children = dbSubData.filter(c => String(c.parent_id) === String(p.id));
-                rawGroups.push({
-                  parentName: p.name,
-                  isGroup: children.length > 0,
-                  children: children.map(c => ({ name: c.name, code: c.code || `sub_${c.id}`, id: c.id, max: Number(c.max_score)||10 })),
-                  code: p.code || `sub_${p.id}`,
-                  id: p.id,
-                  max: Number(p.max_score) || 10
-                });
-              });
-            } else {
-              rawGroups = JSON.parse(JSON.stringify(DEFAULT_MONTHLY_TEMPLATE));
-            }
-
-            const activeGroups = [];
-
-            rawGroups.forEach(g => {
-              if (g.isGroup) {
-                const activeChildren = [];
-                (g.children || []).forEach(c => {
-                  const scoreVal = getSubjectScore(sc, c);
-                  if (scoreVal !== null) {
-                    activeChildren.push({
-                      name: c.name,
-                      max: c.max || 10,
-                      score: scoreVal,
-                      grade: calculateGrade(scoreVal)
-                    });
-                    totalScore += scoreVal;
-                    activeSubjectCount++;
-                  }
-                });
-
-                if (activeChildren.length > 0) {
-                  activeGroups.push({
-                    parentName: g.parentName,
-                    isGroup: true,
-                    children: activeChildren
-                  });
-                }
-              } else {
-                const scoreVal = getSubjectScore(sc, g);
-                if (scoreVal !== null) {
-                  activeGroups.push({
-                    parentName: g.parentName,
-                    isGroup: false,
-                    max: g.max || 10,
-                    score: scoreVal,
-                    grade: calculateGrade(scoreVal)
-                  });
-                  totalScore += scoreVal;
-                  activeSubjectCount++;
-                }
-              }
-            });
-
-            const avgScore = activeSubjectCount > 0 ? (totalScore / activeSubjectCount) : 0;
-
-            return {
-              id: st.student_id || st.id,
-              name: st.student_name || 'គ្មានឈ្មោះ',
-              gender: st.gender || 'ប្រុស',
-              grade: pure,
-              totalScore: totalScore,
-              avgScore: avgScore,
-              gradeLabel: avgScore > 0 ? calculateGrade(avgScore) : '-',
-              absentUnexcused: unexcusedMap[sid1] || unexcusedMap[sid2] || 0,
-              absentExcused: excusedMap[sid1] || excusedMap[sid2] || 0,
-              monthlyGroups: activeGroups
-            };
-
-          } else if (reportMode === 'yearly') {
-            const yList = (dbSubData && dbSubData.length > 0)
-              ? dbSubData.map(x => ({ name: x.name, code: x.code || `sub_${x.id}`, id: x.id, max: Number(x.max_score)||10 }))
-              : JSON.parse(JSON.stringify(DEFAULT_SEMESTER_TEMPLATE));
-
-            let t1 = 0, c1 = 0, t2 = 0, c2 = 0;
-            const yearSubjects = [];
-
-            yList.forEach(sub => {
-              const v1 = getSubjectScore(sc1, sub);
-              const v2 = getSubjectScore(sc2, sub);
-              if (v1 === null && v2 === null) return;
-
-              if (v1 !== null) { t1 += v1; c1++; }
-              if (v2 !== null) { t2 += v2; c2++; }
-
-              let subAvg;
-              if (v1 !== null && v2 !== null) subAvg = (v1 + v2) / 2;
-              else subAvg = (v1 !== null) ? v1 : v2;
-
-              yearSubjects.push({
-                name: sub.name,
-                max: sub.max || 10,
-                s1: (v1 !== null) ? v1 : '-',
-                s2: (v2 !== null) ? v2 : '-',
-                avg: subAvg,
-                grade: calculateGrade(subAvg)
-              });
-            });
-
-            const avg1 = c1 > 0 ? (t1 / c1) : 0;
-            const avg2 = c2 > 0 ? (t2 / c2) : 0;
-            let yearAvg = 0;
-            if (c1 > 0 && c2 > 0) yearAvg = (avg1 + avg2) / 2;
-            else if (c1 > 0) yearAvg = avg1;
-            else if (c2 > 0) yearAvg = avg2;
-
-            return {
-              id: st.student_id || st.id,
-              name: st.student_name || 'គ្មានឈ្មោះ',
-              gender: st.gender || 'ប្រុស',
-              grade: pure,
-              avgSem1: avg1,
-              avgSem2: avg2,
-              avgScore: yearAvg,
-              gradeLabel: yearAvg > 0 ? calculateGrade(yearAvg) : '-',
-              absentUnexcused: unexcusedMap[sid1] || unexcusedMap[sid2] || 0,
-              absentExcused: excusedMap[sid1] || excusedMap[sid2] || 0,
-              semSubjects: yearSubjects
-            };
-
-          } else {
-            const semList = (dbSubData && dbSubData.length > 0)
-              ? dbSubData.map(x => ({ name: x.name, code: x.code || `sub_${x.id}`, id: x.id, max: Number(x.max_score)||10 }))
-              : JSON.parse(JSON.stringify(DEFAULT_SEMESTER_TEMPLATE));
-
-            const scSem = (selectedSemester === 'ឆមាសទី២') ? sc2 : sc1;
-            let semTotal = 0, semCount = 0;
-            const activeSemSubjects = [];
-
-            semList.forEach(sub => {
-              const v = getSubjectScore(scSem, sub);
-              if (v === null) return;
-              semTotal += v;
-              semCount++;
-              activeSemSubjects.push({
-                name: sub.name,
-                max: sub.max || 10,
-                score: v,
-                grade: calculateGrade(v)
-              });
-            });
-
-            const semAvg = semCount > 0 ? (semTotal / semCount) : 0;
-
-            return {
-              id: st.student_id || st.id,
-              name: st.student_name || 'គ្មានឈ្មោះ',
-              gender: st.gender || 'ប្រុស',
-              grade: pure,
-              totalScore: semTotal,
-              avgScore: semAvg,
-              gradeLabel: semAvg > 0 ? calculateGrade(semAvg) : '-',
-              absentUnexcused: unexcusedMap[sid1] || unexcusedMap[sid2] || 0,
-              absentExcused: excusedMap[sid1] || excusedMap[sid2] || 0,
-              semSubjects: activeSemSubjects
-            };
-          }
-        });
-
-        // ៦. គណនាចំណាត់ថ្នាក់
-        const scoreKey = 'avgScore';
-        const sorted = [...studentsList].sort((a, b) => b[scoreKey] - a[scoreKey]);
-        const rankMap = {};
-        let lastScore = null, lastRank = 0;
-        sorted.forEach((item, index) => {
-          if (item[scoreKey] === lastScore) {
-            rankMap[item.id] = lastRank;
-          } else {
-            rankMap[item.id] = index + 1;
-            lastRank = index + 1;
-            lastScore = item[scoreKey];
-          }
-        });
-
-        studentsList.forEach(s => {
-          s.rank = rankMap[s.id] || 1;
-        });
-
-        currentStudentIndex = 0;
-        populateStudentSelect();
-        renderReportWorkspace();
-        if (window.__noScoreNote) showToastRC('⚠ ' + window.__noScoreNote);
-
-      } catch (err) {
-        console.error(err);
-        document.getElementById('paperWorkspace').innerHTML = `<div class="empty-state-card" style="color:#ef4444;">❌ កំហុសផ្ទុកទិន្នន័យ៖ ${err.message}</div>`;
-      }
-    }
-
-    function populateStudentSelect() {
-      if (!studentsList.length) {
-        CS.student.setOptions([]);
-        CS.student.setValue('');
-        CS.student.setPlaceholder('គ្មានសិស្ស');
-        return;
-      }
-      CS.student.setOptions(studentsList.map((s, idx) => ({
-        value: String(idx),
-        label: `${idx + 1}. ${s.name}`
-      })));
-      CS.student.setValue(String(currentStudentIndex));
-    }
-
-    function onStudentSelect(idx) {
-      currentStudentIndex = parseInt(idx, 10);
-      renderReportWorkspace();
-    }
-
-    function prevStudent() {
-      const step = (layoutMode === '2_landscape') ? 2 : 1;
-      if (currentStudentIndex > 0) {
-        currentStudentIndex = Math.max(0, currentStudentIndex - step);
-        CS.student.setValue(String(currentStudentIndex));
-        renderReportWorkspace();
-      }
-    }
-
-    function nextStudent() {
-      const step = (layoutMode === '2_landscape') ? 2 : 1;
-      if (currentStudentIndex < studentsList.length - 1) {
-        currentStudentIndex = Math.min(studentsList.length - 1, currentStudentIndex + step);
-        CS.student.setValue(String(currentStudentIndex));
-        renderReportWorkspace();
-      }
-    }
-
-    /* 4. HTML REPORT SHEET GENERATOR */
-    function generateReportHTML(st) {
-      if (!st) return '';
-
-      const totalAbsent = (st.absentUnexcused || 0) + (st.absentExcused || 0);
-      const isMonthly = (reportMode === 'monthly');
-      const docTitle = isMonthly ? `ព្រឹត្តិបត្រពិន្ទុ ខែ ${selectedMonth}`
-        : (reportMode === 'yearly' ? `ព្រឹត្តិបត្រពិន្ទុប្រចាំឆ្នាំ` : `ព្រឹត្តិបត្រពិន្ទុ ${selectedSemester}`);
-
-      const displayGrade = cleanGrade(st.grade) || cleanGrade(currentClassName) || getTeacherClass() || '...';
-      const rowH = calcRowH(st);
-
-      let theadHtml = '';
-      let tbodyHtml = '';
-      let summaryRowsHtml = '';
-
-      if (isMonthly) {
-        theadHtml = `
-          <tr>
-            <th style="width: 32px;">ល.រ</th>
-            <th colspan="2">មុខវិជ្ជា</th>
-            <th style="width: 78px;">ពិន្ទុអតិបរមា</th>
-            <th style="width: 82px;">ពិន្ទុទទួលបាន</th>
-            <th style="width: 72px;">ចំណាត់ថ្នាក់</th>
-            <th style="width: 52px;">និទ្ទេស</th>
-            <th style="width: 78px;">សេចក្តីផ្សេងៗ</th>
-          </tr>
-        `;
-
-        let rowCounter = 1;
-        const groups = st.monthlyGroups || [];
-
-        if (groups.length === 0) {
-          tbodyHtml = `<tr><td colspan="8" style="padding: 24px; color:#ef4444; font-weight:bold;">⚠️ សិស្សនេះមិនទាន់មានពិន្ទុក្នុងខែ ${selectedMonth} នៅឡើយទេ</td></tr>`;
-        } else {
-          groups.forEach(g => {
-            if (g.isGroup) {
-              g.children.forEach((c, idx) => {
-                const grClass = `gr-${c.grade}`;
-                tbodyHtml += `<tr>`;
-                tbodyHtml += `<td>${rowCounter++}</td>`;
-                if (idx === 0) {
-                  tbodyHtml += `<td rowspan="${g.children.length}" style="font-weight:700; background:#fcfcfc;">${g.parentName}</td>`;
-                }
-                tbodyHtml += `<td style="text-align:left; padding-left:8px;">${c.name}</td>`;
-                tbodyHtml += `<td>${c.max}</td>`;
-                tbodyHtml += `<td class="bold-val">${c.score}</td>`;
-                tbodyHtml += `<td style="color:#dc2626; font-weight:800;">${st.rank}</td>`;
-                tbodyHtml += `<td class="${grClass}">${formatGrade(c.grade)}</td>`;
-                tbodyHtml += `<td></td>`;
-                tbodyHtml += `</tr>`;
-              });
-            } else {
-              const grClass = `gr-${g.grade}`;
-              tbodyHtml += `<tr>`;
-              tbodyHtml += `<td>${rowCounter++}</td>`;
-              tbodyHtml += `<td colspan="2" style="font-weight:700;">${g.parentName}</td>`;
-              tbodyHtml += `<td>${g.max}</td>`;
-              tbodyHtml += `<td class="bold-val">${g.score}</td>`;
-              tbodyHtml += `<td style="color:#dc2626; font-weight:800;">${st.rank}</td>`;
-              tbodyHtml += `<td class="${grClass}">${formatGrade(g.grade)}</td>`;
-              tbodyHtml += `<td></td>`;
-              tbodyHtml += `</tr>`;
-            }
-          });
-        }
-
-        summaryRowsHtml = `
-          <tr style="background:#f8fafc;">
-            <td colspan="3" class="summary-cell-text" style="text-align:left; padding-left:12px;">
-              ពិន្ទុសរុប ${st.totalScore.toFixed(2)} • មធ្យមភាគ ${st.avgScore.toFixed(2)}
-            </td>
-            <td colspan="2" class="summary-cell-text">
-              ចំណាត់ថ្នាក់ទី <span style="color:#dc2626; font-weight:800;">${st.rank}</span>
-            </td>
-            <td colspan="3" class="summary-cell-text gr-${st.gradeLabel}">
-              និទ្ទេស ${formatGrade(st.gradeLabel)}
-            </td>
-          </tr>
-          <tr style="background:#f8fafc;">
-            <td colspan="3" class="summary-cell-text">
-              អវត្តមាន (ឥតច្បាប់) ៖ ${st.absentUnexcused}
-            </td>
-            <td colspan="2" class="summary-cell-text">
-              អវត្តមាន (មានច្បាប់) ៖ ${st.absentExcused}
-            </td>
-            <td colspan="3" class="summary-cell-text">
-              សរុប ៖ ${totalAbsent}
-            </td>
-          </tr>
-        `;
-
-      } else if (reportMode === 'yearly') {
-        theadHtml = `
-          <tr>
-            <th style="width: 32px;">ល.រ</th>
-            <th style="min-width: 140px;">មុខវិជ្ជា</th>
-            <th style="width: 72px;">ពិន្ទុអតិបរមា</th>
-            <th style="width: 78px;">ឆមាសទី១</th>
-            <th style="width: 78px;">ឆមាសទី២</th>
-            <th style="width: 72px;">មធ្យមភាគ</th>
-            <th style="width: 54px;">និទ្ទេស</th>
-            <th style="width: 78px;">សេចក្តីផ្សេងៗ</th>
-          </tr>
-        `;
-
-        const ySubs = st.semSubjects || [];
-        if (ySubs.length === 0) {
-          tbodyHtml = `<tr><td colspan="8" style="padding: 24px; color:#ef4444; font-weight:bold;">⚠️ សិស្សនេះមិនទាន់មានពិន្ទុប្រឡងឆមាសនៅឡើយទេ</td></tr>`;
-        } else {
-          ySubs.forEach((row, i) => {
-            const avgTxt = Number(row.avg).toFixed(2).replace(/\.00$/, '');
-            tbodyHtml += `
-              <tr>
-                <td>${i + 1}</td>
-                <td class="sub-name">${row.name}</td>
-                <td>${row.max}</td>
-                <td>${row.s1}</td>
-                <td>${row.s2}</td>
-                <td class="bold-val">${avgTxt}</td>
-                <td class="gr-${row.grade}">${formatGrade(row.grade)}</td>
-                <td></td>
-              </tr>
-            `;
-          });
-        }
-
-        summaryRowsHtml = `
-          <tr style="background:#f8fafc;">
-            <td colspan="3" class="summary-cell-text" style="text-align:left; padding-left:10px;">
-              មធ្យមភាគឆមាសទី១ ${st.avgSem1 > 0 ? st.avgSem1.toFixed(2) : '-'}
-            </td>
-            <td colspan="2" class="summary-cell-text">
-              មធ្យមភាគឆមាសទី២ ${st.avgSem2 > 0 ? st.avgSem2.toFixed(2) : '-'}
-            </td>
-            <td colspan="3" class="summary-cell-text">
-              មធ្យមភាគប្រចាំឆ្នាំ ${st.avgScore > 0 ? st.avgScore.toFixed(2) : '-'}
-            </td>
-          </tr>
-          <tr style="background:#f8fafc;">
-            <td colspan="3" class="summary-cell-text" style="text-align:left; padding-left:10px;">
-              ចំណាត់ថ្នាក់ប្រចាំឆ្នាំទី <span style="color:#dc2626; font-weight:800;">${st.rank}</span>
-            </td>
-            <td colspan="2" class="summary-cell-text gr-${st.gradeLabel}">
-              និទ្ទេស ${formatGrade(st.gradeLabel)}
-            </td>
-            <td colspan="3" class="summary-cell-text">
-              អវត្តមាន ឥតច្បាប់ ${st.absentUnexcused} • មានច្បាប់ ${st.absentExcused} • សរុប ${totalAbsent}
-            </td>
-          </tr>
-        `;
-
-      } else {
-        theadHtml = `
-          <tr>
-            <th style="width: 32px;">ល.រ</th>
-            <th style="min-width: 150px;">មុខវិជ្ជា</th>
-            <th style="width: 85px;">ពិន្ទុអតិបរមា</th>
-            <th style="width: 90px;">ពិន្ទុទទួលបាន</th>
-            <th style="width: 60px;">និទ្ទេស</th>
-            <th style="width: 90px;">សេចក្តីផ្សេងៗ</th>
-          </tr>
-        `;
-
-        const semSubs = st.semSubjects || [];
-        if (semSubs.length === 0) {
-          tbodyHtml = `<tr><td colspan="6" style="padding: 24px; color:#ef4444; font-weight:bold;">⚠️ សិស្សនេះមិនទាន់មានពិន្ទុ${selectedSemester}នៅឡើយទេ</td></tr>`;
-        } else {
-          semSubs.forEach((row, i) => {
-            tbodyHtml += `
-              <tr>
-                <td>${i + 1}</td>
-                <td class="sub-name">${row.name}</td>
-                <td>${row.max}</td>
-                <td class="bold-val">${row.score}</td>
-                <td class="gr-${row.grade}">${formatGrade(row.grade)}</td>
-                <td></td>
-              </tr>
-            `;
-          });
-        }
-
-        summaryRowsHtml = `
-          <tr style="background:#f8fafc;">
-            <td colspan="2" class="summary-cell-text" style="text-align:left; padding-left:12px;">
-              ពិន្ទុសរុប ${st.totalScore.toFixed(2)} • មធ្យមភាគ ${st.avgScore.toFixed(2)}
-            </td>
-            <td colspan="2" class="summary-cell-text">
-              ចំណាត់ថ្នាក់ទី <span style="color:#dc2626; font-weight:800;">${st.rank}</span>
-            </td>
-            <td colspan="2" class="summary-cell-text gr-${st.gradeLabel}">
-              និទ្ទេស ${formatGrade(st.gradeLabel)}
-            </td>
-          </tr>
-          <tr style="background:#f8fafc;">
-            <td colspan="2" class="summary-cell-text">
-              អវត្តមាន (ឥតច្បាប់) ៖ ${st.absentUnexcused}
-            </td>
-            <td colspan="2" class="summary-cell-text">
-              អវត្តមាន (មានច្បាប់) ៖ ${st.absentExcused}
-            </td>
-            <td colspan="2" class="summary-cell-text">
-              សរុប ៖ ${totalAbsent}
-            </td>
-          </tr>
-        `;
-      }
-
-      return `
-        <div class="report-sheet" style="--row-h:${rowH}mm;">
-          <div class="sheet-national-header">
-            <div class="nat-title-1 f-moul">ព្រះរាជាណាចក្រកម្ពុជា</div>
-            <div class="nat-title-2 f-moul">ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
-            <div class="nat-symbol">─────── ❖ ───────</div>
-          </div>
-
-          <div class="sheet-sub-header">
-            <div class="left-dept-info f-siemreap">
-              <div>ការិយាល័យអប់រំ យុវជន និងកីឡា</div>
-              <div style="font-weight:700;">សាលាបឋមសិក្សាកំពង់ល្ពៅ</div>
-              <div>ថ្នាក់ទី ${displayGrade}</div>
-            </div>
-
-            <div class="center-doc-title">
-              <div class="doc-main-title f-moul">${docTitle}</div>
-              <div class="doc-academic-year">ឆ្នាំសិក្សា ${academicYearStr}</div>
-            </div>
-          </div>
-
-          <div class="student-meta-line f-siemreap">
-            សិស្សឈ្មោះ: <span class="hl-val">${st.name}</span> •
-            ភេទ <span class="hl-val">${st.gender}</span> •
-            អត្តលេខ <span class="hl-val">${st.id}</span> •
-            ចំណាត់ថ្នាក់ទី <span class="hl-rank">${st.rank}</span>
-          </div>
-
-          <table class="report-table f-siemreap">
-            <thead>${theadHtml}</thead>
-            <tbody>
-              ${tbodyHtml}
-              ${summaryRowsHtml}
-            </tbody>
-          </table>
-
-          <div class="sheet-signatures-area f-siemreap">
-            <div class="sig-col left-col">
-              <div class="clean-lunar-text doc-principal-date">${principalDateHtml}</div>
-              <div class="sig-title-moul f-moul">បានឃើញ និងឯកភាព</div>
-              <div class="sig-role f-moul">នាយកសាលា</div>
-            </div>
-
-            <div class="sig-col mid-col">
-              <div class="sig-title-moul f-moul">មតិរបស់មាតាបិតា</div>
-              <div class="f-moul" style="font-size:11px; margin-bottom:4px;">ឬអាណាព្យាបាលសិស្ស</div>
-              <div class="parent-dotted-lines"></div>
-              <div class="parent-dotted-lines"></div>
-            </div>
-
-            <div class="sig-col right-col">
-              <!-- 🌟 ថ្ងៃខែចន្ទគតិ-សូរិយគតិ គណនាតាម MomentKH -->
-              <div class="clean-lunar-text doc-lunar-date">${teacherLunarDate}</div>
-              <div class="sig-solar-date doc-solar-date">${teacherSolarDate}</div>
-              <div class="sig-role f-moul" style="margin-top:2px;">គ្រូទទួលបន្ទុកថ្នាក់</div>
-              <div class="sig-name">${teacherName}</div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function applyPageStyle() {
-      let el = document.getElementById('dynPageStyle');
-      if (!el) {
-        el = document.createElement('style');
-        el.id = 'dynPageStyle';
-        document.head.appendChild(el);
-      }
-      const orient = (layoutMode === '2_landscape') ? 'landscape' : 'portrait';
-      el.textContent = '@page { size: A4 ' + orient + '; margin: 0; }';
-    }
-
-    function calcRowH(st) {
-      let n;
-      if (reportMode === 'monthly') {
-        n = (st.monthlyGroups || []).reduce((sum, g) => sum + (g.isGroup ? g.children.length : 1), 0);
-      } else {
-        n = (st.semSubjects || []).length;
-      }
-      n = Math.max(n, 4) + 3;
-      const two = (layoutMode === '2_landscape');
-      const avail = two ? 122 : 180;
-      const min = two ? 4.8 : 5.6;
-      const max = two ? 6.5 : 9;
-      return Math.max(min, Math.min(max, avail / n)).toFixed(2);
-    }
-
-    function renderReportWorkspace() {
-      applyPageStyle();
-      const container = document.getElementById('paperWorkspace');
-
-      if (!studentsList.length) {
-        container.className = 'paper-stage';
-        container.innerHTML = `
-          <div class="empty-state-card">
-            <i class="fa-solid fa-folder-open fa-2x" style="color:#f59e0b; margin-bottom:12px;"></i>
-            <div>មិនមានទិន្នន័យសិស្សត្រូវបង្ហាញឡើយ</div>
-          </div>`;
-        return;
-      }
-
-      if (layoutMode === '1_portrait') {
-        container.className = 'paper-stage';
-        const currentStudent = studentsList[currentStudentIndex] || studentsList[0];
-        container.innerHTML = generateReportHTML(currentStudent);
-      } else {
-        container.className = 'paper-stage layout-2col';
-        const st1 = studentsList[currentStudentIndex] || studentsList[0];
-        const st2 = studentsList[currentStudentIndex + 1] || null;
-
-        container.innerHTML = `
-          <div class="report-sheet-container-2col">
-            ${generateReportHTML(st1)}
-            ${st2 ? generateReportHTML(st2) : '<div></div>'}
-          </div>
-        `;
-      }
-
-      autoScalePaper();
-    }
-
-    function printReport() {
-      const stage = document.getElementById('paperWorkspace');
-      if (stage) stage.style.transform = 'none';
-      applyPageStyle();
-      window.print();
-      autoScalePaper();
-    }
-
-    function downloadPDF() {
-      if (!studentsList.length) return alert('គ្មានទិន្នន័យដើម្បីទាញយកជា PDF ឡើយ!');
-      const stage = document.getElementById('paperWorkspace');
-      stage.style.transform = 'none';
-
-      const isPortrait = (layoutMode === '1_portrait');
-      const st = studentsList[currentStudentIndex] || studentsList[0];
-
-      const opt = {
-        margin: [0, 0, 0, 0],
-        filename: `ព្រឹត្តិបត្រពិន្ទុ_${st.name}_ថ្នាក់ទី${st.grade}.pdf`,
-        image: { type: 'png' },
-        html2canvas: { scale: 4.2, useCORS: true, scrollX: 0, scrollY: 0 },   /* ~៤០០dpi ច្បាស់ ទោះពង្រីក */
-        jsPDF: { unit: 'mm', format: 'a4', orientation: isPortrait ? 'portrait' : 'landscape', compress: true }
-      };
-
-      document.body.classList.add('exporting');
-      html2pdf().set(opt).from(stage).save().then(() => {
-        document.body.classList.remove('exporting');
-        autoScalePaper();
-      }).catch(() => {
-        document.body.classList.remove('exporting');
-        autoScalePaper();
-      });
-    }
-
-    /* ══════════════ 🚀 ENTRY POINT ══════════════ */
-    window.addEventListener('DOMContentLoaded', async () => {
-      if (!checkAuthentication()) return;
-      initCustomSelects();
-      await initClassDropdown();
-    });
-  </script>
+<script>
+const sb=supabase.createClient("https://nggnuobnrxiqjtcwlvwk.supabase.co","sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML");
+const KHD='០១២៣៤៥៦៧៨៩';
+const toKh=v=>String(v??'').replace(/[0-9]/g,d=>KHD[d]);
+const fromKh=v=>String(v??'').replace(/[០-៩]/g,d=>KHD.indexOf(d));
+const cleanGrade=g=>String(g||'').replace(/^ថ្នាក់ទី\s*/,'').trim();
+const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function readSession(){try{return JSON.parse(localStorage.getItem('krou_supabase_user')||'null')}catch(e){return null}}
+const USER=readSession();
+const IS_ADMIN=String((USER&&USER.role)||'').toLowerCase().trim()==='admin';
+function goIndex(){try{if(window.parent!==window){window.parent.location.href='index.html';return}}catch(e){}location.href='index.html'}
+function goBack(){try{if(window.parent&&window.parent!==window){window.parent.postMessage({type:'NAVIGATE',page:'reportsHub'},'*');return}}catch(e){}location.href='index.html#reportsHub'}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light')}
+applyTheme(localStorage.getItem('krou_theme_manual')||'light');
+window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme))applyTheme(e.data.theme||e.data)});
+window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual')applyTheme(e.newValue)});
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2600)}
+function setSt(){}
+
+const AGES=[6,7,8,9,10,11,12,13,14,15];
+const DIFF=[
+ {t:'សិស្សពិការ',k:'dis',rows:[['dis_move','ពិបាកក្នុងការធ្វើចលនា'],['dis_hear','ពិបាកក្នុងការស្តាប់'],['dis_speak','ពិបាកក្នុងការនិយាយ'],['dis_see','ពិបាកក្នុងការមើល'],['dis_organ','ពិបាកសរីរាង្គខាងក្នុង'],['dis_mind','ពិបាកសតិបញ្ញា'],['dis_emo','ពិបាកផ្លូវចិត្ត'],['dis_other','ពិបាកផ្សេងៗ(ក្រៅពីខាងលើ)']]},
+ {t:'សិស្សជួបការលំបាកផ្នែកសុខភាព',k:'hlt',rows:[['h_nutri','ខ្វះអាហារូបត្ថម្ភធ្ងន់ធ្ងរ'],['h_chronic','ជម្ងឺប្រចាំកាយ'],['h_hiv','កុមាររងគ្រោះដោយ HIV']]},
+ {t:'សិស្សជួបការលំបាក',k:'hard',rows:[['x_move','មកពីគ្រួសារផ្លាស់ប្តូរទីលំនៅ'],['x_orphan','កុមារកំព្រា'],['x_violence','កុមាររងអំពើហិង្សា'],['x_labor','កុមាររងការកេងប្រវ័ញ្ចពលកម្ម'],['x_poor','កុមារមកពីគ្រួសារក្រីក្រ']]}
+];
+const EDU=['មធ្យមសិក្សាបឋមភូមិ','មធ្យមសិក្សាទុតិយភូមិ','បរិញ្ញាបត្ររង','បរិញ្ញាបត្រ','បរិញ្ញាបត្រជាន់ខ្ពស់','បណ្ឌិត'];
+const KV=[['name','ឈ្មោះជាអក្សរខ្មែរ'],['sex','ភេទ'],['age','អាយុ'],['eth','ជនជាតិដើមភាគតិច'],['edu','កម្រិតវប្បធម៌'],['svc','រយៈពេលបម្រើការងារ'],['sal','កម្រិតកំប្រាក់']];
+
+let STU=[],FLAGS=new Set(),INFO={},CUR={year:'',cls:''};
+const fk=(sid,f)=>sid+'|'+f;
+
+const KM=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+function parseDob(v){
+  if(!v)return null;
+  if(v instanceof Date)return isNaN(v)?null:v;
+  const s=fromKh(String(v).trim());
+  let m=s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);if(m)return mk(+m[1],+m[2],+m[3]);
+  m=s.match(/^(\d{1,2})[\/\-.\s](\d{1,2})[\/\-.\s](\d{4})/);if(m)return mk(+m[3],+m[2],+m[1]);
+  m=s.match(/(\d{1,2})\s*(?:ខែ)?\s*(មករា|កុម្ភៈ|មីនា|មេសា|ឧសភា|មិថុនា|កក្កដា|សីហា|កញ្ញា|តុលា|វិច្ឆិកា|ធ្នូ)\s*(?:ឆ្នាំ)?\s*(\d{4})/);
+  if(m)return mk(+m[3],KM.indexOf(m[2])+1,+m[1]);
+  return null;
+}
+function mk(y,mo,d){if(mo<1||mo>12||d<1||d>31||y<1900)return null;return new Date(y,mo-1,d)}
+function ageAt(d,r){let a=r.getFullYear()-d.getFullYear(),md=r.getMonth()-d.getMonth();if(md<0||(md===0&&r.getDate()<d.getDate()))a--;return a}
+function isF(g){const s=String(g||'').trim();return s==='ស'||s.includes('ស្រី')||/^f/i.test(s)}
+function refDate(){const v=document.getElementById('asOf').value;const [y,m,d]=v.split('-').map(Number);return new Date(y,m-1,d)}
+function activeStu(){return STU.filter(s=>!String(s.dropout_semester||'').trim())}
+function ageOf(s){const d=parseDob(s.dob);return d?ageAt(d,refDate()):null}
+
+/* ===== DB ===== */
+function lsKey(){return 'ageTbl_v1:'+CUR.year+':'+CUR.cls}
+function lsLoad(){try{return JSON.parse(localStorage.getItem(lsKey())||'{}')}catch(e){return {}}}
+function lsSave(){try{localStorage.setItem(lsKey(),JSON.stringify({flags:[...FLAGS],info:INFO}))}catch(e){}}
+function lsKey(){return 'ageTbl_v2:'+(USER.username||'')+':'+CUR.year+':'+CUR.cls}
+function lsLoad(){try{return JSON.parse(localStorage.getItem(lsKey())||'{}')}catch(e){return {}}}
+function lsSave(){try{localStorage.setItem(lsKey(),JSON.stringify({flags:[...FLAGS],info:INFO}));return true}catch(e){return false}}
+async function loadFlags(){const l=lsLoad();FLAGS=new Set(l.flags||[]);INFO=l.info||{}}
+async function setFlag(sid,flag,on){const key=fk(sid,flag);on?FLAGS.add(key):FLAGS.delete(key);lsSave();return true}
+let itm;function saveInfo(){clearTimeout(itm);itm=setTimeout(lsSave,300)}
+
+/* ===== render ===== */
+function repAge(a){const r=(INFO.rep||{})[a]||{};return [num(r.t),Math.min(num(r.f),num(r.t))]}
+function num(v){const n=parseInt(fromKh(v),10);return isNaN(n)||n<0?0:n}
+let TEACHER={};
+async function fetchTeacher(cls){
+  try{
+    const {data,error}=await sb.from('users').select('teacher_name, gender, dob, username, assigned_classes, role');
+    if(error||!data)return {};
+    const norm=v=>String(v||'').split(/[,;،\/]+/).map(cleanGrade).filter(Boolean);
+    let u=null;
+    if(!IS_ADMIN)u=data.find(x=>x.username&&x.username===USER.username);
+    if(!u)u=data.find(x=>String(x.role||'').toLowerCase().trim()!=='admin'&&norm(x.assigned_classes).includes(cls));
+    return u||{};
+  }catch(e){return {}}
+}
+function tSex(){const g=String(TEACHER.gender||'').trim();if(!g)return '';return (g==='ស'||g.includes('ស្រី')||/^f/i.test(g))?'ស្រី':(g==='ប'||g.includes('ប្រុស')||/^m/i.test(g))?'ប្រុស':g}
+function tAge(){const d=parseDob(TEACHER.dob);if(!d)return '';const a=ageAt(d,refDate());return a>=0&&a<100?toKh(a)+'ឆ្នាំ':''}
+function kvVal(k){const m=INFO['kv_'+k];if(m!==undefined)return m;return k==='name'?(TEACHER.teacher_name||''):k==='sex'?tSex():k==='age'?tAge():''}
+function count(fn){let t=0,f=0;activeStu().forEach(s=>{if(fn(s)){t++;if(isF(s.gender))f++}});return [t,f]}
+function render(){
+  document.getElementById('yrTxt').textContent=CUR.year.split('-').map(toKh).join('-');
+  document.getElementById('clsTxt').textContent=CUR.cls;{const r=refDate();document.getElementById('asTxt').textContent=toKh(r.getDate())+' '+KM[r.getMonth()]+' '+toKh(r.getFullYear())}
+  document.querySelectorAll('.ed[data-k]').forEach(el=>{const v=INFO[el.dataset.k];if(v!==undefined)el.textContent=v;else if(el.dataset.k==='teacher'&&TEACHER.teacher_name)el.textContent=TEACHER.teacher_name});
+  document.getElementById('kv').innerHTML=KV.map(([k,l])=>k==='edu'
+    ?`<tr><th>${l}</th><td><select class="edu" data-edu="1" required><option value="">— ជ្រើសរើស —</option>${EDU.map(e=>`<option value="${e}" ${kvVal('edu')===e?'selected':''}>${e}</option>`).join('')}</select></td></tr>`
+    :`<tr><th>${l}</th><td><span class="ed" contenteditable data-kv="${k}" data-ph="" style="min-width:90px;border-bottom:0">${esc(kvVal(k))}</span></td></tr>`).join('');
+  enhanceAll();renderSign();document.getElementById('asOfBtn').lastChild.textContent=dLabel(document.getElementById('asOf').value);
+  // age table
+  const n=v=>v?toKh(v):'០';
+  let h=`<thead><tr><th rowspan="3" style="width:13%">អាយុ<br>(ឆ្នាំ)</th><th colspan="6">ចំនួនសិស្ស</th></tr>
+  <tr><th colspan="2">សិស្សថ្មី</th><th colspan="2" class="clk" onclick="openModal('repeat')">សិស្សត្រួតថ្នាក់</th><th colspan="2">សិស្សសរុប</th></tr>
+  <tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(3)}</tr></thead><tbody>`;
+  const sum=[0,0,0,0,0,0];
+  AGES.forEach(a=>{
+    const inAge=s=>{const x=ageOf(s);return x!==null&&(a===15?x>=15:x===a)};
+    const tt=count(inAge);const rp=count(s=>inAge(s)&&FLAGS.has(fk(s.student_id||s.id,'repeat')));const nw=[tt[0]-rp[0],tt[1]-rp[1]];
+    const row=[...nw,...rp,...tt];row.forEach((v,i)=>sum[i]+=v);
+    h+=`<tr><td class="c">${a===15?'១៥+':toKh(a)}</td>${row.map(v=>`<td class="c">${n(v)}</td>`).join('')}</tr>`;
+  });
+  h+=`<tr class="t"><td class="c">សរុប</td>${sum.map(v=>`<td class="c">${n(v)}</td>`).join('')}</tr></tbody>`;
+  document.getElementById('ageT').innerHTML=h;
+  const noDob=activeStu().filter(s=>ageOf(s)===null).length,out=activeStu().filter(s=>{const x=ageOf(s);return x!==null&&x<6}).length;
+  document.getElementById('ageWarn').innerHTML=(noDob?`<div>⚠️ សិស្ស ${toKh(noDob)} នាក់ គ្មានថ្ងៃខែឆ្នាំកំណើតត្រឹមត្រូវ (មិនរាប់ក្នុងតារាងអាយុ)</div>`:'')+(out?`<div>ℹ️ សិស្ស ${toKh(out)} នាក់ អាយុក្រោម ៦ ឆ្នាំ (មិនរាប់ក្នុងតារាង)</div>`:'');
+  // diff
+  let d=`<thead><tr><th rowspan="2">បរិយាយ</th><th colspan="2">ចំណុចជួបការលំបាក</th></tr><tr><th style="width:56px">សរុប</th><th style="width:56px">ស្រី</th></tr></thead><tbody>`;
+  let gT=0,gF=0;
+  DIFF.forEach(g=>{
+    const keys=g.rows.map(r=>r[0]);
+    const gc=count(s=>keys.some(k=>FLAGS.has(fk(s.student_id||s.id,k))));
+    const cs=g.rows.map(r=>count(s=>FLAGS.has(fk(s.student_id||s.id,r[0]))));
+    const st=cs.reduce((a,c)=>a+c[0],0),sf=cs.reduce((a,c)=>a+c[1],0);
+    gT+=st;gF+=sf;
+    d+=`<tr class="g"><td class="nm">${g.t}</td><td class="c">${n(st)}</td><td class="c">${n(sf)}</td></tr>`;
+    g.rows.forEach((r,i)=>{d+=`<tr><td class="nm lk" onclick="openModal('${r[0]}')">${r[1]}</td><td class="c ${cs[i][0]?'hl':''}">${n(cs[i][0])}</td><td class="c ${cs[i][1]?'hl':''}">${n(cs[i][1])}</td></tr>`});
+  });
+  d+=`<tr class="t"><td class="nm" style="text-align:center">សរុប</td><td class="c">${n(gT)}</td><td class="c">${n(gF)}</td></tr></tbody>`;
+  document.getElementById('diffT').innerHTML=d;
+}
+document.addEventListener('change',e=>{if(e.target.dataset&&e.target.dataset.edu){INFO.kv_edu=e.target.value;saveInfo()}});
+document.addEventListener('input',e=>{
+  const t=e.target;if(t.dataset&&t.dataset.k){INFO[t.dataset.k]=t.textContent;saveInfo()}
+  else if(t.dataset&&t.dataset.kv){INFO['kv_'+t.dataset.kv]=t.textContent;saveInfo()}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('.ed'))e.preventDefault()});
+document.addEventListener('paste',e=>{if(e.target.matches('.ed')){e.preventDefault();document.execCommand('insertText',false,(e.clipboardData.getData('text')||'').replace(/\n/g,' '))}});
+
+
+/* ===== ប្រតិទិនជ្រើសថ្ងៃខែ ===== */
+const _n=new Date();
+var calToday={y:_n.getFullYear(),m:_n.getMonth()+1,d:_n.getDate()},calView={y:calToday.y,m:calToday.m},calSel={y:calToday.y,m:calToday.m,d:calToday.d},calTarget='sign';
+const iso=(y,m,d)=>y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+const isoParts=v=>/^\d{4}-\d{2}-\d{2}$/.test(v||'')?v.split('-').map(Number):null;
+function dLabel(v){const p=isoParts(v);return p?kn(p[2])+' '+GM[p[1]-1]+' '+kn(p[0]):'ជ្រើសថ្ងៃ'}
+function signParts(){if(INFO.signDate==='blank')return null;return isoParts(INFO.signDate)||[calToday.y,calToday.m,calToday.d]}
+function renderSign(){
+  const p=signParts(),L=document.getElementById('signLunar'),S=document.getElementById('signSolar');
+  if(!p){L.textContent='ថ្ងៃ.................... ខែ.......... ឆ្នាំ........... ពុទ្ធសករាជ ......';S.textContent='ថ្ងៃទី...... ខែ...... ឆ្នាំ......';return}
+  const o=info(p[0],p[1],p[2]);L.textContent=fullText(o);S.textContent='ថ្ងៃទី'+kn(p[2])+' ខែ'+GM[p[1]-1]+' ឆ្នាំ'+kn(p[0]);
+}
+function curTargetParts(){return calTarget==='asof'?(isoParts(document.getElementById('asOf').value)||[calToday.y,calToday.m,calToday.d]):signParts()||[calToday.y,calToday.m,calToday.d]}
+function openCal(t){
+  calTarget=t;const p=curTargetParts();calSel={y:p[0],m:p[1],d:p[2]};calView={y:p[0],m:p[1]};
+  document.getElementById('calRoleLbl').textContent=t==='asof'?'📅 អាយុគិតត្រឹមថ្ងៃ':'✍ ថ្ងៃខែហត្ថលេខា · គ្រូទទួលបន្ទុកថ្នាក់';
+  document.getElementById('calBtnBlank').style.display=t==='asof'?'none':'';
+  document.getElementById('calBackdrop').classList.add('show');document.getElementById('calModal').classList.add('show');
+  initCalendarPopup();
+}
+function closeCalendarPopup(){document.getElementById('calBackdrop').classList.remove('show');document.getElementById('calModal').classList.remove('show')}
+function initCalendarPopup(){
+  document.getElementById('calSelMonth').innerHTML=GM.map((n,i)=>`<option value="${i+1}">${n}</option>`).join('');
+  let yh='';for(let y=2000;y<=calToday.y+15;y++)yh+=`<option value="${y}">${kn(y)}</option>`;
+  document.getElementById('calSelYear').innerHTML=yh;renderCalendarGrid();
+}
+function changeCalendarSelect(){calView.m=+document.getElementById('calSelMonth').value;calView.y=+document.getElementById('calSelYear').value;renderCalendarGrid()}
+function shiftCalendarMonth(n){const t=new Date(calView.y,calView.m-1+n,1);calView={y:t.getFullYear(),m:t.getMonth()+1};renderCalendarGrid()}
+function renderCalendarGrid(){
+  const y=calView.y,m=calView.m,first=new Date(y,m-1,1).getDay(),dim=new Date(y,m,0).getDate(),total=Math.ceil((first+dim)/7)*7;
+  document.getElementById('calSelMonth').value=m;document.getElementById('calSelYear').value=y;enhanceAll();
+  const months=[],be=[],an=[];let html='';const blank=calTarget==='sign'&&INFO.signDate==='blank';
+  for(let i=0;i<total;i++){
+    const p=addDays(y,m,1,i-first),inM=(p[0]===y&&p[1]===m),o=info(p[0],p[1],p[2]);
+    if(inM){if(!months.includes(o.mname))months.push(o.mname);if(!be.includes(o.be))be.push(o.be);const a=o.animal+' '+o.sak;if(!an.includes(a))an.push(a)}
+    const hs=hols(o),isToday=(calToday.y===o.y&&calToday.m===o.m&&calToday.d===o.d),isSel=!blank&&(calSel.y===o.y&&calSel.m===o.m&&calSel.d===o.d),isSil=holy(o);
+    const cls='cal-cell'+(inM?'':' other')+(o.dow===0?' sun':'')+(isToday?' today':'')+(isSel?' sel':'')+(isSil?' sil':'');
+    const mo=moon(o),lt=(isSil&&!(o.kd===1&&o.ph===0)?'<b>'+lunarText(o)+'</b>':lunarText(o))+((o.kd===1&&o.ph===0)||(o.d===1&&inM)?' ខែ'+o.mname:'');
+    html+=`<button type="button" class="${cls}" onclick="pickCalDate(${o.y},${o.m},${o.d})"><span class="g">${kn(o.d)}</span>${mo?'<span class="mo">'+mo+'</span>':''}<span class="l">${lt}</span>${hs.length?'<span class="h '+hs[0].k+'">'+hs[0].t+'</span>':''}</button>`;
+  }
+  document.getElementById('calGrid').innerHTML=html;
+  document.getElementById('calMTitle').textContent='ខែ'+GM[m-1]+' ឆ្នាំ'+kn(y);
+  document.getElementById('calMSub').textContent='ចន្ទគតិ៖ ខែ'+months.join(' – ខែ')+' · ព.ស. '+be.map(kn).join(' – ')+' · ឆ្នាំ'+an.join(' → ');
+}
+function pickCalDate(y,m,d){
+  if(calTarget==='asof'){document.getElementById('asOf').value=iso(y,m,d);closeCalendarPopup();reload(true)}
+  else{INFO.signDate=iso(y,m,d);saveInfo();renderSign();closeCalendarPopup()}
+}
+function selectCalendarToday(){pickCalDate(calToday.y,calToday.m,calToday.d)}
+function calBlankDate(){INFO.signDate='blank';saveInfo();renderSign();closeCalendarPopup()}
+
+
+/* ===== Dropdown ផ្ទាល់ខ្លួន: ជំនួសបញ្ជីរបស់ប្រព័ន្ធ ដើម្បីប្រើ font Battambang ===== */
+let _selFor=null;
+function closeSelPop(){const p=document.getElementById('selPop');p.style.display='none';_selFor=null}
+function openSelPop(sel){
+  const p=document.getElementById('selPop');
+  if(_selFor===sel){closeSelPop();return}
+  _selFor=sel;
+  p.innerHTML=[...sel.options].map((o,i)=>`<div class="si ${i===sel.selectedIndex?'on':''}" data-i="${i}">${esc(o.textContent)}</div>`).join('');
+  p.style.display='block';
+  const r=sel.getBoundingClientRect(),w=Math.max(r.width,160);
+  p.style.minWidth=w+'px';
+  let left=Math.min(Math.max(8,r.left),innerWidth-p.offsetWidth-8);
+  let top=r.bottom+6;
+  if(top+p.offsetHeight>innerHeight-8)top=Math.max(8,r.top-p.offsetHeight-6);
+  p.style.left=left+'px';p.style.top=top+'px';
+  const on=p.querySelector('.on');if(on)on.scrollIntoView({block:'nearest'});
+}
+document.addEventListener('mousedown',e=>{const t=e.target;
+  if(t.tagName==='SELECT'){e.preventDefault();t.focus();openSelPop(t);return}
+  if(!t.closest('#selPop'))closeSelPop();
+},true);
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='SELECT'&&(e.key===' '||e.key==='Enter'||e.key==='ArrowDown'&&e.altKey)){e.preventDefault();openSelPop(e.target)}
+  if(e.key==='Escape')closeSelPop();
+},true);
+document.getElementById('selPop').addEventListener('click',e=>{
+  const it=e.target.closest('.si');if(!it||!_selFor)return;
+  const sel=_selFor;sel.selectedIndex=+it.dataset.i;closeSelPop();
+  sel.dispatchEvent(new Event('change',{bubbles:true}));
+});
+window.addEventListener('resize',closeSelPop);
+document.addEventListener('scroll',closeSelPop,true);
+
+
+/* ===== Custom select ===== */
+function csSync(sel){const b=sel._cs;if(!b)return;const o=sel.options[sel.selectedIndex];const t=o?o.textContent:'';b.querySelector('.cl').textContent=t;b.classList.toggle('empty',!sel.value)}
+function csEnhance(sel){
+  if(!sel._cs){
+    const b=document.createElement('button');b.type='button';
+    b.className='csb '+(sel.classList.contains('edu')?'edu-b':(sel.closest('.cal-nav')?'cal-b':'fc'));
+    b.innerHTML='<span class="cl"></span><i class="ca"></i>';
+    sel.style.display='none';sel.insertAdjacentElement('afterend',b);sel._cs=b;
+    b.addEventListener('click',e=>{e.stopPropagation();csOpen(sel)});
+  }
+  csSync(sel);
+}
+function enhanceAll(){document.querySelectorAll('select').forEach(csEnhance)}
+function csClose(){const p=document.getElementById('csPop');p.style.display='none';p.innerHTML=''}
+function csOpen(sel){
+  const p=document.getElementById('csPop');
+  if(p.style.display==='block'&&p._for===sel){csClose();return}
+  p._for=sel;
+  p.innerHTML=[...sel.options].map((o,i)=>`<div class="csi ${i===sel.selectedIndex?'on':''}" data-i="${i}">${o.textContent}</div>`).join('');
+  const r=sel._cs.getBoundingClientRect();
+  p.style.display='block';p.style.minWidth=Math.max(r.width,150)+'px';
+  const vh=window.innerHeight,h=Math.min(p.scrollHeight,Math.max(180,vh*.5));
+  p.style.maxHeight=Math.min(vh*.6,360)+'px';
+  let top=r.bottom+6;if(top+h>vh-8&&r.top>h+8)top=r.top-h-6;
+  let left=Math.min(Math.max(8,r.left),window.innerWidth-p.offsetWidth-8);
+  p.style.top=Math.max(8,top)+'px';p.style.left=left+'px';
+  const on=p.querySelector('.on');if(on)p.scrollTop=on.offsetTop-p.clientHeight/2+on.offsetHeight/2;
+  p.onclick=e=>{const it=e.target.closest('.csi');if(!it)return;e.stopPropagation();sel.selectedIndex=+it.dataset.i;csSync(sel);csClose();sel.dispatchEvent(new Event('change',{bubbles:true}))};
+}
+document.addEventListener('click',e=>{if(!e.target.closest('#csPop'))csClose()});
+window.addEventListener('resize',csClose);window.addEventListener('scroll',e=>{const t=e.target;if(t&&t.id==='csPop')return;csClose()},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')csClose()});
+
+/* ===== modal ===== */
+let MD=null;
+const NAMES={};DIFF.forEach(g=>g.rows.forEach(r=>NAMES[r[0]]=r[1]));NAMES.new='សិស្សថ្មី';NAMES.repeat='សិស្សត្រួតថ្នាក់';
+function openModal(flag){MD=flag;document.getElementById('mdT').textContent=NAMES[flag]+' · ថ្នាក់ទី '+CUR.cls;document.getElementById('mdQ').value='';document.getElementById('ov').classList.add('show');renderModal()}
+
+function openRepeat(){
+  MD='repeat';document.getElementById('mdT').textContent='សិស្សត្រួតថ្នាក់ · ថ្នាក់ទី '+CUR.cls;
+  document.getElementById('mdQ').parentNode.style.display='none';
+  document.getElementById('mdC').textContent='បញ្ចូលចំនួនសិស្សត្រួតថ្នាក់ តាមអាយុ — ចំនួននេះនឹងត្រូវដកចេញពី «សិស្សថ្មី» (ស្រី ≤ សរុប)';
+  const rep=INFO.rep||{};
+  document.getElementById('mdL').innerHTML=`<div style="display:grid;grid-template-columns:70px 1fr 1fr;gap:8px;align-items:center;font-weight:700;font-size:12.5px;color:var(--muted);padding:0 6px"><span>អាយុ</span><span style="text-align:center">សរុប</span><span style="text-align:center">ស្រី</span></div>`+
+   AGES.map(a=>`<div style="display:grid;grid-template-columns:70px 1fr 1fr;gap:8px;align-items:center;padding:2px 6px"><b>${a===15?'១៥+':toKh(a)} ឆ្នាំ</b><input class="fc" type="number" min="0" inputmode="numeric" placeholder="0" style="text-align:center" value="${(rep[a]||{}).t??''}" oninput="setRep(${a},'t',this)"><input class="fc" type="number" min="0" inputmode="numeric" placeholder="0" style="text-align:center" value="${(rep[a]||{}).f??''}" oninput="setRep(${a},'f',this)"></div>`).join('');
+  document.getElementById('ov').classList.add('show');
+}
+function setRep(a,k,el){
+  if(num(el.value)<0)el.value=0;
+  INFO.rep=INFO.rep||{};INFO.rep[a]=INFO.rep[a]||{t:'',f:''};INFO.rep[a][k]=el.value;
+  const r=INFO.rep[a];el.style.color=(num(r.f)>num(r.t)&&r.f!=='')?'#e11d48':'';
+  saveInfo();render();
+}
+function closeModal(){document.getElementById('mdQ').parentNode.style.display='';document.getElementById('ov').classList.remove('show');MD=null;render()}
+function renderModal(){
+  if(!MD)return;const q=document.getElementById('mdQ').value.trim();
+  const list=activeStu().filter(s=>!q||String(s.student_name||'').includes(q));
+  document.getElementById('mdC').textContent='បានជ្រើស '+toKh([...activeStu()].filter(s=>FLAGS.has(fk(s.student_id||s.id,MD))).length)+' នាក់ ក្នុងចំណោម '+toKh(activeStu().length)+' នាក់ · ចុចលើឈ្មោះដើម្បីជ្រើស/ដក';
+  document.getElementById('mdL').innerHTML=list.map(s=>{const sid=s.student_id||s.id,on=FLAGS.has(fk(sid,MD)),a=ageOf(s);
+    return `<div class="it ${on?'on':''}" onclick="toggleStu('${esc(String(sid)).replace(/'/g,'')}')"><span class="ck">${on?'✓':''}</span><span class="n">${esc(s.student_name||'')}<div class="m">${isF(s.gender)?'ស្រី':'ប្រុស'}${a!==null?' · អាយុ '+toKh(a)+' ឆ្នាំ':''}</div></span></div>`}).join('')||'<div style="text-align:center;color:var(--muted);padding:20px">មិនមានសិស្ស</div>';
+}
+async function toggleStu(sid){const on=!FLAGS.has(fk(sid,MD));const ok=await setFlag(sid,MD,on);if(ok){renderModal();render()}}
+
+/* ===== load ===== */
+function initSelectors(){
+  const y=new Date().getFullYear(),m=new Date().getMonth(),base=m>=8?y:y-1;
+  const ys=document.getElementById('selYear');
+  for(let i=base+1;i>=base-5;i--){const o=document.createElement('option');o.value=i+'-'+(i+1);o.textContent=toKh(i)+'-'+toKh(i+1);if(i===base)o.selected=true;ys.appendChild(o)}
+  setAsOf();
+}
+function setAsOf(){const n=new Date(),p=x=>String(x).padStart(2,'0');document.getElementById('asOf').value=n.getFullYear()+'-'+p(n.getMonth()+1)+'-'+p(n.getDate())}
+async function initClasses(){
+  const cs=document.getElementById('selClass');
+  const mine=String(USER.assigned_classes||USER.assigned_class||'').split(/[,;،\/]+/).map(cleanGrade).filter(Boolean);
+  let list=mine;
+  if(IS_ADMIN||!mine.length){
+    const {data}=await sb.from('students').select('grade');
+    const set=new Set((data||[]).map(s=>cleanGrade(s.grade)).filter(Boolean));
+    list=[...set].sort((a,b)=>a.localeCompare(b,'km'));
+  }
+  cs.innerHTML=list.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
+  const last=localStorage.getItem('ageTbl_lastClass');if(last&&list.includes(last))cs.value=last;
+}
+let first=true;
+async function reload(keepAsOf){
+  if(!keepAsOf&&!first)setAsOf();
+  CUR.year=document.getElementById('selYear').value;CUR.cls=document.getElementById('selClass').value;
+  if(!CUR.cls){setSt('err','គ្មានថ្នាក់');return}
+  try{localStorage.setItem('ageTbl_lastClass',CUR.cls)}catch(e){}
+  setSt('busy','កំពុងទាញទិន្នន័យ...');
+  try{
+    const {data,error}=await sb.from('students').select('id, student_id, student_name, gender, dob, grade, dropout_semester').order('id',{ascending:true});
+    if(error)throw error;
+    STU=(data||[]).filter(s=>cleanGrade(s.grade)===CUR.cls);
+    await loadFlags();
+    TEACHER=await fetchTeacher(CUR.cls);
+    document.querySelectorAll('.ed[data-k]').forEach(el=>{if(INFO[el.dataset.k]===undefined)el.textContent=el.dataset.def||el.textContent});
+    render();setSt('ok','ទាញពី Database រួច');
+  }catch(err){setSt('err','កំហុស');toast('❌ '+err.message)}
+  first=false;
+}
+
+/* ===== បោះពុម្ពឱ្យចូលតែ ១ សន្លឹក A4 ===== */
+function fitOnePage(){
+  const el=document.getElementById('page');el.style.zoom='';el.style.width='';
+  el.style.minHeight='0';el.style.height='auto';
+  const target=297/25.4*96-4;let z=1;
+  for(let i=0;i<8;i++){
+    el.style.zoom=z;el.style.width=(210/z)+'mm';
+    const h=el.scrollHeight*z;
+    if(h<=target)break;
+    z*=target/h*0.99;
+  }
+  return z;
+}
+function unfit(){const el=document.getElementById('page');el.style.zoom='';el.style.width='';el.style.minHeight='';el.style.height=''}
+window.addEventListener('beforeprint',fitOnePage);
+window.addEventListener('afterprint',unfit);
+function doPrint(){window.focus();setTimeout(()=>{try{window.print()}catch(e){window.parent.print()}},100)}
+async function doPdf(){
+  if(!window.html2canvas||!window.jspdf){toast('មិនអាចផ្ទុក library PDF បានទេ');return}
+  const el=document.getElementById('page'),z=el.style.zoom;el.style.zoom='1';
+  try{
+    if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+    const c=await html2canvas(el,{scale:3,backgroundColor:'#fff',useCORS:true});
+    const {jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');
+    let ih=c.height*210/c.width,iw=210;if(ih>297){iw=210*297/ih;ih=297}
+    pdf.addImage(c.toDataURL('image/png'),'PNG',(210-iw)/2,0,iw,ih,undefined,'FAST');
+    pdf.save('តារាងចំនួនសិស្សតាមអាយុ_'+CUR.cls+'.pdf');
+  }catch(err){toast('❌ PDF៖ '+err.message)}
+  el.style.zoom=z;
+}
+(async function boot(){
+  if(!USER||!USER.username){document.getElementById('auth').style.display='flex';return}
+  document.getElementById('app').style.display='block';
+  initSelectors();await initClasses();enhanceAll();await reload(true);
+})();
+</script>
 </body>
 </html>
