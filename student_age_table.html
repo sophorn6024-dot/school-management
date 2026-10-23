@@ -272,6 +272,28 @@ select option{font-size:14px;font-weight:400}
 .cal-cell .g{color:#1f2433}.cal-cell.sun .g{color:#c62828}
 .cal-btn-ico{color:#1f2433}
 .cal-cell.other{opacity:.4}
+
+/* ===== Dropdown ផ្ទាល់ខ្លួន (Battambang) ===== */
+#selPop{position:fixed;z-index:3500;display:none;min-width:160px;max-height:min(60vh,380px);overflow:auto;background:#fff;color:#0f172a;border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 18px 44px rgba(15,23,42,.28);padding:6px;font-family:'Battambang',sans-serif;animation:popIn .15s ease-out}
+[data-theme=dark] #selPop{background:#1b2740;color:#f1f5f9;border-color:#2b4468}
+#selPop .si{padding:10px 14px;border-radius:10px;font-family:'Battambang',sans-serif;font-size:14.5px;cursor:pointer;line-height:1.5;display:flex;align-items:center;justify-content:space-between;gap:10px}
+#selPop .si:hover{background:#eef2ff}[data-theme=dark] #selPop .si:hover{background:#27306b}
+#selPop .si.on{background:#4f46e5;color:#fff;font-weight:700}
+#selPop .si.on:after{content:'✓'}
+
+/* ===== Custom dropdown (Battambang ទាំងបញ្ជី) ===== */
+.csb{display:inline-flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;font-family:'Battambang',sans-serif!important;font-weight:400;text-align:left;white-space:nowrap;max-width:100%}
+.csb .cl{overflow:hidden;text-overflow:ellipsis}
+.csb .ca{width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);opacity:.55;flex-shrink:0}
+.edu-b{width:100%;justify-content:center;border:0;background:transparent;color:#0f172a;font-size:13px;padding:2px 6px;min-height:24px}
+.edu-b:hover{background:#eef2ff}
+.edu-b.empty .cl{color:#94a3b8}
+.cal-b{flex:1;height:38px;border:1px solid #cbd5e1;background:#f8fafc;color:#1f2433;border-radius:10px;font-weight:700;padding:0 10px;min-width:0}
+#csPop{position:fixed;z-index:4000;display:none;background:var(--card,#fff);color:var(--text,#0f172a);border:1px solid var(--line,#e2e8f0);border-radius:16px;box-shadow:0 18px 44px rgba(15,23,42,.28);padding:6px;overflow:auto;font-family:'Battambang',sans-serif;animation:pop .15s ease-out}
+.csi{padding:10px 14px;border-radius:10px;cursor:pointer;font-size:14.5px;font-family:'Battambang',sans-serif;line-height:1.5}
+.csi:hover{background:var(--acs,#e0e7ff)}
+.csi.on{background:var(--ac,#4f46e5);color:#fff;font-weight:700}
+@media print{.csb .ca{display:none}.edu-b.empty .cl{color:transparent}.edu-b:hover{background:none}#csPop{display:none!important}}
 </style>
 </head>
 <body>
@@ -366,6 +388,8 @@ select option{font-size:14px;font-weight:400}
     </div>
   </div>
 
+<div id="selPop"></div>
+<div id="csPop"></div>
 <div class="toast" id="toast"></div>
 
   <script>
@@ -933,7 +957,7 @@ function render(){
   document.getElementById('kv').innerHTML=KV.map(([k,l])=>k==='edu'
     ?`<tr><th>${l}</th><td><select class="edu" data-edu="1" required><option value="">— ជ្រើសរើស —</option>${EDU.map(e=>`<option value="${e}" ${kvVal('edu')===e?'selected':''}>${e}</option>`).join('')}</select></td></tr>`
     :`<tr><th>${l}</th><td><span class="ed" contenteditable data-kv="${k}" data-ph="" style="min-width:90px;border-bottom:0">${esc(kvVal(k))}</span></td></tr>`).join('');
-  renderSign();document.getElementById('asOfBtn').lastChild.textContent=dLabel(document.getElementById('asOf').value);
+  enhanceAll();renderSign();document.getElementById('asOfBtn').lastChild.textContent=dLabel(document.getElementById('asOf').value);
   // age table
   const n=v=>v?toKh(v):'០';
   let h=`<thead><tr><th rowspan="3" style="width:13%">អាយុ<br>(ឆ្នាំ)</th><th colspan="6">ចំនួនសិស្ស</th></tr>
@@ -1004,7 +1028,7 @@ function changeCalendarSelect(){calView.m=+document.getElementById('calSelMonth'
 function shiftCalendarMonth(n){const t=new Date(calView.y,calView.m-1+n,1);calView={y:t.getFullYear(),m:t.getMonth()+1};renderCalendarGrid()}
 function renderCalendarGrid(){
   const y=calView.y,m=calView.m,first=new Date(y,m-1,1).getDay(),dim=new Date(y,m,0).getDate(),total=Math.ceil((first+dim)/7)*7;
-  document.getElementById('calSelMonth').value=m;document.getElementById('calSelYear').value=y;
+  document.getElementById('calSelMonth').value=m;document.getElementById('calSelYear').value=y;enhanceAll();
   const months=[],be=[],an=[];let html='';const blank=calTarget==='sign'&&INFO.signDate==='blank';
   for(let i=0;i<total;i++){
     const p=addDays(y,m,1,i-first),inM=(p[0]===y&&p[1]===m),o=info(p[0],p[1],p[2]);
@@ -1024,6 +1048,74 @@ function pickCalDate(y,m,d){
 }
 function selectCalendarToday(){pickCalDate(calToday.y,calToday.m,calToday.d)}
 function calBlankDate(){INFO.signDate='blank';saveInfo();renderSign();closeCalendarPopup()}
+
+
+/* ===== Dropdown ផ្ទាល់ខ្លួន: ជំនួសបញ្ជីរបស់ប្រព័ន្ធ ដើម្បីប្រើ font Battambang ===== */
+let _selFor=null;
+function closeSelPop(){const p=document.getElementById('selPop');p.style.display='none';_selFor=null}
+function openSelPop(sel){
+  const p=document.getElementById('selPop');
+  if(_selFor===sel){closeSelPop();return}
+  _selFor=sel;
+  p.innerHTML=[...sel.options].map((o,i)=>`<div class="si ${i===sel.selectedIndex?'on':''}" data-i="${i}">${esc(o.textContent)}</div>`).join('');
+  p.style.display='block';
+  const r=sel.getBoundingClientRect(),w=Math.max(r.width,160);
+  p.style.minWidth=w+'px';
+  let left=Math.min(Math.max(8,r.left),innerWidth-p.offsetWidth-8);
+  let top=r.bottom+6;
+  if(top+p.offsetHeight>innerHeight-8)top=Math.max(8,r.top-p.offsetHeight-6);
+  p.style.left=left+'px';p.style.top=top+'px';
+  const on=p.querySelector('.on');if(on)on.scrollIntoView({block:'nearest'});
+}
+document.addEventListener('mousedown',e=>{const t=e.target;
+  if(t.tagName==='SELECT'){e.preventDefault();t.focus();openSelPop(t);return}
+  if(!t.closest('#selPop'))closeSelPop();
+},true);
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='SELECT'&&(e.key===' '||e.key==='Enter'||e.key==='ArrowDown'&&e.altKey)){e.preventDefault();openSelPop(e.target)}
+  if(e.key==='Escape')closeSelPop();
+},true);
+document.getElementById('selPop').addEventListener('click',e=>{
+  const it=e.target.closest('.si');if(!it||!_selFor)return;
+  const sel=_selFor;sel.selectedIndex=+it.dataset.i;closeSelPop();
+  sel.dispatchEvent(new Event('change',{bubbles:true}));
+});
+window.addEventListener('resize',closeSelPop);
+document.addEventListener('scroll',closeSelPop,true);
+
+
+/* ===== Custom select ===== */
+function csSync(sel){const b=sel._cs;if(!b)return;const o=sel.options[sel.selectedIndex];const t=o?o.textContent:'';b.querySelector('.cl').textContent=t;b.classList.toggle('empty',!sel.value)}
+function csEnhance(sel){
+  if(!sel._cs){
+    const b=document.createElement('button');b.type='button';
+    b.className='csb '+(sel.classList.contains('edu')?'edu-b':(sel.closest('.cal-nav')?'cal-b':'fc'));
+    b.innerHTML='<span class="cl"></span><i class="ca"></i>';
+    sel.style.display='none';sel.insertAdjacentElement('afterend',b);sel._cs=b;
+    b.addEventListener('click',e=>{e.stopPropagation();csOpen(sel)});
+  }
+  csSync(sel);
+}
+function enhanceAll(){document.querySelectorAll('select').forEach(csEnhance)}
+function csClose(){const p=document.getElementById('csPop');p.style.display='none';p.innerHTML=''}
+function csOpen(sel){
+  const p=document.getElementById('csPop');
+  if(p.style.display==='block'&&p._for===sel){csClose();return}
+  p._for=sel;
+  p.innerHTML=[...sel.options].map((o,i)=>`<div class="csi ${i===sel.selectedIndex?'on':''}" data-i="${i}">${o.textContent}</div>`).join('');
+  const r=sel._cs.getBoundingClientRect();
+  p.style.display='block';p.style.minWidth=Math.max(r.width,150)+'px';
+  const vh=window.innerHeight,h=Math.min(p.scrollHeight,Math.max(180,vh*.5));
+  p.style.maxHeight=Math.min(vh*.6,360)+'px';
+  let top=r.bottom+6;if(top+h>vh-8&&r.top>h+8)top=r.top-h-6;
+  let left=Math.min(Math.max(8,r.left),window.innerWidth-p.offsetWidth-8);
+  p.style.top=Math.max(8,top)+'px';p.style.left=left+'px';
+  const on=p.querySelector('.on');if(on)p.scrollTop=on.offsetTop-p.clientHeight/2+on.offsetHeight/2;
+  p.onclick=e=>{const it=e.target.closest('.csi');if(!it)return;e.stopPropagation();sel.selectedIndex=+it.dataset.i;csSync(sel);csClose();sel.dispatchEvent(new Event('change',{bubbles:true}))};
+}
+document.addEventListener('click',e=>{if(!e.target.closest('#csPop'))csClose()});
+window.addEventListener('resize',csClose);window.addEventListener('scroll',e=>{const t=e.target;if(t&&t.id==='csPop')return;csClose()},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')csClose()});
 
 /* ===== modal ===== */
 let MD=null;
@@ -1127,7 +1219,7 @@ async function doPdf(){
 (async function boot(){
   if(!USER||!USER.username){document.getElementById('auth').style.display='flex';return}
   document.getElementById('app').style.display='block';
-  initSelectors();await initClasses();await reload(true);
+  initSelectors();await initClasses();enhanceAll();await reload(true);
 })();
 </script>
 </body>
