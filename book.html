@@ -2952,7 +2952,7 @@ exports.default = {
       try {
         const { error } = await sb.from('book_loans').upsert(records, { onConflict: 'student_id,assigned_class' });
         if (error) throw error;
-        showToast('✅ បានរក្សាទុកទិន្នន័យក្នុង Supabase ជោគជ័យ!');
+        showToast('✅ បានរក្សាទុកទិន្នន័យជោគជ័យ!');
       } catch (err) {
         alert('❌ មិនអាចរក្សាទុកបានទេ៖ ' + err.message);
       }
