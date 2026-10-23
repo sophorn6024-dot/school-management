@@ -306,8 +306,7 @@ select option{font-size:14px;font-weight:400}
   <span class="pill"><label>ថ្នាក់</label><select class="fc" id="selClass" onchange="reload()"></select></span>
   <span class="pill"><label>អាយុគិតត្រឹម</label><input type="hidden" id="asOf"><button type="button" class="fc" id="asOfBtn" onclick="openCal('asof')" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px">📅 <span></span></button></span>
   <span class="sp"></span>
-  <span class="st" id="st"><i></i><span>...</span></span>
-  <button class="btn" onclick="doPrint()">🖨️ បោះពុម្ព</button>
+    <button class="btn" onclick="doPrint()">🖨️ បោះពុម្ព</button>
   <button class="btn ok" onclick="doPdf()">⬇ PDF</button>
 </div>
 
@@ -888,7 +887,7 @@ applyTheme(localStorage.getItem('krou_theme_manual')||'light');
 window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme))applyTheme(e.data.theme||e.data)});
 window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual')applyTheme(e.newValue)});
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2600)}
-function setSt(k,msg){const s=document.getElementById('st');s.className='st '+k;s.lastChild.textContent=msg}
+function setSt(){}
 
 const AGES=[6,7,8,9,10,11,12,13,14,15];
 const DIFF=[
