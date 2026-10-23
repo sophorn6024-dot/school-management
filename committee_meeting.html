@@ -32,6 +32,7 @@ textarea.fc{height:auto;min-height:74px;padding:8px 10px;line-height:1.7;resize:
 .btn.red{background:var(--bads);color:var(--bad)}
 .btn.sm{height:32px;padding:0 11px;font-size:12.5px;border-radius:10px}
 .sp{flex:1}
+.dbst{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--muted)}.dbst i{width:8px;height:8px;border-radius:50%;background:#94a3b8}.dbst.ok i{background:#10b981}.dbst.err i{background:#f43f5e}.dbst.busy i{background:#f59e0b;animation:pl 1s infinite}@keyframes pl{50%{opacity:.3}}
 .wrap{max-width:1180px;margin:0 auto;padding:14px}
 .hero{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px 20px;box-shadow:0 8px 28px rgba(15,23,42,.08)}
 .hero .h1{display:flex;align-items:center;gap:14px}
@@ -326,6 +327,7 @@ select{font-family:'Battambang',sans-serif!important}
     <button class="btn" onclick="goBack()"><svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>ត្រឡប់</button>
     <span class="pill"><label>ឆ្នាំសិក្សា</label><select class="fc" id="selYear" onchange="reload()"></select></span>
     <span class="pill"><label>ថ្នាក់</label><select class="fc" id="selClass" onchange="reload()"></select></span>
+    <span class="dbst" id="dbSt"><i></i><b>—</b></span>
     <span class="pill"><label>ថ្ងៃបោះឆ្នោត</label><button type="button" class="fc" id="electBtn" onclick="pickElect()" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px"></button></span>
   </div>
   <div class="wrap">
@@ -964,10 +966,40 @@ function newData(){return {members:[],meetings:[],locked:false,signDate:'',elect
 const keyOf=(cls)=>'cmt_v1:'+(USER.username||'')+':'+CUR.year+':'+cls;
 const gkey=()=>'cmt_g_v1:'+(USER.username||'');
 function loadOf(cls){try{const d=JSON.parse(localStorage.getItem(keyOf(cls))||'null');return Object.assign(newData(),d||{})}catch(e){return newData()}}
-function saveNow(){try{localStorage.setItem(keyOf(CUR.cls),JSON.stringify(D));return true}catch(e){toast('⚠️ ទំហំផ្ទុកពេញ (រូបថតធំពេក)');return false}}
+function saveNow(){try{localStorage.setItem(keyOf(CUR.cls),JSON.stringify(D));dbPush(CUR.cls,CUR.year,D);return true}catch(e){toast('⚠️ ទំហំផ្ទុកពេញ (រូបថតធំពេក)');return false}}
 let _st;function save(){clearTimeout(_st);_st=setTimeout(saveNow,250)}
+/* ===== Supabase sync (តារាង class_committees) ===== */
+const TBL='class_committees';
+function setDb(t,m){const e=$('dbSt');if(!e)return;e.className='dbst '+t;e.querySelector('b').textContent=m}
+let _dbT={},_dbBusy=0;
+function dbPush(cls,year,payload){
+  if(!sb)return;const k=year+'|'+cls;clearTimeout(_dbT[k]);setDb('busy','កំពុងរក្សាទុក...');
+  _dbT[k]=setTimeout(async()=>{
+    _dbBusy++;
+    try{const {error}=await sb.from(TBL).upsert({school_year:year,class:cls,data:payload,updated_by:USER.username||'',updated_at:new Date().toISOString()},{onConflict:'school_year,class'});
+      if(error)throw error;setDb('ok','បានរក្សាទុកក្នុង Database')}
+    catch(err){setDb('err','រក្សាទុកមិនបាន');const m=String(err.message||err);toast(/relation|does not exist|schema cache/i.test(m)?'⚠️ មិនទាន់មានតារាង class_committees — សូម Run ឯកសារ SQL':'❌ '+m)}
+    _dbBusy--;
+  },500);
+}
+async function syncDown(){
+  if(!sb)return;setDb('busy','កំពុងទាញទិន្នន័យ...');
+  try{
+    const {data,error}=await sb.from(TBL).select('school_year,class,data').in('school_year',[CUR.year,'all']);
+    if(error)throw error;
+    const have=new Set();
+    (data||[]).forEach(r=>{
+      if(r.class==='__settings__'){GL.pDate=(r.data&&r.data.pDate)||'';GL.page=Object.assign({},PAGE0,(r.data&&r.data.page)||{});try{localStorage.setItem(gkey(),JSON.stringify(GL))}catch(e){}}
+      else if(r.school_year===CUR.year){have.add(r.class);try{localStorage.setItem(keyOf(r.class),JSON.stringify(r.data||{}))}catch(e){}}
+    });
+    // ទិន្នន័យដែលមានតែក្នុងឧបករណ៍ (មិនទាន់ឡើង Database) → ផ្ញើឡើង
+    CLASSES.forEach(c=>{if(!have.has(c)){const raw=localStorage.getItem(keyOf(c));if(raw){try{const d=JSON.parse(raw);if((d.members&&d.members.length)||(d.meetings&&d.meetings.length))dbPush(c,CUR.year,d)}catch(e){}}}});
+    if(!(data||[]).some(r=>r.class==='__settings__')&&localStorage.getItem(gkey()))dbPush('__settings__','all',{page:GL.page,pDate:GL.pDate});
+    setDb('ok','ទាញពី Database រួច');
+  }catch(err){setDb('err','មិនទាន់ភ្ជាប់ Database');const m=String(err.message||err);if(/relation|does not exist|schema cache/i.test(m))toast('⚠️ មិនទាន់មានតារាង class_committees — សូម Run ឯកសារ SQL')}
+}
 function loadG(){try{const g=JSON.parse(localStorage.getItem(gkey())||'null');if(g){GL.pDate=g.pDate||'';GL.page=Object.assign({},PAGE0,g.page||{})}}catch(e){}}
-function saveG(){try{localStorage.setItem(gkey(),JSON.stringify(GL))}catch(e){}}
+function saveG(){try{localStorage.setItem(gkey(),JSON.stringify(GL))}catch(e){}dbPush('__settings__','all',{page:GL.page,pDate:GL.pDate})}
 
 /* ===== date helpers ===== */
 const _n=new Date();
@@ -1590,8 +1622,8 @@ async function loadUsers(){
   if(!sb)return;
   try{const {data}=await sb.from('users').select('teacher_name, username, assigned_classes, role');USERS=data||[]}catch(e){}
 }
-function reload(){
-  CUR.year=$('selYear').value;CUR.cls=$('selClass').value;
+async function reload(){
+  CUR.year=$('selYear').value;CUR.cls=$('selClass').value;await syncDown();
   try{localStorage.setItem('cmt_lastClass',CUR.cls)}catch(e){}
   D=loadOf(CUR.cls);
   $('electBtn').innerHTML=IC.cal+'<span>'+esc(dLabel(D.elect,'មិនដាក់'))+'</span>';
@@ -1602,7 +1634,7 @@ function reload(){
   $('app').style.display='block';
   loadG();initSelectors();await initClasses();enhanceAll($('ed'));
   if(!CLASSES.length){CLASSES=['—'];$('selClass').innerHTML='<option value="—">—</option>'}
-  reload();loadUsers();
+  await reload();loadUsers();
 })();
 
 </script>
