@@ -332,8 +332,7 @@ select{font-family:'Battambang',sans-serif!important}
   <div class="tb">
     <button class="btn" onclick="goBack()"><svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>ត្រឡប់</button>
     <span class="pill"><label>ឆ្នាំសិក្សា</label><select class="fc" id="selYear" onchange="reload()"></select></span>
-    <span class="pill"><label>ថ្នាក់</label><select class="fc" id="selClass" onchange="reload()"></select></span>
-    <span class="dbst" id="dbSt"><i></i><b>—</b></span>
+    <span class="pill" id="clsPill"><label>ថ្នាក់</label><select class="fc" id="selClass" onchange="reload()"></select></span>
     <span class="pill"><label>ថ្ងៃបោះឆ្នោត</label><button type="button" class="fc" id="electBtn" onclick="pickElect()" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px"></button></span>
   </div>
   <div class="wrap">
@@ -982,7 +981,7 @@ function saveNow(){try{const c=clean(D);localStorage.setItem(keyOf(CUR.cls),JSON
 let _st;function save(){clearTimeout(_st);_st=setTimeout(saveNow,250)}
 /* ===== Supabase sync (តារាង class_committees) ===== */
 const TBL='class_committees';
-function setDb(t,m){const e=$('dbSt');if(!e)return;e.className='dbst '+t;e.querySelector('b').textContent=m}
+function setDb(){}
 let _dbT={},_dbBusy=0;
 function dbPush(cls,year,payload){
   if(!sb)return;const k=year+'|'+cls;clearTimeout(_dbT[k]);setDb('busy','កំពុងរក្សាទុក...');
@@ -1659,6 +1658,7 @@ async function reload(){
 (async function boot(){
   if(!USER||!USER.username){$('auth').style.display='flex';return}
   $('app').style.display='block';
+  if(!IS_ADMIN)$('clsPill').style.display='none';
   loadG();initSelectors();await initClasses();enhanceAll($('ed'));
   if(!CLASSES.length){CLASSES=['—'];$('selClass').innerHTML='<option value="—">—</option>'}
   await reload();loadUsers();
