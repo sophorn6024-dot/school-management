@@ -697,6 +697,81 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
   body.mnav-off{--mnav-reserve:0px}
   .iframe-container{transition:bottom .3s ease}
 }
+
+/* ===== 📱 ប៊ូតុងហៅរបារខាងក្រោមមកវិញ ===== */
+#mnavPeek{display:none}
+@media (max-width:768px){
+  #mnavPeek{display:block;position:fixed;left:50%;bottom:calc(max(6px,env(safe-area-inset-bottom,0px)) + 2px);transform:translate(-50%,40px);width:84px;height:26px;border:0;border-radius:14px;background:var(--mnav-bg);box-shadow:var(--mnav-shadow);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);opacity:0;pointer-events:none;z-index:70;transition:transform .3s cubic-bezier(.2,.8,.2,1),opacity .25s;padding:0}
+  #mnavPeek span{display:block;width:34px;height:4px;border-radius:3px;background:var(--mnav-ico);margin:0 auto;opacity:.7}
+  body.mnav-off #mnavPeek{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+}
+
+/* ===== 🖥 DASHBOARD បង្រួមឱ្យឃើញ "កិច្ចការថ្ងៃនេះ" ដោយមិនបាច់ scroll ===== */
+@media (min-width:769px){
+  .hero-banner-card, .hero-banner-card *{line-height:1.25}
+  .hero-banner-card.has-cal{padding:14px 18px;gap:14px;border-radius:22px}
+  .hero-left-col{gap:10px}
+  .hero-banner-left{gap:12px}
+  .hero-building-icon{width:48px;height:48px;border-radius:15px}
+  .hero-main-title{font-size:clamp(17px,1.6vw + 6px,22px)}
+  .dash-clock{padding:8px 12px;border-radius:16px}
+  .dash-clock .ck-hm{font-size:clamp(28px,3vw,38px)}
+  .dash-clock .ck-s{font-size:14px}.dash-clock .ck-p{font-size:13px}
+  .dash-clock .ck-line{margin-top:6px;padding-top:6px;font-size:12.5px}
+  .hero-stat-card,.hero-today-card{padding:8px 14px 9px;border-radius:16px;gap:2px}
+  .h-stat-digit{font-size:clamp(22px,2.4vw,28px);margin-top:0}
+  .h-today-status{font-size:clamp(17px,1.9vw,22px)}
+  .h-stat-sub,.h-today-sub{font-size:11.5px}
+  .hero-stat-card .chip,.hero-today-card .chip{width:28px;height:28px;border-radius:10px}
+  .hero-stat-card .chip svg,.hero-today-card .chip svg{width:16px;height:16px}
+  .dash-cal-card{padding:9px 10px 8px;border-radius:18px}
+  .dc-day{min-height:30px;height:34px;padding:1px 0;overflow:hidden}
+  .dc-day .l{font-size:8px}
+  .dc-detail{margin-top:6px;padding:5px 10px}
+  .dc-list{margin-top:5px;padding-top:4px;max-height:44px}
+  .section-headline-group{margin-top:12px!important;margin-bottom:8px!important}
+  .section-cyan-title{font-size:17px}
+  .task-action-card{padding:12px 18px}
+}
+
+/* ===== 🔐 LOGIN — ទំនើប (glass) ===== */
+#authView{background:radial-gradient(1100px 600px at 12% 0%,rgba(99,102,241,.38),transparent 60%),radial-gradient(900px 560px at 100% 100%,rgba(14,165,233,.30),transparent 60%),linear-gradient(160deg,#0b1226 0%,#0a1020 55%,#060a14 100%)}
+#authView:before{background:radial-gradient(circle,rgba(139,92,246,.35),transparent 68%);filter:blur(24px);width:460px;height:460px;right:-120px;top:-140px}
+#authView:after{background:radial-gradient(circle,rgba(34,211,238,.26),transparent 68%);filter:blur(28px);width:420px;height:420px;left:-120px;bottom:-140px}
+.stars{opacity:.22}
+.login-card{position:relative;background:linear-gradient(160deg,rgba(255,255,255,.13),rgba(255,255,255,.05));color:#e8edf8;border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(26px) saturate(160%);-webkit-backdrop-filter:blur(26px) saturate(160%);box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.04) inset,0 1px 0 rgba(255,255,255,.28) inset}
+.login-card:before{content:"";position:absolute;left:12%;right:12%;top:-1px;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,#60a5fa,#a78bfa,#22d3ee,transparent);opacity:.9}
+.login-brand h1{background:linear-gradient(90deg,#fff,#c7d2fe 60%,#a5f3fc);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.login-brand p{color:#a9b6d3}
+.login-line{background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent)}
+.login-field label{color:#b8c4de;font-weight:600}
+.login-input-wrap input{background-color:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.14);color:#f1f5f9;padding-left:44px;background-repeat:no-repeat;background-position:14px 50%;background-size:19px;transition:border-color .2s,box-shadow .2s,background-color .2s}
+.login-input-wrap input::placeholder{color:rgba(203,213,235,.45)}
+.login-input-wrap input:hover{border-color:rgba(255,255,255,.28)}
+.login-input-wrap input:focus{background-color:rgba(255,255,255,.11);border-color:#7aa7ff;box-shadow:0 0 0 4px rgba(96,165,250,.20),0 8px 24px rgba(59,130,246,.18)}
+#loginUsername,#stuName{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fb2d6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7'/%3E%3C/svg%3E")}
+#loginPassword,#stuPass{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fb2d6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='10' width='16' height='11' rx='3'/%3E%3Cpath d='M8 10V7a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E");padding-right:46px}
+#stuQrCode{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fb2d6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='7' height='7' rx='1.5'/%3E%3Crect x='14' y='3' width='7' height='7' rx='1.5'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1.5'/%3E%3Cpath d='M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3'/%3E%3C/svg%3E")}
+.login-input-wrap input:-webkit-autofill{-webkit-text-fill-color:#f1f5f9;caret-color:#fff;-webkit-box-shadow:0 0 0 40px #1a2540 inset;transition:background-color 9999s}
+.login-toggle{filter:grayscale(1) brightness(1.7);opacity:.8}
+.login-btn{background:linear-gradient(135deg,#3b82f6 0%,#6366f1 55%,#8b5cf6 100%);box-shadow:0 14px 30px rgba(79,70,229,.45),0 1px 0 rgba(255,255,255,.35) inset;overflow:hidden;letter-spacing:.2px}
+.login-btn:after{content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-20deg);transition:left .6s}
+.login-btn:hover:after{left:130%}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 18px 36px rgba(79,70,229,.55),0 1px 0 rgba(255,255,255,.35) inset}
+.login-btn:active{transform:scale(.985)}
+#stuQr .login-btn[style*="flex:1"]{background:rgba(255,255,255,.09)!important;color:#dbe6ff!important;border:1px solid rgba(255,255,255,.18);box-shadow:none!important}
+#stuQr .login-btn[style*="flex:1"]:hover{background:rgba(255,255,255,.16)!important}
+.login-error{background:rgba(244,63,94,.14);border-color:rgba(251,113,133,.45);color:#fecdd3}
+.lg-role{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14)}
+.lg-role button{color:#a9b6d3}
+.lg-role button.on{background:linear-gradient(135deg,#3b82f6,#7c3aed);color:#fff;box-shadow:0 8px 20px rgba(99,102,241,.4)}
+.lg-select select{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.16);color:#f1f5f9}
+.lg-select select:hover{border-color:rgba(255,255,255,.32)}
+.lg-select select:focus{border-color:#7aa7ff;box-shadow:0 0 0 4px rgba(96,165,250,.2)}
+.lg-select select option{background:#0f172a;color:#f1f5f9}
+.lg-select:after{border-color:#9fc0ff}
+.login-footer{color:#8392b3}
+.mascot .head{box-shadow:0 12px 28px rgba(0,0,0,.45),0 0 0 6px rgba(255,255,255,.06)}
 </style>
 </head>
 <body>
@@ -3763,10 +3838,12 @@ applyIcons();
   var MIN = 10, lock = 0, hidden = false, anchors = new WeakMap();
   function isMob(){ return window.matchMedia('(max-width:768px)').matches; }
   function setHidden(h){
-    if (h === hidden) return;
-    hidden = h; lock = Date.now() + 500;
+    var actual = document.body.classList.contains('mnav-off');
+    if (h === actual) { hidden = h; return; }          // ធានាថា state ត្រូវនឹង class ពិតប្រាកដ
+    hidden = h; lock = Date.now() + (h ? 450 : 250);
     document.body.classList.toggle('mnav-off', h);
   }
+  window.__mnavShow = function(){ setHidden(false); };
   function onScroll(e){
     if (!isMob()) { if (hidden) setHidden(false); return; }
     var t = e.target; if (!t) return;
@@ -3784,7 +3861,45 @@ applyIcons();
     var down = d > 0;
     setHidden(HIDE_ON_SCROLL_DOWN ? down : !down);
   }
-  function attach(doc){ try { doc.addEventListener('scroll', onScroll, true); } catch(e){} }
+  /* ឆានែលទី២: ទិសដៅម្រាមដៃ/កង់កណ្ដុរ — ធានាថារបារត្រឡប់មកវិញជានិច្ច ទោះ scroll container ជាអ្វីក៏ដោយ */
+  function canScroll(t){
+    try {
+      while (t && t.nodeType === 1) {
+        if (t.scrollHeight - t.clientHeight > 60) {
+          var de = t.ownerDocument.documentElement, ov = t.ownerDocument.defaultView.getComputedStyle(t).overflowY;
+          if (/auto|scroll/.test(ov) || t === de || t === t.ownerDocument.body) return true;
+        }
+        t = t.parentElement;
+      }
+    } catch(e) {}
+    return false;
+  }
+  function bindGesture(doc){
+    var sy = null;
+    doc.addEventListener('touchstart', function(e){ sy = e.touches && e.touches[0] ? e.touches[0].clientY : null; }, { passive:true, capture:true });
+    doc.addEventListener('touchmove', function(e){
+      if (sy == null || !isMob() || !e.touches || !e.touches[0]) return;
+      var y = e.touches[0].clientY, dy = y - sy;
+      if (Math.abs(dy) < 14) return;
+      sy = y;
+      var t = e.target; if (t && t.closest && t.closest('#moreSheet,.sidebar,.modal-backdrop,[role="dialog"],textarea,select')) return;
+      if (dy > 0) setHidden(false);                                // ម្រាមដៃអូសចុះ → content ឡើងលើ → បង្ហាញ
+      else if (Date.now() >= lock && canScroll(t)) setHidden(true);  // ម្រាមដៃអូសឡើង → content ចុះក្រោម → លាក់
+    }, { passive:true, capture:true });
+    doc.addEventListener('wheel', function(e){
+      if (!isMob() || Math.abs(e.deltaY) < 4) return;
+      if (e.deltaY < 0) setHidden(false);
+      else if (Date.now() >= lock && canScroll(e.target)) setHidden(true);
+    }, { passive:true, capture:true });
+  }
+  function attach(doc){ try { doc.addEventListener('scroll', onScroll, true); bindGesture(doc); } catch(e){} }
+  /* ប៊ូតុងតូចសម្រាប់ហៅរបារមកវិញ (ពេលរបារលាក់) */
+  (function(){
+    var pk = document.createElement('button'); pk.id = 'mnavPeek'; pk.type = 'button'; pk.setAttribute('aria-label', 'បង្ហាញម៉ឺនុយ');
+    pk.innerHTML = '<span></span>';
+    pk.addEventListener('click', function(){ setHidden(false); });
+    document.body.appendChild(pk);
+  })();
   attach(document);
   var fr = document.getElementById('pageFrame');
   if (fr) fr.addEventListener('load', function(){
