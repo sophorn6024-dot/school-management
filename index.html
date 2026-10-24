@@ -2198,8 +2198,8 @@ function showAppScreen(pageToOpen) {
 function onLoginAsChange() {
   const st = document.getElementById('loginAs').value === 'student';
   const l = document.querySelector('label[for="loginUsername"]'), i = document.getElementById('loginUsername');
-  if (l) l.textContent = st ? 'លេខសិស្ស / Username' : 'Username / ឈ្មោះគណនី';
-  if (i) i.placeholder = st ? 'បញ្ចូលលេខសិស្ស' : 'បញ្ចូល Username';
+  if (l) l.textContent = st ? 'ឈ្មោះសិស្ស (ឈ្មោះគណនី)' : 'Username / ឈ្មោះគណនី';
+  if (i) i.placeholder = st ? 'បញ្ចូលឈ្មោះរបស់អ្នក' : 'បញ្ចូល Username';
 }
 function toggleLoginPassword() { const p = document.getElementById('loginPassword'); p.type = p.type === 'password' ? 'text' : 'password'; }
 function showLoginError(msg) { const b = document.getElementById('loginErrorBox'); b.innerText = msg; b.classList.add('show'); }
@@ -2220,7 +2220,7 @@ async function handleLoginSubmit(e) {
       const { data: sd, error: se } = await sb.rpc('student_login', { p_username: u, p_password: p });
       if (se) throw se;
       if (!sd || sd.error || !sd.token) {
-        showLoginError(sd && sd.error === 'locked' ? 'ព្យាយាមច្រើនដងពេក សូមរង់ចាំ ៥ នាទី រួចព្យាយាមម្តងទៀត' : 'លេខសិស្ស ឬ Password មិនត្រឹមត្រូវ!');
+        showLoginError(sd && sd.error === 'locked' ? 'ព្យាយាមច្រើនដងពេក សូមរង់ចាំ ៥ នាទី រួចព្យាយាមម្តងទៀត' : 'ឈ្មោះ ឬ Password មិនត្រឹមត្រូវ!');
         btn.disabled = false; btnText.innerText = '🚪 ចូលប្រើប្រាស់ប្រព័ន្ធ';
         return;
       }
