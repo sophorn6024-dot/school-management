@@ -77,6 +77,7 @@ th{background:var(--in);color:var(--muted);font-weight:700}
 .cnt{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
 .cnt .st{min-height:0;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}.cnt .st .v{font-size:30px;margin:0}
 .doc{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:14px;margin-bottom:8px;background:var(--in)}
+.doc .di{font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fff;border-radius:10px;padding:2px}.doc .di img{border-radius:6px;object-fit:contain}
 .doc a{margin-left:auto;color:var(--ac);font-weight:700;text-decoration:none;white-space:nowrap}
 #msgs{height:52vh;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:6px}
 .m{max-width:78%;padding:8px 12px;border-radius:14px;background:var(--in);border:1px solid var(--line);align-self:flex-start;word-break:break-word}
@@ -339,11 +340,18 @@ async function vAtt(){
 }
 
 /* ── បណ្ណាល័យឯកសារ ── */
+function docIcon(u){
+  try{
+    const h=new URL(u).hostname;
+    if(/\.supabase\.co$/i.test(h))return '📄'; // ឯកសារផ្ទុកឡើងក្នុងប្រព័ន្ធ
+    return `<img src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(h)}&sz=64" alt="" width="34" height="34" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createTextNode('🔗'))">`;
+  }catch(e){return '📄'}
+}
 async function vLib(){
   load();
   let d;try{d=await tk('student_documents')}catch(e){$('view').innerHTML=`<div class="empty">${esc(e.message)}</div>`;return}
   const safe=u=>/^https?:\/\//i.test(u)?u:'#';
-  $('view').innerHTML=`<div class="card"><b>📚 បណ្ណាល័យឯកសារ</b><div style="margin-top:12px">${d.length?d.map(x=>`<div class="doc"><span style="font-size:24px">📄</span><div><b>${esc(x.title)}</b><br><small style="color:var(--muted)">${esc(x.category||'ទូទៅ')} · ${new Date(x.created_at).toLocaleDateString('en-GB')}</small></div><a href="${esc(safe(x.url))}" target="_blank" rel="noopener noreferrer">បើក ↗</a></div>`).join(''):'<div class="empty">មិនទាន់មានឯកសារទេ។</div>'}</div></div>`;
+  $('view').innerHTML=`<div class="card"><b>📚 បណ្ណាល័យឯកសារ</b><div style="margin-top:12px">${d.length?d.map(x=>`<div class="doc"><span class="di">${docIcon(x.url)}</span><div><b>${esc(x.title)}</b><br><small style="color:var(--muted)">${esc(x.category||'ទូទៅ')} · ${new Date(x.created_at).toLocaleDateString('en-GB')}</small></div><a href="${esc(safe(x.url))}" target="_blank" rel="noopener noreferrer">បើក ↗</a></div>`).join(''):'<div class="empty">មិនទាន់មានឯកសារទេ។</div>'}</div></div>`;
 }
 
 /* ── សារសន្ទនា ── */
