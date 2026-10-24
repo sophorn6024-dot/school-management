@@ -691,6 +691,7 @@
   <div class="no-print-toolbar" id="controlToolbar" style="display:none;">
 
     <div class="tb-group tb-filters">
+      <button type="button" class="btn btn-ghost" onclick="goBackToReports()" title="ត្រឡប់ទៅបញ្ជីរបាយការណ៍"><i class="fa-solid fa-arrow-left"></i> <span>ត្រឡប់</span></button>
       <!-- ថ្នាក់ (បង្ហាញតែ Admin) -->
       <div class="panel-pill-box" id="adminClassBox" style="display:none;">
         <span class="toolbar-label font-battambang"><i class="fa-solid fa-graduation-cap" style="color:#0284c7;"></i> <span class="lbl">ថ្នាក់ទី៖</span></span>
@@ -1974,6 +1975,21 @@ exports.default = {
 
     const KHMER_DIGITS = ['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
     function cleanGrade(g) { return String(g || '').replace(/^ថ្នាក់ទី\s*/, '').trim(); }
+    // 📅 ថ្ងៃខែឆ្នាំកំណើត → «៣ ខែតុលា ឆ្នាំ២០១៩» (គាំទ្រ 2019-10-03, 03/10/2019, ទ្រង់ទ្រាយខ្មែរ)
+    const DOB_MONTHS = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+    function formatDobKh(v) {
+      if (v === null || v === undefined) return '';
+      const raw = String(v).trim();
+      if (!raw) return '';
+      const s = raw.replace(/[០-៩]/g, d => '០១២៣៤៥៦៧៨៩'.indexOf(d));
+      let y, m, d, mt;
+      if ((mt = s.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/))) { y = +mt[1]; m = +mt[2]; d = +mt[3]; }
+      else if ((mt = s.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})/))) { d = +mt[1]; m = +mt[2]; y = +mt[3]; }
+      else if ((mt = s.match(/(\d{1,2})\s*(?:ខែ)?\s*(មករា|កុម្ភៈ|មីនា|មេសា|ឧសភា|មិថុនា|កក្កដា|សីហា|កញ្ញា|តុលា|វិច្ឆិកា|ធ្នូ)\s*(?:ឆ្នាំ)?\s*(\d{4})/))) { d = +mt[1]; m = DOB_MONTHS.indexOf(mt[2]) + 1; y = +mt[3]; }
+      if (!y || m < 1 || m > 12 || d < 1 || d > 31) return raw;
+      return d + ' ខែ' + DOB_MONTHS[m - 1] + ' ឆ្នាំ' + y;
+    }
+
     function toKhmerDigits(str) {
       if (str === null || str === undefined) return '';
       return String(str).replace(/[0-9]/g, d => KHMER_DIGITS[d]);
@@ -2510,7 +2526,7 @@ exports.default = {
       topStudents.forEach((st, idx) => {
         const sName = st.name || '...............................';
         const sGender = st.gender || '.........';
-        const sDob = st.dob || '........................................';
+        const sDob = formatDobKh(st.dob) || '........................................';
         const sClass = st.grade || selectedClass || '........';
         const sRank = st.rank !== undefined ? st.rank : (idx + 1);
         const sAvg = st.avg !== undefined ? st.avg : '';
@@ -2634,6 +2650,15 @@ exports.default = {
           cornerKbachEls.forEach(el => el.style.display = '');
         }
       });
+    }
+      function goBackToReports() {
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'NAVIGATE', page: 'reportsHub' }, '*');
+          return;
+        }
+      } catch (e) {}
+      window.location.href = 'index.html#reportsHub';
     }
   </script>
 </body>
