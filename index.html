@@ -3234,7 +3234,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 /* ===== 🔄 ពិនិត្យកំណែថ្មី (index + ទំព័រកូនដែលកំពុងបើក) ===== */
 (function(){
   if (!/^https?:/.test(location.protocol)) return;
-  var base = {}, dismissed = false;
+  var base = {}, seen = {}, dismissedSig = {};
   function sig(t){ var h=0; for (var i=0;i<t.length;i++){ h=(h*31+t.charCodeAt(i))|0; } return t.length+':'+h; }
   async function fetchSig(path){
     var r = await fetch(location.origin + path + '?_v=' + Date.now(), { cache: 'no-store' });
@@ -3255,15 +3255,17 @@ window.addEventListener('DOMContentLoaded', async () => {
       try {
         var s = await fetchSig(t[k]);
         if (base[t[k]] === undefined) { base[t[k]] = s; continue; }
-        if (s !== base[t[k]] && !dismissed) document.getElementById('updToast').classList.add('show');
+        seen[t[k]] = s;
+        if (s !== base[t[k]] && s !== dismissedSig[t[k]]) document.getElementById('updToast').classList.add('show');
       } catch(e) {}
     }
   }
-  window.dismissUpdate = function(){ dismissed = true; document.getElementById('updToast').classList.remove('show'); };
+  window.dismissUpdate = function(){ for (var k in seen) dismissedSig[k] = seen[k]; document.getElementById('updToast').classList.remove('show'); };
   window.checkForUpdate = check;
   check();
   setInterval(check, 60000);
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) check(); });
+  window.addEventListener('focus', check);
   var pf = document.getElementById('pageFrame');
   if (pf) pf.addEventListener('load', function(){ setTimeout(check, 800); });
 })();
