@@ -109,8 +109,8 @@ th{background:var(--in);color:var(--muted);font-weight:700}
     <p>ផ្ទាំងសិស្ស — សាលាបឋមសិក្សាកំពង់ល្ពៅ</p>
     <div class="seg"><button id="tPw" class="on" onclick="setTab('pw')">Password</button><button id="tQr" onclick="setTab('qr')">QR Login</button></div>
     <div id="pPw">
-      <label class="f">លេខសិស្ស / Username</label>
-      <input id="lu" class="in" autocomplete="username" placeholder="បញ្ចូលលេខសិស្ស">
+      <label class="f">ឈ្មោះសិស្ស (ឈ្មោះគណនី)</label>
+      <input id="lu" class="in" autocomplete="username" placeholder="បញ្ចូលឈ្មោះរបស់អ្នក">
       <label class="f">ពាក្យសម្ងាត់</label>
       <div class="pw"><input id="lp" class="in" type="password" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"><button type="button" onclick="lp.type=lp.type==='password'?'text':'password'">👁</button></div>
       <button class="btn" id="bLogin" onclick="doLogin()">ចូលប្រព័ន្ធ</button>
@@ -178,7 +178,7 @@ function loginResult(d){
   start();return true;
 }
 async function doLogin(){
-  const u=lu.value.trim(),p=lp.value;if(!u||!p){lerr('សូមបញ្ចូលលេខសិស្ស និងពាក្យសម្ងាត់');return}
+  const u=lu.value.trim(),p=lp.value;if(!u||!p){lerr('សូមបញ្ចូលឈ្មោះ និងពាក្យសម្ងាត់');return}
   bLogin.disabled=true;lerr('');
   try{loginResult(await rpc('student_login',{p_username:u,p_password:p}))}catch(e){lerr('កំហុស៖ '+(e.message||e))}
   bLogin.disabled=false;
