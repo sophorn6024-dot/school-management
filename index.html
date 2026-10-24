@@ -2319,24 +2319,45 @@ function stuTab(t) {
 }
 function stuLoginDone(d) {
   if (!d || d.error || !d.token) {
+    stuCloseTab();
     showLoginError(d && d.error === 'locked' ? 'ព្យាយាមច្រើនដងពេក សូមរង់ចាំ ៥ នាទី រួចព្យាយាមម្តងទៀត' : 'ព័ត៌មានចូលមិនត្រឹមត្រូវ!');
     return false;
   }
   try { localStorage.setItem('krou_student_session', JSON.stringify({ token: d.token })); localStorage.removeItem('krou_student_state'); } catch(e) {}
-  location.href = 'student_portal.html';
+  // បើកក្នុង tab ថ្មី (ប្រើ tab ដែលបើកទុកជាមុន ដើម្បីកុំឱ្យ popup blocker រារាំង); បើមិនបាន → ប្រើ tab ដដែល
+  const w = STU_TAB; STU_TAB = null;
+  if (w && !w.closed) { try { w.location.href = 'student_portal.html'; w.focus(); } catch(e) { location.href = 'student_portal.html'; return true; } }
+  else {
+    let nw = null; try { nw = window.open('student_portal.html', '_blank'); } catch(e) {}
+    if (!nw) { location.href = 'student_portal.html'; return true; }
+  }
+  stuResetForm();
   return true;
+}
+let STU_TAB = null;
+function stuPreOpen() {
+  try { if (STU_TAB && !STU_TAB.closed) return; STU_TAB = window.open('about:blank', '_blank'); } catch(e) { STU_TAB = null; }
+}
+function stuCloseTab() { try { if (STU_TAB && !STU_TAB.closed) STU_TAB.close(); } catch(e) {} STU_TAB = null; }
+function stuResetForm() {
+  ['stuName','stuPass','stuQrCode'].forEach(id => { const e = document.getElementById(id); if (e) e.value = ''; });
+  stuStopCam();
+  const btn = document.getElementById('stuBtn'), tx = document.getElementById('stuBtnText');
+  if (btn) btn.disabled = false; if (tx) tx.innerText = '🚪 ចូលប្រព័ន្ធ';
+  hideLoginError();
 }
 async function stuSubmit() {
   hideLoginError();
   const u = document.getElementById('stuName').value.trim(), p = document.getElementById('stuPass').value;
   if (!u || !p) return showLoginError('សូមបញ្ចូលអត្តលេខ និងពាក្យសម្ងាត់!');
+  stuPreOpen();
   const btn = document.getElementById('stuBtn'), tx = document.getElementById('stuBtnText');
   btn.disabled = true; tx.innerText = '⏳ កំពុងផ្ទៀងផ្ទាត់...';
   try {
     const { data, error } = await sb.rpc('student_login', { p_username: u, p_password: p });
     if (error) throw error;
     if (stuLoginDone(data)) return;
-  } catch (err) { console.error(err); showLoginError('កំហុស៖ ' + (err.message || 'មិនអាចភ្ជាប់បាន')); }
+  } catch (err) { console.error(err); stuCloseTab(); showLoginError('កំហុស៖ ' + (err.message || 'មិនអាចភ្ជាប់បាន')); }
   btn.disabled = false; tx.innerText = '🚪 ចូលប្រព័ន្ធ';
 }
 function stuQrCode(v) { v = String(v || '').trim(); try { const u = new URL(v); return u.searchParams.get('qr') || v; } catch(e) { return v; } }
@@ -2344,11 +2365,12 @@ async function stuQrLogin(v) {
   hideLoginError();
   const c = stuQrCode(v);
   if (!c) return showLoginError('សូមបញ្ចូលកូដ QR');
+  stuPreOpen();
   try {
     const { data, error } = await sb.rpc('student_login_qr', { p_qr: c });
     if (error) throw error;
     stuLoginDone(data);
-  } catch (err) { showLoginError('កំហុស៖ ' + (err.message || 'មិនអាចភ្ជាប់បាន')); }
+  } catch (err) { stuCloseTab(); showLoginError('កំហុស៖ ' + (err.message || 'មិនអាចភ្ជាប់បាន')); }
 }
 let stuStream = null;
 function stuStopCam() {
