@@ -641,7 +641,6 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
     <section class="login-card">
       <div class="login-brand"><h1>សាលាបឋមសិក្សាកំពង់ល្ពៅ</h1><p>ប្រព័ន្ធគ្រប់គ្រងសិស្ស និងគ្រូបង្រៀន</p></div>
       <div class="login-line"></div>
-      <div class="lg-role"><button type="button" id="rolT" class="on" onclick="setLoginRole('teacher')">👩‍🏫 គ្រូ / Admin</button><button type="button" id="rolS" onclick="setLoginRole('student')">🎓 សិស្ស</button></div>
       <div class="login-error" id="loginErrorBox"></div>
       <div id="stuLogin" style="display:none">
         <div class="lg-role lg-sub"><button type="button" id="stTabPw" class="on" onclick="stuTab('pw')">Password</button><button type="button" id="stTabQr" onclick="stuTab('qr')">QR Login</button></div>
@@ -661,6 +660,7 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
         <div class="login-field"><label for="loginPassword">Password / ពាក្យសម្ងាត់</label><div class="login-input-wrap"><input id="loginPassword" type="password" placeholder="បញ្ចូល Password" required autocomplete="current-password"><button class="login-toggle" type="button" onclick="toggleLoginPassword()">👁️</button></div></div>
         <button class="login-btn" id="loginSubmitBtn" type="submit"><span id="loginBtnText">🚪 ចូលប្រើប្រាស់ប្រព័ន្ធ</span></button>
       </form>
+      <div class="login-field" style="margin:16px 0 0"><label for="loginAs">ចូលក្នុងនាម</label><div class="login-input-wrap"><select id="loginAs" onchange="setLoginRole(this.value)" style="width:100%;height:48px;border:1px solid #dbe3ef;border-radius:14px;background:#f8fafc;color:#0f172a;padding:0 14px;font:inherit;font-size:14px;outline:none;cursor:pointer"><option value="teacher">គ្រូ / Admin</option><option value="student">សិស្ស</option></select></div></div>
       <div class="login-footer">© <span id="loginYear"></span> សាលាបឋមសិក្សាកំពង់ល្ពៅ</div>
     </section>
   </div>
@@ -2221,8 +2221,7 @@ function setLoginRole(r) {
   LOGIN_ROLE = r === 'student' ? 'student' : 'teacher';
   try { localStorage.setItem('krou_login_role', LOGIN_ROLE); } catch(e) {}
   const st = LOGIN_ROLE === 'student';
-  document.getElementById('rolT').classList.toggle('on', !st);
-  document.getElementById('rolS').classList.toggle('on', st);
+  document.getElementById('loginAs').value = LOGIN_ROLE;
   document.getElementById('loginForm').style.display = st ? 'none' : '';
   document.getElementById('stuLogin').style.display = st ? '' : 'none';
   stuStopCam();
