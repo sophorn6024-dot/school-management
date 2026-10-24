@@ -616,6 +616,9 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 @keyframes wave{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(16deg)}20%,40%{transform:rotate(-10deg)}50%{transform:rotate(8deg)}}
 @media (prefers-reduced-motion:reduce){.lw-hi,.lw-t,.lw-s,.lw-hi .wave{animation:none}}
 body:not(.is-admin) [data-admin-only]{display:none!important}
+.lg-role{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#f1f5f9;border:1px solid #dbe3ef;border-radius:16px;padding:5px;margin-bottom:18px}
+.lg-role button{border:0;background:transparent;border-radius:12px;padding:11px 8px;font:inherit;font-weight:700;font-size:13px;color:#64748b;cursor:pointer;transition:.2s}
+.lg-role button.on{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;box-shadow:0 8px 18px rgba(37,99,235,.25)}
 </style>
 </head>
 <body>
@@ -638,11 +641,24 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
     <section class="login-card">
       <div class="login-brand"><h1>សាលាបឋមសិក្សាកំពង់ល្ពៅ</h1><p>ប្រព័ន្ធគ្រប់គ្រងសិស្ស និងគ្រូបង្រៀន</p></div>
       <div class="login-line"></div>
+      <div class="lg-role"><button type="button" id="rolT" class="on" onclick="setLoginRole('teacher')">👩‍🏫 គ្រូ / Admin</button><button type="button" id="rolS" onclick="setLoginRole('student')">🎓 សិស្ស</button></div>
       <div class="login-error" id="loginErrorBox"></div>
+      <div id="stuLogin" style="display:none">
+        <div class="lg-role lg-sub"><button type="button" id="stTabPw" class="on" onclick="stuTab('pw')">Password</button><button type="button" id="stTabQr" onclick="stuTab('qr')">QR Login</button></div>
+        <div id="stuPw">
+          <div class="login-field"><label for="stuName">ឈ្មោះសិស្ស (ឈ្មោះគណនី)</label><div class="login-input-wrap"><input id="stuName" type="text" placeholder="បញ្ចូលឈ្មោះរបស់អ្នក" autocomplete="username"></div></div>
+          <div class="login-field"><label for="stuPass">ពាក្យសម្ងាត់</label><div class="login-input-wrap"><input id="stuPass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')stuSubmit()"><button class="login-toggle" type="button" onclick="var p=document.getElementById('stuPass');p.type=p.type==='password'?'text':'password'">👁️</button></div></div>
+          <button class="login-btn" id="stuBtn" type="button" onclick="stuSubmit()"><span id="stuBtnText">🚪 ចូលប្រព័ន្ធ</span></button>
+        </div>
+        <div id="stuQr" style="display:none">
+          <div class="login-field"><label for="stuQrCode">កូដ QR (ឬស្កេនពីកាតសិស្ស)</label><div class="login-input-wrap"><input id="stuQrCode" type="text" placeholder="បិទភ្ជាប់កូដ ឬតំណពី QR" onkeydown="if(event.key==='Enter')stuQrLogin(this.value)"></div></div>
+          <video id="stuVid" playsinline muted style="display:none;width:100%;border-radius:14px;margin-bottom:12px"></video>
+          <div style="display:flex;gap:10px"><button class="login-btn" type="button" style="background:#e2e8f0;color:#0f172a;box-shadow:none" onclick="stuScan()">📷 ស្កេនកាមេរ៉ា</button><button class="login-btn" type="button" onclick="stuQrLogin(document.getElementById('stuQrCode').value)">ចូលប្រព័ន្ធ</button></div>
+        </div>
+      </div>
       <form id="loginForm" onsubmit="handleLoginSubmit(event)">
         <div class="login-field"><label for="loginUsername">Username / ឈ្មោះគណនី</label><div class="login-input-wrap"><input id="loginUsername" type="text" placeholder="បញ្ចូល Username" required autocomplete="username"></div></div>
         <div class="login-field"><label for="loginPassword">Password / ពាក្យសម្ងាត់</label><div class="login-input-wrap"><input id="loginPassword" type="password" placeholder="បញ្ចូល Password" required autocomplete="current-password"><button class="login-toggle" type="button" onclick="toggleLoginPassword()">👁️</button></div></div>
-        <div class="login-field"><label for="loginAs">ចូលក្នុងនាម</label><div class="login-input-wrap"><select id="loginAs" onchange="onLoginAsChange()" style="width:100%;background:transparent;color:inherit;border:0;outline:0;font:inherit;padding:12px 0;"><option value="teacher">គ្រូ / Admin</option><option value="student">សិស្ស</option></select></div></div>
         <button class="login-btn" id="loginSubmitBtn" type="submit"><span id="loginBtnText">🚪 ចូលប្រើប្រាស់ប្រព័ន្ធ</span></button>
       </form>
       <div class="login-footer">© <span id="loginYear"></span> សាលាបឋមសិក្សាកំពង់ល្ពៅ</div>
@@ -2183,6 +2199,7 @@ function showAuthScreen() {
   try { document.getElementById('loginGreet').textContent = timeGreeting() + ' !'; } catch(e) {}
   document.getElementById('authView').style.display = 'flex';
   document.getElementById('mainAppLayout').style.display = 'none';
+  try { setLoginRole(LOGIN_ROLE); } catch(e) {}
 }
 function showAppScreen(pageToOpen) {
   document.getElementById('authView').style.display = 'none';
@@ -2195,11 +2212,82 @@ function showAppScreen(pageToOpen) {
   startChatNotifier();
   requestAnimationFrame(updateMobileNavIndicator);
 }
-function onLoginAsChange() {
-  const st = document.getElementById('loginAs').value === 'student';
-  const l = document.querySelector('label[for="loginUsername"]'), i = document.getElementById('loginUsername');
-  if (l) l.textContent = st ? 'ឈ្មោះសិស្ស (ឈ្មោះគណនី)' : 'Username / ឈ្មោះគណនី';
-  if (i) i.placeholder = st ? 'បញ្ចូលឈ្មោះរបស់អ្នក' : 'បញ្ចូល Username';
+/* ── ជ្រើសប្រភេទអ្នកប្រើ: គ្រូ / សិស្ស ── */
+let LOGIN_ROLE = (function(){
+  try { const q = new URLSearchParams(location.search).get('login'); if (q === 'student' || q === 'teacher') return q; } catch(e) {}
+  try { return localStorage.getItem('krou_login_role') === 'student' ? 'student' : 'teacher'; } catch(e) { return 'teacher'; }
+})();
+function setLoginRole(r) {
+  LOGIN_ROLE = r === 'student' ? 'student' : 'teacher';
+  try { localStorage.setItem('krou_login_role', LOGIN_ROLE); } catch(e) {}
+  const st = LOGIN_ROLE === 'student';
+  document.getElementById('rolT').classList.toggle('on', !st);
+  document.getElementById('rolS').classList.toggle('on', st);
+  document.getElementById('loginForm').style.display = st ? 'none' : '';
+  document.getElementById('stuLogin').style.display = st ? '' : 'none';
+  stuStopCam();
+  hideLoginError();
+}
+function stuTab(t) {
+  const q = t === 'qr';
+  document.getElementById('stTabPw').classList.toggle('on', !q);
+  document.getElementById('stTabQr').classList.toggle('on', q);
+  document.getElementById('stuPw').style.display = q ? 'none' : '';
+  document.getElementById('stuQr').style.display = q ? '' : 'none';
+  if (!q) stuStopCam();
+  hideLoginError();
+}
+function stuLoginDone(d) {
+  if (!d || d.error || !d.token) {
+    showLoginError(d && d.error === 'locked' ? 'ព្យាយាមច្រើនដងពេក សូមរង់ចាំ ៥ នាទី រួចព្យាយាមម្តងទៀត' : 'ព័ត៌មានចូលមិនត្រឹមត្រូវ!');
+    return false;
+  }
+  try { localStorage.setItem('krou_student_session', JSON.stringify({ token: d.token })); localStorage.removeItem('krou_student_state'); } catch(e) {}
+  location.href = 'student_portal.html';
+  return true;
+}
+async function stuSubmit() {
+  hideLoginError();
+  const u = document.getElementById('stuName').value.trim(), p = document.getElementById('stuPass').value;
+  if (!u || !p) return showLoginError('សូមបញ្ចូលឈ្មោះ និងពាក្យសម្ងាត់!');
+  const btn = document.getElementById('stuBtn'), tx = document.getElementById('stuBtnText');
+  btn.disabled = true; tx.innerText = '⏳ កំពុងផ្ទៀងផ្ទាត់...';
+  try {
+    const { data, error } = await sb.rpc('student_login', { p_username: u, p_password: p });
+    if (error) throw error;
+    if (stuLoginDone(data)) return;
+  } catch (err) { console.error(err); showLoginError('កំហុស៖ ' + (err.message || 'មិនអាចភ្ជាប់បាន')); }
+  btn.disabled = false; tx.innerText = '🚪 ចូលប្រព័ន្ធ';
+}
+function stuQrCode(v) { v = String(v || '').trim(); try { const u = new URL(v); return u.searchParams.get('qr') || v; } catch(e) { return v; } }
+async function stuQrLogin(v) {
+  hideLoginError();
+  const c = stuQrCode(v);
+  if (!c) return showLoginError('សូមបញ្ចូលកូដ QR');
+  try {
+    const { data, error } = await sb.rpc('student_login_qr', { p_qr: c });
+    if (error) throw error;
+    stuLoginDone(data);
+  } catch (err) { showLoginError('កំហុស៖ ' + (err.message || 'មិនអាចភ្ជាប់បាន')); }
+}
+let stuStream = null;
+function stuStopCam() {
+  if (stuStream) { stuStream.getTracks().forEach(t => t.stop()); stuStream = null; }
+  const v = document.getElementById('stuVid'); if (v) v.style.display = 'none';
+}
+async function stuScan() {
+  if (!('BarcodeDetector' in window)) return showLoginError('ឧបករណ៍នេះមិនគាំទ្រការស្កេន សូមបិទភ្ជាប់កូដដោយដៃ');
+  try {
+    stuStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    const v = document.getElementById('stuVid'); v.srcObject = stuStream; v.style.display = 'block'; await v.play();
+    const det = new BarcodeDetector({ formats: ['qr_code'] });
+    const loop = async () => {
+      if (!stuStream) return;
+      try { const r = await det.detect(v); if (r.length) { stuStopCam(); stuQrLogin(r[0].rawValue); return; } } catch(e) {}
+      requestAnimationFrame(loop);
+    };
+    loop();
+  } catch (e) { showLoginError('មិនអាចបើកកាមេរ៉ា៖ ' + (e.message || e)); }
 }
 function toggleLoginPassword() { const p = document.getElementById('loginPassword'); p.type = p.type === 'password' ? 'text' : 'password'; }
 function showLoginError(msg) { const b = document.getElementById('loginErrorBox'); b.innerText = msg; b.classList.add('show'); }
@@ -2215,24 +2303,6 @@ async function handleLoginSubmit(e) {
   if (!u || !p) return showLoginError('សូមបញ្ចូល Username និង Password!');
   btn.disabled = true;
   btnText.innerText = '⏳ កំពុងផ្ទៀងផ្ទាត់...';
-  if ((document.getElementById('loginAs') || {}).value === 'student') {
-    try {
-      const { data: sd, error: se } = await sb.rpc('student_login', { p_username: u, p_password: p });
-      if (se) throw se;
-      if (!sd || sd.error || !sd.token) {
-        showLoginError(sd && sd.error === 'locked' ? 'ព្យាយាមច្រើនដងពេក សូមរង់ចាំ ៥ នាទី រួចព្យាយាមម្តងទៀត' : 'ឈ្មោះ ឬ Password មិនត្រឹមត្រូវ!');
-        btn.disabled = false; btnText.innerText = '🚪 ចូលប្រើប្រាស់ប្រព័ន្ធ';
-        return;
-      }
-      localStorage.setItem('krou_student_session', JSON.stringify({ token: sd.token }));
-      location.href = 'student_portal.html';
-    } catch (err) {
-      console.error(err);
-      showLoginError('កំហុស៖ ' + (err.message || 'មិនអាចភ្ជាប់បាន'));
-      btn.disabled = false; btnText.innerText = '🚪 ចូលប្រើប្រាស់ប្រព័ន្ធ';
-    }
-    return;
-  }
   try {
     const { data, error } = await sb.rpc('app_login', { p_username: u, p_password: p });
     if (error) throw error;
@@ -3196,7 +3266,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     currentPage = savedPage;
     showAppScreen(savedPage);
   } else {
+    let hasStu = false;
+    try { hasStu = !!JSON.parse(localStorage.getItem('krou_student_session') || 'null'); } catch(e) {}
+    let hasParam = false, qerr = false;
+    try { const sp = new URLSearchParams(location.search); hasParam = sp.has('login'); qerr = sp.get('err') === 'qr'; } catch(e) {}
+    if (hasStu && !hasParam) { location.replace('student_portal.html'); return; }
     showAuthScreen();
+    if (qerr) showLoginError('កូដ QR មិនត្រឹមត្រូវ ឬត្រូវបានបិទ។ សូមចូលដោយឈ្មោះ និងពាក្យសម្ងាត់។');
   }
 });
 /* ===== 📅 DASHBOARD CALENDAR (desktop only) ===== */
