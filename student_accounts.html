@@ -57,7 +57,7 @@ th{background:var(--in);color:var(--muted)}.sc{overflow:auto;max-height:60vh}
 
   <div id="main" class="hide">
     <div class="tabs"><button id="t1" class="on" onclick="tab(1)">👤 គណនីសិស្ស</button><button id="t2" onclick="tab(2)">📚 ឯកសារ</button><button id="t3" onclick="tab(3)">💬 សារថ្នាក់</button></div>
-    <div class="card row"><b>ថ្នាក់៖</b><select id="cls" class="in" onchange="onCls()"></select><span id="info" style="color:var(--muted)"></span></div>
+    <div class="card row"><b>ថ្នាក់៖</b><select id="cls" class="in" onchange="onCls()"></select><b id="clsTxt" class="hide"></b><span id="info" style="color:var(--muted)"></span></div>
 
     <!-- គណនី -->
     <div id="p1">
@@ -65,10 +65,12 @@ th{background:var(--in);color:var(--muted)}.sc{overflow:auto;max-height:60vh}
         <div class="row" style="margin-bottom:10px">
           <button class="btn pri" onclick="createMissing()">➕ បង្កើតគណនីសិស្សដែលមិនទាន់មាន</button>
           <button class="btn" onclick="resetSel()">🔑 កំណត់ពាក្យសម្ងាត់ថ្មី (ដែលបានជ្រើស)</button>
+          <button class="btn" onclick="resetQrSel()">♻ QR + ពាក្យសម្ងាត់ថ្មី (ដែលបានជ្រើស)</button>
           <button class="btn" onclick="printSlips()">🖨 បោះពុម្ពកាត</button>
+          <button class="btn" onclick="dlAllQr()">⬇ QR ទាំងអស់ (PNG)</button>
           <button class="btn" onclick="csv()">⬇ CSV</button>
         </div>
-        <div class="note">ពាក្យសម្ងាត់បង្ហាញតែម្តង (ក្រោយបង្កើត/កំណត់ថ្មី) ហើយមិនអាចមើលវិញបានទេ។ សូមបោះពុម្ពកាត ឬទាញ CSV ភ្លាម។ កូដ QR អនុញ្ញាតឱ្យចូលដោយមិនបាច់ពាក្យសម្ងាត់ ដូច្នេះសូមប្រគល់ជូនសិស្សផ្ទាល់ខ្លួនប៉ុណ្ណោះ។</div>
+        <div class="note">ឈ្មោះគណនី = អត្តលេខសិស្ស។ ពាក្យសម្ងាត់ជាលេខចៃដន្យ បង្ហាញតែម្តង (ក្រោយបង្កើត/កំណត់ថ្មី) ហើយមិនអាចមើលវិញបានទេ។ សិស្សចូលប្រព័ន្ធតាម <b>QR</b> បានដោយមិនបាច់ចាំពាក្យសម្ងាត់ (ស្កេនពីកាតរូបថតកាតរបស់ខ្លួន ឬផ្ទុករូប QR ឡើង)។ QR អាចបោះពុម្ព/ទាញយកឡើងវិញបានជានិច្ច។ កូដ QR អនុញ្ញាតឱ្យចូលដោយមិនបាច់ពាក្យសម្ងាត់ ដូច្នេះសូមប្រគល់ជូនសិស្សផ្ទាល់ខ្លួនប៉ុណ្ណោះ។</div>
         <div class="sc"><table id="tbl"></table></div>
       </div>
     </div>
@@ -154,6 +156,10 @@ async function init(){
   if(!classes.length){$('cls').innerHTML='<option value="">គ្មានថ្នាក់</option>';return}
   $('cls').innerHTML=classes.map(c=>`<option>${esc(c)}</option>`).join('');
   $('dk').innerHTML=(IS_ADMIN?'<option value="all">គ្រប់ថ្នាក់</option>':'')+classes.map(c=>`<option>${esc(c)}</option>`).join('');
+  if(!IS_ADMIN){ // គ្រូ: ថ្នាក់ថេរតាមថ្នាក់ខ្លួន មិនបង្ហាញ dropdown
+    $('cls').classList.add('hide');$('dk').classList.add('hide');
+    $('clsTxt').textContent=classes[0];$('clsTxt').classList.remove('hide');
+  }
   onCls();
 }
 let cur=1;
@@ -169,11 +175,11 @@ async function loadList(){
   drawList();
 }
 function drawList(){
-  $('tbl').innerHTML=`<tr><th><input type="checkbox" onchange="document.querySelectorAll('.ck').forEach(c=>c.checked=this.checked)"></th><th>#</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ឈ្មោះគណនី</th><th>ស្ថានភាព</th><th>ពាក្យសម្ងាត់ថ្មី</th><th>ចូលចុងក្រោយ</th><th></th></tr>`+
+  $('tbl').innerHTML=`<tr><th><input type="checkbox" onchange="document.querySelectorAll('.ck').forEach(c=>c.checked=this.checked)"></th><th>#</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ឈ្មោះគណនី (អត្តលេខ)</th><th>ស្ថានភាព</th><th>ពាក្យសម្ងាត់ដើម</th><th>ចូលចុងក្រោយ</th><th></th></tr>`+
   LIST.map((s,i)=>`<tr><td><input type="checkbox" class="ck" value="${s.pk}"></td><td>${i+1}</td><td>${esc(s.student_name)}</td><td>${esc(s.gender||'')}</td><td>${esc(s.username||s.student_id||'—')}</td>
    <td>${!s.has_account?'<span class="pill gr">គ្មានគណនី</span>':!s.is_active?'<span class="pill no">បិទ</span>':s.must_change?'<span class="pill wn">រង់ចាំប្តូរ PW</span>':'<span class="pill ok">ដំណើរការ</span>'}</td>
    <td style="font-family:monospace">${esc(GEN[s.pk]||'')}</td><td>${s.last_login?new Date(s.last_login).toLocaleDateString('en-GB'):'—'}</td>
-   <td>${s.has_account?`<button class="btn ${s.is_active?'bad':''}" onclick="toggle(${s.pk},${!s.is_active})">${s.is_active?'បិទ':'បើក'}</button>`:''}</td></tr>`).join('');
+   <td>${s.has_account?`<button class="btn" onclick="dlQr(${s.pk})" title="ទាញយករូប QR">⬇ QR</button> <button class="btn ${s.is_active?'bad':''}" onclick="toggle(${s.pk},${!s.is_active})">${s.is_active?'បិទ':'បើក'}</button>`:''}</td></tr>`).join('');
 }
 function genPw(){const A='abcdefghjkmnpqrstuvwxyz23456789';const b=new Uint32Array(8);crypto.getRandomValues(b);return [...b].map(x=>A[x%A.length]).join('')}
 async function setAccounts(pks,resetQr){
@@ -183,21 +189,51 @@ async function setAccounts(pks,resetQr){
     const r=await staff('staff_set_student_accounts',{p_items:items,p_reset_qr:!!resetQr});
     if(r.error){alert('❌ '+r.error);return}
     items.forEach(i=>GEN[i.pk]=i.password);
-    alert(`✅ បានកំណត់គណនី ${r.ok} នាក់${r.skipped?` (រំលង ${r.skipped} — គ្មានឈ្មោះ ឬគ្មានសិទ្ធិ)`:''}\nសូមបោះពុម្ពកាត ឬទាញ CSV ឥឡូវនេះ ព្រោះពាក្យសម្ងាត់នឹងមិនបង្ហាញម្តងទៀតទេ។`);
+    alert(`✅ បានកំណត់គណនី ${r.ok} នាក់ (ឈ្មោះគណនី = អត្តលេខ, ពាក្យសម្ងាត់ចៃដន្យ)\nសិស្សចូលតាម QR បាន។ សូមបោះពុម្ពកាត ឬទាញ QR/CSV ឥឡូវនេះ ព្រោះពាក្យសម្ងាត់មិនបង្ហាញម្តងទៀតទេ (QR អាចបោះពុម្ពឡើងវិញបានជានិច្ច)។`+(r.skipped?`\n⚠️ រំលង ${r.skipped} នាក់ — គ្មានអត្តលេខ ឬគ្មានសិទ្ធិ`:'')+(r.duplicates?`\n⚠️ រំលង ${r.duplicates} នាក់ — អត្តលេខស្ទួនគ្នា សូមកែក្នុងព័ត៌មានសិស្ស`:''));
     await loadList();
   }catch(e){alert('❌ '+(e.message||e))}
+}
+function resetQrSel(){
+  const pks=[...document.querySelectorAll('.ck:checked')].map(c=>+c.value).filter(pk=>LIST.find(s=>s.pk===pk&&s.has_account));
+  if(!pks.length){alert('សូមជ្រើសសិស្សដែលមានគណនីរួច');return}
+  if(confirm(`បង្កើត QR ថ្មី និងពាក្យសម្ងាត់ថ្មីឱ្យសិស្ស ${pks.length} នាក់? QR ចាស់នឹងលែងប្រើបាន (ប្រើពេលកាតបាត់)។`))setAccounts(pks,true);
+}
+/* រូប QR (PNG) សម្រាប់ផ្ញើឱ្យសិស្ស ដើម្បីផ្ទុកឡើងពេលចូល */
+function qrPng(s){
+  return new Promise(res=>{
+    if(!window.QRCode||!s.qr_token)return res(null);
+    const box=document.createElement('div');box.style.cssText='position:fixed;left:-9999px;top:0';document.body.appendChild(box);
+    new QRCode(box,{text:qrUrl(s.qr_token),width:480,height:480,correctLevel:QRCode.CorrectLevel.M});
+    setTimeout(()=>{
+      const cv=box.querySelector('canvas'),im=box.querySelector('img');let src=null;
+      try{src=cv?cv.toDataURL('image/png'):(im?im.src:null)}catch(e){}
+      box.remove();res(src);
+    },60);
+  });
+}
+function dlData(url,name){const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),500)}
+const safeName=t=>String(t||'qr').replace(/[^\w\u1780-\u17FF-]+/g,'_').slice(0,40);
+async function dlQr(pk){
+  const s=LIST.find(x=>x.pk===pk);if(!s)return;
+  const u=await qrPng(s);if(!u){alert('មិនអាចបង្កើតរូប QR (ត្រូវការអ៊ីនធឺណិតដើម្បីផ្ទុក library)');return}
+  dlData(u,`QR_${safeName(s.username)}_${safeName(s.student_name)}.png`);
+}
+async function dlAllQr(){
+  const rows=LIST.filter(s=>s.has_account&&s.is_active);if(!rows.length){alert('មិនទាន់មានគណនី');return}
+  if(rows.length>10&&!confirm(`ទាញយករូប QR ${rows.length} ឯកសារ?`))return;
+  for(const s of rows){await dlQr(s.pk);await new Promise(r=>setTimeout(r,250))}
 }
 function createMissing(){setAccounts(LIST.filter(s=>!s.has_account).map(s=>s.pk),false)}
 function resetSel(){
   const pks=[...document.querySelectorAll('.ck:checked')].map(c=>+c.value).filter(pk=>LIST.find(s=>s.pk===pk&&s.has_account));
   if(!pks.length){alert('សូមជ្រើសសិស្សដែលមានគណនីរួច');return}
-  if(confirm(`កំណត់ពាក្យសម្ងាត់ថ្មីឱ្យសិស្ស ${pks.length} នាក់? សិស្សត្រូវចូលម្តងទៀត។`))setAccounts(pks,false);
+  if(confirm(`កំណត់ពាក្យសម្ងាត់ចៃដន្យថ្មីឱ្យសិស្ស ${pks.length} នាក់? សិស្សត្រូវចូលម្តងទៀត (QR ចាស់នៅប្រើបាន)។`))setAccounts(pks,false);
 }
 async function toggle(pk,on){try{await staff('staff_toggle_student_account',{p_pk:pk,p_active:on});await loadList()}catch(e){alert('❌ '+(e.message||e))}}
 function csv(){
   const rows=LIST.filter(s=>s.has_account);if(!rows.length){alert('មិនទាន់មានគណនី');return}
   const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
-  const out=[['ឈ្មោះ','ថ្នាក់','ឈ្មោះគណនី','ពាក្យសម្ងាត់ថ្មី','តំណ QR'],...rows.map(s=>[s.student_name,$('cls').value,s.username,GEN[s.pk]||'(មិនមាន — សូមកំណត់ថ្មី)',qrUrl(s.qr_token)])].map(r=>r.map(q).join(',')).join('\r\n');
+  const out=[['ឈ្មោះ','ថ្នាក់','ឈ្មោះគណនី','ពាក្យសម្ងាត់ដើម','តំណ QR'],...rows.map(s=>[s.student_name,$('cls').value,s.username,GEN[s.pk]||'',qrUrl(s.qr_token)])].map(r=>r.map(q).join(',')).join('\r\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+out],{type:'text/csv;charset=utf-8'}));a.download=`student_accounts_${$('cls').value}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
 }
 function qrUrl(t){return t?new URL('student_portal.html?qr='+t,location.href).href:''}
@@ -206,7 +242,7 @@ function printSlips(){
   const pa=$('printArea');pa.innerHTML='';
   rows.forEach(s=>{
     const d=document.createElement('div');d.className='slip';
-    d.innerHTML=`<div class="qr"></div><div><b>${esc(s.student_name)}</b><br>ថ្នាក់ ${esc($('cls').value)}<br>ឈ្មោះគណនី៖ <span class="sc2">${esc(s.username)}</span><br>ពាក្យសម្ងាត់៖ <span class="sc2">${esc(GEN[s.pk]||'(សូមសួរគ្រូ)')}</span><br><small>${esc(new URL('student_portal.html',location.href).href)}</small></div>`;
+    d.innerHTML=`<div class="qr"></div><div><b>${esc(s.student_name)}</b><br>ថ្នាក់ ${esc($('cls').value)}<br>ឈ្មោះគណនី៖ <span class="sc2">${esc(s.username)}</span><br>ពាក្យសម្ងាត់៖ <span class="sc2">${esc(GEN[s.pk]||'(ចូលតាម QR)')}</span><br><small>${esc(new URL('student_portal.html',location.href).href)}</small></div>`;
     pa.appendChild(d);
     if(window.QRCode&&s.qr_token){try{new QRCode(d.querySelector('.qr'),{text:qrUrl(s.qr_token),width:140,height:140,correctLevel:QRCode.CorrectLevel.M})}catch(e){}}
   });
