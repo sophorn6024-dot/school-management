@@ -65,6 +65,10 @@ table.ed td[data-c="0"] input{min-width:130px}
 table.ed td[data-c="4"] input{min-width:100px}
 table.ed td[data-c="5"] .csb{min-width:170px;max-width:230px}
 .ph{width:54px;height:54px;border-radius:50%;border:1.5px dashed var(--inl);background:var(--in);color:var(--muted);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;padding:0}
+.phw{position:relative;display:inline-block}
+.phx{position:absolute;top:-4px;right:-6px;width:22px;height:22px;border-radius:50%;border:2px solid var(--card);background:#e11d48;color:#fff;font-size:10px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+.locked .phx{display:none}
+.fc.bad,.csb.bad{border-color:var(--bad)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--bad) 22%,transparent)}
 .ph img{width:100%;height:100%;object-fit:cover}
 .ph svg{width:22px;height:22px}
 .del{width:34px;height:34px;border-radius:10px;border:0;background:transparent;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
@@ -195,7 +199,9 @@ table.dt td.mt{text-align:center;color:#64748b;font-style:italic}
 @media(max-width:700px){.wrap{padding:10px}.hero{padding:14px}.hero h1{font-size:15.5px}.acts .btn{flex:1 1 44%;justify-content:center}}
 @media print{
   @page{size:A4 portrait;margin:var(--pgm,0)}
-  html,body{background:#fff!important;padding:0!important}
+  html{background:#fff!important;color-scheme:light!important}
+  html,body{background:#fff!important;padding:0!important;margin:0!important;border:0!important;outline:0!important}
+  .sheet,.sheet .inner{border:0!important;outline:0!important;background:#fff!important}
   .tb,.pvbar,#ed,.ov,.toast,#mnav,.cal-modal,.cal-modal-backdrop,#csPop,.auth{display:none!important}
   #pv{display:block!important}
   .stage{display:block!important;padding:0!important;background:#fff!important;min-height:0!important}
@@ -966,7 +972,13 @@ function newData(){return {members:[],meetings:[],locked:false,signDate:'',elect
 const keyOf=(cls)=>'cmt_v1:'+(USER.username||'')+':'+CUR.year+':'+cls;
 const gkey=()=>'cmt_g_v1:'+(USER.username||'');
 function loadOf(cls){try{const d=JSON.parse(localStorage.getItem(keyOf(cls))||'null');return Object.assign(newData(),d||{})}catch(e){return newData()}}
-function saveNow(){try{localStorage.setItem(keyOf(CUR.cls),JSON.stringify(D));dbPush(CUR.cls,CUR.year,D);return true}catch(e){toast('⚠️ ទំហំផ្ទុកពេញ (រូបថតធំពេក)');return false}}
+const hasName=m=>!!String(m&&m.name||'').trim();
+const nm=d=>d.members.filter(hasName);
+const DEF_TITLE='កិច្ចប្រជុំ គ.គ.ថ.';
+const mHas=x=>!!(String(x.agenda||'').trim()||String(x.notes||'').trim()||String(x.decision||'').trim()||Object.values(x.att||{}).some(Boolean)||(String(x.title||'').trim()&&x.title!==DEF_TITLE));
+function clean(d){return Object.assign({},d,{members:d.members.filter(hasName),meetings:d.meetings.filter(mHas)})}
+const DBHAS=new Set();
+function saveNow(){try{const c=clean(D);localStorage.setItem(keyOf(CUR.cls),JSON.stringify(c));const k=CUR.year+'|'+CUR.cls,empty=!c.members.length&&!c.meetings.length&&!c.elect&&!c.signDate&&!c.teacher;if(!empty||DBHAS.has(k)){DBHAS.add(k);dbPush(CUR.cls,CUR.year,c)}return true}catch(e){toast('⚠️ ទំហំផ្ទុកពេញ (រូបថតធំពេក)');return false}}
 let _st;function save(){clearTimeout(_st);_st=setTimeout(saveNow,250)}
 /* ===== Supabase sync (តារាង class_committees) ===== */
 const TBL='class_committees';
@@ -990,10 +1002,10 @@ async function syncDown(){
     const have=new Set();
     (data||[]).forEach(r=>{
       if(r.class==='__settings__'){GL.pDate=(r.data&&r.data.pDate)||'';GL.page=Object.assign({},PAGE0,(r.data&&r.data.page)||{});try{localStorage.setItem(gkey(),JSON.stringify(GL))}catch(e){}}
-      else if(r.school_year===CUR.year){have.add(r.class);try{localStorage.setItem(keyOf(r.class),JSON.stringify(r.data||{}))}catch(e){}}
+      else if(r.school_year===CUR.year){have.add(r.class);DBHAS.add(r.school_year+'|'+r.class);try{localStorage.setItem(keyOf(r.class),JSON.stringify(r.data||{}))}catch(e){}}
     });
     // ទិន្នន័យដែលមានតែក្នុងឧបករណ៍ (មិនទាន់ឡើង Database) → ផ្ញើឡើង
-    CLASSES.forEach(c=>{if(!have.has(c)){const raw=localStorage.getItem(keyOf(c));if(raw){try{const d=JSON.parse(raw);if((d.members&&d.members.length)||(d.meetings&&d.meetings.length))dbPush(c,CUR.year,d)}catch(e){}}}});
+    CLASSES.forEach(c=>{if(!have.has(c)){const raw=localStorage.getItem(keyOf(c));if(raw){try{const d=JSON.parse(raw);if((d.members&&nm(d).length)||(d.meetings&&d.meetings.length))dbPush(c,CUR.year,d)}catch(e){}}}});
     if(!(data||[]).some(r=>r.class==='__settings__')&&localStorage.getItem(gkey()))dbPush('__settings__','all',{page:GL.page,pDate:GL.pDate});
     setDb('ok','ទាញពី Database រួច');
   }catch(err){setDb('err','មិនទាន់ភ្ជាប់ Database');const m=String(err.message||err);if(/relation|does not exist|schema cache/i.test(m))toast('⚠️ មិនទាន់មានតារាង class_committees — សូម Run ឯកសារ SQL')}
@@ -1099,7 +1111,7 @@ function ask(q,okLbl){
 /* ===== members ===== */
 const sexOf=m=>m.sex==='ប្រុស'||m.sex==='ស្រី'?m.sex:'';
 const rank=m=>ROLES.indexOf(m.role);
-function sortedMembers(d){return d.members.map((m,i)=>[m,i]).sort((a,b)=>rank(a[0])-rank(b[0])||a[1]-b[1]).map(x=>x[0])}
+function sortedMembers(d){return nm(d).map((m,i)=>[m,i]).sort((a,b)=>rank(a[0])-rank(b[0])||a[1]-b[1]).map(x=>x[0])}
 function addMember(extra){
   D.members.push(Object.assign({id:uid(),name:'',sex:'មិនកំណត់',role:D.members.some(m=>m.role==='ប្រធាន')?'សមាជិក':'ប្រធាន',type:'មិនកំណត់',phone:'',duty:'',cust:false,under:'auto',photo:''},extra||{}));
 }
@@ -1114,7 +1126,7 @@ function memberRow(m,i){
   const showC=d.sel==='__c';
   return `<tr data-i="${i}">
   <td class="no">${toKh(i+1)}</td>
-  <td data-c="p"><button type="button" class="ph" data-i="${i}" onclick="pickPhoto(${i})" title="រូបថត">${m.photo?`<img src="${m.photo}" alt="">`:IC.cam}</button></td>
+  <td data-c="p"><span class="phw"><button type="button" class="ph" data-i="${i}" onclick="pickPhoto(${i})" title="${m.photo?'ប្តូររូបថត':'ថែមរូបថត'}">${m.photo?`<img src="${m.photo}" alt="">`:IC.cam}</button>${m.photo?`<button type="button" class="phx" onclick="delPhoto(${i})" title="លុបរូបថត">✕</button>`:''}</span></td>
   <td data-c="0"><input class="fc cell" data-f="name" data-i="${i}" value="${esc(m.name)}" placeholder="ឈ្មោះ:" autocomplete="off"></td>
   <td data-c="1">${selHtml('sex',SEXES.map(x=>[x,x]),m.sex||'មិនកំណត់',i)}</td>
   <td data-c="2">${selHtml('role',ROLES.map(x=>[x,x]),m.role,i)}</td>
@@ -1146,7 +1158,7 @@ function setField(m,f,v){
 }
 document.addEventListener('input',e=>{
   const t=e.target;
-  if(t.matches&&t.matches('input.cell[data-f]')){const m=D.members[+t.dataset.i];if(m){setField(m,t.dataset.f,t.value);save()}}
+  if(t.matches&&t.matches('input.cell[data-f]')){const m=D.members[+t.dataset.i];if(m){setField(m,t.dataset.f,t.value);t.classList.remove('bad');save()}}
   else if(t.dataset&&t.dataset.mf){const x=D.meetings.find(z=>z.id===t.dataset.mid);if(x){x[t.dataset.mf]=t.value;save()}}
 });
 document.addEventListener('change',e=>{
@@ -1160,11 +1172,12 @@ document.addEventListener('change',e=>{
 });
 function updHero(){
   const total=CLASSES.length||1;let have=0;
-  CLASSES.forEach(c=>{const d=c===CUR.cls?D:loadOf(c);if(d.members.length)have++});
+  CLASSES.forEach(c=>{const d=c===CUR.cls?D:loadOf(c);if(nm(d).length)have++});
   $('heroSub').textContent='ឆ្នាំសិក្សា '+CUR.year+' · ថ្នាក់មាន គ.គ.ថ. '+have+'/'+total;
   const el=$('mCount');if(el)el.textContent='ប្រជុំ '+toKh(D.meetings.length)+' ដង';
 }
 /* photo */
+function delPhoto(i){const m=D.members[i];if(!m)return;m.photo='';saveNow();renderMembers();toast('បានលុបរូបថត')}
 let _phIdx=-1;
 function pickPhoto(i){_phIdx=i;$('photoIn').value='';$('photoIn').click()}
 $('photoIn').addEventListener('change',e=>{
@@ -1287,26 +1300,33 @@ function renderTab(){
       <div class="hint">បញ្ជាក្រឡា៖ Enter ↓ · Tab → · Shift + click ជ្រើសជាច្រើនក្រឡា · Ctrl + C / V ចម្លង/បិទភ្ជាប់ (ពី Excel បាន)</div>
       <div class="tw"><table class="ed"><thead><tr><th>ល.រ.</th><th>រូបថត</th><th>ឈ្មោះ:</th><th>ភេទ</th><th>តួនាទី</th><th>ប្រភេទ</th><th>ទូរស័ព្ទ</th><th class="g">ភារកិច្ច</th><th class="g">ក្រោមអនុប្រធាន</th><th></th></tr></thead><tbody id="mBody"></tbody></table></div>
       <div class="foot"><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn addbtn" style="background:var(--acs)" onclick="addMember();saveNow();renderMembers();updHero();focusCell(D.members.length-1,0)">${IC.plus}បន្ថែមសមាជិក</button><button class="btn addbtn gh" onclick="openParents()">${IC.users}ជ្រើសពីឪពុកម្តាយសិស្ស</button></div>
-        <button class="btn pri" onclick="if(saveNow())toast('✓ បានរក្សាទុកសមាជិក')">${IC.save}រក្សាទុកសមាជិក</button></div></div>`;
+        <button class="btn pri" onclick="saveMembers()">${IC.save}រក្សាទុកសមាជិក</button></div></div>`;
     renderMembers();
   }else{
     renderMeetings();
   }
   updHero();
 }
+function flagRows(){document.querySelectorAll('#mBody tr[data-i]').forEach(tr=>{const m=D.members[+tr.dataset.i];const inp=tr.querySelector('input[data-f=name]');if(inp)inp.classList.toggle('bad',!hasName(m))});const f=document.querySelector('#mBody input.bad');if(f)f.focus()}
+function saveMembers(){
+  const bad=D.members.filter(m=>!hasName(m));
+  if(!nm(D).length){flagRows();toast('⚠️ មិនមានទិន្នន័យ — សូមបញ្ចូលឈ្មោះសមាជិកជាមុនសិន');return}
+  if(bad.length){flagRows();toast('⚠️ មាន '+toKh(bad.length)+' ជួរគ្មានឈ្មោះ — ជួរទទេមិនត្រូវបានរក្សាទុកទេ');if(!saveNow())return;return}
+  if(saveNow())toast('✓ បានរក្សាទុកសមាជិក');
+}
 function toggleLock(){D.locked=!D.locked;saveNow();renderTab()}
 
 /* ===== meetings ===== */
 function newMeeting(){
-  D.meetings.push({id:uid(),date:todayIso(),time:'',place:GL.page.school.replace(/^សាលា/,'សាលា')||'',title:'កិច្ចប្រជុំ គ.គ.ថ.',agenda:'',notes:'',decision:'',att:{}});
+  D.meetings.push({id:uid(),date:todayIso(),time:'',place:GL.page.school.replace(/^សាលា/,'សាលា')||'',title:DEF_TITLE,agenda:'',notes:'',decision:'',att:{}});
   saveNow();renderMeetings();updHero();
 }
 function renderMeetings(){
-  const m=D.members;
+  const m=nm(D);
   const cards=D.meetings.map((x,i)=>{
     const n=m.filter(z=>x.att[z.id]).length;
     return `<div class="mcard" data-mid="${x.id}">
-      <div class="mh"><b>កិច្ចប្រជុំលើកទី ${toKh(i+1)}</b><span class="chip">ចូលរួម ${toKh(n)}/${toKh(m.length)}</span><span class="sp"></span>
+      <div class="mh"><b>កិច្ចប្រជុំលើកទី ${toKh(i+1)}</b><span class="chip">ចូលរួម ${toKh(n)}/${toKh(m.length)}</span>${mHas(x)?'':'<span class="chip" style="background:var(--bads);color:var(--bad)">មិនទាន់មានទិន្នន័យ · មិនរក្សាទុក</span>'}<span class="sp"></span>
         <button class="btn sm gh" onclick="pickMtgDate('${x.id}')">${IC.cal}<span>${esc(dLabel(x.date))}</span></button>
         <button class="btn sm red" onclick="delMeeting('${x.id}')">${IC.trash}លុប</button></div>
       <div class="mgrid">
@@ -1322,14 +1342,21 @@ function renderMeetings(){
       <div style="display:flex;align-items:center;gap:8px;margin-top:12px"><span class="lbl" style="margin:0">វត្តមានអ្នកចូលរួម</span><button class="btn sm" onclick="attAll('${x.id}')">ជ្រើសទាំងអស់</button><button class="btn sm gh" onclick="attNone('${x.id}')">សម្អាត</button></div>
       <div class="att">${m.length?m.map(z=>`<button type="button" class="at ${x.att[z.id]?'on':''}" onclick="toggleAtt('${x.id}','${z.id}')"><i>${x.att[z.id]?'✓':''}</i>${esc(z.name||'គ្មានឈ្មោះ')}<small style="color:var(--muted)">${esc(z.role)}</small></button>`).join(''):'<span class="hint">សូមបន្ថែមសមាជិកក្នុងផ្ទាំង គ.គ.ថ. ជាមុន</span>'}</div>
     </div>`}).join('');
-  $('tabBody').innerHTML=`<div class="panel"><div class="ph2"><h2>កត់ត្រាកិច្ចប្រជុំ គ.គ.ថ. ថ្នាក់ទី${esc(toKh(CUR.cls))}</h2><span class="chip" id="mCount"></span><span class="sp"></span><button class="btn pri" onclick="newMeeting()">${IC.plus}កិច្ចប្រជុំថ្មី</button></div>
+  $('tabBody').innerHTML=`<div class="panel"><div class="ph2"><h2>កត់ត្រាកិច្ចប្រជុំ គ.គ.ថ. ថ្នាក់ទី${esc(toKh(CUR.cls))}</h2><span class="chip" id="mCount"></span><span class="sp"></span><button class="btn gh" onclick="newMeeting()">${IC.plus}កិច្ចប្រជុំថ្មី</button><button class="btn pri" onclick="saveMeetings()">${IC.save}រក្សាទុក</button></div>
     ${cards||'<div class="empty">មិនទាន់មានកិច្ចប្រជុំទេ<br>ចុច «កិច្ចប្រជុំថ្មី» ដើម្បីចាប់ផ្តើមកត់ត្រា វត្តមាន និងកំណត់ហេតុ</div>'}</div>`;
   updHero();
+}
+function saveMeetings(){
+  const empty=D.meetings.filter(x=>!mHas(x));
+  if(!D.meetings.length||empty.length===D.meetings.length){toast('⚠️ មិនមានទិន្នន័យ — សូមបញ្ចូលរបៀបវារៈ ខ្លឹមសារ សេចក្តីសម្រេច ឬវត្តមានជាមុន');document.querySelectorAll('.mcard').forEach(c=>c.style.outline='2px solid var(--bad)');return}
+  if(!saveNow())return;
+  if(empty.length){D.meetings=D.meetings.filter(mHas);saveNow();renderMeetings();toast('✓ បានរក្សាទុក · លុបកិច្ចប្រជុំទទេ '+toKh(empty.length))}
+  else toast('✓ បានរក្សាទុកកិច្ចប្រជុំ');
 }
 function pickMtgDate(id){const x=D.meetings.find(z=>z.id===id);openCal('📅 ថ្ងៃប្រជុំ',x.date,false,v=>{x.date=v;saveNow();renderMeetings()})}
 async function delMeeting(id){if(!(await ask('លុបកិច្ចប្រជុំនេះ ?')))return;D.meetings=D.meetings.filter(z=>z.id!==id);saveNow();renderMeetings()}
 function toggleAtt(id,mid){const x=D.meetings.find(z=>z.id===id);x.att[mid]=!x.att[mid];saveNow();renderMeetings()}
-function attAll(id){const x=D.meetings.find(z=>z.id===id);D.members.forEach(z=>x.att[z.id]=true);saveNow();renderMeetings()}
+function attAll(id){const x=D.meetings.find(z=>z.id===id);nm(D).forEach(z=>x.att[z.id]=true);saveNow();renderMeetings()}
 function attNone(id){const x=D.meetings.find(z=>z.id===id);x.att={};saveNow();renderMeetings()}
 function pickElect(){openCal('🗳 ថ្ងៃបោះឆ្នោតជ្រើសរើស គ.គ.ថ.',D.elect,true,v=>{D.elect=v;saveNow();$('electBtn').innerHTML=IC.cal+'<span>'+esc(dLabel(D.elect,'មិនដាក់'))+'</span>'})}
 
@@ -1366,7 +1393,7 @@ function signBlock(cls,d,opts){
   return `<div class="sig">${left}${right}</div>`;
 }
 function classesFor(){
-  const have=CLASSES.filter(c=>(c===CUR.cls?D:loadOf(c)).members.length);
+  const have=CLASSES.filter(c=>nm(c===CUR.cls?D:loadOf(c)).length);
   return have;
 }
 function scopeList(){
@@ -1386,7 +1413,7 @@ function docList(){
     if(d.meetings.length){
       rows+=`<tr class="sub"><td colspan="4">កិច្ចប្រជុំ</td></tr>`;
       d.meetings.forEach((x,i)=>{const n=d.members.filter(z=>x.att[z.id]).length;
-        rows+=`<tr><td>${toKh(i+1)}. ${esc(x.title||'')}<br><small>${esc(dLabel(x.date,''))}</small></td><td>${esc(x.agenda)}</td><td>${esc(x.decision)}</td><td class="c">${toKh(n)}/${toKh(d.members.length)}</td></tr>`});
+        rows+=`<tr><td>${toKh(i+1)}. ${esc(x.title||'')}<br><small>${esc(dLabel(x.date,''))}</small></td><td>${esc(x.agenda)}</td><td>${esc(x.decision)}</td><td class="c">${toKh(n)}/${toKh(nm(d).length)}</td></tr>`});
     }
   });
   const html=head('គណៈកម្មការគ្រប់គ្រងសាលា និងថ្នាក់','ឆ្នាំសិក្សា '+yrTxt()+' · ថ្នាក់មាន គ.គ.ថ. '+toKh(have)+'/'+toKh(total))+
@@ -1593,7 +1620,7 @@ function doExcel(){
   const mem=[['ថ្នាក់','ល.រ.','ឈ្មោះ','ភេទ','តួនាទី','ប្រភេទ','ទូរស័ព្ទ','ភារកិច្ច']],mt=[['ថ្នាក់','លើកទី','ថ្ងៃ','ម៉ោង','ទីកន្លែង','ប្រធានបទ','របៀបវារៈ','ខ្លឹមសារ','សេចក្តីសម្រេច','ចូលរួម','សរុប']];
   list.forEach(c=>{const d=dataOf(c);
     sortedMembers(d).forEach((m,i)=>mem.push([c,i+1,m.name,sexOf(m),m.role,m.type==='មិនកំណត់'?'':m.type,m.phone,m.duty||'']));
-    d.meetings.forEach((x,i)=>mt.push([c,i+1,x.date,x.time,x.place,x.title,x.agenda,x.notes,x.decision,d.members.filter(z=>x.att[z.id]).length,d.members.length]));
+    d.meetings.forEach((x,i)=>mt.push([c,i+1,x.date,x.time,x.place,x.title,x.agenda,x.notes,x.decision,d.members.filter(z=>x.att[z.id]).length,nm(d).length]));
   });
   try{
     if(window.XLSX){const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(mem),'សមាជិក');XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(mt),'កិច្ចប្រជុំ');XLSX.writeFile(wb,'គ.គ.ថ._'+CUR.year+'.xlsx');return}
