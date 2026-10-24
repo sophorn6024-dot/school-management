@@ -169,7 +169,7 @@ async function loadList(){
   drawList();
 }
 function drawList(){
-  $('tbl').innerHTML=`<tr><th><input type="checkbox" onchange="document.querySelectorAll('.ck').forEach(c=>c.checked=this.checked)"></th><th>#</th><th>ឈ្មោះ</th><th>ភេទ</th><th>Username</th><th>ស្ថានភាព</th><th>ពាក្យសម្ងាត់ថ្មី</th><th>ចូលចុងក្រោយ</th><th></th></tr>`+
+  $('tbl').innerHTML=`<tr><th><input type="checkbox" onchange="document.querySelectorAll('.ck').forEach(c=>c.checked=this.checked)"></th><th>#</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ឈ្មោះគណនី</th><th>ស្ថានភាព</th><th>ពាក្យសម្ងាត់ថ្មី</th><th>ចូលចុងក្រោយ</th><th></th></tr>`+
   LIST.map((s,i)=>`<tr><td><input type="checkbox" class="ck" value="${s.pk}"></td><td>${i+1}</td><td>${esc(s.student_name)}</td><td>${esc(s.gender||'')}</td><td>${esc(s.username||s.student_id||'—')}</td>
    <td>${!s.has_account?'<span class="pill gr">គ្មានគណនី</span>':!s.is_active?'<span class="pill no">បិទ</span>':s.must_change?'<span class="pill wn">រង់ចាំប្តូរ PW</span>':'<span class="pill ok">ដំណើរការ</span>'}</td>
    <td style="font-family:monospace">${esc(GEN[s.pk]||'')}</td><td>${s.last_login?new Date(s.last_login).toLocaleDateString('en-GB'):'—'}</td>
@@ -181,9 +181,9 @@ async function setAccounts(pks,resetQr){
   const items=pks.map(pk=>({pk,password:genPw()}));
   try{
     const r=await staff('staff_set_student_accounts',{p_items:items,p_reset_qr:!!resetQr});
-    if(r.error){alert(r.error==='duplicate_username'?'❌ លេខសិស្ស (username) ស្ទួន សូមពិនិត្យតារាងសិស្ស':'❌ '+r.error);return}
+    if(r.error){alert('❌ '+r.error);return}
     items.forEach(i=>GEN[i.pk]=i.password);
-    alert(`✅ បានកំណត់គណនី ${r.ok} នាក់${r.skipped?` (រំលង ${r.skipped})`:''}\nសូមបោះពុម្ពកាត ឬទាញ CSV ឥឡូវនេះ ព្រោះពាក្យសម្ងាត់នឹងមិនបង្ហាញម្តងទៀតទេ។`);
+    alert(`✅ បានកំណត់គណនី ${r.ok} នាក់${r.skipped?` (រំលង ${r.skipped} — គ្មានឈ្មោះ ឬគ្មានសិទ្ធិ)`:''}\nសូមបោះពុម្ពកាត ឬទាញ CSV ឥឡូវនេះ ព្រោះពាក្យសម្ងាត់នឹងមិនបង្ហាញម្តងទៀតទេ។`);
     await loadList();
   }catch(e){alert('❌ '+(e.message||e))}
 }
@@ -197,7 +197,7 @@ async function toggle(pk,on){try{await staff('staff_toggle_student_account',{p_p
 function csv(){
   const rows=LIST.filter(s=>s.has_account);if(!rows.length){alert('មិនទាន់មានគណនី');return}
   const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
-  const out=[['ឈ្មោះ','ថ្នាក់','Username','ពាក្យសម្ងាត់ថ្មី','តំណ QR'],...rows.map(s=>[s.student_name,$('cls').value,s.username,GEN[s.pk]||'(មិនមាន — សូមកំណត់ថ្មី)',qrUrl(s.qr_token)])].map(r=>r.map(q).join(',')).join('\r\n');
+  const out=[['ឈ្មោះ','ថ្នាក់','ឈ្មោះគណនី','ពាក្យសម្ងាត់ថ្មី','តំណ QR'],...rows.map(s=>[s.student_name,$('cls').value,s.username,GEN[s.pk]||'(មិនមាន — សូមកំណត់ថ្មី)',qrUrl(s.qr_token)])].map(r=>r.map(q).join(',')).join('\r\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+out],{type:'text/csv;charset=utf-8'}));a.download=`student_accounts_${$('cls').value}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
 }
 function qrUrl(t){return t?new URL('student_portal.html?qr='+t,location.href).href:''}
@@ -206,7 +206,7 @@ function printSlips(){
   const pa=$('printArea');pa.innerHTML='';
   rows.forEach(s=>{
     const d=document.createElement('div');d.className='slip';
-    d.innerHTML=`<div class="qr"></div><div><b>${esc(s.student_name)}</b><br>ថ្នាក់ ${esc($('cls').value)}<br>Username៖ <span class="sc2">${esc(s.username)}</span><br>ពាក្យសម្ងាត់៖ <span class="sc2">${esc(GEN[s.pk]||'(សូមសួរគ្រូ)')}</span><br><small>${esc(new URL('student_portal.html',location.href).href)}</small></div>`;
+    d.innerHTML=`<div class="qr"></div><div><b>${esc(s.student_name)}</b><br>ថ្នាក់ ${esc($('cls').value)}<br>ឈ្មោះគណនី៖ <span class="sc2">${esc(s.username)}</span><br>ពាក្យសម្ងាត់៖ <span class="sc2">${esc(GEN[s.pk]||'(សូមសួរគ្រូ)')}</span><br><small>${esc(new URL('student_portal.html',location.href).href)}</small></div>`;
     pa.appendChild(d);
     if(window.QRCode&&s.qr_token){try{new QRCode(d.querySelector('.qr'),{text:qrUrl(s.qr_token),width:140,height:140,correctLevel:QRCode.CorrectLevel.M})}catch(e){}}
   });
