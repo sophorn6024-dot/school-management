@@ -666,7 +666,9 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
   .lg-role button{padding:7px 6px;font-size:12px}.lg-role,.lg-sub{margin-bottom:8px}.login-footer{display:none}
   .lw-s{display:none}.lw-t{margin-top:6px}
 }
-@media (max-height:620px){ .mascot,.login-welcome .lw-t{display:none} .login-welcome{margin-bottom:6px} }
+@media (max-height:620px) and (max-width:899px){ .mascot,.login-welcome .lw-t{display:none} .login-welcome{margin-bottom:6px} }
+@media (max-height:520px) and (min-width:900px){ .mascot{display:none} }
+@media (max-height:620px) and (min-width:900px){ .login-welcome .lw-t{font-size:clamp(20px,3vw,30px)} .mascot{height:96px;margin-bottom:-14px} }
 @media (max-width:899px){ .login-welcome{margin-bottom:12px} }
 #stuVid{max-height:22vh;object-fit:cover}
 
