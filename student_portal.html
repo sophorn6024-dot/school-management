@@ -103,30 +103,6 @@ th{background:var(--in);color:var(--muted);font-weight:700}
 </head>
 <body>
 
-<!-- ចូលប្រើ -->
-<div id="login" class="hide">
-  <div class="lg">
-    <h1>ចូលប្រើ</h1>
-    <p>ផ្ទាំងសិស្ស — សាលាបឋមសិក្សាកំពង់ល្ពៅ</p>
-    <div class="seg"><button id="tPw" class="on" onclick="setTab('pw')">Password</button><button id="tQr" onclick="setTab('qr')">QR Login</button></div>
-    <div id="pPw">
-      <label class="f">ឈ្មោះសិស្ស (ឈ្មោះគណនី)</label>
-      <input id="lu" class="in" autocomplete="username" placeholder="បញ្ចូលឈ្មោះរបស់អ្នក">
-      <label class="f">ពាក្យសម្ងាត់</label>
-      <div class="pw"><input id="lp" class="in" type="password" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"><button type="button" onclick="lp.type=lp.type==='password'?'text':'password'">👁</button></div>
-      <button class="btn" id="bLogin" onclick="doLogin()">ចូលប្រព័ន្ធ</button>
-    </div>
-    <div id="pQr" class="hide">
-      <label class="f">កូដ QR (ឬស្កេនពីកាតសិស្ស)</label>
-      <input id="lq" class="in" placeholder="បិទភ្ជាប់កូដ ឬតំណពី QR">
-      <video id="vid" class="hide" style="width:100%;border-radius:12px;margin-top:10px" playsinline muted></video>
-      <div class="row" style="margin-top:12px"><button class="btn sm ghost" id="bScan" onclick="scanQr()">📷 ស្កេនកាមេរ៉ា</button><button class="btn sm" onclick="doQr(lq.value)">ចូលប្រព័ន្ធ</button></div>
-    </div>
-    <div class="err" id="lerr"></div>
-    <p style="margin-top:16px;font-size:12.5px"><a href="index.html" style="color:var(--muted)">← ចូលជាគ្រូ / Admin</a></p>
-  </div>
-</div>
-
 <!-- កម្មវិធី -->
 <div id="app" class="hide">
   <aside id="side">
@@ -170,45 +146,27 @@ async function tk(n,a){ // function ដែលត្រូវការ token
   return d;
 }
 
-/* ── ចូល/ចេញ ── */
-function lerr(m){const e=$('lerr');e.textContent=m||'';e.style.display=m?'block':'none'}
-function setTab(t){const q=t==='qr';$('tPw').classList.toggle('on',!q);$('tQr').classList.toggle('on',q);$('pPw').classList.toggle('hide',q);$('pQr').classList.toggle('hide',!q);lerr('')}
-function loginResult(d){
-  if(!d||d.error||!d.token){lerr(d&&d.error==='locked'?'ព្យាយាមច្រើនដងពេក សូមរង់ចាំ ៥ នាទី':'ព័ត៌មានចូលមិនត្រឹមត្រូវ');return false}
-  TOKEN=d.token;ME=d.profile;try{localStorage.setItem(KEY,JSON.stringify({token:TOKEN}))}catch(e){}
-  start();return true;
-}
-async function doLogin(){
-  const u=lu.value.trim(),p=lp.value;if(!u||!p){lerr('សូមបញ្ចូលឈ្មោះ និងពាក្យសម្ងាត់');return}
-  bLogin.disabled=true;lerr('');
-  try{loginResult(await rpc('student_login',{p_username:u,p_password:p}))}catch(e){lerr('កំហុស៖ '+(e.message||e))}
-  bLogin.disabled=false;
-}
-function qrCode(v){v=String(v||'').trim();try{const u=new URL(v);return u.searchParams.get('qr')||v}catch(e){return v}}
-async function doQr(v){
-  const c=qrCode(v);if(!c){lerr('សូមបញ្ចូលកូដ QR');return}
-  try{loginResult(await rpc('student_login_qr',{p_qr:c}))}catch(e){lerr('កំហុស៖ '+(e.message||e))}
-}
-let stream=null;
-async function scanQr(){
-  if(!('BarcodeDetector' in window)){lerr('ឧបករណ៍នេះមិនគាំទ្រការស្កេន សូមបិទភ្ជាប់កូដដោយដៃ');return}
-  try{
-    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
-    vid.srcObject=stream;vid.classList.remove('hide');await vid.play();
-    const det=new BarcodeDetector({formats:['qr_code']});
-    const loop=async()=>{
-      if(!stream)return;
-      try{const r=await det.detect(vid);if(r.length){stopCam();doQr(r[0].rawValue);return}}catch(e){}
-      requestAnimationFrame(loop);
-    };loop();
-  }catch(e){lerr('មិនអាចបើកកាមេរ៉ា៖ '+(e.message||e))}
-}
-function stopCam(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}vid.classList.add('hide')}
+/* ── ចូល/ចេញ (ទំព័រ login ស្ថិតក្នុង index.html) ── */
+const LOGIN_URL='index.html?login=student';
+function goLogin(q){location.replace(LOGIN_URL+(q||''))}
 async function logout(silent){
-  clearInterval(chatTimer);stopCam();
+  clearInterval(chatTimer);
   try{if(TOKEN&&!silent)await rpc('student_logout',{p_token:TOKEN})}catch(e){}
-  TOKEN=null;ME=null;try{localStorage.removeItem(KEY)}catch(e){}
-  $('app').classList.add('hide');$('login').classList.remove('hide');
+  TOKEN=null;ME=null;try{localStorage.removeItem(KEY);localStorage.removeItem(STATE_KEY)}catch(e){}
+  goLogin();
+}
+/* ── ចងចាំផ្នែកដែលកំពុងមើល (refresh នៅដដែល) ── */
+const STATE_KEY='krou_student_state';
+function saveState(){try{localStorage.setItem(STATE_KEY,JSON.stringify({view,sTab,sMonth,aM,aY}))}catch(e){}}
+function loadState(){
+  try{
+    const st=JSON.parse(localStorage.getItem(STATE_KEY)||'null');if(!st)return;
+    if(NAV.some(n=>n[0]===st.view))view=st.view;
+    if(['month','sem','semavg','year'].includes(st.sTab))sTab=st.sTab;
+    if(MONTHS.includes(st.sMonth))sMonth=st.sMonth;
+    if(Number.isInteger(st.aM)&&st.aM>=0&&st.aM<=11)aM=st.aM;
+    if(Number.isInteger(st.aY)&&st.aY>2000&&st.aY<2100)aY=st.aY;
+  }catch(e){}
 }
 
 /* ── ចាប់ផ្តើម ── */
@@ -222,15 +180,16 @@ const ICONS={
 };
 const NAV=[['dash','ផ្ទាំងខ្ញុំ'],['score','ពិន្ទុខ្ញុំ'],['att','វត្តមានខ្ញុំ'],['lib','បណ្ណាល័យឯកសារ'],['chat','សារសន្ទនា'],['me','ព័ត៌មានផ្ទាល់ខ្លួន']];
 function start(){
-  $('login').classList.add('hide');$('app').classList.remove('hide');
+  $('app').classList.remove('hide');
   const av=ME.photo_url?`<img src="${esc(ME.photo_url)}" alt="">`:esc((ME.student_name||'?').trim().charAt(0));
   $('avSide').innerHTML=av;$('nmSide').textContent=ME.student_name||'';
   $('nav').innerHTML=NAV.map(([k,t])=>`<button data-k="${k}" onclick="go('${k}')"><svg viewBox="0 0 24 24">${ICONS[k]}</svg><span>${t}</span></button>`).join('');
-  go(ME.must_change?'me':'dash');
+  loadState();
+  go(ME.must_change?'me':(view||'dash'));
 }
 function go(k){
   if(ME&&ME.must_change&&k!=='me'){return}
-  view=k;clearInterval(chatTimer);chatTimer=null;
+  view=k;saveState();clearInterval(chatTimer);chatTimer=null;
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));
   $('ttl').textContent=(NAV.find(n=>n[0]===k)||[])[1]||'';
   side.classList.remove('open');
@@ -301,6 +260,7 @@ function avgHtml(label,v){
   return `<div class="grid2">${kv(label,v.toFixed(2))}${kv('និទ្ទេស',gradeOf(v))}${kv('លទ្ធផល',v>=5?'ជាប់':'ធ្លាក់')}</div>`;
 }
 function drawScore(){
+  saveState();
   const T=[['month','ពិន្ទុខែ'],['sem','ឆមាស'],['semavg','ប្រចាំឆមាស'],['year','ប្រចាំឆ្នាំ']];
   let body='',ctl='';
   if(sTab==='month'){
@@ -321,6 +281,7 @@ function drawScore(){
 /* ── វត្តមានខ្ញុំ ── */
 let aM=new Date().getMonth(),aY=new Date().getFullYear();
 async function vAtt(){
+  saveState();
   const p=n=>String(n).padStart(2,'0'),last=new Date(aY,aM+1,0).getDate();
   const from=`${aY}-${p(aM+1)}-01`,to=`${aY}-${p(aM+1)}-${p(last)}`;
   load();
@@ -417,14 +378,21 @@ async function changePw(){
 /* ── ចាប់ផ្តើមទំព័រ ── */
 (async function init(){
   const qs=new URLSearchParams(location.search),qr=qs.get('qr');
-  if(qr){try{history.replaceState(null,'',location.pathname)}catch(e){}$('login').classList.remove('hide');setTab('qr');lq.value=qr;await doQr(qr);return}
+  if(qr){
+    try{history.replaceState(null,'',location.pathname)}catch(e){}
+    try{
+      const d=await rpc('student_login_qr',{p_qr:qr});
+      if(d&&d.token){TOKEN=d.token;ME=d.profile;try{localStorage.setItem(KEY,JSON.stringify({token:TOKEN}));localStorage.removeItem(STATE_KEY)}catch(e){}start();return}
+    }catch(e){}
+    goLogin('&err=qr');return;
+  }
   let s=null;try{s=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
   if(s&&s.token){
     TOKEN=s.token;
-    try{const me=await rpc('student_me',{p_token:TOKEN});if(me){ME=me;start();return}}catch(e){}
-    TOKEN=null;try{localStorage.removeItem(KEY)}catch(e){}
+    try{const me=await rpc('student_me',{p_token:TOKEN});if(me){ME=me;start();return}}catch(e){console.error('student init',e)}
+    try{localStorage.removeItem(KEY);localStorage.removeItem(STATE_KEY)}catch(e){}
   }
-  $('login').classList.remove('hide');
+  goLogin();
 })();
 </script>
 </body>
