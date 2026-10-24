@@ -622,7 +622,12 @@
       }
       @page { size: A4 landscape; margin: 0; }
     }
-  </style>
+  
+    /* ⬅️ ប៊ូតុងត្រឡប់ */
+    .btn-back{background:var(--ctrl-group-bg,#f1f5f9);color:var(--text-main,#0f172a);border:1px solid var(--input-border,#cbd5e1);font-family:'Battambang',sans-serif;font-weight:700;cursor:pointer;white-space:nowrap;flex-shrink:0}
+    .btn-back:hover{border-color:var(--input-focus,#0284c7);color:var(--input-focus,#0284c7)}
+    @media print{.btn-back{display:none!important}}
+</style>
 </head>
 <body>
 
@@ -645,6 +650,7 @@
     
     <!-- ផ្នែកខាងឆ្វេង ៖ ជម្រើសទិន្នន័យ (Filters) -->
     <div class="tb-group tb-filters">
+      <button type="button" class="btn btn-back" onclick="goBackToReports()" title="ត្រឡប់ទៅបញ្ជីរបាយការណ៍"><i class="fa-solid fa-arrow-left"></i> <span>ត្រឡប់</span></button>
       <!-- 🌟 ថ្នាក់៖ បង្ហាញតែសម្រាប់ ADMIN ប៉ុណ្ណោះ (គ្រូមិនបាច់បង្ហាញឡើយ) -->
       <div class="panel-pill-box" id="adminClassBox" style="display:none;">
         <span class="toolbar-label"><i class="fa-solid fa-graduation-cap" style="color:#0284c7;"></i> <span class="lbl">ថ្នាក់៖</span></span>
@@ -2793,6 +2799,16 @@ exports.default = {
       if (num >= 6.00) return 'D';
       if (num >= 5.00) return 'E';
       return 'F';
+    }
+  
+    function goBackToReports() {
+      try {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'NAVIGATE', page: 'reportsHub' }, '*');
+          return;
+        }
+      } catch (e) {}
+      window.location.href = 'index.html#reportsHub';
     }
   </script>
 </body>
