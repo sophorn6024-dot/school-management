@@ -619,6 +619,16 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
 .lg-role{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#f1f5f9;border:1px solid #dbe3ef;border-radius:16px;padding:5px;margin-bottom:18px}
 .lg-role button{border:0;background:transparent;border-radius:12px;padding:11px 8px;font:inherit;font-weight:700;font-size:13px;color:#64748b;cursor:pointer;transition:.2s}
 .lg-role button.on{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;box-shadow:0 8px 18px rgba(37,99,235,.25)}
+/* ទំព័រ login លើកុំព្យូទ័រ/ថេប្លេត: សារស្វាគមន៍នៅចំហៀង */
+@media (min-width:900px) and (min-height:520px){
+  .login-wrap{width:min(1080px,94vw);display:grid;grid-template-columns:minmax(0,1fr) 430px;grid-template-areas:"w m" "w c";column-gap:72px;align-content:center}
+  .login-welcome{grid-area:w;text-align:left;align-self:center;margin:0}
+  .login-wrap .mascot{grid-area:m}
+  .login-wrap .login-card{grid-area:c}
+  .lw-t{font-size:clamp(30px,3.4vw,46px);line-height:1.75;margin-top:16px}
+  .lw-s{font-size:17px;margin-top:10px}
+  .lw-hi{font-size:15px;padding:8px 20px}
+}
 </style>
 </head>
 <body>
@@ -698,6 +708,7 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
       <div class="nav-link-btn" data-page="score" onclick="navigate('score', this)"><span class="nav-icon-box">📊</span><span class="nav-text">ស្រង់ពិន្ទុ</span></div>
       <div class="nav-link-btn" data-page="chat" onclick="navigate('chat', this)"><span class="nav-icon-box">💬</span><span class="nav-text">សារសន្ទនា</span><span class="nav-badge" data-chat-badge></span></div>
       <div class="nav-link-btn" data-page="reportsHub" onclick="navigate('reportsHub', this)"><span class="nav-icon-box">📄</span><span class="nav-text">របាយការណ៍</span></div>
+      <div class="nav-link-btn" id="studentAccNav" data-page="student_accounts" onclick="navigate('student_accounts', this)"><span class="nav-icon-box">🎓</span><span class="nav-text">គណនីសិស្ស និងបណ្ណាល័យ</span></div>
       <div class="nav-link-btn" id="teacherAdminNav" data-page="teacher" onclick="navigate('teacher', this)" style="display:none;"><span class="nav-icon-box">👨‍🏫</span><span class="nav-text">គ្រប់គ្រងគ្រូ</span></div>
     </nav>
 
@@ -803,7 +814,6 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
             <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">📊</div><div class="rci-name">តារាងចំនួនសិស្សតាមអាយុ</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('student_age_table', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
             <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">👥</div><div class="rci-name">បញ្ជីប្រជុំ និងគណៈកម្មការថ្នាក់</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('committee_meeting', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
             <div class="report-card-item rci-inline" data-admin-only="1"><div class="rci-left"><div class="rci-icon">💾</div><div class="rci-name">បម្រុងទុកទិន្នន័យ (Backup)</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('backup', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
-            <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">🎓</div><div class="rci-name">គណនីសិស្ស និងបណ្ណាល័យឯកសារ</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('student_accounts', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
             <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">📚</div><div class="rci-name">បញ្ជីសារពើភ័ណ្ឌ</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('class_inventory', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
             <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">🗂️</div><div class="rci-name">តារាងនិទ្ទេស ខ្មែរ-គណិត ប្រចាំឆ្នាំ</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('annual_subject_grade', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
             <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">📑 </div><div class="rci-name">បទបញ្ជាផ្ទៃក្នុង</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="navigate('classroom_rules', null)"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
@@ -2586,6 +2596,7 @@ const MORE_ITEMS = [
   { page: 'group', t: 'បែងចែកជាក្រុម', d: 'ចែកសិស្សជាក្រុមសិក្សា', i: 'group' },
   { page: 'book', t: 'ការខ្ចី-សងសៀវភៅ', d: 'តាមដានការខ្ចី និងសងសៀវភៅ', i: 'book' },
   { page: 'reportsHub', t: 'របាយការណ៍', d: 'បញ្ជីឈ្មោះ · តារាងចំណាត់ថ្នាក់ · ព្រឹត្តិបត្រ · ឯកសារ', i: 'report' },
+  { page: 'student_accounts', t: 'គណនីសិស្ស និងបណ្ណាល័យ', d: 'បង្កើតគណនីសិស្ស · ឯកសារ · សារថ្នាក់', i: 'student' },
   { page: 'teacher', t: 'គ្រប់គ្រងគ្រូ', d: 'គ្រប់គ្រងគណនីគ្រូបង្រៀន', i: 'teacher', admin: true }
 ];
 function isMobileView() { return window.matchMedia('(max-width:768px)').matches; }
