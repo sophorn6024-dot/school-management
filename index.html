@@ -929,6 +929,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
           <input type="text" id="pfClass" placeholder="ឧ. ១, ២, ៤(ក)...">
         </div>
         <div class="form-group-field"><label>ទីកន្លែងបច្ចុប្បន្ន</label><input type="text" id="pfAddress" required></div>
+        <div class="form-group-field"><label>ពាក្យសម្ងាត់បច្ចុប្បន្ន (បំពេញតែពេលប្តូរពាក្យសម្ងាត់)</label><input type="password" id="pfOldPassword" placeholder="••••••••" autocomplete="current-password"></div>
         <div class="form-group-field"><label>ពាក្យសម្ងាត់ថ្មី (ទុកទទេបើមិនប្តូរ)</label><input type="password" id="pfPassword" placeholder="••••••••"></div>
         <div class="modal-foot-actions">
           <button type="button" class="btn-modal cancel" onclick="closeProfileModal()">បិទ</button>
@@ -2071,6 +2072,8 @@ const SUPABASE_URL = "https://nggnuobnrxiqjtcwlvwk.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const TEACHERS_TABLE = 'users';
+// ជួរដែលអនុញ្ញាតឱ្យអាន (មិនរួមបញ្ចូល password)
+const USER_COLS = 'id, teacher_id, teacher_name, gender, phone, dob, address, username, role, assigned_classes, photo_url, created_at, updated_at';
 const BASE_TITLE = document.title;
 const KHMER_MONTHS = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
 const ENG_MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
@@ -2203,7 +2206,7 @@ async function handleLoginSubmit(e) {
   btn.disabled = true;
   btnText.innerText = '⏳ កំពុងផ្ទៀងផ្ទាត់...';
   try {
-    const { data, error } = await sb.from(TEACHERS_TABLE).select('*').eq('username', u).eq('password', p).maybeSingle();
+    const { data, error } = await sb.rpc('app_login', { p_username: u, p_password: p });
     if (error) throw error;
     if (!data) {
       showLoginError('Username ឬ Password មិនត្រឹមត្រូវ!');
@@ -2265,7 +2268,7 @@ function forceLogoutDeleted(reasonMsg) {
 async function verifySession() {
   if (!CURRENT_USER) { showAuthScreen(); return false; }
   try {
-    let query = sb.from(TEACHERS_TABLE).select('*');
+    let query = sb.from(TEACHERS_TABLE).select(USER_COLS);
     if (CURRENT_USER.id) query = query.eq('id', CURRENT_USER.id);
     else if (CURRENT_USER.username) query = query.eq('username', CURRENT_USER.username);
     else { forceLogoutDeleted(); return false; }
@@ -2949,6 +2952,7 @@ function openProfileModal() {
   document.getElementById('pfPhone').value = CURRENT_USER.phone || '';
   document.getElementById('pfAddress').value = CURRENT_USER.address || '';
   document.getElementById('pfPassword').value = '';
+  if (document.getElementById('pfOldPassword')) document.getElementById('pfOldPassword').value = '';
   const dobVal = CURRENT_USER.dob || '';
   document.getElementById('pfDob').value = dobVal;
   if (dobVal) {
@@ -3054,11 +3058,21 @@ async function saveMyProfile(ev) {
   };
   if (IS_ADMIN) updates.assigned_classes = document.getElementById('pfClass').value.trim();
   const newPass = document.getElementById('pfPassword').value.trim();
-  if (newPass) updates.password = newPass;
+  const oldPass = (document.getElementById('pfOldPassword') || {}).value ? document.getElementById('pfOldPassword').value.trim() : '';
+  if (newPass && !oldPass) {
+    btn.innerText = '💾 រក្សាទុក'; btn.disabled = false;
+    alert('⚠️ សូមបញ្ចូលពាក្យសម្ងាត់បច្ចុប្បន្ន ដើម្បីប្តូរពាក្យសម្ងាត់ថ្មី');
+    return false;
+  }
   if (profilePickedPhotoBase64) updates.photo_url = profilePickedPhotoBase64;
   else if (profilePhotoDeleteRequested) updates.photo_url = null;
   try {
-    const { data, error } = await sb.from(TEACHERS_TABLE).update(updates).eq('id', CURRENT_USER.id).select().single();
+    if (newPass) {
+      const { data: okPw, error: pwErr } = await sb.rpc('app_change_password', { p_id: CURRENT_USER.id, p_old: oldPass, p_new: newPass });
+      if (pwErr) throw pwErr;
+      if (!okPw) throw new Error('ពាក្យសម្ងាត់បច្ចុប្បន្នមិនត្រឹមត្រូវ');
+    }
+    const { data, error } = await sb.from(TEACHERS_TABLE).update(updates).eq('id', CURRENT_USER.id).select(USER_COLS).single();
     if (error) throw error;
     CURRENT_USER = data;
     localStorage.setItem('krou_supabase_user', JSON.stringify(CURRENT_USER));
