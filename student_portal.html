@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="km" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ផ្ទាំងសិស្ស</title>
+<link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Moul&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#eef2f9;--bg2:#e3eaf6;--side:#1e3a8a;--sidet:#e0e7ff;--card:#fff;--line:#d9e1ef;--text:#0f172a;--muted:#5b6b86;--ac:#2563eb;--acs:#dbeafe;--in:#f8fafc;--ok:#059669;--oks:#d1fae5;--bad:#e11d48;--bads:#ffe4e6;--warn:#b45309;--warns:#fef3c7;--gold:#b45309}
+[data-theme=dark]{--bg:#070d1c;--bg2:#0d1730;--side:#0f2557;--sidet:#c7d2fe;--card:#111c33;--line:#25355a;--text:#f1f5f9;--muted:#93a4c4;--ac:#3b82f6;--acs:#16294d;--in:#18253f;--ok:#34d399;--oks:#0f3a30;--bad:#fb7185;--bads:#3b1420;--warn:#fbbf24;--warns:#3a2c0e;--gold:#fbbf24}
+*{box-sizing:border-box}
+html{color-scheme:light}[data-theme=dark]{color-scheme:dark}
+body{margin:0;min-height:100vh;color:var(--text);font-family:'Battambang',system-ui,sans-serif;font-size:15px;line-height:1.6;background:radial-gradient(1200px 600px at 80% -10%,var(--bg2),var(--bg))}
+button,input,select,textarea{font:inherit;color:inherit}
+.hide{display:none!important}
+/* login */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
+.lg{width:100%;max-width:420px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:26px 22px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.lg h1{font-family:'Moul',serif;font-weight:400;font-size:21px;text-align:center;margin:0 0 4px;color:var(--ac)}
+.lg p{text-align:center;color:var(--muted);margin:0 0 16px;font-size:13.5px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--in);border:1px solid var(--line);border-radius:14px;padding:5px;margin-bottom:14px}
+.seg button{border:0;background:transparent;border-radius:10px;padding:10px;cursor:pointer;font-weight:700;color:var(--muted)}
+.seg button.on{background:var(--ac);color:#fff}
+label.f{display:block;margin:10px 0 4px;color:var(--muted);font-size:13.5px}
+.in{width:100%;background:var(--in);border:1px solid var(--line);border-radius:12px;padding:12px 14px;outline:none}
+.in:focus{border-color:var(--ac)}
+.btn{border:0;background:var(--ac);color:#fff;border-radius:12px;padding:12px 16px;cursor:pointer;font-weight:700;width:100%;margin-top:14px}
+.btn.sm{width:auto;margin:0;padding:9px 14px}
+.btn.ghost{background:var(--in);color:var(--text);border:1px solid var(--line)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.err{background:var(--bads);color:var(--bad);border-radius:10px;padding:9px 12px;margin-top:10px;font-size:13.5px;display:none}
+.pw{position:relative}.pw button{position:absolute;right:8px;top:7px;background:none;border:0;cursor:pointer;font-size:18px}
+/* app */
+#app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+aside{background:linear-gradient(180deg,var(--side),#0a1530);color:var(--sidet);padding:14px 12px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.who{display:flex;align-items:center;gap:10px;padding:8px 6px 14px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:10px}
+.av{width:44px;height:44px;border-radius:50%;background:#c2410c;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;overflow:hidden;flex-shrink:0}
+.av img{width:100%;height:100%;object-fit:cover}
+.who b{display:block;line-height:1.3;color:#fff}.who small{opacity:.75}
+nav button{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;color:inherit;padding:12px;border-radius:12px;cursor:pointer;text-align:left;margin-bottom:2px}
+nav button:hover{background:rgba(255,255,255,.08)}
+nav button.on{background:linear-gradient(90deg,#1d4ed8,#0369a1);color:#fff;font-weight:700}
+nav svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.sp{flex:1}
+.side-foot{display:flex;gap:8px}
+.side-foot button{flex:1;background:rgba(255,255,255,.1);border:0;color:#fff;border-radius:10px;padding:9px;cursor:pointer}
+main{padding:22px;min-width:0}
+.top{display:none}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}
+.hero{display:flex;align-items:center;gap:16px}
+.hero .ic{width:68px;height:68px;border-radius:20px;background:linear-gradient(135deg,#0ea5e9,#2563eb);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0}
+.hero small{color:var(--muted)}.hero h2{margin:0;font-size:26px;color:var(--ac)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.st{border-radius:18px;padding:16px;border:1px solid var(--line);background:var(--card);min-height:150px}
+.st .h{color:var(--muted);font-size:13.5px;display:flex;align-items:center;gap:6px}
+.st .v{font-size:38px;font-weight:700;text-align:center;margin:10px 0 2px}
+.st .s{text-align:center;color:var(--muted);font-size:13px}
+.bar{height:8px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:8px}.bar i{display:block;height:100%;background:var(--ac)}
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.chip{border:1px solid var(--line);border-radius:999px;padding:7px 16px;font-size:14px;background:var(--card)}
+.chip.g{color:var(--gold)}.chip.k{color:var(--ok)}.chip.b{color:var(--ac)}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.tabs button{border:1px solid var(--line);background:var(--card);border-radius:12px;padding:11px;cursor:pointer;font-weight:700;color:var(--muted)}
+.tabs button.on{background:var(--ac);border-color:var(--ac);color:#fff}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row .in{width:auto;min-width:130px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.kv{border:1px solid var(--line);background:var(--in);border-radius:14px;padding:12px;text-align:center}
+.kv small{color:var(--muted);display:block}.kv b{font-size:24px}
+.empty{border:1px dashed var(--line);border-radius:14px;padding:26px;text-align:center;color:var(--muted)}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
+th{background:var(--in);color:var(--muted);font-weight:700}
+.pill{display:inline-block;border-radius:999px;padding:3px 12px;font-size:13px;font-weight:700}
+.pP{background:var(--oks);color:var(--ok)}.pA{background:var(--bads);color:var(--bad)}.pL{background:var(--warns);color:var(--warn)}.pC{background:var(--acs);color:var(--ac)}
+.cnt{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px}
+.cnt .st{min-height:0;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}.cnt .st .v{font-size:30px;margin:0}
+.doc{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:14px;margin-bottom:8px;background:var(--in)}
+.doc a{margin-left:auto;color:var(--ac);font-weight:700;text-decoration:none;white-space:nowrap}
+#msgs{height:52vh;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:6px}
+.m{max-width:78%;padding:8px 12px;border-radius:14px;background:var(--in);border:1px solid var(--line);align-self:flex-start;word-break:break-word}
+.m.me{align-self:flex-end;background:var(--acs);border-color:var(--ac)}
+.m small{display:block;color:var(--muted);font-size:11.5px}
+.m.t small b{color:var(--gold)}
+.info{display:grid;grid-template-columns:150px 1fr;gap:8px 12px}.info span{color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.notice{background:var(--warns);color:var(--warn);border-radius:12px;padding:10px 14px;margin-bottom:14px}
+.tip{padding:10px 12px;border-left:3px solid var(--ac);background:var(--in);border-radius:8px;margin-top:8px}
+@media(max-width:900px){
+  #app{grid-template-columns:1fr}
+  aside{position:fixed;left:0;top:0;width:270px;z-index:50;transform:translateX(-105%);transition:transform .2s}
+  aside.open{transform:none}
+  .top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .top button{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
+  main{padding:14px}
+  .stats{grid-template-columns:1fr 1fr}.cnt{grid-template-columns:1fr 1fr}.two{grid-template-columns:1fr}
+  .tabs{grid-template-columns:1fr 1fr}.info{grid-template-columns:1fr}
+  .hero h2{font-size:21px}
+}
+</style>
+</head>
+<body>
+
+<!-- ចូលប្រើ -->
+<div id="login" class="hide">
+  <div class="lg">
+    <h1>ចូលប្រើ</h1>
+    <p>ផ្ទាំងសិស្ស — សាលាបឋមសិក្សាកំពង់ល្ពៅ</p>
+    <div class="seg"><button id="tPw" class="on" onclick="setTab('pw')">Password</button><button id="tQr" onclick="setTab('qr')">QR Login</button></div>
+    <div id="pPw">
+      <label class="f">លេខសិស្ស / Username</label>
+      <input id="lu" class="in" autocomplete="username" placeholder="បញ្ចូលលេខសិស្ស">
+      <label class="f">ពាក្យសម្ងាត់</label>
+      <div class="pw"><input id="lp" class="in" type="password" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"><button type="button" onclick="lp.type=lp.type==='password'?'text':'password'">👁</button></div>
+      <button class="btn" id="bLogin" onclick="doLogin()">ចូលប្រព័ន្ធ</button>
+    </div>
+    <div id="pQr" class="hide">
+      <label class="f">កូដ QR (ឬស្កេនពីកាតសិស្ស)</label>
+      <input id="lq" class="in" placeholder="បិទភ្ជាប់កូដ ឬតំណពី QR">
+      <video id="vid" class="hide" style="width:100%;border-radius:12px;margin-top:10px" playsinline muted></video>
+      <div class="row" style="margin-top:12px"><button class="btn sm ghost" id="bScan" onclick="scanQr()">📷 ស្កេនកាមេរ៉ា</button><button class="btn sm" onclick="doQr(lq.value)">ចូលប្រព័ន្ធ</button></div>
+    </div>
+    <div class="err" id="lerr"></div>
+    <p style="margin-top:16px;font-size:12.5px"><a href="index.html" style="color:var(--muted)">← ចូលជាគ្រូ / Admin</a></p>
+  </div>
+</div>
+
+<!-- កម្មវិធី -->
+<div id="app" class="hide">
+  <aside id="side">
+    <div class="who"><div class="av" id="avSide"></div><div><b id="nmSide"></b><small>សិស្ស</small></div></div>
+    <nav id="nav"></nav>
+    <div class="sp"></div>
+    <div class="side-foot"><button onclick="toggleTheme()" title="ពណ៌ងងឹត/ភ្លឺ">🌓</button><button onclick="logout()">ចាកចេញ</button></div>
+  </aside>
+  <main>
+    <div class="top"><button onclick="side.classList.toggle('open')">☰</button><b id="ttl"></b></div>
+    <div id="view"></div>
+  </main>
+</div>
+
+<script>
+const SB=window.supabase?supabase.createClient("https://nggnuobnrxiqjtcwlvwk.supabase.co","sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML"):null;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const KEY='krou_student_session';
+const MONTHS=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+const SEM1=['វិច្ឆិកា','ធ្នូ','មករា','កុម្ភៈ','មីនា','មេសា'],SEM2=['ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា'];
+const ORDER=[...SEM1,...SEM2];
+const CHAT_CAN_SEND=true; // កំណត់ false ដើម្បីឱ្យសិស្សអានតែប៉ុណ្ណោះ
+let TOKEN=null,ME=null,SCORES=[],view='dash',sTab='month',chatLast=0,chatTimer=null;
+
+/* ── ពណ៌ ── */
+function applyTheme(v){document.documentElement.setAttribute('data-theme',v==='light'?'light':'dark')}
+try{applyTheme(localStorage.getItem('krou_student_theme')||'dark')}catch(e){}
+function toggleTheme(){const n=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';applyTheme(n);try{localStorage.setItem('krou_student_theme',n)}catch(e){}}
+
+/* ── RPC ── */
+async function rpc(n,a){
+  if(!SB)throw new Error('មិនអាចភ្ជាប់ Supabase');
+  const {data,error}=await SB.rpc(n,a);
+  if(error)throw error;
+  return data;
+}
+async function tk(n,a){ // function ដែលត្រូវការ token
+  const d=await rpc(n,{p_token:TOKEN,...(a||{})});
+  if(d===null){logout(true);throw new Error('session ផុតកំណត់')}
+  return d;
+}
+
+/* ── ចូល/ចេញ ── */
+function lerr(m){const e=$('lerr');e.textContent=m||'';e.style.display=m?'block':'none'}
+function setTab(t){const q=t==='qr';$('tPw').classList.toggle('on',!q);$('tQr').classList.toggle('on',q);$('pPw').classList.toggle('hide',q);$('pQr').classList.toggle('hide',!q);lerr('')}
+function loginResult(d){
+  if(!d||d.error||!d.token){lerr(d&&d.error==='locked'?'ព្យាយាមច្រើនដងពេក សូមរង់ចាំ ៥ នាទី':'ព័ត៌មានចូលមិនត្រឹមត្រូវ');return false}
+  TOKEN=d.token;ME=d.profile;try{localStorage.setItem(KEY,JSON.stringify({token:TOKEN}))}catch(e){}
+  start();return true;
+}
+async function doLogin(){
+  const u=lu.value.trim(),p=lp.value;if(!u||!p){lerr('សូមបញ្ចូលលេខសិស្ស និងពាក្យសម្ងាត់');return}
+  bLogin.disabled=true;lerr('');
+  try{loginResult(await rpc('student_login',{p_username:u,p_password:p}))}catch(e){lerr('កំហុស៖ '+(e.message||e))}
+  bLogin.disabled=false;
+}
+function qrCode(v){v=String(v||'').trim();try{const u=new URL(v);return u.searchParams.get('qr')||v}catch(e){return v}}
+async function doQr(v){
+  const c=qrCode(v);if(!c){lerr('សូមបញ្ចូលកូដ QR');return}
+  try{loginResult(await rpc('student_login_qr',{p_qr:c}))}catch(e){lerr('កំហុស៖ '+(e.message||e))}
+}
+let stream=null;
+async function scanQr(){
+  if(!('BarcodeDetector' in window)){lerr('ឧបករណ៍នេះមិនគាំទ្រការស្កេន សូមបិទភ្ជាប់កូដដោយដៃ');return}
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    vid.srcObject=stream;vid.classList.remove('hide');await vid.play();
+    const det=new BarcodeDetector({formats:['qr_code']});
+    const loop=async()=>{
+      if(!stream)return;
+      try{const r=await det.detect(vid);if(r.length){stopCam();doQr(r[0].rawValue);return}}catch(e){}
+      requestAnimationFrame(loop);
+    };loop();
+  }catch(e){lerr('មិនអាចបើកកាមេរ៉ា៖ '+(e.message||e))}
+}
+function stopCam(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}vid.classList.add('hide')}
+async function logout(silent){
+  clearInterval(chatTimer);stopCam();
+  try{if(TOKEN&&!silent)await rpc('student_logout',{p_token:TOKEN})}catch(e){}
+  TOKEN=null;ME=null;try{localStorage.removeItem(KEY)}catch(e){}
+  $('app').classList.add('hide');$('login').classList.remove('hide');
+}
+
+/* ── ចាប់ផ្តើម ── */
+const ICONS={
+ dash:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+ score:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+ att:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18M9 15l2 2 4-4"/>',
+ lib:'<path d="M4 4v16M9 4v16M14 6l5 14M14 6l3-1"/>',
+ chat:'<path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z"/>',
+ me:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.5A6.5 6.5 0 0 1 21.5 20"/>'
+};
+const NAV=[['dash','ផ្ទាំងខ្ញុំ'],['score','ពិន្ទុខ្ញុំ'],['att','វត្តមានខ្ញុំ'],['lib','បណ្ណាល័យឯកសារ'],['chat','សារសន្ទនា'],['me','ព័ត៌មានផ្ទាល់ខ្លួន']];
+function start(){
+  $('login').classList.add('hide');$('app').classList.remove('hide');
+  const av=ME.photo_url?`<img src="${esc(ME.photo_url)}" alt="">`:esc((ME.student_name||'?').trim().charAt(0));
+  $('avSide').innerHTML=av;$('nmSide').textContent=ME.student_name||'';
+  $('nav').innerHTML=NAV.map(([k,t])=>`<button data-k="${k}" onclick="go('${k}')"><svg viewBox="0 0 24 24">${ICONS[k]}</svg><span>${t}</span></button>`).join('');
+  go(ME.must_change?'me':'dash');
+}
+function go(k){
+  if(ME&&ME.must_change&&k!=='me'){return}
+  view=k;clearInterval(chatTimer);chatTimer=null;
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));
+  $('ttl').textContent=(NAV.find(n=>n[0]===k)||[])[1]||'';
+  side.classList.remove('open');
+  ({dash:vDash,score:vScore,att:vAtt,lib:vLib,chat:vChat,me:vMe})[k]();
+}
+const load=m=>{$('view').innerHTML=`<div class="empty">⏳ ${m||'កំពុងទាញយក...'}</div>`};
+const R2=x=>Number(Number(x).toFixed(2));
+const combine2=(a,b)=>(a>0&&b>0)?(a+b)/2:(a>0?a:(b>0?b:0));
+const rowOf=(t,p)=>SCORES.find(s=>s.score_type===t&&s.period===p);
+async function ensureScores(){if(!SCORES.length||view==='dash'){SCORES=await tk('student_scores')}}
+function semCalc(months,exam){
+  let sum=0,c=0;months.forEach(m=>{const r=rowOf('monthly',m);if(r&&+r.average>0){sum+=+r.average;c++}});
+  const mo=c?sum/c:0,er=rowOf('semester',exam),ex=er&&+er.average>0?+er.average:0;
+  return {mo,ex,sem:R2(combine2(mo,ex))};
+}
+function gradeOf(a){a=+a;return a>=9?'A':a>=8?'B':a>=7?'C':a>=6?'D':a>=5?'E':'F'}
+
+/* ── ផ្ទាំងខ្ញុំ ── */
+async function vDash(){
+  load();
+  try{await ensureScores()}catch(e){$('view').innerHTML=`<div class="empty">${esc(e.message)}</div>`;return}
+  const done=ORDER.map((m,i)=>({m,i,r:rowOf('monthly',m)})).filter(x=>x.r&&+x.r.average>0);
+  const cur=done.length?done[done.length-1]:null,prev=done.length>1?done[done.length-2]:null;
+  const r=cur&&cur.r;
+  const avg=r?+r.average:0,rank=r&&r.rank?+r.rank:null,grade=r?(r.grade_label||gradeOf(avg)):'—';
+  const pass=r?(r.result||(avg>=5?'ជាប់':'ធ្លាក់')):'—';
+  const up=prev&&avg>+prev.r.average;
+  const gt={A:'ពូកែ',B:'ល្អណាស់',C:'ធ្វើបានល្អ',D:'មធ្យម',E:'ខ្សោយ',F:'ត្រូវខំប្រឹងបន្ថែម'}[grade]||'';
+  $('view').innerHTML=`
+  <div class="card hero"><div class="ic">🎓</div><div><small>សួស្តី</small><h2>${esc(ME.student_name)}</h2><div style="color:var(--muted)">មើលពិន្ទុ ចំណាត់ថ្នាក់ និងគន្លឹះរៀនឲ្យកាន់តែប្រសើរ។</div></div></div>
+  ${r?`<div class="stats">
+    <div class="st"><div class="h">🏆 ចំណាត់ថ្នាក់</div><div class="v" style="color:var(--gold)">${rank??'—'}</div><div class="s">${rank?`ក្នុងថ្នាក់ (${r.class_size} នាក់)`:'មិនទាន់មាន'} · ខែ${esc(cur.m)}</div></div>
+    <div class="st"><div class="h">📈 មធ្យមភាគ</div><div class="v">${avg.toFixed(2)}</div><div class="bar"><i style="width:${Math.min(100,avg*10)}%"></i></div><div class="s">${avg.toFixed(2)} / 10</div></div>
+    <div class="st"><div class="h">🏅 និទ្ទេស</div><div class="v">${esc(grade)}</div><div class="s">${esc(gt)}</div></div>
+    <div class="st"><div class="h">🎯 ស្ថានភាព</div><div class="v" style="color:${pass==='ជាប់'?'var(--ok)':'var(--bad)'}">${esc(pass)}</div><div class="s">${pass==='ជាប់'?'បន្តខិតខំរក្សាលទ្ធផលល្អ':'ត្រូវខិតខំបន្ថែម'}</div></div>
+  </div>
+  <div class="chips">${rank&&rank<=3?`<span class="chip g">🏅 កំពូលលេខ ${rank}</span>`:''}${pass==='ជាប់'?'<span class="chip k">✔ ឡើងថ្នាក់</span>':''}${up?'<span class="chip b">↗ រីកចម្រើន</span>':''}</div>`
+  :`<div class="card"><div class="empty">មិនទាន់មានពិន្ទុនៅឡើយទេ។ សូមរង់ចាំគ្រូបញ្ចូលពិន្ទុ។</div></div>`}
+  <div class="card"><b>✨ គន្លឹះរៀនបន្ទាប់</b><div style="color:var(--muted);margin:4px 0 10px">ចុចដើម្បីទទួលបានគន្លឹះរៀនខ្លីៗ ផ្អែកលើលទ្ធផលរបស់អ្នក។</div>
+    <button class="btn sm" onclick="tips(${avg},${up?1:0},${prev?1:0})">បង្កើតគន្លឹះរៀន</button><div id="tips"></div></div>`;
+}
+function tips(avg,up,hasPrev){
+  const t=[];
+  if(!avg)t.push('រង់ចាំគ្រូបញ្ចូលពិន្ទុ ហើយត្រឡប់មកមើលម្តងទៀត។');
+  else if(avg<5)t.push('ត្រូវការពេលអានសៀវភៅរៀងរាល់ថ្ងៃ យ៉ាងតិច ៣០ នាទី។','សួរគ្រូអំពីមេរៀនដែលមិនយល់ មុនប្រឡងបន្ទាប់។','ធ្វើលំហាត់ខ្លីៗរាល់ថ្ងៃ ជាជាងរៀនច្រើនម្តងមុនប្រឡង។');
+  else if(avg<8)t.push('រកមុខវិជ្ជាដែលពិន្ទុទាបជាងគេ ហើយអនុវត្តលំហាត់បន្ថែម។','ពិនិត្យកំហុសក្នុងលំហាត់ចាស់ ដើម្បីកុំឱ្យច្រឡំម្តងទៀត។');
+  else t.push('រក្សាទម្លាប់រៀនដូចដែលកំពុងធ្វើ។','ជួយមិត្តភក្តិដែលរៀនយឺត ដើម្បីពង្រឹងចំណេះដឹងខ្លួនឯង។');
+  if(hasPrev&&!up&&avg)t.push('ពិន្ទុខែនេះមិនទាន់កើនឡើងពីខែមុន សូមពិនិត្យថាមានមុខវិជ្ជាណាធ្លាក់ចុះ។');
+  t.push('មកសាលាឱ្យទៀងទាត់ ព្រោះវត្តមានជួយឱ្យតាមទាន់មេរៀន។');
+  $('tips').innerHTML=t.map(x=>`<div class="tip">${esc(x)}</div>`).join('');
+}
+
+/* ── ពិន្ទុខ្ញុំ ── */
+let sMonth=MONTHS[new Date().getMonth()];
+async function vScore(){
+  load();
+  try{SCORES=await tk('student_scores')}catch(e){$('view').innerHTML=`<div class="empty">${esc(e.message)}</div>`;return}
+  drawScore();
+}
+function kv(l,v){return `<div class="kv"><small>${l}</small><b>${v}</b></div>`}
+function scoreRowHtml(r){
+  if(!r||!(+r.average>0))return `<div class="empty"><b>មិនទាន់មានពិន្ទុ</b><br>សូមជ្រើសរើសរយៈពេលផ្សេង ឬរង់ចាំគ្រូបញ្ចូលពិន្ទុ។</div>`;
+  const a=+r.average;
+  return `<div class="grid2">${kv('ពិន្ទុសរុប',(+r.total).toFixed(2))}${kv('មធ្យមភាគ',a.toFixed(2))}${kv('ចំណាត់ថ្នាក់',r.rank?`${r.rank} / ${r.class_size}`:'—')}${kv('និទ្ទេស',esc(r.grade_label||gradeOf(a)))}${kv('លទ្ធផល',esc(r.result||(a>=5?'ជាប់':'ធ្លាក់')))}</div>`;
+}
+function avgHtml(label,v){
+  if(!(v>0))return `<div class="empty"><b>មិនទាន់មានទិន្នន័យគ្រប់គ្រាន់</b></div>`;
+  return `<div class="grid2">${kv(label,v.toFixed(2))}${kv('និទ្ទេស',gradeOf(v))}${kv('លទ្ធផល',v>=5?'ជាប់':'ធ្លាក់')}</div>`;
+}
+function drawScore(){
+  const T=[['month','ពិន្ទុខែ'],['sem','ឆមាស'],['semavg','ប្រចាំឆមាស'],['year','ប្រចាំឆ្នាំ']];
+  let body='',ctl='';
+  if(sTab==='month'){
+    ctl=`<div class="row"><b>ជ្រើសរើសខែ</b><select class="in" onchange="sMonth=this.value;drawScore()">${MONTHS.map(m=>`<option ${m===sMonth?'selected':''}>${m}</option>`).join('')}</select></div>`;
+    body=`<h3 style="margin:14px 0 10px">លទ្ធផលសង្ខេបប្រចាំខែ ${esc(sMonth)}</h3>`+scoreRowHtml(rowOf('monthly',sMonth));
+  }else if(sTab==='sem'){
+    body=['ឆមាសទី១','ឆមាសទី២'].map(p=>`<h3 style="margin:14px 0 10px">ប្រឡង${p}</h3>`+scoreRowHtml(rowOf('semester',p))).join('');
+  }else if(sTab==='semavg'){
+    const a=semCalc(SEM1,'ឆមាសទី១'),b=semCalc(SEM2,'ឆមាសទី២');
+    body=`<h3 style="margin:14px 0 10px">ប្រចាំឆមាសទី១</h3>`+avgHtml('មធ្យមភាគ',a.sem)+`<h3 style="margin:14px 0 10px">ប្រចាំឆមាសទី២</h3>`+avgHtml('មធ្យមភាគ',b.sem);
+  }else{
+    const a=semCalc(SEM1,'ឆមាសទី១').sem,b=semCalc(SEM2,'ឆមាសទី២').sem;
+    body=`<h3 style="margin:14px 0 10px">ប្រចាំឆ្នាំ</h3>`+avgHtml('មធ្យមភាគប្រចាំឆ្នាំ',R2(combine2(a,b)))+`<p style="color:var(--muted);font-size:13px">គណនា = (ប្រចាំឆមាសទី១ + ប្រចាំឆមាសទី២) ÷ ២</p>`;
+  }
+  $('view').innerHTML=`<div class="tabs">${T.map(([k,t])=>`<button class="${k===sTab?'on':''}" onclick="sTab='${k}';drawScore()">${t}</button>`).join('')}</div><div class="card">${ctl}${body}</div>`;
+}
+
+/* ── វត្តមានខ្ញុំ ── */
+let aM=new Date().getMonth(),aY=new Date().getFullYear();
+async function vAtt(){
+  const p=n=>String(n).padStart(2,'0'),last=new Date(aY,aM+1,0).getDate();
+  const from=`${aY}-${p(aM+1)}-01`,to=`${aY}-${p(aM+1)}-${p(last)}`;
+  load();
+  let rows;try{rows=await tk('student_attendance',{p_from:from,p_to:to})}catch(e){$('view').innerHTML=`<div class="empty">${esc(e.message)}</div>`;return}
+  const c={P:0,A:0,L:0,C:0};rows.forEach(r=>{if(c[r.status]!==undefined)c[r.status]++});
+  const tot=rows.length,rate=tot?Math.round((c.P+c.L)/tot*100):0;
+  const L={P:'មានវត្តមាន',A:'អវត្តមាន',L:'យឺត',C:'មានច្បាប់'};
+  const yrs=[aY-1,aY,aY+1];
+  $('view').innerHTML=`<div class="card"><div class="row"><b>ខែ</b><select class="in" onchange="aM=+this.value;vAtt()">${MONTHS.map((m,i)=>`<option value="${i}" ${i===aM?'selected':''}>${m}</option>`).join('')}</select><select class="in" onchange="aY=+this.value;vAtt()">${yrs.map(y=>`<option ${y===aY?'selected':''}>${y}</option>`).join('')}</select></div></div>
+  <div class="cnt">
+   <div class="st"><span class="h">✔ មានវត្តមាន</span><span class="v" style="color:var(--ok)">${c.P}</span></div>
+   <div class="st"><span class="h">⚠ អវត្តមាន</span><span class="v" style="color:var(--bad)">${c.A}</span></div>
+   <div class="st"><span class="h">⏱ យឺត</span><span class="v" style="color:var(--warn)">${c.L}</span></div>
+   <div class="st"><span class="h">📄 មានច្បាប់</span><span class="v" style="color:var(--ac)">${c.C}</span></div>
+   <div class="st"><span class="h">📈 ភាគរយវត្តមាន</span><span class="v">${rate}%</span><span class="s" style="width:100%">ក្នុង ${tot} ថ្ងៃដែលគ្រូបានកត់</span></div></div>
+  <div class="card"><b>កំណត់ត្រាប្រចាំថ្ងៃ</b>${tot?`<div style="overflow:auto"><table><tr><th>ថ្ងៃ</th><th>ស្ថានភាព</th><th>កំណត់ចំណាំ</th></tr>${rows.map(r=>{const d=new Date(r.date+'T00:00:00');return `<tr><td>${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}</td><td><span class="pill p${esc(r.status)}">${esc(L[r.status]||r.status)}</span></td><td>${esc(r.note||'—')}</td></tr>`}).join('')}</table></div>`:'<div class="empty" style="margin-top:10px">មិនទាន់មានកំណត់ត្រាវត្តមានក្នុងខែនេះ។</div>'}</div>`;
+}
+
+/* ── បណ្ណាល័យឯកសារ ── */
+async function vLib(){
+  load();
+  let d;try{d=await tk('student_documents')}catch(e){$('view').innerHTML=`<div class="empty">${esc(e.message)}</div>`;return}
+  const safe=u=>/^https?:\/\//i.test(u)?u:'#';
+  $('view').innerHTML=`<div class="card"><b>📚 បណ្ណាល័យឯកសារ</b><div style="margin-top:12px">${d.length?d.map(x=>`<div class="doc"><span style="font-size:24px">📄</span><div><b>${esc(x.title)}</b><br><small style="color:var(--muted)">${esc(x.category||'ទូទៅ')} · ${new Date(x.created_at).toLocaleDateString('en-GB')}</small></div><a href="${esc(safe(x.url))}" target="_blank" rel="noopener noreferrer">បើក ↗</a></div>`).join(''):'<div class="empty">មិនទាន់មានឯកសារទេ។</div>'}</div></div>`;
+}
+
+/* ── សារសន្ទនា ── */
+async function vChat(){
+  chatLast=0;
+  $('view').innerHTML=`<div class="card"><b>💬 សារសន្ទនាថ្នាក់ ${esc(ME.grade)}</b><div style="color:var(--muted);font-size:13px">សូមប្រើពាក្យសម្តីគួរសម។ គ្រូអាចមើល និងលុបសារបាន។</div><div id="msgs"></div>
+  ${CHAT_CAN_SEND?`<div class="row" style="margin-top:10px;flex-wrap:nowrap"><input id="ci" class="in" style="flex:1;min-width:0" maxlength="500" placeholder="សរសេរសារ..." onkeydown="if(event.key==='Enter')sendChat()"><button class="btn sm" onclick="sendChat()">ផ្ញើ</button></div>`:''}</div>`;
+  await pullChat(true);chatTimer=setInterval(()=>pullChat(false),4000);
+}
+async function pullChat(first){
+  if(view!=='chat')return;
+  try{
+    const list=await tk('student_chat_list',{p_after:first?0:chatLast});
+    const box=$('msgs');if(!box)return;
+    if(first)box.innerHTML='';
+    const near=box.scrollHeight-box.scrollTop-box.clientHeight<80;
+    list.forEach(m=>{
+      if(m.id<=chatLast)return;chatLast=Math.max(chatLast,m.id);
+      const me=m.sender_role==='student'&&m.sender_code===ME.student_id,t=m.sender_role!=='student';
+      const d=document.createElement('div');d.className='m'+(me?' me':'')+(t?' t':'');
+      d.innerHTML=`<small>${t?'<b>គ្រូ</b> ':''}${esc(m.sender_name||'')} · ${new Date(m.created_at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</small>${esc(m.content)}`;
+      box.appendChild(d);
+    });
+    if(first||near)box.scrollTop=box.scrollHeight;
+    if(first&&!list.length)box.innerHTML='<div class="empty">មិនទាន់មានសារទេ។ សូមចាប់ផ្តើមជជែក!</div>';
+  }catch(e){}
+}
+async function sendChat(){
+  const i=$('ci'),v=i.value.trim();if(!v)return;i.disabled=true;
+  try{await tk('student_chat_send',{p_content:v});i.value='';const e=document.querySelector('#msgs .empty');if(e)e.remove();await pullChat(false)}
+  catch(e){alert('❌ '+(e.message||e))}
+  i.disabled=false;i.focus();
+}
+
+/* ── ព័ត៌មានផ្ទាល់ខ្លួន ── */
+function vMe(){
+  const m=ME,dob=m.dob?new Date(m.dob+'T00:00:00'):null;
+  const dobT=dob&&!isNaN(dob)?`ថ្ងៃទី ${dob.getDate()} ខែ${MONTHS[dob.getMonth()]} ឆ្នាំ ${dob.getFullYear()}`:'—';
+  const rows=[['លេខសិស្ស',m.student_id],['ភេទ',m.gender],['ថ្នាក់',m.grade],['ថ្ងៃខែឆ្នាំកំណើត',dobT],['ទីកន្លែងកំណើត',m.pob],['ឈ្មោះឪពុក',[m.father_name,m.father_job].filter(Boolean).join(' · ')],['ឈ្មោះម្តាយ',[m.mother_name,m.mother_job].filter(Boolean).join(' · ')],['លេខទូរស័ព្ទ',m.phone],['អាសយដ្ឋាន',m.address]];
+  $('view').innerHTML=`${m.must_change?'<div class="notice">🔐 នេះជាការចូលលើកដំបូង។ សូមប្តូរពាក្យសម្ងាត់ថ្មី មុននឹងប្រើមុខងារផ្សេង។</div>':''}
+  <div class="two"><div class="card"><div class="hero" style="margin-bottom:14px"><div class="av" style="width:72px;height:72px;font-size:28px">${m.photo_url?`<img src="${esc(m.photo_url)}" alt="">`:esc((m.student_name||'?').charAt(0))}</div><div><h2 style="font-size:22px;color:var(--text)">${esc(m.student_name)}</h2><small>${esc(m.username)}</small></div></div>
+    <div class="info">${rows.map(([k,v])=>`<span>${k}៖</span><b style="font-weight:400">${esc(v||'—')}</b>`).join('')}</div></div>
+  <div class="card"><b>🔒 ផ្លាស់ប្តូរពាក្យសម្ងាត់</b>
+    <label class="f">ពាក្យសម្ងាត់បច្ចុប្បន្ន</label><input id="po" type="password" class="in" autocomplete="current-password">
+    <label class="f">ពាក្យសម្ងាត់ថ្មី (យ៉ាងតិច ៦ តួ)</label><input id="pn" type="password" class="in" autocomplete="new-password">
+    <label class="f">បញ្ជាក់ពាក្យសម្ងាត់ថ្មី</label><input id="pc" type="password" class="in" autocomplete="new-password">
+    <button class="btn" onclick="changePw()">ផ្លាស់ប្តូរ</button><div class="err" id="perr"></div></div></div>`;
+}
+async function changePw(){
+  const o=po.value,n=pn.value,c=pc.value,e=$('perr');e.style.display='block';e.style.background='var(--bads)';e.style.color='var(--bad)';
+  if(!o||!n){e.textContent='សូមបំពេញគ្រប់ប្រអប់';return}
+  if(n.length<6){e.textContent='ពាក្យសម្ងាត់ថ្មីត្រូវមានយ៉ាងតិច ៦ តួ';return}
+  if(n!==c){e.textContent='ពាក្យសម្ងាត់បញ្ជាក់មិនដូចគ្នា';return}
+  if(n===o){e.textContent='ពាក្យសម្ងាត់ថ្មីត្រូវខុសពីចាស់';return}
+  try{
+    const ok=await tk('student_change_password',{p_old:o,p_new:n});
+    if(!ok){e.textContent='ពាក្យសម្ងាត់បច្ចុប្បន្នមិនត្រឹមត្រូវ';return}
+    ME.must_change=false;e.style.background='var(--oks)';e.style.color='var(--ok)';e.textContent='✅ ផ្លាស់ប្តូរពាក្យសម្ងាត់ជោគជ័យ';
+    po.value=pn.value=pc.value='';setTimeout(()=>go('dash'),900);
+  }catch(x){e.textContent='❌ '+(x.message||x)}
+}
+
+/* ── ចាប់ផ្តើមទំព័រ ── */
+(async function init(){
+  const qs=new URLSearchParams(location.search),qr=qs.get('qr');
+  if(qr){try{history.replaceState(null,'',location.pathname)}catch(e){}$('login').classList.remove('hide');setTab('qr');lq.value=qr;await doQr(qr);return}
+  let s=null;try{s=JSON.parse(localStorage.getItem(KEY)||'null')}catch(e){}
+  if(s&&s.token){
+    TOKEN=s.token;
+    try{const me=await rpc('student_me',{p_token:TOKEN});if(me){ME=me;start();return}}catch(e){}
+    TOKEN=null;try{localStorage.removeItem(KEY)}catch(e){}
+  }
+  $('login').classList.remove('hide');
+})();
+</script>
+</body>
+</html>
