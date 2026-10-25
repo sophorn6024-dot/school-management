@@ -504,6 +504,29 @@
       }
     }
   </style>
+<script>
+(function(){let t='dark';try{const u=new URLSearchParams(location.search).get('theme');let p=null;try{if(window.parent&&window.parent!==window)p=window.parent.document.documentElement.getAttribute('data-theme')}catch(e){}
+t=u||p||localStorage.getItem('krou_theme_manual')||'dark'}catch(e){}document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');
+try{const q=new URLSearchParams(location.search).get('primary');if(/^#[0-9a-fA-F]{6}$/.test(q||''))document.documentElement.style.setProperty('--primary',q)}catch(e){}
+try{const pr=window.parent&&window.parent!==window&&window.parent.document.documentElement.style.getPropertyValue('--primary');if(pr)document.documentElement.style.setProperty('--primary',pr.trim())}catch(e){}})();
+</script>
+<style id="tbGlass">
+/* ===== 🧰 Toolbar glass + pill (ដូច form ផ្សេងៗ) ===== */
+:root,[data-theme="light"]{--primary:#0284c7;--tb-1:color-mix(in srgb,var(--primary) 12%,#fff);--tb-2:color-mix(in srgb,var(--primary) 5%,#fff);--tb-line:color-mix(in srgb,var(--primary) 28%,#dbe3ee);--pill:#fff;--input-focus:var(--primary)}
+[data-theme="dark"]{--tb-1:color-mix(in srgb,var(--primary) 17%,#0f1b2d);--tb-2:color-mix(in srgb,var(--primary) 7%,#0c1524);--tb-line:color-mix(in srgb,var(--primary) 32%,#16273f);--pill:rgba(255,255,255,.05);--input-focus:var(--primary)}
+.no-print-toolbar{top:8px;margin:8px 10px;padding:8px 10px;border:1px solid var(--tb-line);border-bottom:1px solid var(--tb-line);border-radius:20px;background:linear-gradient(120deg,var(--tb-1),var(--tb-2));box-shadow:0 6px 18px color-mix(in srgb,var(--primary) 14%,transparent)}
+.panel-pill-box,.form-control,.bb-dd-btn,.dt-btn,.btn-ghost,.btn-outline{background:var(--pill);border:1px solid var(--tb-line);border-radius:14px;height:36px}
+.panel-pill-box{padding:0 10px}
+[data-theme="dark"] .panel-pill-box,[data-theme="dark"] .form-control,[data-theme="dark"] .bb-dd-btn,[data-theme="dark"] .dt-btn,[data-theme="dark"] .btn-ghost{border-color:rgba(255,255,255,.14)}
+.btn{height:36px;border-radius:14px;padding:0 14px}
+.btn-primary{background:linear-gradient(135deg,var(--primary),color-mix(in srgb,var(--primary) 70%,#000));box-shadow:0 4px 12px color-mix(in srgb,var(--primary) 30%,transparent)}
+.btn-ghost:hover,.btn-ghost.open,.dt-btn:hover,.dt-btn.open,.bb-dd-btn:hover,.panel-pill-box:hover{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 9%,var(--pill))}
+.bb-dd-item.on{background:var(--primary)}
+.panel-pill-box .bb-dd-btn{background:transparent;border-color:transparent;height:30px;padding:0 6px;min-width:110px}
+.panel-pill-box .bb-dd-btn:hover{background:transparent}
+@media screen and (min-width:721px) and (max-width:1100px){.tb-filters{flex:1 1 auto}.tb-actions{flex:0 0 auto;margin-left:auto}}
+@media screen and (max-width:720px){.no-print-toolbar{margin:6px;padding:6px;border-radius:16px;top:0}.form-control,.btn,.bb-dd-btn,.dt-btn,.panel-pill-box{height:34px}}
+</style>
 </head>
 <body>
 
@@ -1818,9 +1841,12 @@ try {
 
 let allStudents = [];
 
-function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme || 'dark'); }
-applyTheme(localStorage.getItem('krou_theme_manual') || 'dark');
-window.addEventListener('message', e => { if (e.data && (e.data.type === 'THEME_CHANGE' || e.data.theme)) applyTheme(e.data.theme || e.data); });
+function applyTheme(theme, d) {
+  document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
+  if (d && d.primary) document.documentElement.style.setProperty('--primary', d.primary);
+}
+window.addEventListener('message', e => { if (e.data && (e.data.type === 'THEME_CHANGE' || e.data.theme)) applyTheme(e.data.theme || e.data, e.data); });
+window.addEventListener('storage', e => { if (e.key === 'krou_theme_manual' && e.newValue) applyTheme(e.newValue); });
 
 const _KHMER_DIGITS = ['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
 function toKhmerNum(val) {
