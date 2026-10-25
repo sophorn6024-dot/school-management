@@ -352,6 +352,33 @@
     .btn-back:hover{border-color:var(--input-focus,#0284c7);color:var(--input-focus,#0284c7)}
     @media print{.btn-back{display:none!important}}
 </style>
+<script>
+(function(){let t='dark';try{const u=new URLSearchParams(location.search).get('theme');let p=null;try{if(window.parent&&window.parent!==window)p=window.parent.document.documentElement.getAttribute('data-theme')}catch(e){}
+t=u||p||localStorage.getItem('krou_theme_manual')||'dark'}catch(e){}document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');
+try{const q=new URLSearchParams(location.search).get('primary');if(/^#[0-9a-fA-F]{6}$/.test(q||''))document.documentElement.style.setProperty('--primary',q)}catch(e){}
+try{const pr=window.parent&&window.parent!==window&&window.parent.document.documentElement.style.getPropertyValue('--primary');if(pr)document.documentElement.style.setProperty('--primary',pr.trim())}catch(e){}})();
+</script>
+<style id="tbGlass">
+/* ===== 🧰 Toolbar glass + pill (ដូច form ផ្សេងៗ) ===== */
+:root,[data-theme="light"]{--primary:#0284c7;--tb-1:color-mix(in srgb,var(--primary) 12%,#fff);--tb-2:color-mix(in srgb,var(--primary) 5%,#fff);--tb-line:color-mix(in srgb,var(--primary) 28%,#dbe3ee);--pill:#fff;--input-focus:var(--primary)}
+[data-theme="dark"]{--tb-1:color-mix(in srgb,var(--primary) 17%,#0f1b2d);--tb-2:color-mix(in srgb,var(--primary) 7%,#0c1524);--tb-line:color-mix(in srgb,var(--primary) 32%,#16273f);--pill:rgba(255,255,255,.05);--input-focus:var(--primary)}
+.control-panel,.no-print-bar{top:8px!important;margin:8px 10px!important;padding:8px 10px!important;border:1px solid var(--tb-line)!important;border-radius:20px!important;background:linear-gradient(120deg,var(--tb-1),var(--tb-2))!important;box-shadow:0 6px 18px color-mix(in srgb,var(--primary) 14%,transparent)!important}
+.control-panel{gap:8px!important}
+.control-panel .control-row[style]{background:transparent!important;border-color:var(--tb-line)!important}
+.panel-pill-box,.form-control,.btn,.custom-dd-btn,.sp-btn,.dt-btn,.mp-btn,.period-type-switcher,.layout-switcher,.teacher-class-badge{border-radius:14px!important;min-height:36px}
+.form-control,.btn,.custom-dd-btn,.sp-btn,.dt-btn,.mp-btn{height:36px}
+.panel-pill-box,.form-control,.custom-dd-btn,.sp-btn,.dt-btn,.mp-btn,.period-type-switcher,.layout-switcher,.btn-secondary,.btn-toggle{background:var(--pill);border:1px solid var(--tb-line)}
+[data-theme="dark"] .panel-pill-box,[data-theme="dark"] .form-control,[data-theme="dark"] .custom-dd-btn,[data-theme="dark"] .sp-btn,[data-theme="dark"] .dt-btn,[data-theme="dark"] .mp-btn,[data-theme="dark"] .period-type-switcher,[data-theme="dark"] .layout-switcher{border-color:rgba(255,255,255,.14)}
+.panel-pill-box{padding:0 10px}
+.panel-pill-box .custom-dd-btn,.panel-pill-box .sp-btn,.panel-pill-box .dt-btn,.panel-pill-box .mp-btn,.panel-pill-box .form-control{background:transparent!important;border-color:transparent!important;height:30px;min-height:30px;box-shadow:none}
+.btn{padding:0 14px}
+.btn-primary,.teacher-class-badge{background:linear-gradient(135deg,var(--primary),color-mix(in srgb,var(--primary) 70%,#000))!important;box-shadow:0 4px 12px color-mix(in srgb,var(--primary) 30%,transparent)}
+.period-type-btn,.layout-btn{border-radius:10px!important}
+.period-type-btn.active{background:var(--primary)!important}
+.panel-pill-box:hover,.custom-dd-btn:hover,.sp-btn:hover,.dt-btn:hover,.dt-btn.open,.mp-btn:hover{border-color:var(--primary)}
+@media screen and (max-width:720px){.control-panel,.no-print-bar{margin:6px!important;padding:6px!important;border-radius:16px!important;top:0!important}.form-control,.btn,.custom-dd-btn,.sp-btn,.dt-btn,.mp-btn{height:34px}}
+@media print{.control-panel,.no-print-bar{display:none!important}}
+</style>
 </head>
 <body>
 
@@ -1792,9 +1819,12 @@ exports.default = {
       return num.toString().replace(/\d/g, d => KHMER_DIGITS[parseInt(d)] !== undefined ? KHMER_DIGITS[parseInt(d)] : d);
     }
 
-    function applyTheme(theme) { document.documentElement.setAttribute('data-theme', theme || 'dark'); }
-    applyTheme(localStorage.getItem('krou_theme_manual') || 'dark');
-    window.addEventListener('message', e => { if (e.data && (e.data.type === 'THEME_CHANGE' || e.data.theme)) applyTheme(e.data.theme || e.data); });
+    function applyTheme(theme, d) {
+      document.documentElement.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
+      if (d && d.primary) document.documentElement.style.setProperty('--primary', d.primary);
+    }
+    window.addEventListener('message', e => { if (e.data && (e.data.type === 'THEME_CHANGE' || e.data.theme)) applyTheme(e.data.theme || e.data, e.data); });
+    window.addEventListener('storage', e => { if (e.key === 'krou_theme_manual' && e.newValue) applyTheme(e.newValue); });
 
     /* 📱 ទំព័រត្រូវបង្រួមស្វ័យប្រវត្តិតាមទទឹងអេក្រង់ (គ្រប់ឧបករណ៍) */
     const PAGE_DESIGN_W = 1050;
