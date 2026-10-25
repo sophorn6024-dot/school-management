@@ -107,13 +107,33 @@ th{background:var(--in);color:var(--muted);font-weight:700}
   .hero h2{font-size:21px}
 }
 </style>
+<style id="acctCss">
+.ac-bg{position:fixed;inset:0;background:rgba(2,6,23,.62);backdrop-filter:blur(6px);z-index:9000;display:none;align-items:center;justify-content:center;padding:14px}
+.ac-bg.show{display:flex}
+.ac{width:min(460px,100%);max-height:calc(100vh - 28px);overflow:auto;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.ac-h{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;font-weight:800;font-size:17px;position:sticky;top:0;background:var(--card);z-index:2;border-bottom:1px solid var(--line)}
+.ac-x{border:0;background:var(--in);color:var(--muted);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px}
+.ac-top{display:flex;flex-direction:column;align-items:center;gap:6px;padding:22px 20px 16px;background:linear-gradient(160deg,var(--acs),transparent)}
+.ac-av{position:relative;width:104px;height:104px;border-radius:50%;background:#c2410c;color:#fff;display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:800;overflow:hidden;border:4px solid var(--card);box-shadow:0 8px 24px rgba(0,0,0,.25);cursor:pointer}
+.ac-av img{width:100%;height:100%;object-fit:cover}
+.ac-cam{position:absolute;right:0;bottom:0;left:0;background:rgba(0,0,0,.5);font-size:12px;padding:5px 0;text-align:center}
+.ac-nm{font-size:19px;font-weight:800}.ac-sub{color:var(--muted);font-size:13px}
+.ac-b{padding:6px 20px 20px;display:grid;gap:12px}
+.ac-code{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);background:var(--in);border-radius:14px;padding:12px 14px}
+.ac-code small{color:var(--muted);display:block;font-size:12px}.ac-code b{font-size:18px;letter-spacing:1px}
+.ac-cp{border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:10px;padding:6px 12px;cursor:pointer;font-weight:700}
+.ac-sec{font-weight:800;margin-top:6px}
+.ac-pw{position:relative}.ac-pw .in{padding-right:44px}
+.ac-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:16px;padding:8px}
+.ac-ok{background:var(--oks);color:var(--ok)}
+</style>
 </head>
 <body>
 
 <!-- កម្មវិធី -->
 <div id="app" class="hide">
   <aside id="side">
-    <div class="who"><div class="av" id="avSide"></div><div><b id="nmSide"></b><small>សិស្ស</small></div></div>
+    <div class="who" onclick="openAcct()" style="cursor:pointer" title="ព័ត៌មានគណនី"><div class="av" id="avSide"></div><div><b id="nmSide"></b><small>សិស្ស</small></div></div>
     <nav id="nav"></nav>
     <div class="sp"></div>
     <div class="side-foot"><button onclick="toggleTheme()" title="ពណ៌ងងឹត/ភ្លឺ">🌓</button><button onclick="logout()">ចាកចេញ</button></div>
@@ -424,6 +444,63 @@ async function changePw(){
   }
   goLogin();
 })();
+</script>
+<div class="ac-bg" id="acBg" onclick="if(event.target===this)closeAcct()"><div class="ac" role="dialog" aria-label="ព័ត៌មានគណនី">
+  <div class="ac-h"><span>ព័ត៌មានគណនី</span><button class="ac-x" onclick="closeAcct()" aria-label="បិទ">✕</button></div>
+  <div class="ac-top"><div class="ac-av" id="acAv" onclick="acFile.click()"></div>
+    <input type="file" id="acFile" accept="image/jpeg,image/png,image/webp" hidden onchange="pickPhoto(this.files[0]);this.value=''">
+    <a href="#" onclick="acFile.click();return false" style="color:var(--ac);font-size:13px;font-weight:700">📷 ផ្លាស់ប្តូររូបភាព</a>
+    <div class="ac-nm" id="acNm"></div><div class="ac-sub" id="acSub"></div><div class="err" id="acPhErr"></div></div>
+  <div class="ac-b">
+    <div class="ac-code"><div><small>លេខសម្គាល់ (ឈ្មោះចូលប្រើ)</small><b id="acCode"></b></div><button class="ac-cp" onclick="copyAcct()">ចម្លង</button></div>
+    <div class="ac-sec">🔒 ផ្លាស់ប្តូរពាក្យសម្ងាត់</div>
+    <div class="ac-pw"><input id="ao" type="password" class="in" placeholder="ពាក្យសម្ងាត់បច្ចុប្បន្ន" autocomplete="current-password"><button type="button" class="ac-eye" onclick="eyeT('ao')">👁</button></div>
+    <div class="ac-pw"><input id="an" type="password" class="in" placeholder="ពាក្យសម្ងាត់ថ្មី (យ៉ាងតិច ៦ តួ)" autocomplete="new-password"><button type="button" class="ac-eye" onclick="eyeT('an')">👁</button></div>
+    <div class="ac-pw"><input id="ac" type="password" class="in" placeholder="បញ្ជាក់ពាក្យសម្ងាត់ថ្មី" autocomplete="new-password"><button type="button" class="ac-eye" onclick="eyeT('ac')">👁</button></div>
+    <button class="btn" style="margin-top:2px" onclick="changePw2()">ផ្លាស់ប្តូរពាក្យសម្ងាត់</button><div class="err" id="aerr"></div>
+  </div></div></div>
+<script>
+function acAvHtml(){return ME.photo_url?`<img src="${esc(ME.photo_url)}" alt="">`:esc((ME.student_name||'?').trim().charAt(0))}
+function openAcct(){
+  if(!ME)return;
+  $('acAv').innerHTML=acAvHtml()+'<div class="ac-cam">📷</div>';$('acNm').textContent=ME.student_name||'';
+  $('acSub').textContent='សិស្ស'+(ME.grade?' · ថ្នាក់ទី '+ME.grade:'');$('acCode').textContent=ME.username||ME.student_id||'';
+  ['ao','an','ac'].forEach(i=>{$(i).value='';$(i).type='password'});$('aerr').style.display='none';$('acPhErr').style.display='none';
+  $('acBg').classList.add('show');
+}
+function closeAcct(){$('acBg').classList.remove('show')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAcct()});
+function eyeT(id){const i=$(id);i.type=i.type==='password'?'text':'password'}
+function copyAcct(){const v=$('acCode').textContent;try{navigator.clipboard.writeText(v)}catch(e){const t=document.createElement('textarea');t.value=v;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}const b=document.querySelector('.ac-cp');b.textContent='✓ បានចម្លង';setTimeout(()=>b.textContent='ចម្លង',1400)}
+function acMsg(el,t,ok){el.style.display='block';el.className='err'+(ok?' ac-ok':'');el.textContent=t}
+async function pickPhoto(f){
+  const e=$('acPhErr');if(!f)return;
+  if(!/^image\/(jpeg|png|webp)$/.test(f.type)){acMsg(e,'សូមជ្រើសរូប JPG/PNG/WEBP');return}
+  if(f.size>8*1024*1024){acMsg(e,'រូបធំពេក (អតិបរមា 8 MB)');return}
+  try{
+    const url=URL.createObjectURL(f),img=await new Promise((ok,bad)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=bad;i.src=url});
+    const S=320,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d'),m=Math.min(img.width,img.height);
+    x.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,S,S);URL.revokeObjectURL(url);
+    const data=c.toDataURL('image/jpeg',.82);
+    acMsg(e,'កំពុងរក្សាទុក…',true);
+    const ok=await tk('student_set_photo',{p_photo:data});
+    if(!ok)throw new Error('រក្សាទុកមិនបាន');
+    ME.photo_url=data;$('acAv').innerHTML=acAvHtml()+'<div class="ac-cam">📷</div>';$('avSide').innerHTML=acAvHtml();
+    acMsg(e,'✅ បានផ្លាស់ប្តូររូបភាព',true);
+  }catch(x){acMsg(e,'❌ '+(x.message||x))}
+}
+async function changePw2(){
+  const o=$('ao').value,n=$('an').value,c=$('ac').value,e=$('aerr');
+  if(!o||!n){acMsg(e,'សូមបំពេញគ្រប់ប្រអប់');return}
+  if(n.length<6){acMsg(e,'ពាក្យសម្ងាត់ថ្មីត្រូវមានយ៉ាងតិច ៦ តួ');return}
+  if(n!==c){acMsg(e,'ពាក្យសម្ងាត់បញ្ជាក់មិនដូចគ្នា');return}
+  if(n===o){acMsg(e,'ពាក្យសម្ងាត់ថ្មីត្រូវខុសពីចាស់');return}
+  try{
+    const ok=await tk('student_change_password',{p_old:o,p_new:n});
+    if(!ok){acMsg(e,'ពាក្យសម្ងាត់បច្ចុប្បន្នមិនត្រឹមត្រូវ');return}
+    ME.must_change=false;acMsg(e,'✅ ផ្លាស់ប្តូរពាក្យសម្ងាត់ជោគជ័យ',true);['ao','an','ac'].forEach(i=>$(i).value='');
+  }catch(x){acMsg(e,'❌ '+(x.message||x))}
+}
 </script>
 </body>
 </html>
