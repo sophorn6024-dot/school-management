@@ -68,6 +68,13 @@ main{padding:22px;min-width:0}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
 .kv{border:1px solid var(--line);background:var(--in);border-radius:14px;padding:12px;text-align:center}
 .kv small{color:var(--muted);display:block}.kv b{font-size:24px}
+.sj-t{margin:18px 0 10px;font-size:15px}
+.sj{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.sj-g{border:1px solid var(--line);background:var(--in);border-radius:14px;padding:10px 12px}
+.sj-h{font-weight:800;color:var(--ac,#38bdf8);margin-bottom:6px;font-size:13px}
+.sj-r{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-top:1px dashed var(--line);font-size:13px}
+.sj-r:first-of-type{border-top:0}
+.sj-r b{font-size:15px}.sj-r small{color:var(--muted);font-weight:600;font-size:11px}
 .empty{border:1px dashed var(--line);border-radius:14px;padding:26px;text-align:center;color:var(--muted)}
 table{width:100%;border-collapse:collapse}
 th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
@@ -249,13 +256,34 @@ let sMonth=MONTHS[new Date().getMonth()];
 async function vScore(){
   load();
   try{SCORES=await tk('student_scores')}catch(e){$('view').innerHTML=`<div class="empty">${esc(e.message)}</div>`;return}
+  await loadSubj();
   drawScore();
 }
 function kv(l,v){return `<div class="kv"><small>${l}</small><b>${v}</b></div>`}
-function scoreRowHtml(r){
+const TPL_M=[{l:'ភាសាខ្មែរ',c:[['kh_listen','សមត្ថភាពស្ដាប់'],['kh_write','សមត្ថភាពសរសេរ'],['kh_read','សមត្ថភាពអាន'],['kh_speak','សមត្ថភាពនិយាយ']]},{l:'គណិតវិទ្យា',c:[['m_num','ចំនួន'],['m_measure','រង្វាស់រង្វាល់'],['m_geo','ធរណីមាត្រ'],['m_algebra','ពិជគណិត'],['m_stat','ស្ថិតិ']]},{l:'វិទ្យាសាស្ត្រ',c:[['science','វិទ្យាសាស្ត្រ']]},{l:'សិក្សាសង្គម',c:[['social','សិក្សាសង្គម']]},{l:'អប់រំកាយសុខភាព សិល្បៈ',c:[['a_craft','គេហវិទ្យា-អប់រំសិល្បៈ'],['a_pe','អប់រំកាយ-កីឡា'],['a_health','សុខភាព-អនាម័យ'],['a_env','អប់រំបំណិនជីវិត']]},{l:'ភាសាបរទេស',c:[['foreign','ភាសាបរទេស']]}];
+const TPL_S=[{l:'ភាសាខ្មែរ',c:[['read','អំណាន'],['listen','ស្ដាប់ និងនិយាយ'],['dictation','សរសេរតាមអាន'],['essay','តែងសេចក្ដី']]},{l:'គណិតវិទ្យា',c:[['math','គណិតវិទ្យា']]},{l:'វិទ្យាសាស្ត្រ',c:[['science','វិទ្យាសាស្ត្រ']]},{l:'សិក្សាសង្គម',c:[['social','សិក្សាសង្គម']]},{l:'អប់រំកាយសុខភាព សិល្បៈ',c:[['homeArts','គេហវិទ្យា-អប់រំសិល្បៈ'],['pe','អប់រំកាយ-សុខភាព'],['ethics','អប់រំបំណិនជីវិត']]},{l:'ភាសាបរទេស',c:[['foreign','ភាសាបរទេស']]}];
+let SUBJ=null;
+async function loadSubj(){if(SUBJ)return;try{SUBJ=await tk('student_subjects')||[]}catch(e){SUBJ=[]}}
+function groupsOf(type){
+  const t=type==='monthly'?'monthly':'semester',rows=(SUBJ||[]).filter(x=>x.subject_type===t);
+  if(!rows.length)return (t==='monthly'?TPL_M:TPL_S).map(g=>({l:g.l,c:g.c.map(x=>({k:x[0],n:x[1],m:10}))}));
+  return rows.filter(x=>!x.parent_id).map(p=>{
+    const ch=rows.filter(x=>String(x.parent_id)===String(p.id));
+    const mk=x=>({k:x.code||('sub_'+x.id),n:x.name,m:+x.max_score||10});
+    return {l:p.name,c:ch.length?ch.map(mk):[mk(p)]};
+  });
+}
+function subjHtml(r,type){
+  const sc=r&&r.scores&&typeof r.scores==='object'?r.scores:{};
+  const gs=groupsOf(type).map(g=>({l:g.l,c:g.c.filter(x=>sc[x.k]!==undefined&&sc[x.k]!==''&&sc[x.k]!==null)})).filter(g=>g.c.length);
+  if(!gs.length)return '';
+  const col=v=>{v=+v;return v>=9?'var(--ok)':v>=7?'#3b82f6':v>=5?'#f59e0b':'var(--bad)'};
+  return `<h4 class="sj-t">📚 ពិន្ទុតាមមុខវិជ្ជា</h4><div class="sj">`+gs.map(g=>`<div class="sj-g"><div class="sj-h">${esc(g.l)}</div>${g.c.map(x=>`<div class="sj-r"><span>${esc(x.n)}</span><b style="color:${col(sc[x.k])}">${esc(String(sc[x.k]))}<small>/${x.m}</small></b></div>`).join('')}</div>`).join('')+`</div>`;
+}
+function scoreRowHtml(r,type){
   if(!r||!(+r.average>0))return `<div class="empty"><b>មិនទាន់មានពិន្ទុ</b><br>សូមជ្រើសរើសរយៈពេលផ្សេង ឬរង់ចាំគ្រូបញ្ចូលពិន្ទុ។</div>`;
   const a=+r.average;
-  return `<div class="grid2">${kv('ពិន្ទុសរុប',(+r.total).toFixed(2))}${kv('មធ្យមភាគ',a.toFixed(2))}${kv('ចំណាត់ថ្នាក់',r.rank?`${r.rank} / ${r.class_size}`:'—')}${kv('និទ្ទេស',esc(r.grade_label||gradeOf(a)))}${kv('លទ្ធផល',esc(r.result||(a>=5?'ជាប់':'ធ្លាក់')))}</div>`;
+  return `<div class="grid2">${kv('ពិន្ទុសរុប',(+r.total).toFixed(2))}${kv('មធ្យមភាគ',a.toFixed(2))}${kv('ចំណាត់ថ្នាក់',r.rank?`${r.rank} / ${r.class_size}`:'—')}${kv('និទ្ទេស',esc(r.grade_label||gradeOf(a)))}${kv('លទ្ធផល',esc(r.result||(a>=5?'ជាប់':'ធ្លាក់')))}</div>`+subjHtml(r,type);
 }
 function avgHtml(label,v){
   if(!(v>0))return `<div class="empty"><b>មិនទាន់មានទិន្នន័យគ្រប់គ្រាន់</b></div>`;
@@ -267,9 +295,9 @@ function drawScore(){
   let body='',ctl='';
   if(sTab==='month'){
     ctl=`<div class="row"><b>ជ្រើសរើសខែ</b><select class="in" onchange="sMonth=this.value;drawScore()">${MONTHS.map(m=>`<option ${m===sMonth?'selected':''}>${m}</option>`).join('')}</select></div>`;
-    body=`<h3 style="margin:14px 0 10px">លទ្ធផលសង្ខេបប្រចាំខែ ${esc(sMonth)}</h3>`+scoreRowHtml(rowOf('monthly',sMonth));
+    body=`<h3 style="margin:14px 0 10px">លទ្ធផលសង្ខេបប្រចាំខែ ${esc(sMonth)}</h3>`+scoreRowHtml(rowOf('monthly',sMonth),'monthly');
   }else if(sTab==='sem'){
-    body=['ឆមាសទី១','ឆមាសទី២'].map(p=>`<h3 style="margin:14px 0 10px">ប្រឡង${p}</h3>`+scoreRowHtml(rowOf('semester',p))).join('');
+    body=['ឆមាសទី១','ឆមាសទី២'].map(p=>`<h3 style="margin:14px 0 10px">ប្រឡង${p}</h3>`+scoreRowHtml(rowOf('semester',p),'semester')).join('');
   }else if(sTab==='semavg'){
     const a=semCalc(SEM1,'ឆមាសទី១'),b=semCalc(SEM2,'ឆមាសទី២');
     body=`<h3 style="margin:14px 0 10px">ប្រចាំឆមាសទី១</h3>`+avgHtml('មធ្យមភាគ',a.sem)+`<h3 style="margin:14px 0 10px">ប្រចាំឆមាសទី២</h3>`+avgHtml('មធ្យមភាគ',b.sem);
