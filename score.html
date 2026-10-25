@@ -1605,6 +1605,15 @@ body.is-locked .score-box{opacity:1}
 [data-theme="dark"] .th-group-res,[data-theme="dark"] .th-sub-res{--g-brd:#6366f1;--g-txt:#c7d2fe}
 .modern-score-table{min-width:0!important}
 .modern-score-table th.stk-2,.modern-score-table th.stk-2b,.modern-score-table td.stk-2,.modern-score-table td.stk-2b{min-width:0!important;width:1%!important;padding:3px 10px!important}
+
+/* ===== ទូរស័ព្ទ: លាក់ភេទ ប្រើពណ៌ឈ្មោះ + ខ្សែពណ៌ ជំនួស, ឈ្មោះមិនធ្លាក់ជួរ ===== */
+@media (max-width:700px){
+ .modern-score-table .stk-2{white-space:nowrap!important;overflow:visible!important;max-width:none!important;min-width:0!important;overflow-wrap:normal!important;box-shadow:3px 0 6px -2px rgba(0,0,0,.14);text-align:left}
+ .modern-score-table tbody tr.gm td.stk-2{color:#0369a1;box-shadow:inset 4px 0 0 #0ea5e9,3px 0 6px -2px rgba(0,0,0,.14)}
+ .modern-score-table tbody tr.gf td.stk-2{color:#be185d;box-shadow:inset 4px 0 0 #ec4899,3px 0 6px -2px rgba(0,0,0,.14)}
+ [data-theme="dark"] .modern-score-table tbody tr.gm td.stk-2{color:#7dd3fc}
+ [data-theme="dark"] .modern-score-table tbody tr.gf td.stk-2{color:#f9a8d4}
+}
 </style>
 </head>
 <body>
@@ -2206,7 +2215,7 @@ function renderTable(){
   h+='<th class="stk stk-1" rowspan="2">ល.រ</th>';
   if(isMobile)h+='<th class="stk stk-2" rowspan="2">ឈ្មោះសិស្ស</th>';
   else h+='<th class="stk stk-2" rowspan="2">គោត្តនាម</th><th class="stk stk-2b" rowspan="2">នាម</th>';
-  h+='<th class="stk stk-3" rowspan="2">ភេទ</th>';
+  if(!isMobile)h+='<th class="stk stk-3" rowspan="2">ភេទ</th>';
 
   grps.forEach(g=>{
     if(g.cols.length>1)h+=`<th class="th-group-${g.grp}" colspan="${g.cols.length}" style="font-weight:700;">${g.label}</th>`;
@@ -2219,7 +2228,7 @@ function renderTable(){
   RES_COLS.forEach(c=>{h+=`<th class="th-sub-res th-vertical-cell ${c.cls}"><div class="th-vertical-wrap">${c.label}</div></th>`});
   h+='</tr>';
 
-  h+=`<tr class="coef-row"><td colspan="${isMobile?3:4}" class="stk" style="left:0;text-align:right;padding-right:6px;font-weight:700;">មេគុណ</td>`;
+  h+=`<tr class="coef-row"><td colspan="${isMobile?2:4}" class="stk" style="left:0;text-align:right;padding-right:6px;font-weight:700;">មេគុណ</td>`;
   cols.forEach(c=>{
     const coefVal=Number(c.coef)>0?Number(c.coef):1;
     h+=`<td class="sc-td"><span class="coef-tag coef-zero" id="ac-${c.key}">×${coefVal}</span></td>`;
@@ -2228,7 +2237,7 @@ function renderTable(){
   h+='</thead><tbody>';
 
   if(!list.length){
-    h+=`<tr><td colspan="${(isMobile?3:4)+cols.length+RES_COLS.length}" style="padding:35px;color:var(--text-muted);">⚠️ មិនមានទិន្នន័យឡើយ</td></tr>`;
+    h+=`<tr><td colspan="${(isMobile?2:4)+cols.length+RES_COLS.length}" style="padding:35px;color:var(--text-muted);">⚠️ មិនមានទិន្នន័យឡើយ</td></tr>`;
   }else{
     list.forEach((s,idx)=>{
       const sc=savedScoresData[s.id]||{};
@@ -2239,11 +2248,11 @@ function renderTable(){
       const parts=s.name.split(/\s+/);
       const ln=parts[0]||'',fn=parts.slice(1).join(' ')||'';
 
-      h+=`<tr class="dr" data-id="${s.id}">`;
+      h+=`<tr class="dr ${isF?'gf':'gm'}" data-id="${s.id}">`;
       h+=`<td class="stk stk-1">${idx+1}</td>`;
       if(isMobile)h+=`<td class="stk stk-2" title="${s.name}">${s.name}</td>`;
       else h+=`<td class="stk stk-2">${ln}</td><td class="stk stk-2b">${fn}</td>`;
-      h+=`<td class="stk stk-3" style="color:${isF?'#ec4899':'#0284c7'};font-weight:bold;">${isF?'ស្រី':'ប្រុស'}</td>`;
+      if(!isMobile)h+=`<td class="stk stk-3" style="color:${isF?'#ec4899':'#0284c7'};font-weight:bold;">${isF?'ស្រី':'ប្រុស'}</td>`;
 
       cols.forEach(c=>{
         const val=sc[c.key]!==undefined?sc[c.key]:'';
