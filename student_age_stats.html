@@ -185,6 +185,31 @@ table.stat td.rm{text-align:left;font-size:.89em;padding:.3em .6em;line-height:1
 .sig-l.dir{margin-top:2.2em}
 </style>
 <style id="pageStyle">@page{size:297mm 210mm;margin:0}</style>
+<script>
+(function(){const R=document.documentElement;let t='dark';try{const u=new URLSearchParams(location.search).get('theme');let p=null;try{if(window.parent&&window.parent!==window)p=window.parent.document.documentElement.getAttribute('data-theme')}catch(e){}
+t=u||p||localStorage.getItem('krou_theme_manual')||R.getAttribute('data-theme')||'dark'}catch(e){}R.setAttribute('data-theme',t==='light'?'light':'dark');
+function setP(v){if(/^#[0-9a-fA-F]{6}$/.test(v||''))R.style.setProperty('--primary',v)}
+try{setP(new URLSearchParams(location.search).get('primary'))}catch(e){}
+try{const pr=window.parent&&window.parent!==window&&window.parent.document.documentElement.style.getPropertyValue('--primary');if(pr)setP(pr.trim())}catch(e){}
+window.addEventListener('message',e=>{if(e.data&&e.data.type==='THEME_CHANGE'){if(e.data.theme)R.setAttribute('data-theme',e.data.theme==='light'?'light':'dark');setP(e.data.primary)}});
+window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue)R.setAttribute('data-theme',e.newValue==='light'?'light':'dark')});})();
+</script>
+<style id="tbGlass">
+/* ===== 🧰 Toolbar glass + pill ===== */
+:root{--primary:#0284c7}
+:root,[data-theme="light"]{--tb-1:color-mix(in srgb,var(--primary) 12%,#fff);--tb-2:color-mix(in srgb,var(--primary) 5%,#fff);--tb-line:color-mix(in srgb,var(--primary) 28%,#dbe3ee);--pillbg:#fff}
+[data-theme="dark"]{--tb-1:color-mix(in srgb,var(--primary) 17%,#0f1b2d);--tb-2:color-mix(in srgb,var(--primary) 7%,#0c1524);--tb-line:color-mix(in srgb,var(--primary) 32%,#16273f);--pillbg:rgba(255,255,255,.05)}
+.toolbar{top:8px!important;margin:8px 10px 14px!important;padding:8px 10px!important;border:1px solid var(--tb-line)!important;border-radius:20px;background:linear-gradient(120deg,var(--tb-1),var(--tb-2))!important;box-shadow:0 6px 18px color-mix(in srgb,var(--primary) 14%,transparent)!important;gap:6px 8px!important}
+@media(min-width:721px){.toolbar{flex-direction:row!important;flex-wrap:wrap!important;align-items:center}.toolbar .row{display:contents}}
+.pill,.fc,.btn,.date-btn{border-radius:14px!important;height:36px}
+.pill{padding:0 10px;background:var(--pillbg);border-color:var(--tb-line)}
+.pill .fc,.pill .date-btn{background:transparent!important;border-color:transparent!important;height:30px}
+.btn,.date-btn{background:var(--pillbg);border:1px solid var(--tb-line)}
+.btn-primary{background:linear-gradient(135deg,var(--primary),color-mix(in srgb,var(--primary) 70%,#000))!important;border-color:transparent!important;color:#fff}
+.btn-green{background:linear-gradient(135deg,#10b981,#059669)!important;border-color:transparent!important;color:#fff}
+.pill:hover,.btn:hover,.date-btn:hover{border-color:var(--primary)}
+@media(max-width:720px){.toolbar{margin:6px!important;padding:6px!important;border-radius:16px;top:0!important}.pill,.fc,.btn,.date-btn{height:34px}}
+</style>
 </head>
 <body>
 
@@ -1425,7 +1450,6 @@ const isoLocal=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 
 /* Theme (Dark / Light) */
 function applyTheme(t){document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark')}
-applyTheme(localStorage.getItem('krou_theme_manual')||'dark');
 window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme))applyTheme(e.data.theme||e.data)});
 window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual')applyTheme(e.newValue)});
 
