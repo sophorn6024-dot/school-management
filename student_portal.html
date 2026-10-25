@@ -97,8 +97,14 @@ th{background:var(--in);color:var(--muted);font-weight:700}
 .tip{padding:10px 12px;border-left:3px solid var(--ac);background:var(--in);border-radius:8px;margin-top:8px}
 @media(max-width:900px){
   #app{grid-template-columns:1fr}
-  aside{position:fixed;left:0;top:0;width:270px;z-index:50;transform:translateX(-105%);transition:transform .2s}
-  aside.open{transform:none}
+  aside{position:fixed;left:0;right:0;bottom:0;top:auto;width:100%;height:auto;z-index:50;transform:none;flex-direction:row;padding:6px 6px calc(6px + env(safe-area-inset-bottom));border-top:1px solid rgba(255,255,255,.14);box-shadow:0 -6px 22px rgba(0,0,0,.25)}
+  aside .who,aside .sp,aside .side-foot{display:none}
+  aside nav{display:flex;width:100%;gap:2px}
+  nav button{flex:1;min-width:0;flex-direction:column;justify-content:center;gap:3px;padding:7px 2px;margin:0;font-size:10.5px;text-align:center;border-radius:12px}
+  nav button span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  nav svg{width:22px;height:22px}
+  nav button.on{background:linear-gradient(135deg,#1d4ed8,#0369a1)}
+  main{padding-bottom:92px!important}
   .top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
   .top button{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
   main{padding:14px}
@@ -139,7 +145,7 @@ th{background:var(--in);color:var(--muted);font-weight:700}
     <div class="side-foot"><button onclick="toggleTheme()" title="ពណ៌ងងឹត/ភ្លឺ">🌓</button><button onclick="logout()">ចាកចេញ</button></div>
   </aside>
   <main>
-    <div class="top"><button onclick="side.classList.toggle('open')">☰</button><b id="ttl"></b></div>
+    <div class="top"><div class="av" id="avTop" onclick="openAcct()" style="width:38px;height:38px;font-size:16px;cursor:pointer" title="ព័ត៌មានគណនី"></div><b id="ttl" style="flex:1"></b><button onclick="toggleTheme()" title="ពណ៌ងងឹត/ភ្លឺ">🌓</button></div>
     <div id="view"></div>
   </main>
 </div>
@@ -211,7 +217,7 @@ const NAV=[['dash','ផ្ទាំងខ្ញុំ'],['score','ពិន្�
 function start(){
   $('app').classList.remove('hide');
   const av=ME.photo_url?`<img src="${esc(ME.photo_url)}" alt="">`:esc((ME.student_name||'?').trim().charAt(0));
-  $('avSide').innerHTML=av;$('nmSide').textContent=ME.student_name||'';
+  $('avSide').innerHTML=av;$('avTop').innerHTML=av;$('nmSide').textContent=ME.student_name||'';
   $('nav').innerHTML=NAV.map(([k,t])=>`<button data-k="${k}" onclick="go('${k}')"><svg viewBox="0 0 24 24">${ICONS[k]}</svg><span>${t}</span></button>`).join('');
   loadState();
   go(ME.must_change?'me':(view||'dash'));
@@ -458,6 +464,7 @@ async function changePw(){
     <div class="ac-pw"><input id="an" type="password" class="in" placeholder="ពាក្យសម្ងាត់ថ្មី (យ៉ាងតិច ៦ តួ)" autocomplete="new-password"><button type="button" class="ac-eye" onclick="eyeT('an')">👁</button></div>
     <div class="ac-pw"><input id="ac" type="password" class="in" placeholder="បញ្ជាក់ពាក្យសម្ងាត់ថ្មី" autocomplete="new-password"><button type="button" class="ac-eye" onclick="eyeT('ac')">👁</button></div>
     <button class="btn" style="margin-top:2px" onclick="changePw2()">ផ្លាស់ប្តូរពាក្យសម្ងាត់</button><div class="err" id="aerr"></div>
+    <button class="btn ghost" style="margin-top:4px" onclick="logout()">ចាកចេញពីគណនី</button>
   </div></div></div>
 <script>
 function acAvHtml(){return ME.photo_url?`<img src="${esc(ME.photo_url)}" alt="">`:esc((ME.student_name||'?').trim().charAt(0))}
@@ -485,7 +492,7 @@ async function pickPhoto(f){
     acMsg(e,'កំពុងរក្សាទុក…',true);
     const ok=await tk('student_set_photo',{p_photo:data});
     if(!ok)throw new Error('រក្សាទុកមិនបាន');
-    ME.photo_url=data;$('acAv').innerHTML=acAvHtml()+'<div class="ac-cam">📷</div>';$('avSide').innerHTML=acAvHtml();
+    ME.photo_url=data;$('acAv').innerHTML=acAvHtml()+'<div class="ac-cam">📷</div>';$('avSide').innerHTML=acAvHtml();$('avTop').innerHTML=acAvHtml();
     acMsg(e,'✅ បានផ្លាស់ប្តូររូបភាព',true);
   }catch(x){acMsg(e,'❌ '+(x.message||x))}
 }
