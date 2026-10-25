@@ -827,6 +827,16 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
   .login-btn{height:52px}
   .lg-role{margin-bottom:16px}
 }
+
+/* ===== 📄 tab របាយការណ៍ (?only=1): បង្ហាញតែ form ===== */
+body.solo{--mnav-reserve:0px}
+body.solo .sidebar,body.solo .mobile-bottom-nav,body.solo #mobileBackdrop,body.solo #mnavPeek,body.solo #moreSheet,body.solo #moreBackdrop{display:none!important}
+body.solo .iframe-container{bottom:0!important}
+
+/* ===== សារស្វាគមន៍ មួយបន្ទាត់ ===== */
+.login-welcome{container-type:inline-size;container-name:lw}
+.login-welcome .lw-t{white-space:nowrap;font-size:clamp(14px,4.7cqw,28px);line-height:1.7}
+@media (max-height:620px) and (min-width:900px){ .login-welcome .lw-t{font-size:clamp(14px,4.7cqw,24px)} }
 </style>
 </head>
 <body>
@@ -2789,6 +2799,9 @@ function syncThemeToIframe(theme) {
 }
 
 /* NAVIGATION */
+/* របៀប tab របាយការណ៍: បង្ហាញតែ form (គ្មាន sidebar/ទំព័រដើម) */
+const SOLO = (function(){ try { return new URLSearchParams(location.search).get('only') === '1'; } catch(e) { return false; } })();
+if (SOLO) document.body.classList.add('solo');
 let currentPage = window.location.hash.replace('#', '') || localStorage.getItem('krou_active_page') || 'dashboard';
 
 function updateMobileNavIndicator() {
@@ -2809,11 +2822,16 @@ function updateMobileNavIndicator() {
 
 function navigate(page, el) {
   if (!page) return;
+  if (SOLO && (page === 'dashboard' || page === 'reportsHub')) {          // tab របាយការណ៍ មិនមានទំព័រដើម → បិទ tab
+    try { window.close(); } catch(e) {}
+    setTimeout(function(){ location.href = location.pathname; }, 250);
+    return;
+  }
   const prevPage = currentPage;
   currentPage = page;
   document.body.classList.toggle('chat-page', page === 'chat');
   document.body.classList.toggle('is-admin', !!IS_ADMIN);
-  localStorage.setItem('krou_active_page', page);
+  if (!SOLO) localStorage.setItem('krou_active_page', page);
   try { history.replaceState(null, '', '#' + page); } catch(e) {}
 
   document.querySelectorAll('.nav-link-btn').forEach(n => n.classList.remove('active'));
@@ -2872,7 +2890,7 @@ document.getElementById('pageFrame').addEventListener('load', function() {
       if (detectedPage !== 'about:blank' && detectedPage !== currentPage) {
         currentPage = detectedPage;
         document.body.classList.toggle('chat-page', detectedPage === 'chat');
-        localStorage.setItem('krou_active_page', detectedPage);
+        if (!SOLO) localStorage.setItem('krou_active_page', detectedPage);
         try { history.replaceState(null, '', '#' + detectedPage); } catch(err) {}
         document.querySelectorAll('.nav-link-btn').forEach(n => n.classList.remove('active'));
         let t = document.querySelector(`[data-page="${detectedPage}"]`);
@@ -3563,7 +3581,7 @@ function openRosterFormat() { closeRosterFormatMenu(); openInTab(rosterFormat); 
 function openInTab(page) {
   if (!page) return;
   let w = null;
-  try { w = window.open(location.href.split('#')[0].split('?')[0] + '#' + encodeURIComponent(page), '_blank'); } catch(e) {}
+  try { w = window.open(location.href.split('#')[0].split('?')[0] + '?only=1#' + encodeURIComponent(page), '_blank'); } catch(e) {}
   if (!w) navigate(page, null);   // browser រារាំង popup → បើកក្នុង tab ដដែល
 }
 document.addEventListener('click', e => { if (rfPopup && !e.target.closest('.rf-popup')) closeRosterFormatMenu(); });
@@ -4069,8 +4087,17 @@ applyIcons();
   window.addEventListener('resize', function(){ pos(0); });
   dots(); go(0); play();
   /* រូបរបស់អ្នក: login_hero_1..5 ជំនួសសន្លឹកទី 1..5 (login_hero ធម្មតា → សន្លឹកទី 1) */
+  var pending = 6, custom = {};
+  function settle(){
+    if (--pending > 0) return;
+    var keys = Object.keys(custom); if (!keys.length) return;
+    // មានរូបរបស់អ្នក → លុបរូបគំរូដែលមិនត្រូវបានជំនួស
+    var all = Array.prototype.slice.call(track.querySelectorAll('.lw-slide'));
+    all.forEach(function(el, i){ if (!custom[i]) el.parentNode.removeChild(el); });
+    cur = 0; dots(); go(0); play();
+  }
   function tryLoad(base, idx, k){
-    if (k >= exts.length) return;
+    if (k >= exts.length) return settle();
     var im = new Image(); im.alt = ''; im.draggable = false;
     im.onload = function(){
       if (im.naturalWidth < 50) return tryLoad(base, idx, k + 1);
@@ -4078,7 +4105,7 @@ applyIcons();
       if (!el) { el = document.createElement('div'); el.className = 'lw-slide'; track.appendChild(el); dots(); }
       el.innerHTML = ''; el.appendChild(im); el.setAttribute('data-cap', '');
       el.setAttribute('data-ar', String(im.naturalWidth / im.naturalHeight));
-      go(cur);
+      custom[idx] = 1; go(cur); settle();
     };
     im.onerror = function(){ tryLoad(base, idx, k + 1); };
     im.src = base + '.' + exts[k];
