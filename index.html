@@ -786,10 +786,12 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
   .lw-shot-frame:before,.lw-shot-frame:after{content:"";position:absolute;width:22px;height:22px;border:2.5px solid #a5b4fc;opacity:.8;pointer-events:none}
   .lw-shot-frame:before{left:-6px;top:-6px;border-right:0;border-bottom:0;border-radius:12px 0 0 0}
   .lw-shot-frame:after{right:-6px;bottom:-6px;border-left:0;border-top:0;border-radius:0 0 12px 0}
-  .lw-slides{position:relative;aspect-ratio:8/5;border-radius:13px;overflow:hidden;background:#0b1224}
-  .lw-slide{position:absolute;inset:0;opacity:0;transform:scale(1.03);transition:opacity .7s ease,transform 1.2s ease;pointer-events:none}
-  .lw-slide.on{opacity:1;transform:none}
-  .lw-slide svg,.lw-slide img{display:block;width:100%;height:100%;object-fit:cover}
+  .lw-slides{position:relative;aspect-ratio:var(--ar,8/5);max-height:calc(100vh - 350px);margin:0 auto;border-radius:13px;overflow:hidden;background:rgba(5,9,20,.55);touch-action:pan-y;cursor:grab;user-select:none;-webkit-user-select:none;transition:aspect-ratio .4s}
+  .lw-slides.drag{cursor:grabbing}
+  .lw-track{display:flex;height:100%;width:100%;transition:transform .55s cubic-bezier(.22,.8,.24,1);will-change:transform}
+  .lw-slides.drag .lw-track{transition:none}
+  .lw-slide{flex:0 0 100%;width:100%;height:100%;position:relative}
+  .lw-slide svg,.lw-slide img{display:block;width:100%;height:100%;object-fit:contain;-webkit-user-drag:none;user-drag:none;pointer-events:none}
   .lw-cap{position:absolute;left:20px;bottom:20px;padding:5px 12px;border-radius:999px;background:rgba(8,13,28,.62);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#e0e7ff;font-size:12px;font-weight:700}
   .lw-dots{position:absolute;right:20px;bottom:24px;display:flex;gap:6px}
   .lw-dots button{width:8px;height:8px;padding:0;border:0;border-radius:99px;background:rgba(255,255,255,.35);cursor:pointer;transition:width .3s,background .3s}
@@ -3981,37 +3983,76 @@ applyIcons();
   setTimeout(function(){ var n = document.getElementById('mobileNav'); if (n) n.classList.add('ready'); }, 1200);
 })();
 
-/* Slideshow ក្នុង login: រូប ៥ សន្លឹក — ដាក់ឯកសារ login_hero_1 … login_hero_5 (.png/.jpg/.webp) ក្បែរ index.html ដើម្បីជំនួសរូបគំរូ */
+/* Slideshow ក្នុង login: អូស/ស្វាយបាន + ប្តូរខ្លួនឯង + បង្ហាញរូបពេញមិនកាត់ — ដាក់ login_hero_1 … login_hero_5 (.png/.jpg/.webp) ក្បែរ index.html ដើម្បីជំនួសរូបគំរូ */
 (function(){
   var wrap = document.getElementById('lgSlides'); if (!wrap) return;
   var cap = document.getElementById('lgCap'), dotsEl = document.getElementById('lgDots');
-  var cur = 0, timer = null, exts = ['png','jpg','jpeg','webp'];
-  function slides(){ return wrap.querySelectorAll('.lw-slide'); }
+  var track = document.createElement('div'); track.className = 'lw-track';
+  Array.prototype.slice.call(wrap.querySelectorAll('.lw-slide')).forEach(function(e){ e.classList.remove('on'); e.setAttribute('data-ar', '1.6'); track.appendChild(e); });
+  wrap.appendChild(track);
+  var cur = 0, timer = null, exts = ['png','jpg','jpeg','webp'], dragging = false, hover = false;
+  function slides(){ return track.querySelectorAll('.lw-slide'); }
   function dots(){
     dotsEl.innerHTML = '';
     slides().forEach(function(_, i){ var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'រូបទី ' + (i + 1)); b.onclick = function(){ go(i); play(); }; dotsEl.appendChild(b); });
     mark();
   }
   function mark(){ var d = dotsEl.children; for (var i = 0; i < d.length; i++) d[i].classList.toggle('on', i === cur); }
+  function pos(dx){ track.style.transform = 'translateX(calc(' + (-cur * 100) + '% + ' + (dx || 0) + 'px))'; }
   function go(i){
     var s = slides(); if (!s.length) return;
     cur = (i + s.length) % s.length;
-    s.forEach(function(e, k){ e.classList.toggle('on', k === cur); });
-    cap.textContent = s[cur].getAttribute('data-cap') || ''; cap.style.display = cap.textContent ? '' : 'none'; mark();
+    pos(0);
+    var el = s[cur];
+    wrap.style.setProperty('--ar', el.getAttribute('data-ar') || '1.6');   // កម្ពស់តាមសមាមាត្ររូបដើម
+    var c = el.getAttribute('data-cap') || ''; cap.textContent = c; cap.style.display = c ? '' : 'none';
+    mark();
   }
-  function play(){ clearInterval(timer); if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) return; timer = setInterval(function(){ if (!document.hidden) go(cur + 1); }, 4200); }
-  wrap.parentNode.addEventListener('mouseenter', function(){ clearInterval(timer); });
-  wrap.parentNode.addEventListener('mouseleave', play);
-  dots(); play();
-  // រូបរបស់អ្នក: login_hero_1..5 ជំនួសសន្លឹកទី 1..5 (login_hero ធម្មតា → សន្លឹកទី 1)
+  function play(){
+    clearInterval(timer);
+    if (window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+    timer = setInterval(function(){ if (!document.hidden && !dragging && !hover) go(cur + 1); }, 4500);
+  }
+  wrap.parentNode.addEventListener('mouseenter', function(){ hover = true; });
+  wrap.parentNode.addEventListener('mouseleave', function(){ hover = false; });
+  /* អូសដោយកណ្ដុរ ឬម្រាមដៃ */
+  var sx = 0, sy = 0, dx = 0, id = null, moved = false;
+  wrap.addEventListener('pointerdown', function(e){
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    id = e.pointerId; sx = e.clientX; sy = e.clientY; dx = 0; moved = false; dragging = true;
+    try { wrap.setPointerCapture(id); } catch(err) {}
+  });
+  wrap.addEventListener('pointermove', function(e){
+    if (!dragging || e.pointerId !== id) return;
+    dx = e.clientX - sx;
+    if (!moved && Math.abs(dx) > 6 && Math.abs(dx) > Math.abs(e.clientY - sy)) { moved = true; wrap.classList.add('drag'); }
+    if (moved) pos(dx);
+  });
+  function end(e){
+    if (!dragging || (e && e.pointerId !== id)) return;
+    dragging = false; wrap.classList.remove('drag');
+    try { wrap.releasePointerCapture(id); } catch(err) {}
+    var w = wrap.clientWidth || 1;
+    if (moved && Math.abs(dx) > Math.min(70, w * .18)) go(cur + (dx < 0 ? 1 : -1)); else go(cur);
+    play();
+  }
+  wrap.addEventListener('pointerup', end); wrap.addEventListener('pointercancel', end);
+  wrap.addEventListener('dragstart', function(e){ e.preventDefault(); });
+  wrap.tabIndex = 0;
+  wrap.addEventListener('keydown', function(e){ if (e.key === 'ArrowLeft') { go(cur - 1); play(); } else if (e.key === 'ArrowRight') { go(cur + 1); play(); } });
+  window.addEventListener('resize', function(){ pos(0); });
+  dots(); go(0); play();
+  /* រូបរបស់អ្នក: login_hero_1..5 ជំនួសសន្លឹកទី 1..5 (login_hero ធម្មតា → សន្លឹកទី 1) */
   function tryLoad(base, idx, k){
     if (k >= exts.length) return;
-    var im = new Image(); im.alt = '';
+    var im = new Image(); im.alt = ''; im.draggable = false;
     im.onload = function(){
       if (im.naturalWidth < 50) return tryLoad(base, idx, k + 1);
       var s = slides(), el = s[idx];
-      if (!el) { el = document.createElement('div'); el.className = 'lw-slide'; wrap.appendChild(el); dots(); }
-      el.innerHTML = ''; el.appendChild(im); el.setAttribute('data-cap', ''); go(cur);
+      if (!el) { el = document.createElement('div'); el.className = 'lw-slide'; track.appendChild(el); dots(); }
+      el.innerHTML = ''; el.appendChild(im); el.setAttribute('data-cap', '');
+      el.setAttribute('data-ar', String(im.naturalWidth / im.naturalHeight));
+      go(cur);
     };
     im.onerror = function(){ tryLoad(base, idx, k + 1); };
     im.src = base + '.' + exts[k];
