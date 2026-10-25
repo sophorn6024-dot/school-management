@@ -751,6 +751,7 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
 .login-input-wrap input::placeholder{color:rgba(203,213,235,.45)}
 .login-input-wrap input:hover{border-color:rgba(255,255,255,.28)}
 .login-input-wrap input:focus{background-color:rgba(255,255,255,.11);border-color:#7aa7ff;box-shadow:0 0 0 4px rgba(96,165,250,.20),0 8px 24px rgba(59,130,246,.18)}
+#loginUsername,#stuName,#loginPassword,#stuPass,#stuQrCode{background-repeat:no-repeat!important;background-position:14px 50%!important;background-size:19px!important}
 #loginUsername,#stuName{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fb2d6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7'/%3E%3C/svg%3E")}
 #loginPassword,#stuPass{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fb2d6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='10' width='16' height='11' rx='3'/%3E%3Cpath d='M8 10V7a4 4 0 0 1 8 0v3'/%3E%3C/svg%3E");padding-right:46px}
 #stuQrCode{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fb2d6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='7' height='7' rx='1.5'/%3E%3Crect x='14' y='3' width='7' height='7' rx='1.5'/%3E%3Crect x='3' y='14' width='7' height='7' rx='1.5'/%3E%3Cpath d='M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3'/%3E%3C/svg%3E")}
@@ -774,6 +775,23 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
 .lg-select:after{border-color:#9fc0ff}
 .login-footer{color:#8392b3}
 .mascot .head{box-shadow:0 12px 28px rgba(0,0,0,.45),0 0 0 6px rgba(255,255,255,.06)}
+
+/* ===== 🖼 រូបភាពក្រោមសារស្វាគមន៍ (desktop/tablet ធំ) ===== */
+.lw-tags,.lw-shot{display:none}
+@media (min-width:900px) and (min-height:700px){
+  .lw-tags{display:flex;align-items:center;gap:12px;margin-top:14px;color:#c7d2fe;font-weight:600;font-size:15px;animation:lwIn .8s .5s both}
+  .lw-tags i{font-style:normal;color:#f472b6;font-size:9px}
+  .lw-shot{display:block;margin-top:22px;width:min(100%,500px);animation:lwIn .9s .6s both}
+  .lw-shot-frame{position:relative;padding:8px;border-radius:20px;background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.18);box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 60px rgba(99,102,241,.25);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .lw-shot-frame:before,.lw-shot-frame:after{content:"";position:absolute;width:22px;height:22px;border:2.5px solid #a5b4fc;opacity:.8;pointer-events:none}
+  .lw-shot-frame:before{left:-6px;top:-6px;border-right:0;border-bottom:0;border-radius:12px 0 0 0}
+  .lw-shot-frame:after{right:-6px;bottom:-6px;border-left:0;border-top:0;border-radius:0 0 12px 0}
+  .lw-shot-frame svg,.lw-shot-frame img{display:block;width:100%;height:auto;max-height:calc(100vh - 430px);object-fit:cover;border-radius:13px}
+}
+
+@media (min-width:900px){
+  .login-wrap{grid-template-areas:"w ." "w m" "w c" "w .";grid-template-rows:1fr auto auto 1fr}
+}
 </style>
 </head>
 <body>
@@ -785,6 +803,28 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
       <div class="lw-hi"><span class="wave">👋</span><span id="loginGreet">សូមស្វាគមន៍</span></div>
       <div class="lw-t">សូមស្វាគមន៍មកកាន់ប្រព័ន្ធ</div>
       <div class="lw-s">សូមចូលគណនីរបស់អ្នក ដើម្បីបន្តការងារ</div>
+      <div class="lw-tags"><span>ពិន្ទុ</span><i>◆</i><span>វត្តមាន</span><i>◆</i><span>របាយការណ៍</span></div>
+      <div class="lw-shot"><div class="lw-shot-frame" id="lgShotBox"><svg viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ប្រព័ន្ធគ្រប់គ្រងសិស្ស">
+<defs><linearGradient id="lgA" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient>
+<linearGradient id="lgB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#0d9488"/></linearGradient></defs>
+<rect width="480" height="300" rx="12" fill="#0b1224"/>
+<rect width="480" height="22" rx="12" fill="#121c36"/><circle cx="14" cy="11" r="3.2" fill="#fb7185"/><circle cx="26" cy="11" r="3.2" fill="#fbbf24"/><circle cx="38" cy="11" r="3.2" fill="#34d399"/>
+<rect x="0" y="22" width="86" height="278" fill="#0f1930"/>
+<rect x="9" y="32" width="68" height="16" rx="8" fill="url(#lgA)"/>
+<g fill="#22304f"><rect x="12" y="58" width="62" height="9" rx="4.5"/><rect x="12" y="74" width="54" height="9" rx="4.5"/><rect x="12" y="90" width="60" height="9" rx="4.5"/><rect x="12" y="106" width="50" height="9" rx="4.5"/><rect x="12" y="122" width="58" height="9" rx="4.5"/><rect x="12" y="138" width="46" height="9" rx="4.5"/></g>
+<rect x="98" y="32" width="372" height="64" rx="12" fill="#13213f"/><rect x="108" y="42" width="30" height="30" rx="9" fill="url(#lgB)"/><rect x="146" y="46" width="90" height="8" rx="4" fill="#e2e8f0"/><rect x="146" y="60" width="140" height="6" rx="3" fill="#475a82"/><rect x="108" y="80" width="120" height="6" rx="3" fill="#33466e"/>
+<rect x="388" y="44" width="72" height="40" rx="10" fill="#1b2d52"/><text x="424" y="70" font-size="18" font-weight="700" text-anchor="middle" fill="#7dd3fc" font-family="sans-serif">6:41</text>
+<rect x="98" y="106" width="118" height="58" rx="12" fill="#13213f"/><rect x="108" y="116" width="40" height="6" rx="3" fill="#475a82"/><text x="108" y="150" font-size="24" font-weight="800" fill="#f8fafc" font-family="sans-serif">32</text><rect x="184" y="114" width="24" height="24" rx="8" fill="#134e4a"/>
+<rect x="224" y="106" width="118" height="58" rx="12" fill="#2a1a0a"/><rect x="234" y="116" width="40" height="6" rx="3" fill="#92602a"/><rect x="234" y="136" width="64" height="12" rx="6" fill="#fbbf24"/>
+<rect x="350" y="106" width="120" height="188" rx="12" fill="#13213f"/>
+<g fill="#22304f"><rect x="360" y="116" width="50" height="7" rx="3.5"/></g>
+<g fill="#1d2d52"><rect x="358.0" y="132" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="373.5" y="132" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="389.0" y="132" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="404.5" y="132" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="420.0" y="132" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="435.5" y="132" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="451.0" y="132" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="358.0" y="153" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="373.5" y="153" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="389.0" y="153" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="404.5" y="153" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="420.0" y="153" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="435.5" y="153" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="451.0" y="153" width="13" height="17" rx="4" fill="#4a2438"/><rect x="358.0" y="174" width="13" height="17" rx="4" fill="#4a2438"/><rect x="373.5" y="174" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="389.0" y="174" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="404.5" y="174" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="420.0" y="174" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="435.5" y="174" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="451.0" y="174" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="358.0" y="195" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="373.5" y="195" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="389.0" y="195" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="404.5" y="195" width="13" height="17" rx="4" fill="#10b981"/><rect x="420.0" y="195" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="435.5" y="195" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="451.0" y="195" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="358.0" y="216" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="373.5" y="216" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="389.0" y="216" width="13" height="17" rx="4" fill="#4a2438"/><rect x="404.5" y="216" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="420.0" y="216" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="435.5" y="216" width="13" height="17" rx="4" fill="#1d2d52"/><rect x="451.0" y="216" width="13" height="17" rx="4" fill="#1d2d52"/></g>
+<rect x="98" y="174" width="244" height="120" rx="12" fill="#13213f"/>
+<rect x="110" y="184" width="70" height="7" rx="3.5" fill="#6ee7b7"/>
+<rect x="110" y="202" width="104" height="38" rx="9" fill="#182a4d"/><rect x="118" y="210" width="26" height="22" rx="6" fill="#f59e0b"/><rect x="152" y="212" width="52" height="6" rx="3" fill="#e2e8f0"/><rect x="152" y="224" width="38" height="5" rx="2.5" fill="#fbbf24"/>
+<rect x="224" y="202" width="106" height="38" rx="9" fill="#182a4d"/><rect x="232" y="210" width="26" height="22" rx="6" fill="url(#lgA)"/><rect x="266" y="212" width="50" height="6" rx="3" fill="#e2e8f0"/><rect x="266" y="224" width="30" height="5" rx="2.5" fill="#94a3b8"/>
+<g fill="#3b82f6" opacity=".9"><rect x="114" y="258" width="12" height="26" rx="3"/><rect x="134" y="250" width="12" height="34" rx="3"/><rect x="154" y="262" width="12" height="22" rx="3"/><rect x="174" y="246" width="12" height="38" rx="3" fill="#8b5cf6"/><rect x="194" y="254" width="12" height="30" rx="3"/><rect x="214" y="244" width="12" height="40" rx="3" fill="#10b981"/><rect x="234" y="256" width="12" height="28" rx="3"/><rect x="254" y="248" width="12" height="36" rx="3" fill="#8b5cf6"/><rect x="274" y="260" width="12" height="24" rx="3"/><rect x="294" y="252" width="12" height="32" rx="3"/></g>
+</svg></div></div>
     </div>
     <div class="mascot" aria-hidden="true">
       <div class="husky">
@@ -3910,6 +3950,19 @@ applyIcons();
   });
   window.addEventListener('resize', function(){ if (!isMob() && hidden) setHidden(false); });
   setTimeout(function(){ var n = document.getElementById('mobileNav'); if (n) n.classList.add('ready'); }, 1200);
+})();
+
+/* រូបក្នុង login: ប្រសិនបើមានឯកសារ login_hero.png (ឬ .jpg) ក្បែរ index.html នឹងប្រើវាជំនួសរូបគំរូ */
+(function(){
+  var box = document.getElementById('lgShotBox'); if (!box) return;
+  var names = ['login_hero.png','login_hero.jpg','login_hero.webp'], i = 0;
+  (function next(){
+    if (i >= names.length) return;
+    var im = new Image(); im.alt = 'ប្រព័ន្ធគ្រប់គ្រងសិស្ស';
+    im.onload = function(){ if (im.naturalWidth > 50) { box.innerHTML = ''; box.appendChild(im); } else { i++; next(); } };
+    im.onerror = function(){ i++; next(); };
+    im.src = names[i];
+  })();
 })();
 </script>
 </body>
