@@ -1542,6 +1542,58 @@ exports.default = {
 const s=localStorage.getItem('krou_theme_manual');t=u||p||s||'dark'}catch(e){}document.documentElement.setAttribute('data-theme',t);
 try{const q=new URLSearchParams(window.location.search).get('primary');if(/^#[0-9a-fA-F]{6}$/.test(q||''))document.documentElement.style.setProperty('--primary',q)}catch(e){}})();
 </script>
+<style id="tblSkin">
+/* ===== 🎨 Table skin: light / dark (តាមរូបគំរូ) ===== */
+:root,[data-theme="light"]{--row-a:#ffffff;--row-b:#f1f6fd;--grid:#d6e0ee;--c-low:#dc2626;--c-med:#ea580c;--c-fair:#2563eb;--c-good:#16a34a;--c-ex:#15803d;--tot:#6b7280;--rank:#b91c1c;--avg:#0f172a;--pass:#15803d;--fail:#b91c1c}
+[data-theme="dark"]{--row-a:#0e1a30;--row-b:#13233f;--grid:#243453;--c-low:#94a3b8;--c-med:#fb7a5c;--c-fair:#fbbf24;--c-good:#60a5fa;--c-ex:#34d399;--tot:#94a3b8;--rank:#fda4af;--avg:#f8fafc;--pass:#6ee7b7;--fail:#fb7185}
+.modern-score-table,.modern-score-table th,.modern-score-table td{border-color:var(--grid)}
+.table-scroll-wrap,.table-container-card{background:var(--row-a)}
+.modern-score-table tbody tr.dr{--rb:var(--row-a)}
+.modern-score-table tbody tr.dr:nth-child(even){--rb:var(--row-b)}
+.modern-score-table tbody tr.dr:hover{--rb:color-mix(in srgb,var(--primary) 10%,var(--row-a))}
+.modern-score-table tbody tr.dr td,.modern-score-table tbody tr.dr td.stk{background:var(--rb)!important}
+.modern-score-table tbody td.stk-1{color:var(--text-muted);font-weight:600}
+.modern-score-table tbody td.stk-2,.modern-score-table tbody td.stk-2b{font-weight:600}
+/* header columns: ខ្សែបន្ទាត់ពណ៌តាមក្រុមមុខវិជ្ជា */
+.th-sub-kh{border-left-color:var(--khmer-brd);border-right-color:var(--khmer-brd)}
+.th-sub-ma{border-left-color:var(--math-brd);border-right-color:var(--math-brd)}
+.th-sub-sc{border-left-color:var(--sci-brd);border-right-color:var(--sci-brd)}
+.th-sub-so{border-left-color:var(--soc-brd);border-right-color:var(--soc-brd)}
+.th-sub-ar{border-left-color:var(--art-brd);border-right-color:var(--art-brd)}
+.th-sub-fo{border-left-color:var(--for-brd);border-right-color:var(--for-brd)}
+.th-sub-res{border-left-color:var(--res-brd);border-right-color:var(--res-brd)}
+.th-sub-kh,.th-sub-ma,.th-sub-sc,.th-sub-so,.th-sub-ar,.th-sub-fo,.th-sub-res{border-bottom:2px solid var(--grid)}
+.th-vertical-wrap{font-size:11.5px}
+/* ពិន្ទុ: គ្មានប្រអប់ មានតែលេខពណ៌ */
+.modern-score-table .score-box[class*="val-"]:not(:focus){background:transparent!important;border-color:transparent!important;box-shadow:none}
+.modern-score-table .score-box{font-size:15px}
+.modern-score-table .score-box:not([class*="val-"]){background:transparent;border-color:var(--grid)}
+.modern-score-table .score-box.val-low{color:var(--c-low)!important}
+.modern-score-table .score-box.val-medium{color:var(--c-med)!important}
+.modern-score-table .score-box.val-fair{color:var(--c-fair)!important}
+.modern-score-table .score-box.val-good{color:var(--c-good)!important}
+.modern-score-table .score-box.val-excel{color:var(--c-ex)!important}
+body.is-locked .score-box{opacity:1}
+.modern-score-table td.sc-td.lk::before{font-size:9px;opacity:.85;color:var(--c-low)}
+.modern-score-table td.sc-td.lk:has(.val-medium)::before{color:var(--c-med)}
+.modern-score-table td.sc-td.lk:has(.val-fair)::before{color:var(--c-fair)}
+.modern-score-table td.sc-td.lk:has(.val-good)::before{color:var(--c-good)}
+.modern-score-table td.sc-td.lk:has(.val-excel)::before{color:var(--c-ex)}
+/* ជួរលទ្ធផល */
+.modern-score-table td.col-res-tot{color:var(--tot)}
+.modern-score-table td.col-res-avg{color:var(--avg);font-weight:800;font-size:14px}
+.modern-score-table td.col-res-rank{color:var(--rank);font-weight:800;font-size:14px}
+.status-pass{color:var(--pass);font-size:14px}.status-fail{color:var(--fail);font-size:14px}
+.badge-grade{min-width:34px;text-align:center;padding:4px 11px;border-radius:10px;font-size:13px;font-weight:800}
+.grade-f{background:#fde4ea;color:#be123c}.grade-e{background:#f3eadb;color:#a16207}
+.grade-d,.grade-c{background:#dbeafe;color:#1d4ed8}.grade-b,.grade-a{background:#d1fae5;color:#047857}
+[data-theme="dark"] .grade-f{background:#2b3040;color:#9ca3af}
+[data-theme="dark"] .grade-e{background:#3d1f27;color:#f87171}
+[data-theme="dark"] .grade-d{background:#3d2519;color:#fb923c}
+[data-theme="dark"] .grade-c{background:#3a3217;color:#fbbf24}
+[data-theme="dark"] .grade-b{background:#12315c;color:#60a5fa}
+[data-theme="dark"] .grade-a{background:#0f3b2c;color:#34d399}
+</style>
 </head>
 <body>
 <div id="krouDlg" class="kd-backdrop" role="dialog" aria-modal="true" tabindex="-1"><div class="kd-card"><div class="kd-icon" id="kdIcon">ℹ️</div><div class="kd-title" id="kdTitle"></div><div class="kd-msg" id="kdMsg"></div><div class="kd-actions" id="kdActions"><button type="button" class="kd-btn kd-no" id="kdNo">បោះបង់</button><button type="button" class="kd-btn kd-yes" id="kdYes">យល់ព្រម</button></div></div></div>
