@@ -295,6 +295,29 @@ select option{font-size:14px;font-weight:400}
 .csi.on{background:var(--ac,#4f46e5);color:#fff;font-weight:700}
 @media print{.csb .ca{display:none}.edu-b.empty .cl{color:transparent}.edu-b:hover{background:none}#csPop{display:none!important}}
 </style>
+<script>
+(function(){const R=document.documentElement;let t='dark';try{const u=new URLSearchParams(location.search).get('theme');let p=null;try{if(window.parent&&window.parent!==window)p=window.parent.document.documentElement.getAttribute('data-theme')}catch(e){}
+t=u||p||localStorage.getItem('krou_theme_manual')||R.getAttribute('data-theme')||'dark'}catch(e){}R.setAttribute('data-theme',t==='light'?'light':'dark');
+function setP(v){if(/^#[0-9a-fA-F]{6}$/.test(v||''))R.style.setProperty('--primary',v)}
+try{setP(new URLSearchParams(location.search).get('primary'))}catch(e){}
+try{const pr=window.parent&&window.parent!==window&&window.parent.document.documentElement.style.getPropertyValue('--primary');if(pr)setP(pr.trim())}catch(e){}
+window.addEventListener('message',e=>{if(e.data&&e.data.type==='THEME_CHANGE'){if(e.data.theme)R.setAttribute('data-theme',e.data.theme==='light'?'light':'dark');setP(e.data.primary)}});
+window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue)R.setAttribute('data-theme',e.newValue==='light'?'light':'dark')});})();
+</script>
+<style id="tbGlass">
+/* ===== 🧰 Toolbar glass + pill ===== */
+:root{--primary:#0284c7}
+:root,[data-theme="light"]{--tb-1:color-mix(in srgb,var(--primary) 12%,#fff);--tb-2:color-mix(in srgb,var(--primary) 5%,#fff);--tb-line:color-mix(in srgb,var(--primary) 28%,#dbe3ee);--pillbg:#fff}
+[data-theme="dark"]{--tb-1:color-mix(in srgb,var(--primary) 17%,#0f1b2d);--tb-2:color-mix(in srgb,var(--primary) 7%,#0c1524);--tb-line:color-mix(in srgb,var(--primary) 32%,#16273f);--pillbg:rgba(255,255,255,.05)}
+.tb{top:8px!important;margin:8px 10px 14px!important;padding:8px 10px!important;border:1px solid var(--tb-line)!important;border-radius:20px;background:linear-gradient(120deg,var(--tb-1),var(--tb-2))!important;box-shadow:0 6px 18px color-mix(in srgb,var(--primary) 14%,transparent)!important;gap:6px 8px!important}
+.pill{border-radius:14px!important;height:36px;padding:0 10px;background:var(--pillbg)!important;border-color:var(--tb-line)!important}
+.pill .fc{background:transparent!important;border-color:transparent!important;height:30px}
+.btn{border-radius:14px!important;height:36px;border:1px solid var(--tb-line);background:var(--pillbg);color:var(--text)}
+.btn.ok{background:var(--oks);color:var(--ok);border-color:transparent}
+.pill:hover,.btn:hover{border-color:var(--ac)}
+@media(max-width:720px){.tb{margin:6px!important;padding:6px!important;border-radius:16px;top:0!important}.btn,.pill{height:34px}}
+@media print{.tb{display:none!important}}
+</style>
 </head>
 <body>
 <div class="auth" id="auth"><div><h2 style="color:#e11d48;font-size:18px;margin-bottom:8px">សូមចូលប្រើប្រព័ន្ធជាមុន</h2><p style="color:var(--muted);line-height:1.7;margin-bottom:18px">ទំព័រនេះត្រូវការចូលគណនីតាមរយៈទំព័រដើម។</p><button class="btn" onclick="goIndex()">ទៅទំព័រចូលប្រើ</button></div></div>
@@ -883,7 +906,6 @@ const IS_ADMIN=String((USER&&USER.role)||'').toLowerCase().trim()==='admin';
 function goIndex(){try{if(window.parent!==window){window.parent.location.href='index.html';return}}catch(e){}location.href='index.html'}
 function goBack(){try{if(window.parent&&window.parent!==window){window.parent.postMessage({type:'NAVIGATE',page:'reportsHub'},'*');return}}catch(e){}location.href='index.html#reportsHub'}
 function applyTheme(t){document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light')}
-applyTheme(localStorage.getItem('krou_theme_manual')||'light');
 window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme))applyTheme(e.data.theme||e.data)});
 window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual')applyTheme(e.newValue)});
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2600)}
