@@ -792,8 +792,6 @@
     .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 
     @media (max-width: 1100px) {
-      .btn-label { display: none !important; }
-      .badge-ic { display: inline; }
       body { padding: 8px 8px 60px; }
       .top-nav { gap: 7px; padding: 7px 10px; }
       .badge-pill { font-size: 12px; padding: 4px 10px; }
@@ -813,6 +811,8 @@
     }
 
     @media (max-width: 600px) {
+      .btn-label { display: none !important; }
+      .badge-ic { display: inline; }
       #roleBadge { display: none; }
       .ctl-row-1, .control-card.is-admin .ctl-row-1 { grid-template-columns: 1fr 44px 44px; }
       .control-card.is-admin #classFilterContainer { grid-column: 1 / -1; }
@@ -821,7 +821,27 @@
       .form-row-2 { grid-template-columns: 1fr; }
       .column-dropdown { left: auto; right: 0; }
     }
-  </style>
+      @media (min-width: 601px) and (max-width: 1100px) {
+      .ctl { font-size: 12px; gap: 6px; padding: 0 6px; }
+      .ctl-row-1 { grid-template-columns: 1.2fr 1.4fr auto auto; }
+      .control-card.is-admin .ctl-row-1 { grid-template-columns: 1fr 1fr 1.3fr auto auto; }
+      .ctl-row-1 .chip-btn { padding: 0 12px; }
+      .ctl-row-2 { grid-template-columns: 1.5fr repeat(5, minmax(0, 1fr)); }
+      #roleBadge { max-width: 170px; }
+      .btn-add .btn-label, .ctl-row-2 .btn-label { overflow: hidden; text-overflow: ellipsis; }
+    }
+</style>
+<script>
+(function(){let t='dark';try{const u=new URLSearchParams(location.search).get('theme');let p=null;try{if(window.parent&&window.parent!==window)p=window.parent.document.documentElement.getAttribute('data-theme')}catch(e){}
+t=u||p||localStorage.getItem('krou_theme_manual')||'dark'}catch(e){}document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');
+try{const q=new URLSearchParams(location.search).get('primary');if(/^#[0-9a-fA-F]{6}$/.test(q||''))document.documentElement.style.setProperty('--primary',q)}catch(e){}
+try{const pr=window.parent&&window.parent!==window&&window.parent.document.documentElement.style.getPropertyValue('--primary');if(pr)document.documentElement.style.setProperty('--primary',pr.trim())}catch(e){}})();
+</script>
+<style id="themeFollow">
+:root,[data-theme="light"]{--hdr-bg:linear-gradient(90deg,color-mix(in srgb,var(--primary) 16%,#fff),color-mix(in srgb,var(--primary) 8%,#fff));--hdr-border:color-mix(in srgb,var(--primary) 30%,#fff);--title-color:color-mix(in srgb,var(--primary) 85%,#000);--card-bg:linear-gradient(135deg,color-mix(in srgb,var(--primary) 12%,#fff),color-mix(in srgb,var(--primary) 5%,#fff) 55%,color-mix(in srgb,var(--primary) 14%,#fff))}
+[data-theme="dark"]{--hdr-bg:linear-gradient(135deg,color-mix(in srgb,var(--primary) 18%,#0c1524),color-mix(in srgb,var(--primary) 8%,#0c1524));--hdr-border:color-mix(in srgb,var(--primary) 34%,#17243a);--title-color:color-mix(in srgb,var(--primary) 55%,#fff);--card-bg:linear-gradient(135deg,color-mix(in srgb,var(--primary) 14%,#0f1b2d),color-mix(in srgb,var(--primary) 6%,#0c1524) 55%,color-mix(in srgb,var(--primary) 16%,#0f1b2d))}
+body{background:var(--bg)}
+</style>
 </head>
 <body>
 
@@ -1327,9 +1347,9 @@
 
     function goBack() {
       if (window.parent && window.parent !== window) {
-        try { window.parent.postMessage({ type: 'GO_BACK' }, '*'); } catch(err) {}
+        try { window.parent.postMessage({ type: 'NAVIGATE', page: 'dashboard', target: 'dashboard.html' }, '*'); return; } catch(err) {}
       }
-      if (window.history.length > 1) window.history.back();
+      window.location.href = 'index.html';
     }
 
     const USER_ROLE  = CURRENT_USER?.role || "teacher";
@@ -1361,9 +1381,12 @@
     let activeImportTab = 'paste';
     let uidSeq = 0;
 
-    function applyTheme(th) { document.documentElement.setAttribute('data-theme', th); }
-    applyTheme(localStorage.getItem('krou_theme_manual') || 'dark');
-    window.addEventListener('message', e => { if (e.data?.type === 'THEME_CHANGE') applyTheme(e.data.theme); });
+    function applyTheme(th, d) {
+      document.documentElement.setAttribute('data-theme', th === 'light' ? 'light' : 'dark');
+      if (d && d.primary) document.documentElement.style.setProperty('--primary', d.primary);
+    }
+    window.addEventListener('message', e => { if (e.data?.type === 'THEME_CHANGE' && e.data.theme) applyTheme(e.data.theme, e.data); });
+    window.addEventListener('storage', e => { if (e.key === 'krou_theme_manual' && e.newValue) applyTheme(e.newValue); });
 
     let toastTimer = null;
     function showToast(msg, isError) {
@@ -2677,7 +2700,8 @@
       installLockInterceptors();
       installArrowKeyNavigation();
       updateLockUI();
-      document.getElementById('roleBadge').innerText = IS_ADMIN ? 'អ្នកគ្រប់គ្រង (Admin)' : `ថ្នាក់ទី ${currentSelectedClass || 'ទូទៅ'}`;
+      const _rb = document.getElementById('roleBadge');
+      if (IS_ADMIN) { _rb.innerText = 'អ្នកគ្រប់គ្រង (Admin)'; } else { _rb.style.display = 'none'; }
 
       const filterBox = document.getElementById('classFilterContainer');
       if (IS_ADMIN) {
