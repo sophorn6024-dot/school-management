@@ -98,6 +98,19 @@ main{padding:22px;min-width:0}
 .sm-3>div{border:1px solid var(--line);background:var(--in);border-radius:14px;text-align:center;padding:8px 4px}
 .sm-3 small{display:block;color:var(--muted);font-size:11.5px}.sm-3 b{font-size:20px}
 @media(max-width:560px){.sm-grid{grid-template-columns:1fr 1fr}.sem-pick .in{min-width:110px}}
+.cl-sec{font-size:22px;font-weight:800;margin:4px 0 16px}
+.cl-item{display:flex;align-items:center;gap:14px;border:1px solid var(--line);background:var(--card);border-radius:22px;padding:16px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,.12);transition:transform .12s}
+.cl-item:hover{transform:translateY(-1px);border-color:var(--ac)}
+.cl-av{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#9f1239,#be185d);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;color:#fff}
+.cl-av.sm{width:40px;height:40px;font-size:18px}
+.cl-mid{flex:1;min-width:0}.cl-mid b{display:block;font-size:16.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cl-mid small{display:block;color:var(--muted);margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}.cl-mid small.dim{opacity:.8}
+.cl-end{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
+.cl-t{color:var(--bad);font-size:13px;font-weight:700}
+.cl-bd{min-width:28px;height:26px;padding:0 8px;border-radius:999px;background:#be123c;color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+.cr-h{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.cr-h small{display:block;color:var(--muted);font-size:12px}.cr-h b{display:block}
+.cr-b{border:1px solid var(--line);background:var(--in);color:var(--text);width:36px;height:36px;border-radius:50%;font-size:22px;cursor:pointer;line-height:1}
 .empty{border:1px dashed var(--line);border-radius:14px;padding:26px;text-align:center;color:var(--muted)}
 table{width:100%;border-collapse:collapse}
 th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
@@ -411,12 +424,32 @@ async function vLib(){
 }
 
 /* ── សារសន្ទនា ── */
+let chatRoom=false,chatMsgs=[];
+function schoolYear(){const d=new Date(),y=d.getFullYear();return d.getMonth()>=8?`${y}-${y+1}`:`${y-1}-${y}`}
+const seenKey=()=>'krou_stu_chat_seen_'+(ME&&ME.student_id||'');
+const getSeen=()=>{try{return +localStorage.getItem(seenKey())||0}catch(e){return 0}};
+const setSeen=v=>{try{localStorage.setItem(seenKey(),String(v))}catch(e){}};
+function ago(t){const d=new Date(t),n=new Date(),m=Math.floor((n-d)/60000);if(m<1)return 'ឥឡូវ';if(m<60)return m+' នាទីមុន';const h=Math.floor(m/60);if(h<24)return h+' ម៉ោងមុន';const dd=Math.floor(h/24);return dd<7?dd+' ថ្ងៃមុន':d.toLocaleDateString('en-GB')}
 async function vChat(){
-  chatLast=0;
-  $('view').innerHTML=`<div class="card"><b>💬 សារសន្ទនាថ្នាក់ ${esc(ME.grade)}</b><div style="color:var(--muted);font-size:13px">សូមប្រើពាក្យសម្តីគួរសម។ គ្រូអាចមើល និងលុបសារបាន។</div><div id="msgs"></div>
-  ${CHAT_CAN_SEND?`<div class="row" style="margin-top:10px;flex-wrap:nowrap"><input id="ci" class="in" style="flex:1;min-width:0" maxlength="500" placeholder="សរសេរសារ..." onkeydown="if(event.key==='Enter')sendChat()"><button class="btn sm" onclick="sendChat()">ផ្ញើ</button></div>`:''}</div>`;
-  await pullChat(true);chatTimer=setInterval(()=>pullChat(false),4000);
+  chatLast=0;if(chatRoom){openRoom();return}
+  $('view').innerHTML=`<div class="cl-wrap"><div class="cl-sec">ជជែក</div><div id="clList"><div class="empty">កំពុងទាញយក…</div></div></div>`;
+  await refreshChatList();chatTimer=setInterval(refreshChatList,6000);
 }
+async function refreshChatList(){
+  if(view!=='chat'||chatRoom)return;
+  let list=[];try{list=await tk('student_chat_list',{p_after:0})||[]}catch(e){}
+  chatMsgs=list;const box=$('clList');if(!box)return;
+  const last=list[list.length-1],seen=getSeen(),unread=list.filter(m=>m.id>seen&&!(m.sender_role==='student'&&m.sender_code===ME.student_id)).length;
+  const prev=last?`${last.sender_role!=='student'?'គ្រូ':esc((last.sender_name||'').split(' ').pop())}៖ ${esc(String(last.content||'').slice(0,60))}`:'មិនទាន់មានសារ';
+  box.innerHTML=`<div class="cl-item" onclick="openRoom()"><div class="cl-av">🎓</div><div class="cl-mid"><b>សិស្ស · ថ្នាក់ទី${esc(ME.grade||'')} · ${schoolYear()}</b><small class="${last?'':'dim'}">${prev}</small></div><div class="cl-end">${last?`<span class="cl-t">${ago(last.created_at)}</span>`:''}${unread?`<span class="cl-bd">${unread>99?'99+':unread}</span>`:''}</div></div>`;
+}
+async function openRoom(){
+  chatRoom=true;clearInterval(chatTimer);chatLast=0;
+  $('view').innerHTML=`<div class="card chat-room"><div class="cr-h"><button class="cr-b" onclick="closeRoom()" aria-label="ត្រឡប់">‹</button><div class="cl-av sm">🎓</div><div><b>សិស្ស · ថ្នាក់ទី${esc(ME.grade||'')} · ${schoolYear()}</b><small>គ្រូអាចមើល និងលុបសារបាន · សូមប្រើពាក្យសម្តីគួរសម</small></div></div><div id="msgs"></div>
+  ${CHAT_CAN_SEND?`<div class="row" style="margin-top:10px;flex-wrap:nowrap"><input id="ci" class="in" style="flex:1;min-width:0" maxlength="500" placeholder="សរសេរសារ..." onkeydown="if(event.key==='Enter')sendChat()"><button class="btn sm" onclick="sendChat()">ផ្ញើ</button></div>`:''}</div>`;
+  await pullChat(true);setSeen(chatLast);chatTimer=setInterval(()=>{pullChat(false);setSeen(chatLast)},4000);
+}
+function closeRoom(){chatRoom=false;clearInterval(chatTimer);vChat()}
 async function pullChat(first){
   if(view!=='chat')return;
   try{
