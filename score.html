@@ -354,6 +354,14 @@ html,body{font-size:13.5px;letter-spacing:.1px}
 .card-icon.m{background:var(--primary-soft);color:var(--primary)}
 :root[data-theme] .modern-score-table thead th.stk{background:var(--tint)!important}
 .modern-score-table{font-size:13px}
+
+/* ===== ជួរឈ្មោះសិស្ស រីកតាមខ្លឹមសារ មិនកាត់ ===== */
+.modern-score-table .stk-2,.modern-score-table .stk-2b{white-space:nowrap;width:auto;max-width:none!important;overflow:visible!important;text-overflow:clip!important}
+.modern-score-table .stk-2{min-width:90px}
+.modern-score-table .stk-2b{min-width:70px}
+@media (max-width:700px){
+  .modern-score-table .stk-2{min-width:110px!important;max-width:46vw!important;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;overflow-wrap:anywhere;line-height:1.25!important;font-size:12px!important}
+}
 </style>
   <script>
 (function (root, factory) {
@@ -2133,7 +2141,7 @@ function renderTable(){
   h+='</tbody></table>';
   area.innerHTML=h;
   updateAutoCoef();
-  fixStickyOffsets();
+  watchNameColumns();
   updateLockUI();
 }
 
@@ -2332,11 +2340,33 @@ function selectGradeFilter(code,label){
 document.addEventListener('click',(e)=>{if(!e.target.closest('.dropdown-relative'))closeGradeMenu()});
 
 function fixStickyOffsets(){
+  const root=document.documentElement.style;
   const th=document.querySelector('.modern-score-table thead th.stk-2');
-  if(th)document.documentElement.style.setProperty('--w2',Math.ceil(th.getBoundingClientRect().width)+'px');
+  if(th)root.setProperty('--w2',Math.ceil(th.getBoundingClientRect().width)+'px');
   const thb=document.querySelector('.modern-score-table thead th.stk-2b');
-  if(thb)document.documentElement.style.setProperty('--w2b',Math.ceil(thb.getBoundingClientRect().width)+'px');
+  root.setProperty('--w2b',thb?Math.ceil(thb.getBoundingClientRect().width)+'px':'0px');
 }
+/* ជួរឈ្មោះ ត្រូវរីកតាមឈ្មោះសិស្សវែងបំផុត ហើយ offset ត្រូវគណនាឡើងវិញពេល font ទាញចប់ ឬទំហំប្តូរ */
+let nameColObserver=null;
+function watchNameColumns(){
+  fixStickyOffsets();
+  requestAnimationFrame(fixStickyOffsets);
+  setTimeout(fixStickyOffsets,350);
+  try{if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fixStickyOffsets)}catch(e){}
+  try{
+    if(window.ResizeObserver){
+      if(nameColObserver)nameColObserver.disconnect();
+      nameColObserver=new ResizeObserver(fixStickyOffsets);
+      document.querySelectorAll('.modern-score-table thead th.stk-2,.modern-score-table thead th.stk-2b').forEach(e=>nameColObserver.observe(e));
+    }
+  }catch(e){}
+}
+/* ប្តូរ ទូរស័ព្ទ ⇄ កុំព្យូទ័រ → បង្ហាញជួរឈ្មោះ ១ ឬ ២ ឡើងវិញ */
+let lastIsMobile=window.innerWidth<=700;
+window.addEventListener('resize',()=>{
+  const m=window.innerWidth<=700;
+  if(m!==lastIsMobile){lastIsMobile=m;if(typeof renderTable==='function'&&document.getElementById('tableArea')&&displayedStudents.length)renderTable()}
+});
 
 function setupArrowKeys(){
   document.addEventListener('keydown',function(e){
