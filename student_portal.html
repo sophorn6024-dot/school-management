@@ -149,6 +149,8 @@ async function tk(n,a){ // function ដែលត្រូវការ token
 /* ── ចូល/ចេញ (ទំព័រ login ស្ថិតក្នុង index.html) ── */
 const LOGIN_URL='index.html?login=student';
 function goLogin(q){location.replace(LOGIN_URL+(q||''))}
+/* logout ស្របគ្នាគ្រប់ tab */
+window.addEventListener('storage',function(e){if(e.key===KEY&&!e.newValue&&TOKEN){clearInterval(chatTimer);TOKEN=null;ME=null;goLogin();}});
 async function logout(silent){
   clearInterval(chatTimer);
   try{if(TOKEN&&!silent)await rpc('student_logout',{p_token:TOKEN})}catch(e){}
