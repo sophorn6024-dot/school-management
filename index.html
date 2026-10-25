@@ -801,6 +801,32 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
 @media (min-width:900px){
   .login-wrap{grid-template-areas:"w ." "w m" "w c" "w .";grid-template-rows:1fr auto auto 1fr}
 }
+
+/* ===== 🔐 ផ្ទាំង login ខ្ពស់ស្មើផ្ទាំងស្វាគមន៍ ===== */
+@media (min-width:900px){
+  .login-wrap{grid-template-areas:"w m" "w c";grid-template-rows:auto 1fr;align-content:center}
+  .login-card{display:flex;flex-direction:column;justify-content:space-evenly}
+  .login-card>.login-line{width:100%}
+}
+@media (min-width:900px) and (min-height:701px){
+  .login-card{padding:34px 32px 26px}
+  .login-brand h1{font-size:20px}
+  .login-brand p{font-size:13px}
+  .login-field label{font-size:13.5px}
+  .login-input-wrap input,.lg-select select{height:52px;font-size:15px}
+  .login-btn{height:54px;font-size:15px}
+  .lg-role button{padding:12px 8px;font-size:14px}
+  .login-footer{font-size:12px}
+}
+@media (max-width:899px) and (min-height:720px){
+  .login-card{padding:32px 26px 24px}
+  .login-brand h1{font-size:19px}
+  .login-line{margin:18px 0}
+  .login-field{margin-bottom:15px}
+  .login-input-wrap input,.lg-select select{height:50px}
+  .login-btn{height:52px}
+  .lg-role{margin-bottom:16px}
+}
 </style>
 </head>
 <body>
