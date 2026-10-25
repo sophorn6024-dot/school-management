@@ -341,9 +341,12 @@
     thead .sticky-col-2, thead .sticky-col-3 { z-index: 65; background: var(--bg-header-sticky); }
 
     .th-vertical {
-      writing-mode: vertical-rl; transform: rotate(180deg); text-orientation: mixed; white-space: nowrap;
-      height: 70px; line-height: 1; padding: 6px 2px; letter-spacing: 0.5px;
+      writing-mode: horizontal-tb; transform: none; white-space: nowrap;
+      height: auto; line-height: 1.3; padding: 6px 4px; letter-spacing: 0;
     }
+    .col-id .table-input { font-size: 12px; padding: 0 4px; }
+    button.gender-pill { font-family: inherit; min-width: 56px; height: 28px; font-size: 12px; user-select: none; }
+    button.gender-pill:active { transform: scale(.95); }
 
     .th-academic { background: rgba(168, 85, 247, 0.18); color: #c084fc; font-size: 13.5px; }
     .th-pob-main { background: rgba(2, 132, 199, 0.18); color: #38bdf8; font-size: 13.5px; }
@@ -994,7 +997,7 @@ body{background:var(--bg)}
             <th rowspan="2" class="col-id"><div class="th-vertical">អត្តលេខ *</div></th>
             <th rowspan="2" class="sticky-col-2"><div class="th-vertical">គោត្តនាម *</div></th>
             <th rowspan="2" class="sticky-col-3"><div class="th-vertical">នាម</div></th>
-            <th rowspan="2" class="col-gender" style="width: 60px;"><div class="th-vertical">ភេទ *</div></th>
+            <th rowspan="2" class="col-gender" style="width: 76px;"><div class="th-vertical">ភេទ *</div></th>
             <th colspan="4" class="th-academic col-info">ព័ត៌មានសិស្ស</th>
             <th colspan="4" class="th-pob-main col-pob">ទីកន្លែងកំណើតសិស្ស</th>
             <th colspan="4" class="th-addr-main col-address">អាសយដ្ឋានបច្ចុប្បន្នសិស្ស</th>
@@ -1556,7 +1559,7 @@ body{background:var(--bg)}
         if (e.target.closest('.table-photo-box, .action-icons')) return;
         const td = e.target.closest('td');
         if (!td) return;
-        if (td.querySelector('input, select, .date-picker-trigger, .btn-save-row-now, .btn-cancel-draft')) {
+        if (td.querySelector('input, select, .gender-pill, .date-picker-trigger, .btn-save-row-now, .btn-cancel-draft')) {
           e.preventDefault();
           e.stopPropagation();
           showLockMessage();
@@ -1870,6 +1873,16 @@ body{background:var(--bg)}
       s.motherJob = data.motherJob || '';
     }
 
+    function toggleGender(btn, realIdx) {
+      if (isTableLocked) { showLockMessage(); return; }
+      const next = btn.value === 'ស្រី' ? 'ប្រុស' : 'ស្រី';
+      btn.value = next;
+      btn.textContent = next;
+      btn.classList.remove('gender-f', 'gender-m', 'gender-dash');
+      btn.classList.add(next === 'ស្រី' ? 'gender-f' : 'gender-m');
+      syncRowInput(btn, realIdx);
+    }
+
     function syncRowInput(input, realIdx) {
       if (isTableLocked) { showLockMessage(); return; }
       const s = studentsList[realIdx];
@@ -2002,7 +2015,7 @@ body{background:var(--bg)}
             <td class="sticky-col-2"><input type="text" class="table-input input-left ${(showMissing && !lastName) || errs.name ? 'cell-missing' : ''}" value="${esc(lastName)}" data-field="lastName" style="font-weight:700;" oninput="syncRowInput(this, ${realIdx})" placeholder="គោត្តនាម *"></td>
             <td class="sticky-col-3"><input type="text" class="table-input input-left" value="${esc(firstName)}" data-field="firstName" style="font-weight:700;" oninput="syncRowInput(this, ${realIdx})" placeholder="នាម"></td>
             <td class="col-gender">
-              <select class="gender-pill ${genderClass}" data-field="sex" onchange="syncRowInput(this, ${realIdx})">${genderOptions}</select>
+              <button type="button" class="gender-pill ${genderClass}" data-field="sex" value="${esc(gv || '')}" onclick="toggleGender(this, ${realIdx})" title="ចុចដើម្បីប្តូរ ស្រី / ប្រុស">${gv || '— ភេទ —'}</button>
             </td>
             <td class="col-info">
               <div class="date-picker-trigger ${showMissing && !formattedDob ? 'cell-missing' : ''}" onclick="openKhmerCalendarForTable(event, ${realIdx})">
