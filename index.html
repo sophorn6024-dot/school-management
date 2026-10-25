@@ -778,10 +778,10 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
 
 /* ===== 🖼 រូបភាពក្រោមសារស្វាគមន៍ (desktop/tablet ធំ) ===== */
 .lw-tags,.lw-shot{display:none}
-@media (min-width:900px) and (min-height:700px){
+@media (min-width:900px) and (min-height:520px){
   .lw-tags{display:flex;align-items:center;gap:12px;margin-top:14px;color:#c7d2fe;font-weight:600;font-size:15px;animation:lwIn .8s .5s both}
   .lw-tags i{font-style:normal;color:#f472b6;font-size:9px}
-  .lw-shot{display:block;margin-top:22px;width:min(100%,500px);animation:lwIn .9s .6s both}
+  .lw-shot{display:block;margin-top:clamp(12px,2.6vh,22px);width:min(100%,500px,calc((100vh - 300px) * 1.6));min-width:300px;animation:lwIn .9s .6s both}
   .lw-shot-frame{position:relative;padding:8px;border-radius:20px;background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.18);box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 60px rgba(99,102,241,.25);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
   .lw-shot-frame:before,.lw-shot-frame:after{content:"";position:absolute;width:22px;height:22px;border:2.5px solid #a5b4fc;opacity:.8;pointer-events:none}
   .lw-shot-frame:before{left:-6px;top:-6px;border-right:0;border-bottom:0;border-radius:12px 0 0 0}
