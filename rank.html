@@ -378,6 +378,16 @@ try{const pr=window.parent&&window.parent!==window&&window.parent.document.docum
 .panel-pill-box:hover,.custom-dd-btn:hover,.sp-btn:hover,.dt-btn:hover,.dt-btn.open,.mp-btn:hover{border-color:var(--primary)}
 @media screen and (max-width:720px){.control-panel,.no-print-bar{margin:6px!important;padding:6px!important;border-radius:16px!important;top:0!important}.form-control,.btn,.custom-dd-btn,.sp-btn,.dt-btn,.mp-btn{height:34px}}
 @media print{.control-panel,.no-print-bar{display:none!important}}
+.control-panel,.no-print-bar,.no-print-toolbar{gap:6px 8px!important}
+@media screen and (min-width:721px){
+ .control-panel{flex-direction:row!important;flex-wrap:wrap!important;align-items:center}
+ .control-panel .control-row:not([style]),.control-panel .control-row:not([style]) .cp-group,.no-print-bar .tb-group,.no-print-toolbar .tb-group{display:contents!important}
+ .control-panel .control-row[style]{padding:0!important;border:0!important;flex-wrap:nowrap}
+ .no-print-bar .tb-actions,.no-print-toolbar .tb-actions{margin-left:0}
+ .panel-pill-box,.layout-switcher,.period-type-switcher{flex-wrap:nowrap}
+}
+@media screen and (max-width:720px){.tb-filters{grid-template-columns:repeat(auto-fit,minmax(125px,1fr))!important;gap:5px!important}.tb-actions{gap:5px!important}.control-panel{gap:5px!important}}
+.toolbar-label{font-size:11.5px}
 </style>
 </head>
 <body>
