@@ -75,6 +75,29 @@ main{padding:22px;min-width:0}
 .sj-r{display:flex;justify-content:space-between;gap:10px;padding:5px 0;border-top:1px dashed var(--line);font-size:13px}
 .sj-r:first-of-type{border-top:0}
 .sj-r b{font-size:15px}.sj-r small{color:var(--muted);font-weight:600;font-size:11px}
+.sem-pick{display:flex;align-items:center;gap:12px;border:1px solid var(--line);background:var(--in);border-radius:18px;padding:12px 14px;margin-bottom:14px}
+.sem-ic{width:44px;height:44px;border-radius:14px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff}
+.sem-pick small{display:block;color:var(--muted);font-size:12px}.sem-pick b{font-size:18px}
+.sem-pick .in{width:auto;margin-left:auto;min-width:130px}
+.sm-h{font-size:22px;margin:4px 0 2px}.sm-s{color:var(--muted);font-size:13px;margin-bottom:14px}
+.sm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.sm-st{border:1px solid var(--line);border-radius:16px;padding:12px 14px;background:var(--in)}
+.sm-l{color:var(--muted);font-size:12.5px}.sm-v{font-size:28px;font-weight:800;margin-top:6px}
+.sm-st.c1{background:linear-gradient(135deg,rgba(14,165,233,.14),transparent)}.sm-st.c1 .sm-v{color:#38bdf8}
+.sm-st.c2{background:linear-gradient(135deg,rgba(245,158,11,.16),transparent)}.sm-st.c2 .sm-v{color:#fbbf24}
+.sm-st.c3{background:linear-gradient(135deg,rgba(59,130,246,.16),transparent)}.sm-st.c3 .sm-v{color:#60a5fa}
+.sm-st.c4{background:linear-gradient(135deg,rgba(16,185,129,.14),transparent)}
+.sm-st.c5{background:linear-gradient(135deg,rgba(139,92,246,.16),transparent)}.sm-st.c5 .sm-v{color:#a78bfa}
+.sm-list{display:grid;gap:0;border-top:1px solid var(--line)}
+.sm-sub{padding:14px 4px;border-bottom:1px solid var(--line)}
+.sm-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sm-top b{font-size:17px;display:block}.sm-top small{color:var(--muted);font-size:12px}
+.sm-bd{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;background:var(--in);border:1px solid var(--line)}
+.sm-bd.gA{color:#34d399;background:rgba(16,185,129,.16)}.sm-bd.gB{color:#60a5fa;background:rgba(59,130,246,.16)}.sm-bd.gC{color:#38bdf8;background:rgba(14,165,233,.14)}.sm-bd.gD{color:#fb923c;background:rgba(249,115,22,.16)}.sm-bd.gE{color:#f472b6;background:rgba(236,72,153,.16)}.sm-bd.gF{color:#f87171;background:rgba(239,68,68,.16)}
+.sm-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+.sm-3>div{border:1px solid var(--line);background:var(--in);border-radius:14px;text-align:center;padding:8px 4px}
+.sm-3 small{display:block;color:var(--muted);font-size:11.5px}.sm-3 b{font-size:20px}
+@media(max-width:560px){.sm-grid{grid-template-columns:1fr 1fr}.sem-pick .in{min-width:110px}}
 .empty{border:1px dashed var(--line);border-radius:14px;padding:26px;text-align:center;color:var(--muted)}
 table{width:100%;border-collapse:collapse}
 th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
@@ -306,6 +329,21 @@ function subjHtml(r,type){
   const col=v=>{v=+v;return v>=9?'var(--ok)':v>=7?'#3b82f6':v>=5?'#f59e0b':'var(--bad)'};
   return `<h4 class="sj-t">📚 ពិន្ទុតាមមុខវិជ្ជា</h4><div class="sj">`+gs.map(g=>`<div class="sj-g"><div class="sj-h">${esc(g.l)}</div>${g.c.map(x=>`<div class="sj-r"><span>${esc(x.n)}</span><b style="color:${col(sc[x.k])}">${esc(String(sc[x.k]))}<small>/${x.m}</small></b></div>`).join('')}</div>`).join('')+`</div>`;
 }
+let sSem='ឆមាសទី១';
+function semHtml(r,p){
+  const n=p==='ឆមាសទី២'?'2':'1';
+  if(!r||!(+r.average>0))return `<div class="empty"><b>មិនទាន់មានពិន្ទុឆមាស ${n}</b><br>សូមរង់ចាំគ្រូបញ្ចូលពិន្ទុ។</div>`;
+  const a=+r.average,sc=r.scores&&typeof r.scores==='object'?r.scores:{},rk=r.subj_ranks||{};
+  const gs=groupsOf('semester'),subs=[];
+  gs.forEach(g=>g.c.forEach(x=>{const v=sc[x.k];if(v!==undefined&&v!==''&&v!==null&&!isNaN(+v))subs.push({n:x.n,v:+v,k:x.k,m:x.m})}));
+  const grade=r.grade_label||gradeOf(a),pass=r.result||(a>=5?'ជាប់':'ធ្លាក់');
+  const st=(cls,ic,l,v,extra)=>`<div class="sm-st ${cls}"><div class="sm-l">${ic} ${l}</div><div class="sm-v" ${extra||''}>${v}</div></div>`;
+  const vc=v=>v>=9?'var(--ok)':v>=7?'#60a5fa':v>=5?'#fbbf24':'var(--bad)';
+  return `<h3 class="sm-h">ពិន្ទុឆមាស ${n}</h3><div class="sm-s">ចាប់យកពីតារាងស្រង់ពិន្ទុឆមាស និងបង្ហាញតាមមុខវិជ្ជា</div>
+  <div class="sm-grid">${st('c0','✨','ពិន្ទុសរុប',(+r.total).toFixed(2))}${st('c1','📊','មធ្យមភាគ',a.toFixed(2))}${st('c2','🏆','ចំណាត់ថ្នាក់',r.rank?'#'+r.rank:'—')}${st('c3','🎓','និទ្ទេស',esc(grade))}${st('c4','📘','ស្ថានភាព',esc(pass),`style="color:${pass==='ជាប់'?'var(--ok)':'var(--bad)'}"`)}${st('c5','🗓','មុខវិជ្ជា',subs.length)}</div>
+  <div class="sm-list">${subs.map(x=>{const g=gradeOf(x.v);return `<div class="sm-sub"><div class="sm-top"><div><b>${esc(x.n)}</b><small>ពិន្ទុប្រឡង</small></div><span class="sm-bd g${g}">${g}</span></div>
+    <div class="sm-3"><div><small>ពិន្ទុ</small><b style="color:${vc(x.v)}">${x.v.toFixed(1)}</b></div><div><small>លំដាប់</small><b style="color:#fbbf24">${rk[x.k]?'#'+rk[x.k]:'—'}</b></div><div><small>និទ្ទេស</small><b style="color:${vc(x.v)}">${g}</b></div></div></div>`}).join('')}</div>`;
+}
 function scoreRowHtml(r,type){
   if(!r||!(+r.average>0))return `<div class="empty"><b>មិនទាន់មានពិន្ទុ</b><br>សូមជ្រើសរើសរយៈពេលផ្សេង ឬរង់ចាំគ្រូបញ្ចូលពិន្ទុ។</div>`;
   const a=+r.average;
@@ -323,7 +361,8 @@ function drawScore(){
     ctl=`<div class="row"><b>ជ្រើសរើសខែ</b><select class="in" onchange="sMonth=this.value;drawScore()">${MONTHS.map(m=>`<option ${m===sMonth?'selected':''}>${m}</option>`).join('')}</select></div>`;
     body=`<h3 style="margin:14px 0 10px">លទ្ធផលសង្ខេបប្រចាំខែ ${esc(sMonth)}</h3>`+scoreRowHtml(rowOf('monthly',sMonth),'monthly');
   }else if(sTab==='sem'){
-    body=['ឆមាសទី១','ឆមាសទី២'].map(p=>`<h3 style="margin:14px 0 10px">ប្រឡង${p}</h3>`+scoreRowHtml(rowOf('semester',p),'semester')).join('');
+    ctl=`<div class="sem-pick"><span class="sem-ic">📖</span><div><small>ជ្រើសរើសពិន្ទុឆមាស</small><b>ពិន្ទុឆមាស ${sSem==='ឆមាសទី២'?'2':'1'}</b></div><select class="in" onchange="sSem=this.value;drawScore()"><option value="ឆមាសទី១" ${sSem==='ឆមាសទី១'?'selected':''}>ពិន្ទុឆមាស 1</option><option value="ឆមាសទី២" ${sSem==='ឆមាសទី២'?'selected':''}>ពិន្ទុឆមាស 2</option></select></div>`;
+    body=semHtml(rowOf('semester',sSem),sSem);
   }else if(sTab==='semavg'){
     const a=semCalc(SEM1,'ឆមាសទី១'),b=semCalc(SEM2,'ឆមាសទី២');
     body=`<h3 style="margin:14px 0 10px">ប្រចាំឆមាសទី១</h3>`+avgHtml('មធ្យមភាគ',a.sem)+`<h3 style="margin:14px 0 10px">ប្រចាំឆមាសទី២</h3>`+avgHtml('មធ្យមភាគ',b.sem);
