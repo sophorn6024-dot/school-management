@@ -362,6 +362,54 @@ html,body{font-size:13.5px;letter-spacing:.1px}
 @media (max-width:700px){
   .modern-score-table .stk-2{min-width:110px!important;max-width:46vw!important;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;overflow-wrap:anywhere;line-height:1.25!important;font-size:12px!important}
 }
+
+/* ===== 🧰 Toolbar ស្អាត (បែប glass + pill) ===== */
+html,body{font-size:12px}
+:root[data-theme] .top-toolbar{margin:8px 10px;padding:8px 10px;gap:8px;border:1px solid var(--tb-line);border-radius:20px;background:linear-gradient(120deg,var(--tb-1),var(--tb-2));box-shadow:0 6px 18px color-mix(in srgb,var(--primary) 14%,transparent)}
+.tb-group{gap:8px}
+.pill-select,.pill-btn,.search-input-wrap,.cs-btn,.btn-eraser,.btn-lock{height:36px;border-radius:14px;font-size:12px;font-weight:700;background:var(--surface);border:1px solid var(--tb-line);box-shadow:0 2px 8px rgba(15,23,42,.07);color:var(--text)}
+[data-theme="dark"] .pill-select,[data-theme="dark"] .pill-btn,[data-theme="dark"] .search-input-wrap,[data-theme="dark"] .cs-btn,[data-theme="dark"] .btn-eraser,[data-theme="dark"] .btn-lock{background:rgba(255,255,255,.045);border-color:rgba(255,255,255,.14);box-shadow:none}
+.pill-btn:hover,.cs-btn:hover,.pill-select:hover,.btn-eraser:hover,.btn-lock:hover{transform:translateY(-1px);box-shadow:0 6px 14px color-mix(in srgb,var(--primary) 18%,transparent)}
+.btn-eraser,.btn-lock{width:36px;padding:0;border-radius:14px}
+.pill-btn.keep-lbl{border-color:var(--primary)}
+.btn-lock.locked{background:rgba(245,158,11,.2);color:#f59e0b;border-color:#f59e0b;box-shadow:0 4px 12px rgba(245,158,11,.25)}
+body.is-locked .btn-eraser{display:none!important}
+.search-input-wrap{min-width:190px;padding:0 12px}
+.search-input-wrap input{font-size:12px}
+.save-status-pill{height:36px;border-radius:14px;font-size:12px}
+.tag-title-badge,.badge-student-counts,.assigned-class-badge{font-size:12px}
+.modern-score-table{font-size:12px}
+.modern-score-table .stk-2,.modern-score-table .stk-2b{font-size:12px}
+.score-box{font-size:12px}
+.th-vertical-wrap{font-size:10.5px}
+.grade-menu-item,.cs-item{font-size:12px}
+.cs-item{padding:10px 14px}
+.cs-popup,.grade-menu-popup{border-radius:16px}
+@media (max-width:700px){
+  :root[data-theme] .top-toolbar{margin:6px;padding:6px;border-radius:16px;gap:6px}
+  .pill-select,.pill-btn,.search-input-wrap,.cs-btn,.btn-eraser,.btn-lock,.save-status-pill{height:34px;font-size:11.5px;border-radius:12px}
+  .btn-eraser,.btn-lock{width:34px}
+  .modern-score-table .stk-2{font-size:12px!important}
+}
+
+/* ===== 💬 ប្រអប់សារ (popup) ===== */
+.kd-backdrop{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(8,12,24,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);outline:none}
+.kd-backdrop.show{display:flex;animation:kdFade .18s ease}
+.kd-card{width:min(92vw,360px);text-align:center;padding:26px 22px 20px;border-radius:24px;background:var(--surface);color:var(--text);border:1px solid var(--tb-line);box-shadow:0 24px 60px rgba(0,0,0,.45);animation:kdPop .28s cubic-bezier(.2,1.2,.3,1)}
+.kd-icon{width:64px;height:64px;margin:0 auto 12px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;background:var(--primary-soft);box-shadow:0 0 0 8px color-mix(in srgb,var(--primary) 8%,transparent)}
+.kd-warn .kd-icon{background:rgba(245,158,11,.18);box-shadow:0 0 0 8px rgba(245,158,11,.08)}
+.kd-ok .kd-icon{background:rgba(16,185,129,.16);box-shadow:0 0 0 8px rgba(16,185,129,.08)}
+.kd-danger .kd-icon{background:rgba(239,68,68,.16);box-shadow:0 0 0 8px rgba(239,68,68,.08)}
+.kd-title{font-size:15px;font-weight:800;margin-bottom:6px}
+.kd-msg{font-size:12px;line-height:1.65;color:var(--text-muted)}
+.kd-actions{display:flex;gap:10px;margin-top:18px}
+.kd-btn{flex:1;height:40px;border-radius:13px;border:1px solid var(--border);font-size:12.5px;font-weight:800;cursor:pointer;background:var(--surface-elevated);color:var(--text);transition:transform .12s,box-shadow .12s}
+.kd-btn:active{transform:scale(.97)}
+.kd-yes{border:0;color:#fff;background:linear-gradient(135deg,var(--primary),var(--primary-hover));box-shadow:0 8px 18px color-mix(in srgb,var(--primary) 35%,transparent)}
+.kd-danger .kd-yes{background:linear-gradient(135deg,#ef4444,#b91c1c);box-shadow:0 8px 18px rgba(220,38,38,.35)}
+@keyframes kdFade{from{opacity:0}to{opacity:1}}
+@keyframes kdPop{from{opacity:0;transform:translateY(14px) scale(.92)}to{opacity:1;transform:none}}
+@media print{.kd-backdrop{display:none!important}}
 </style>
   <script>
 (function (root, factory) {
@@ -1496,6 +1544,7 @@ try{const q=new URLSearchParams(window.location.search).get('primary');if(/^#[0-
 </script>
 </head>
 <body>
+<div id="krouDlg" class="kd-backdrop" role="dialog" aria-modal="true" tabindex="-1"><div class="kd-card"><div class="kd-icon" id="kdIcon">ℹ️</div><div class="kd-title" id="kdTitle"></div><div class="kd-msg" id="kdMsg"></div><div class="kd-actions" id="kdActions"><button type="button" class="kd-btn kd-no" id="kdNo">បោះបង់</button><button type="button" class="kd-btn kd-yes" id="kdYes">យល់ព្រម</button></div></div></div>
 <div id="toastNotification" class="toast-notification"></div>
 <input type="file" id="excelScoreFileInput" accept=".xlsx, .xls" style="display:none;" onchange="handleExcelUpload(this)">
 
@@ -2024,13 +2073,26 @@ function calcTotal(sid){
   allCols().forEach(c=>{const v=parseFloat((savedScoresData[sid]||{})[c.key]);if(!isNaN(v))tot+=v});
   return tot;
 }
-function calcAvg(sid){
-  let ws=0,tc=0;
+/* មេគុណសរុបរបស់ថ្នាក់៖ បូកមេគុណនៃមុខវិជ្ជាដែលមានពិន្ទុ (យ៉ាងតិចសិស្ស ១ នាក់) — ដូចគ្នាសម្រាប់សិស្សគ្រប់រូប */
+function activeCoefTotal(){
+  let t=0;
+  allCols().forEach(c=>{
+    const has=displayedStudents.some(s=>!isNaN(parseFloat((savedScoresData[s.id]||{})[c.key])));
+    if(has)t+=Number(c.coef)>0?Number(c.coef):1;
+  });
+  return t;
+}
+/* មធ្យមភាគ = ពិន្ទុសរុប(×មេគុណ) ÷ មេគុណសរុបនៃមុខវិជ្ជាដែលមានពិន្ទុ (សិស្សដែលខ្វះពិន្ទុមុខវិជ្ជាណាមួយ គិតជា 0) */
+function calcAvg(sid,den){
+  let ws=0,own=0;
   allCols().forEach(c=>{
     const v=parseFloat((savedScoresData[sid]||{})[c.key]);
-    if(!isNaN(v)){const coef=Number(c.coef)>0?Number(c.coef):1;ws+=v*coef;tc+=coef}
+    if(!isNaN(v)){const coef=Number(c.coef)>0?Number(c.coef):1;ws+=v*coef;own++}
   });
-  if(tc>0)return ws/tc;
+  if(own>0){
+    const d=(den!==undefined)?den:activeCoefTotal();
+    return d>0?ws/d:0;
+  }
   // ប្រើមធ្យមភាគក្នុង DB តែពេលសិស្សនេះមិនទាន់ត្រូវបានកែ/លុបពិន្ទុក្នុងវគ្គនេះ
   if(!touchedSids[sid]&&savedDbAverages[sid])return savedDbAverages[sid];
   return 0;
@@ -2045,7 +2107,8 @@ function getGradeBadge(avg){
   return {code,khName,label:(gradeLangMode==='EN'?code:khName),c:cls};
 }
 function computeRanks(){
-  const list=displayedStudents.map(s=>({id:s.id,avg:calcAvg(s.id)}));
+  const den=activeCoefTotal();
+  const list=displayedStudents.map(s=>({id:s.id,avg:calcAvg(s.id,den)}));
   list.sort((a,b)=>b.avg-a.avg);
   const ranks={};
   let prev=null,pr=0;
@@ -2199,25 +2262,27 @@ function updateAutoCoef(){
   if(t)t.textContent=totalActiveCoef;
 }
 function updateRowTotals(sid){
-  const tot=calcTotal(sid),avg=calcAvg(sid);
-  const tEl=document.getElementById('rt-'+sid);
-  if(tEl)tEl.textContent=tot>0?tot.toFixed(2):'—';
-  const aEl=document.getElementById('ra-'+sid);
-  if(aEl)aEl.textContent=avg>0?avg.toFixed(2):'—';
-  const gEl=document.getElementById('rg-'+sid);
-  if(gEl){
-    if(avg>0){const gr=getGradeBadge(avg);gEl.innerHTML=`<span class="badge-grade ${gr.c}">${gr.label}</span>`}
-    else gEl.textContent='—';
-  }
-  const nEl=document.getElementById('rn-'+sid);
-  if(nEl){
-    if(avg>0)nEl.innerHTML=avg>=5?'<span class="status-pass">ជាប់</span>':'<span class="status-fail">ធ្លាក់</span>';
-    else nEl.textContent='—';
-  }
+  /* មធ្យមភាគប្រើមេគុណសរុបរួម → ពេលពិន្ទុណាមួយប្តូរ ត្រូវធ្វើបច្ចុប្បន្នភាពសិស្សទាំងអស់ */
+  const den=activeCoefTotal();
   const ranks=computeRanks();
   displayedStudents.forEach(s=>{
-    const rEl=document.getElementById('rr-'+s.id);
-    if(rEl)rEl.textContent=calcAvg(s.id)>0?(ranks[s.id]||''):'—';
+    const id=s.id,tot=calcTotal(id),avg=calcAvg(id,den);
+    const tEl=document.getElementById('rt-'+id);
+    if(tEl)tEl.textContent=tot>0?tot.toFixed(2):'—';
+    const aEl=document.getElementById('ra-'+id);
+    if(aEl)aEl.textContent=avg>0?avg.toFixed(2):'—';
+    const gEl=document.getElementById('rg-'+id);
+    if(gEl){
+      if(avg>0){const gr=getGradeBadge(avg);gEl.innerHTML=`<span class="badge-grade ${gr.c}">${gr.label}</span>`}
+      else gEl.textContent='—';
+    }
+    const nEl=document.getElementById('rn-'+id);
+    if(nEl){
+      if(avg>0)nEl.innerHTML=avg>=5?'<span class="status-pass">ជាប់</span>':'<span class="status-fail">ធ្លាក់</span>';
+      else nEl.textContent='—';
+    }
+    const rEl=document.getElementById('rr-'+id);
+    if(rEl)rEl.textContent=avg>0?(ranks[id]||''):'—';
   });
 }
 
@@ -2279,7 +2344,37 @@ function toggleLock(){
   localStorage.setItem('krou_score_locked',isLocked?'true':'false');
   updateLockUI();
   renderTable();
-  showToast(isLocked?'🔒 បានចាក់សោ — រារាំងមិនឱ្យកែប្រែ':'🔓 បានដោះសោ — អ្នកអាចកែប្រែបាន');
+  krouDialog(isLocked
+    ?{icon:'🔒',tone:'warn',title:'បានចាក់សោតារាងពិន្ទុ',msg:'ការកែប្រែពិន្ទុត្រូវបានរារាំង ហើយប៊ូតុងលុបពិន្ទុត្រូវបានលាក់។',auto:2200}
+    :{icon:'🔓',tone:'ok',title:'បានដោះសោតារាងពិន្ទុ',msg:'អ្នកអាចកែប្រែពិន្ទុបានវិញ។',auto:1800});
+}
+/* ===== ប្រអប់សារ (popup) ស្អាត — ជំនួស confirm()/toast ===== */
+let krouDlgTimer=null,krouDlgDone=null;
+function krouDialog(o){
+  return new Promise(res=>{
+    const bd=document.getElementById('krouDlg');if(!bd){res(window.confirm(o.msg||o.title));return}
+    if(krouDlgDone)krouDlgDone(false);
+    clearTimeout(krouDlgTimer);
+    const confirmMode=!!o.confirmText;
+    bd.className='kd-backdrop show kd-'+(o.tone||'ok');
+    document.getElementById('kdIcon').textContent=o.icon||'ℹ️';
+    document.getElementById('kdTitle').textContent=o.title||'';
+    document.getElementById('kdMsg').textContent=o.msg||'';
+    const act=document.getElementById('kdActions');
+    act.style.display=confirmMode?'flex':'none';
+    document.getElementById('kdNo').textContent=o.cancelText||'បោះបង់';
+    document.getElementById('kdYes').textContent=o.confirmText||'';
+    const close=v=>{bd.classList.remove('show');clearTimeout(krouDlgTimer);document.removeEventListener('keydown',kd);krouDlgDone=null;res(v)};
+    const kd=e=>{if(e.key==='Escape')close(false);else if(e.key==='Enter')close(confirmMode)};
+    krouDlgDone=close;
+    document.addEventListener('keydown',kd);
+    document.getElementById('kdYes').onclick=()=>close(true);
+    document.getElementById('kdNo').onclick=()=>close(false);
+    bd.onclick=e=>{if(e.target===bd)close(false)};
+    if(!confirmMode){bd.querySelector('.kd-card').onclick=()=>close(true);krouDlgTimer=setTimeout(()=>close(true),o.auto||2000)}
+    else bd.querySelector('.kd-card').onclick=null;
+    setTimeout(()=>{try{(confirmMode?document.getElementById('kdYes'):bd).focus()}catch(e){}},30);
+  });
 }
 function updateLockUI(){
   const btn=document.getElementById('btnLock'),icon=document.getElementById('lockIcon');
@@ -2442,7 +2537,8 @@ async function clearAllScoresPrompt(){
   if(isLocked){showToast('🔒 តារាងកំពុងចាក់សោ!',true);return}
   const cls=cleanGrade(document.getElementById('classSelect').value||USER_CLASS);
   const period=getSelectedPeriod();
-  if(!confirm(`តើអ្នកពិតជាចង់លុបពិន្ទុទាំងអស់ក្នុង ${period} នៃថ្នាក់ទី ${cls} មែនទេ?`))return;
+  const okDel=await krouDialog({icon:'🗑️',tone:'danger',title:'លុបពិន្ទុទាំងអស់?',msg:`ពិន្ទុទាំងអស់ក្នុង «${period}» នៃថ្នាក់ទី ${cls} នឹងត្រូវលុបជាអចិន្ត្រៃយ៍ ហើយមិនអាចត្រឡប់វិញបានទេ។`,confirmText:'លុបពិន្ទុ',cancelText:'បោះបង់'});
+  if(!okDel)return;
   clearTimeout(autoSaveTimer);   // បោះបង់ការរក្សាទុកស្វ័យប្រវត្តិដែលកំពុងរង់ចាំ
   setAutoSaveStatus('កំពុងលុប...','saving');
   try{
@@ -2454,7 +2550,7 @@ async function clearAllScoresPrompt(){
     sids.forEach(id=>{touchedSids[id]=1});
     renderTable();
     setAutoSaveStatus('រក្សាទុករួច','');
-    showToast('🗑️ បានលុបពិន្ទុរួចរាល់!');
+    krouDialog({icon:'✅',tone:'ok',title:'បានលុបពិន្ទុរួចរាល់',msg:'ពិន្ទុ និងមធ្យមភាគក្នុងវគ្គនេះត្រូវបានសម្អាតអស់។',auto:1800});
   }catch(err){setAutoSaveStatus('កំហុស','error');showToast('❌ លុបមិនបាន៖ '+(err.message||err),true)}
 }
 
