@@ -199,6 +199,35 @@ body.inroom #view{flex:1;min-height:0;display:flex;flex-direction:column}
 .ac-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:16px;padding:8px}
 .ac-ok{background:var(--oks);color:var(--ok)}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style id="cxSkin">
+body.inroom{background:linear-gradient(135deg,#cfeafb 0%,#eaf5fd 35%,#f7fbff 70%,#fbf8ee 100%)}
+body.inroom[data-theme=dark],[data-theme=dark] body.inroom{background:linear-gradient(160deg,#071822 0%,#091c28 50%,#07151e 100%)}
+.chat-room{--c-in:#fff;--c-in-t:#14202b;--c-out:#d9efff;--c-out-t:#0b2a40;--c-hd:rgba(255,255,255,.86);--c-sf:#fff;--c-mu:#6b7a89;--c-user:#0d7a5f;--c-admin:#c2570c;--c-sh:0 2px 10px rgba(20,40,60,.07);--c-wave:#c4c9ce;--c-bd:#e3e9ef}
+[data-theme=dark] .chat-room{--c-in:#0e202c;--c-in-t:#e2e8f0;--c-out:#0d3856;--c-out-t:#f1f5f9;--c-hd:rgba(9,24,34,.9);--c-sf:#0e202c;--c-mu:#94a3b8;--c-user:#34d399;--c-admin:#fbbf24;--c-sh:0 2px 12px rgba(0,0,0,.4);--c-wave:#3b5366;--c-bd:#183347}
+.chat-room{position:relative}
+.chat-room .cr-h{background:var(--c-hd);backdrop-filter:blur(10px);border:0;border-radius:24px;padding:8px 12px;margin:0 0 6px;box-shadow:var(--c-sh);gap:10px;flex-shrink:0}
+.cx-ib{background:none;border:0;color:var(--text);font-size:19px;width:38px;height:38px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}.cx-ib:hover{background:rgba(127,127,127,.15);color:var(--ac)}
+.cx-logo{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#be185d,#9d174d);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.cx-title{flex:1;min-width:0;font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cx-sbar{display:none;margin:2px 0 6px;padding:5px 12px;background:var(--c-sf);border-radius:20px;box-shadow:var(--c-sh);align-items:center;gap:8px;flex-shrink:0}.cx-sbar input{flex:1;border:0;outline:0;background:transparent;color:var(--text);font-family:inherit;font-size:14px;padding:6px}
+.cx-date{background:rgba(255,255,255,.75);color:var(--c-mu);border:0;box-shadow:var(--c-sh)}[data-theme=dark] .cx-date{background:rgba(255,255,255,.08)}
+.cx-av{overflow:hidden}.cx-av img{width:100%;height:100%;object-fit:cover;background:#fff}
+.cx-bub{background:var(--c-in);color:var(--c-in-t);border:0;box-shadow:var(--c-sh)}
+.cx-row.cr .cx-bub{background:var(--c-out);color:var(--c-out-t)}
+:root:not([data-theme=dark]) .cx-bub{background:var(--c-in)}:root:not([data-theme=dark]) .cx-row.cr .cx-bub{background:var(--c-out)}
+.cx-who{color:var(--c-user)}.cx-who.t{color:var(--c-admin)}.cx-t,.cx-am{color:var(--c-mu)}
+.cx-wave i{background:var(--c-wave)}.cx-wave i.on{background:var(--ac)}
+.cx-dock{position:relative;background:var(--c-sf);border:0;border-radius:28px;padding:8px 10px 8px 8px;gap:2px;box-shadow:0 -2px 18px rgba(20,40,60,.1);margin-top:6px;flex-shrink:0}
+.cx-tool{font-size:21px;width:42px;height:42px;color:var(--text);opacity:.85;display:flex;align-items:center;justify-content:center}
+.cx-send{display:flex;align-items:center;justify-content:center;font-size:18px;width:48px;height:48px;background:linear-gradient(135deg,#0b7fc0,#0a5a8e);box-shadow:0 4px 12px rgba(10,106,166,.35)}
+.cx-emoji{display:none;position:absolute;left:0;right:0;bottom:calc(100% + 8px);background:var(--c-sf);border:1px solid var(--c-bd);border-radius:20px;box-shadow:0 12px 32px rgba(0,0,0,.2);padding:8px;max-height:210px;overflow-y:auto;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:2px;z-index:5}
+.cx-emoji button{font-size:23px;background:none;border:0;border-radius:8px;padding:4px;cursor:pointer}.cx-emoji button:active{background:rgba(10,106,166,.18)}
+.cx-vid{display:block;max-width:min(280px,66vw);max-height:300px;border-radius:14px;margin:2px 0 4px;background:#000}
+.cx-play{display:flex;align-items:center;justify-content:center;background:var(--ac);font-size:17px;width:46px;height:46px}
+.cx-play i{margin-left:2px}
+@media(max-width:900px){body.inroom main{padding:10px 8px 84px!important}}
+</style>
 </head>
 <body>
 
@@ -484,9 +513,12 @@ async function refreshChatList(){
 }
 async function openRoom(){
   chatRoom=true;clearInterval(chatTimer);chatLast=0;document.body.classList.add('inroom');
-  chatAll=[];
-  $('view').innerHTML=`<div class="card chat-room"><div class="cr-h"><button class="cr-b" onclick="closeRoom()" aria-label="ត្រឡប់">‹</button><div class="cl-av sm">🎓</div><div><b>សិស្ស · ថ្នាក់ទី${esc(ME.grade||'')} · ${schoolYear()}</b><small>សូមប្រើពាក្យសម្តីគួរសម</small></div><button class="cr-b" style="margin-left:auto" onclick="openMembersS()" aria-label="សមាជិក">👥</button></div><div id="msgs"></div>
-  <div id="cban" class="cx-ban"></div>${CHAT_CAN_SEND?`<div id="crow" class="cx-dock"><button class="cx-tool" id="cxImg" onclick="$('cxFile').click()" aria-label="រូបភាព">🖼️</button><input type="file" id="cxFile" accept="image/*" style="display:none" onchange="onChatImg(this)"><div class="cx-recbar" id="cxRec"><span>●</span><span id="cxRecT">0:00</span><button onclick="cancelRecS()">បោះបង់</button></div><textarea id="ci" rows="1" maxlength="500" placeholder="ផ្ញើសារ..." oninput="cxIn(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendChat()}"></textarea><button class="cx-send" id="cxBtn" onclick="cxMain()" aria-label="ផ្ញើ">🎤</button></div>`:''}</div>`;
+  chatAll=[];chatQ='';cxMem={};
+  $('view').innerHTML=`<div class="card chat-room"><div class="cr-h"><button class="cx-ib" onclick="closeRoom()" aria-label="ត្រឡប់"><i class="fa-solid fa-arrow-left"></i></button><div class="cx-logo"><i class="fa-solid fa-graduation-cap"></i></div><div class="cx-title">សិស្ស · ថ្នាក់ទី${esc(ME.grade||'')} · ${schoolYear()}</div><button class="cx-ib" onclick="cxSearch()" aria-label="ស្វែងរក"><i class="fa-solid fa-magnifying-glass"></i></button><button class="cx-ib" onclick="openMembersS()" aria-label="សមាជិក"><i class="fa-solid fa-user-group"></i></button></div>
+  <div class="cx-sbar" id="cxSbar"><i class="fa-solid fa-magnifying-glass" style="color:var(--muted)"></i><input id="cxSin" placeholder="ស្វែងរកសារ..." oninput="chatQ=this.value;renderChat(false)"><button class="cx-ib" style="width:30px;height:30px;font-size:14px" onclick="cxSearch()"><i class="fa-solid fa-xmark"></i></button></div>
+  <div id="msgs"></div>
+  <div id="cban" class="cx-ban"></div>${CHAT_CAN_SEND?`<div id="crow" class="cx-dock"><div class="cx-emoji" id="cxEmoji"></div><div id="cxTools" style="display:flex;align-items:center"><button class="cx-tool" onclick="cxEmo()" aria-label="Emoji"><i class="fa-regular fa-face-smile"></i></button><button class="cx-tool" onclick="$('cxVid').click()" aria-label="វីដេអូ"><i class="fa-solid fa-video"></i></button><button class="cx-tool" onclick="$('cxFile').click()" aria-label="រូបភាព"><i class="fa-regular fa-image"></i></button></div><input type="file" id="cxFile" accept="image/*" style="display:none" onchange="onChatImg(this)"><input type="file" id="cxVid" accept="video/*" style="display:none" onchange="onChatVid(this)"><div class="cx-recbar" id="cxRec"><span>●</span><span id="cxRecT">0:00</span><button onclick="cancelRecS()">បោះបង់</button></div><textarea id="ci" rows="1" maxlength="500" placeholder="ផ្ញើសារ..." oninput="cxIn(this)" onfocus="cxEmoClose()" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendChat()}"></textarea><button class="cx-send" id="cxBtn" onclick="cxMain()" aria-label="ផ្ញើ"><i class="fa-solid fa-microphone" id="cxIco"></i></button></div>`:''}</div>`;
+  loadMembersS();
   await pullChat(true);setSeen(chatLast);chatState();chatTimer=setInterval(()=>{pullChat(false);setSeen(chatLast);chatState()},4000);
 }
 async function chatState(){
@@ -496,31 +528,32 @@ async function chatState(){
     b.textContent=m;b.style.display=m?'block':'none';if(row)row.style.display=m?'none':'flex'}catch(e){}
 }
 function closeRoom(){chatRoom=false;clearInterval(chatTimer);document.body.classList.remove('inroom');vChat()}
-let chatAll=[];
+let chatAll=[],chatQ='',cxMem={},cxMembers=null;
 const PAL=['#0d7a5f','#2563eb','#c2410c','#7c3aed','#0891b2','#be185d','#4d7c0f','#b45309'];
 const hueC=t=>{let h=0;for(const c of String(t))h=(h*31+c.charCodeAt(0))>>>0;return PAL[h%PAL.length]};
 const dLabel=iso=>{const d=new Date(iso);if(isNaN(d))return'';const n=new Date(),y=new Date(n-864e5);const same=(a,b)=>a.toDateString()===b.toDateString();return same(d,n)?'ថ្ងៃនេះ':same(d,y)?'ម្សិលមិញ':d.toLocaleDateString('en-GB')};
 function mediaHtml(m){
   const ty=m.type||'text',u=String(m.content||'');
   if(ty==='image'&&/^(data:image\/|https?:\/\/)/.test(u))return`<img class="cx-img" src="${esc(u)}" alt="" onclick="cxZoom(this.src)">${m.caption?`<span class="cx-cap">${esc(m.caption)}</span>`:''}`;
-  if(ty==='audio'&&/^(data:audio\/|https?:\/\/)/.test(u))return`<div class="cx-audio" data-id="${m.id}"><button class="cx-play" onclick="cxPlay(this)">▶</button><button class="cx-spd" onclick="cxSpeed(this)">${cxRate}x</button><div><div class="cx-wave">${cxBars(m.id).map(h=>`<i style="height:${h}px"></i>`).join('')}</div><div class="cx-am"><span class="cx-dur">--:--</span><span>${new Date(m.created_at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</span></div></div></div>`;
+  if(ty==='audio'&&/^(data:audio\/|https?:\/\/)/.test(u))return`<div class="cx-audio" data-id="${m.id}"><button class="cx-play" onclick="cxPlay(this)"><i class="fa-solid fa-play"></i></button><button class="cx-spd" onclick="cxSpeed(this)">${cxRate}x</button><div><div class="cx-wave">${cxBars(m.id).map(h=>`<i style="height:${h}px"></i>`).join('')}</div><div class="cx-am"><span class="cx-dur">--:--</span><span>${new Date(m.created_at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</span></div></div></div>`;
+  if(ty==='video'&&/^(data:video\/|https?:\/\/)/.test(u))return`<video class="cx-vid" src="${esc(u)}" controls preload="metadata" playsinline></video>`;
   return esc(u);
 }
 let cxRate=1,cxAu=null,cxBtn2=null;
 const cxFmt=t=>!isFinite(t)||t<0?'--:--':Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0');
 function cxBars(id,n=34){let s=0;for(const c of String(id))s=(s*33+c.charCodeAt(0))>>>0;const o=[];for(let i=0;i<n;i++){s=(s*1664525+1013904223)>>>0;o.push(6+(s>>>8)%24)}return o}
 function cxPaint(card,ratio){const b=card.querySelectorAll('.cx-wave i'),n=Math.round(b.length*ratio);b.forEach((x,i)=>x.classList.toggle('on',i<n))}
-function cxStop(){if(cxAu){cxAu.pause();cxAu=null}if(cxBtn2){cxBtn2.textContent='▶';cxBtn2=null}}
+function cxStop(){if(cxAu){cxAu.pause();cxAu=null}if(cxBtn2){cxBtn2.innerHTML='<i class="fa-solid fa-play"></i>';cxBtn2=null}}
 function cxSpeed(btn){const s=[1,1.5,2];cxRate=s[(s.indexOf(cxRate)+1)%s.length];document.querySelectorAll('.cx-spd').forEach(b=>b.textContent=cxRate+'x');if(cxAu)cxAu.playbackRate=cxRate}
 function cxPlay(btn){
   const card=btn.closest('.cx-audio');
-  if(cxAu&&cxBtn2===btn){if(cxAu.paused){cxAu.play();btn.textContent='⏸'}else{cxAu.pause();btn.textContent='▶'}return}
+  if(cxAu&&cxBtn2===btn){if(cxAu.paused){cxAu.play();btn.innerHTML='<i class="fa-solid fa-pause"></i>'}else{cxAu.pause();btn.innerHTML='<i class="fa-solid fa-play"></i>'}return}
   cxStop();const m=chatAll.find(x=>String(x.id)===card.dataset.id);if(!m)return;
   const a=cxAu=new Audio(m.content);cxBtn2=btn;a.playbackRate=cxRate;const dur=card.querySelector('.cx-dur');
   a.ontimeupdate=()=>{const d=isFinite(a.duration)?a.duration:0;cxPaint(card,d?a.currentTime/d:0);dur.textContent=cxFmt(a.currentTime)};
-  a.onended=()=>{btn.textContent='▶';cxPaint(card,0);dur.textContent=cxFmt(a.duration);cxAu=null;cxBtn2=null};
+  a.onended=()=>{btn.innerHTML='<i class="fa-solid fa-play"></i>';cxPaint(card,0);dur.textContent=cxFmt(a.duration);cxAu=null;cxBtn2=null};
   a.onerror=()=>{alert('មិនអាចចាក់សំឡេងនេះបាន');cxStop()};
-  a.play().then(()=>btn.textContent='⏸').catch(()=>alert('មិនអាចចាក់សំឡេងបាន'));
+  a.play().then(()=>btn.innerHTML='<i class="fa-solid fa-pause"></i>').catch(()=>alert('មិនអាចចាក់សំឡេងបាន'));
 }
 function cxHydrate(){document.querySelectorAll('#msgs .cx-audio').forEach(el=>{
   if(el._d)return;el._d=1;const m=chatAll.find(x=>String(x.id)===el.dataset.id);if(!m)return;
@@ -529,15 +562,18 @@ function cxHydrate(){document.querySelectorAll('#msgs .cx-audio').forEach(el=>{
 function cxZoom(src){const d=document.createElement('div');d.className='cx-lb';d.innerHTML=`<img src="${esc(src)}" alt="">`;d.onclick=()=>d.remove();document.body.appendChild(d)}
 function renderChat(stick){
   const box=$('msgs');if(!box)return;
-  if(!chatAll.length){box.innerHTML='<div class="empty">មិនទាន់មានសារទេ។ សូមចាប់ផ្តើមជជែក!</div>';return}
+  const all=chatAll;const q=(chatQ||'').trim().toLowerCase();
+  const chatAll_=q?all.filter(m=>(m.type||'text')==='text'&&String(m.content||'').toLowerCase().includes(q)):all;
+  if(!chatAll_.length){box.innerHTML='<div class="empty">មិនទាន់មានសារទេ។ សូមចាប់ផ្តើមជជែក!</div>';return}
   const isMe=m=>m.sender_role==='student'&&m.sender_code===ME.student_id;
   const same=(a,b)=>a&&b&&String(a.sender_code||a.sender_name)===String(b.sender_code||b.sender_name)&&dLabel(a.created_at)===dLabel(b.created_at)&&Math.abs(new Date(b.created_at)-new Date(a.created_at))<300000;
   let h='',ld='';
-  chatAll.forEach((m,i)=>{
+  chatAll_.forEach((m,i)=>{
     const dl=dLabel(m.created_at);if(dl&&dl!==ld){h+=`<div class="cx-date">${dl}</div>`;ld=dl}
-    const me=isMe(m),t=m.sender_role!=='student',p=chatAll[i-1],n=chatAll[i+1],first=!same(p,m),last=!same(m,n);
+    const me=isMe(m),t=m.sender_role!=='student',p=chatAll_[i-1],n=chatAll_[i+1],first=!same(p,m),last=!same(m,n);
     const nm=String(m.sender_name||'').trim(),ini=nm.charAt(0)||'?';
-    const av=!last?'<div class="cx-av sp"></div>':`<div class="cx-av" style="background:${t?'#c2570c':hueC(m.sender_code||nm)}">${esc(ini)}</div>`;
+    const ph=me?ME.photo_url:cxMem[String(m.sender_code||'').toLowerCase()];
+    const av=!last?'<div class="cx-av sp"></div>':(ph&&/^(data:image\/|https?:\/\/)/.test(ph)?`<div class="cx-av"><img src="${esc(ph)}" alt=""></div>`:`<div class="cx-av" style="background:${t?'#c2570c':hueC(m.sender_code||nm)}">${esc(ini)}</div>`);
     const who=(!me&&first)?`<div class="cx-who${t?' t':''}">${esc(nm)}${t?' · គ្រូ':''}</div>`:'';
     h+=`<div class="cx-row ${me?'cr':'cl'}${first?' first':''}${last?' last':''}">${av}<div class="cx-bub">${who}${mediaHtml(m)}${m.type==='audio'?'':`<span class="cx-t">${new Date(m.created_at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</span>`}</div></div>`;
   });
@@ -554,7 +590,7 @@ async function pullChat(first){
     if(first||add)renderChat(first);
   }catch(e){}
 }
-function cxIn(t){t.style.height='42px';t.style.height=Math.min(t.scrollHeight,120)+'px';const b=$('cxBtn');if(b&&!(rec&&rec.state==='recording'))b.textContent=t.value.trim()?'➤':'🎤'}
+function cxIn(t){t.style.height='42px';t.style.height=Math.min(t.scrollHeight,120)+'px';const b=$('cxBtn');if(b&&!(rec&&rec.state==='recording'))$('cxIco').className='fa-solid '+(t.value.trim()?'fa-paper-plane':'fa-microphone')}
 function cxMain(){const i=$('ci');if(i&&i.value.trim())sendChat();else toggleRecS()}
 function compressImg(file){return new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(file);
   img.onload=()=>{let w=img.width,h=img.height,M=1024;if(w>M){h=Math.round(h*M/w);w=M}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.7))};img.onerror=rej;img.src=u})}
@@ -566,7 +602,7 @@ async function onChatImg(inp){const f=inp.files[0];inp.value='';if(!f)return;
   try{await sendMedia('image',await compressImg(f))}catch(e){alert('❌ មិនអាចផ្ញើរូបភាពបាន')}}
 let rec=null,recChunks=[],recTm=null,recSec=0,recCancelS=false;
 const blobUrl=b=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(b)});
-function recUiS(on){const g=x=>document.getElementById(x);if(!g('cxRec'))return;g('cxRec').style.display=on?'flex':'none';g('ci').style.display=on?'none':'block';g('cxImg').style.display=on?'none':'';const b=g('cxBtn');b.classList.toggle('rec',on);b.textContent=on?'⏹':(g('ci').value.trim()?'➤':'🎤')}
+function recUiS(on){const g=x=>document.getElementById(x);if(!g('cxRec'))return;g('cxRec').style.display=on?'flex':'none';g('ci').style.display=on?'none':'block';g('cxTools').style.display=on?'none':'flex';const b=g('cxBtn');b.classList.toggle('rec',on);g('cxIco').className='fa-solid '+(on?'fa-stop':(g('ci').value.trim()?'fa-paper-plane':'fa-microphone'))}
 async function toggleRecS(){
   if(rec&&rec.state==='recording'){rec.stop();return}
   if(!navigator.mediaDevices||!window.MediaRecorder){alert('ឧបករណ៍មិនគាំទ្រការថតសំឡេង');return}
@@ -584,14 +620,27 @@ async function toggleRecS(){
   }catch(e){alert('សូមអនុញ្ញាតសិទ្ធិប្រើ Microphone')}
 }
 function cancelRecS(){recCancelS=true;if(rec&&rec.state==='recording')rec.stop()}
+function cxSearch(){const b=$('cxSbar'),on=b.style.display==='flex';b.style.display=on?'none':'flex';if(on){$('cxSin').value='';chatQ='';renderChat(false)}else $('cxSin').focus()}
+const CX_EMO="😀😃😄😁😆😅😂🤣🙂😉😊😇🥰😍🤩😘😋😜🤪🤗🤔😏😌😴😷🤯🥳😎🤓😢😭😡👍👎👏🙌🙏🤝👊✌️👌❤️🔥💯✨🎉⭐💡☕✅❌📚✏️🏫".match(/\p{Extended_Pictographic}(\uFE0F)?(\u200D\p{Extended_Pictographic}(\uFE0F)?)*/gu)||[];
+function cxEmo(){const d=$('cxEmoji');if(d.style.display==='grid'){d.style.display='none';return}
+  if(!d.childElementCount){d.innerHTML=CX_EMO.map(e=>`<button type="button">${e}</button>`).join('');d.onclick=ev=>{const b=ev.target.closest('button');if(!b)return;const i=$('ci');i.value+=b.textContent;cxIn(i);i.focus()}}d.style.display='grid'}
+function cxEmoClose(){const d=$('cxEmoji');if(d)d.style.display='none'}
+async function loadMembersS(){
+  try{const d=await rpc('student_chat_members',{p_token:TOKEN});if(!d)return;cxMembers=d;
+    [...d.teachers,...d.students].forEach(u=>{if(u.code&&u.photo)cxMem[String(u.code).toLowerCase()]=u.photo});
+    renderChat(false)}catch(e){}
+}
+async function onChatVid(inp){const f=inp.files[0];inp.value='';if(!f)return;
+  if(f.size>8*1048576){alert('វីដេអូធំពេក (អតិបរមា 8MB)');return}
+  try{await sendMedia('video',await blobUrl(f))}catch(e){alert('❌ មិនអាចផ្ញើវីដេអូបាន')}}
 async function openMembersS(){
   const bg=document.createElement('div');bg.className='cx-lb';bg.style.cursor='default';bg.style.alignItems='flex-end';
   bg.innerHTML='<div style="background:var(--card);color:var(--text);width:min(460px,100%);max-height:80dvh;overflow:auto;border-radius:24px 24px 0 0;padding:16px"><div style="display:flex;align-items:center;font-weight:700;margin-bottom:6px">👥 សមាជិក<button class="cr-b" style="margin-left:auto" id="cxMClose">✕</button></div><div id="cxMList" class="empty">កំពុងផ្ទុក...</div></div>';
   bg.onclick=e=>{if(e.target===bg||e.target.id==='cxMClose')bg.remove()};document.body.appendChild(bg);
   try{const d=await rpc('student_chat_members',{p_token:TOKEN});if(!d)throw 0;
-    const row=(n,sub,col)=>`<div class="cx-mem"><div class="cx-av" style="background:${col}">${esc((n||'?').charAt(0))}</div><div><b>${esc(n||'')}</b>${sub?`<small>${sub}</small>`:''}</div></div>`;
+    const row=(n,sub,col,ph)=>`<div class="cx-mem"><div class="cx-av" style="background:${col}">${ph&&/^(data:image\/|https?:\/\/)/.test(ph)?`<img src="${esc(ph)}" alt="">`:esc((n||'?').charAt(0))}</div><div><b>${esc(n||'')}</b>${sub?`<small>${sub}</small>`:''}</div></div>`;
     $('cxMList').className='';
-    $('cxMList').innerHTML=`<div class="cx-sec">គ្រូ (${d.teachers.length})</div>`+d.teachers.map(t=>row(t.name,'គ្រូបង្រៀន','#c2570c')).join('')+`<div class="cx-sec">សិស្ស (${d.students.length})</div>`+d.students.map(t=>row(t.name,'',hueC(t.name))).join('')}
+    $('cxMList').innerHTML=`<div class="cx-sec">គ្រូ (${d.teachers.length})</div>`+d.teachers.map(t=>row(t.name,'គ្រូបង្រៀន','#c2570c',t.photo)).join('')+`<div class="cx-sec">សិស្ស (${d.students.length})</div>`+d.students.map(t=>row(t.name,'',hueC(t.name),t.photo)).join('')}
   catch(e){const l=$('cxMList');if(l)l.textContent='មិនអាចទាញបញ្ជីសមាជិកបានទេ (សូមដំណើរការ chat_controls.sql)'}
 }
 async function sendChat(){
