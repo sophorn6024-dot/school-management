@@ -339,13 +339,12 @@ function go(k){document.body.classList.remove('inroom');
 const load=m=>{$('view').innerHTML=`<div class="empty">⏳ ${m||'កំពុងទាញយក...'}</div>`};
 const R2=x=>Number(Number(x).toFixed(2));
 const combine2=(a,b)=>(a>0&&b>0)?(a+b)/2:(a>0?a:(b>0?b:0));
-const rowOf=(t,p)=>SCORES.find(s=>s.score_type===t&&s.period===p);
-let RES_OPEN=true;
-async function getScores(){
-  try{const st=await rpc('student_results_status',{p_token:TOKEN});RES_OPEN=(st===null||st===undefined)?true:!!st}catch(e){RES_OPEN=true}
-  if(!RES_OPEN){SCORES=[];return SCORES}
-  SCORES=await tk('student_scores');return SCORES}
-const noRes=()=>`<div class="card" style="text-align:center;padding:34px 18px"><div style="font-size:46px">🔒</div><b style="font-size:17px">លទ្ធផលមិនទាន់ត្រូវបានផ្សាយ</b><p style="color:var(--muted);margin:8px 0 0">សូមរង់ចាំគ្រូផ្សាយលទ្ធផលរបស់ថ្នាក់អ្នក។</p></div>`;
+const rowOf=(t,p)=>SCORES.find(s=>s.score_type===t&&s.period===p&&!s.hidden);
+const hiddenOf=(t,p)=>SCORES.some(s=>s.score_type===t&&s.period===p&&s.hidden);
+async function getScores(){SCORES=await tk('student_scores')||[];return SCORES}
+const lockedBox=(what)=>`<div style="text-align:center;padding:30px 14px"><div style="font-size:42px">🔒</div><b style="font-size:16px">${what?esc(what)+' ':''}មិនទាន់ត្រូវបានផ្សាយ</b><p style="color:var(--muted);margin:8px 0 0">សូមរង់ចាំគ្រូផ្សាយលទ្ធផលនេះ។</p></div>`;
+const noRes=()=>`<div class="card">${lockedBox('លទ្ធផល')}</div>`;
+const semHidden=(months,exam)=>hiddenOf('semester',exam)||months.some(m=>hiddenOf('monthly',m));
 async function ensureScores(){if(!SCORES.length||view==='dash'){await getScores()}}
 function semCalc(months,exam){
   let sum=0,c=0;months.forEach(m=>{const r=rowOf('monthly',m);if(r&&+r.average>0){sum+=+r.average;c++}});
@@ -358,7 +357,7 @@ function gradeOf(a){a=+a;return a>=9?'A':a>=8?'B':a>=7?'C':a>=6?'D':a>=5?'E':'F'
 async function vDash(){
   load();
   try{await ensureScores()}catch(e){$('view').innerHTML=`<div class="empty">${esc(e.message)}</div>`;return}
-  if(!RES_OPEN){$('view').innerHTML=noRes();return}
+  if(!SCORES.some(x=>!x.hidden)&&SCORES.some(x=>x.hidden)){$('view').innerHTML=noRes();return}
   const done=ORDER.map((m,i)=>({m,i,r:rowOf('monthly',m)})).filter(x=>x.r&&+x.r.average>0);
   const cur=done.length?done[done.length-1]:null,prev=done.length>1?done[done.length-2]:null;
   const r=cur&&cur.r;
@@ -395,7 +394,6 @@ let sMonth=MONTHS[new Date().getMonth()];
 async function vScore(){
   load();
   try{await getScores()}catch(e){$('view').innerHTML=`<div class="empty">${esc(e.message)}</div>`;return}
-  if(!RES_OPEN){$('view').innerHTML=noRes();return}
   await loadSubj();
   drawScore();
 }
@@ -450,16 +448,16 @@ function drawScore(){
   let body='',ctl='';
   if(sTab==='month'){
     ctl=`<div class="row"><b>ជ្រើសរើសខែ</b><select class="in" onchange="sMonth=this.value;drawScore()">${MONTHS.map(m=>`<option ${m===sMonth?'selected':''}>${m}</option>`).join('')}</select></div>`;
-    body=`<h3 style="margin:14px 0 10px">លទ្ធផលសង្ខេបប្រចាំខែ ${esc(sMonth)}</h3>`+scoreRowHtml(rowOf('monthly',sMonth),'monthly');
+    body=hiddenOf('monthly',sMonth)?lockedBox('លទ្ធផលខែ'+sMonth):`<h3 style="margin:14px 0 10px">លទ្ធផលសង្ខេបប្រចាំខែ ${esc(sMonth)}</h3>`+scoreRowHtml(rowOf('monthly',sMonth),'monthly');
   }else if(sTab==='sem'){
     ctl=`<div class="sem-pick"><span class="sem-ic">📖</span><div><small>ជ្រើសរើសពិន្ទុឆមាស</small><b>ពិន្ទុឆមាស ${sSem==='ឆមាសទី២'?'2':'1'}</b></div><select class="in" onchange="sSem=this.value;drawScore()"><option value="ឆមាសទី១" ${sSem==='ឆមាសទី១'?'selected':''}>ពិន្ទុឆមាស 1</option><option value="ឆមាសទី២" ${sSem==='ឆមាសទី២'?'selected':''}>ពិន្ទុឆមាស 2</option></select></div>`;
-    body=semHtml(rowOf('semester',sSem),sSem);
+    body=hiddenOf('semester',sSem)?lockedBox('លទ្ធផល'+sSem):semHtml(rowOf('semester',sSem),sSem);
   }else if(sTab==='semavg'){
-    const a=semCalc(SEM1,'ឆមាសទី១'),b=semCalc(SEM2,'ឆមាសទី២');
-    body=`<h3 style="margin:14px 0 10px">ប្រចាំឆមាសទី១</h3>`+avgHtml('មធ្យមភាគ',a.sem)+`<h3 style="margin:14px 0 10px">ប្រចាំឆមាសទី២</h3>`+avgHtml('មធ្យមភាគ',b.sem);
+    const a=semCalc(SEM1,'ឆមាសទី១'),b=semCalc(SEM2,'ឆមាសទី២'),h1=semHidden(SEM1,'ឆមាសទី១'),h2=semHidden(SEM2,'ឆមាសទី២');
+    body=`<h3 style="margin:14px 0 10px">ប្រចាំឆមាសទី១</h3>`+(h1?lockedBox('ឆមាសទី១'):avgHtml('មធ្យមភាគ',a.sem))+`<h3 style="margin:14px 0 10px">ប្រចាំឆមាសទី២</h3>`+(h2?lockedBox('ឆមាសទី២'):avgHtml('មធ្យមភាគ',b.sem));
   }else{
     const a=semCalc(SEM1,'ឆមាសទី១').sem,b=semCalc(SEM2,'ឆមាសទី២').sem;
-    body=`<h3 style="margin:14px 0 10px">ប្រចាំឆ្នាំ</h3>`+avgHtml('មធ្យមភាគប្រចាំឆ្នាំ',R2(combine2(a,b)))+`<p style="color:var(--muted);font-size:13px">គណនា = (ប្រចាំឆមាសទី១ + ប្រចាំឆមាសទី២) ÷ ២</p>`;
+    body=(semHidden(SEM1,'ឆមាសទី១')||semHidden(SEM2,'ឆមាសទី២'))?lockedBox('លទ្ធផលប្រចាំឆ្នាំ'):`<h3 style="margin:14px 0 10px">ប្រចាំឆ្នាំ</h3>`+avgHtml('មធ្យមភាគប្រចាំឆ្នាំ',R2(combine2(a,b)))+`<p style="color:var(--muted);font-size:13px">គណនា = (ប្រចាំឆមាសទី១ + ប្រចាំឆមាសទី២) ÷ ២</p>`;
   }
   $('view').innerHTML=`<div class="tabs">${T.map(([k,t])=>`<button class="${k===sTab?'on':''}" onclick="sTab='${k}';drawScore()">${t}</button>`).join('')}</div><div class="card">${ctl}${body}</div>`;
 }
