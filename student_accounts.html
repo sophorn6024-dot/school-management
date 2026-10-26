@@ -28,6 +28,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:8px 10px;border-bottom:1
 th{background:var(--in);color:var(--muted)}.sc{overflow:auto;max-height:60vh}
 .pill{border-radius:999px;padding:2px 10px;font-size:12.5px;font-weight:700}.ok{background:var(--oks);color:var(--ok)}.no{background:var(--bads);color:var(--bad)}.wn{background:var(--warns);color:var(--warn)}.gr{background:var(--in);color:var(--muted)}
 .note{background:var(--warns);color:var(--warn);border-radius:10px;padding:9px 12px;font-size:13px;margin-bottom:10px}
+.pubsw{width:46px;height:26px;border-radius:20px;border:0;background:var(--line);position:relative;cursor:pointer;flex-shrink:0;transition:.2s}.pubsw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}.pubsw.on{background:var(--ok)}.pubsw.on::after{left:23px}
 .msg{padding:8px 0;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:flex-start}.msg .t{flex:1;word-break:break-word}.msg small{color:var(--muted)}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:50;padding:14px}
 .modal .box{background:var(--card);border-radius:16px;padding:18px;width:100%;max-width:360px}
@@ -56,8 +57,9 @@ th{background:var(--in);color:var(--muted)}.sc{overflow:auto;max-height:60vh}
   <div id="denied" class="card hide">⛔ សូមចូលប្រព័ន្ធជាគ្រូ ឬ Admin ជាមុនសិន។</div>
 
   <div id="main" class="hide">
-    <div class="tabs"><button id="t1" class="on" onclick="tab(1)">👤 គណនីសិស្ស</button><button id="t2" onclick="tab(2)">📚 ឯកសារ</button><button id="t3" onclick="tab(3)">💬 សារថ្នាក់</button></div>
+    <div class="tabs"><button id="t1" class="on" onclick="tab(1)">👤 គណនីសិស្ស</button><button id="t2" onclick="tab(2)">📚 ឯកសារ</button></div>
     <div class="card row"><b>ថ្នាក់៖</b><select id="cls" class="in" onchange="onCls()"></select><b id="clsTxt" class="hide"></b><span id="info" style="color:var(--muted)"></span></div>
+    <div class="card row" id="pubCard"><b>📢 ផ្សាយលទ្ធផលដល់សិស្ស៖</b><button class="pubsw" id="pubSw" onclick="togglePub()" aria-label="ផ្សាយលទ្ធផល"></button><b id="pubTxt"></b><span style="color:var(--muted);font-size:13px" id="pubHint"></span></div>
 
     <!-- គណនី -->
     <div id="p1">
@@ -94,14 +96,6 @@ th{background:var(--in);color:var(--muted)}.sc{overflow:auto;max-height:60vh}
       <div class="card"><div class="sc"><table id="dtbl"></table></div></div>
     </div>
 
-    <!-- សារ -->
-    <div id="p3" class="hide">
-      <div class="card">
-        <div class="row" style="margin-bottom:8px"><button class="btn" onclick="loadChat()">🔄 ផ្ទុកសារឡើងវិញ</button></div>
-        <div class="sc" id="chat" style="max-height:48vh"></div>
-        <div class="row" style="margin-top:10px;flex-wrap:nowrap"><input id="ct" class="in" style="flex:1;min-width:0" maxlength="500" placeholder="ផ្ញើសារជាគ្រូទៅថ្នាក់..." onkeydown="if(event.key==='Enter')sendChat()"><button class="btn pri" onclick="sendChat()">ផ្ញើ</button></div>
-      </div>
-    </div>
   </div>
 </div>
 
@@ -162,9 +156,24 @@ async function init(){
   }
   onCls();
 }
-let cur=1;
-function tab(n){cur=n;[1,2,3].forEach(i=>{$('t'+i).classList.toggle('on',i===n);$('p'+i).classList.toggle('hide',i!==n)});onCls()}
-function onCls(){if(cur===1)loadList();else if(cur===2)loadDocs();else loadChat()}
+let cur=1,PUB=false;
+const clsKey=c=>String(c||'').replace(/^ថ្នាក់ទី\s*/,'').trim();
+async function loadPub(){
+  const c=$('cls').value;if(!c||!SB)return;
+  try{const {data,error}=await SB.from('class_results_publish').select('published').eq('class_key',clsKey(c)).limit(1);
+    if(error)throw error;PUB=!!(data&&data[0]&&data[0].published);drawPub()}
+  catch(e){$('pubHint').textContent='(សូមដំណើរការ results_publish.sql ក្នុង Supabase)'}
+}
+function drawPub(){$('pubSw').classList.toggle('on',PUB);const t=$('pubTxt');t.textContent=PUB?'បានផ្សាយ':'បិទផ្សាយ';t.style.color=PUB?'var(--ok)':'var(--bad)';
+  $('pubHint').textContent=PUB?'សិស្សក្នុងថ្នាក់នេះឃើញពិន្ទុ និងចំណាត់ថ្នាក់':'សិស្សមិនទាន់ឃើញពិន្ទុទេ រហូតដល់ផ្សាយ'}
+async function togglePub(){
+  const c=$('cls').value;if(!c)return;const v=!PUB;
+  if(v&&!confirm('ផ្សាយលទ្ធផលដល់សិស្សថ្នាក់ '+c+'? សិស្សនឹងឃើញពិន្ទុ និងចំណាត់ថ្នាក់របស់ខ្លួន។'))return;
+  try{await staff('staff_set_results_published',{p_class:clsKey(c),p_published:v});PUB=v;drawPub()}
+  catch(e){alert('❌ '+(e.message||e))}
+}
+function tab(n){cur=n;[1,2].forEach(i=>{$('t'+i).classList.toggle('on',i===n);$('p'+i).classList.toggle('hide',i!==n)});onCls()}
+function onCls(){loadPub();if(cur===1)loadList();else loadDocs()}
 
 /* ── គណនី ── */
 async function loadList(){
@@ -280,18 +289,6 @@ async function addDoc(){
   $('dadd').disabled=false;
 }
 async function delDoc(id){if(!confirm('លុបឯកសារនេះ?'))return;try{await staff('staff_delete_document',{p_id:id});loadDocs()}catch(e){alert('❌ '+(e.message||e))}}
-
-/* ── សារថ្នាក់ ── */
-async function loadChat(){
-  const c=$('cls').value;if(!c)return;
-  $('chat').innerHTML='⏳';
-  try{const m=await staff('staff_chat_list',{p_class:c});
-    $('chat').innerHTML=m.length?m.map(x=>`<div class="msg"><div class="t"><b>${x.sender_role==='student'?'':'👩‍🏫 '}${esc(x.sender_name||'')}</b> <small>${new Date(x.created_at).toLocaleString('en-GB')}</small><br>${esc(x.content)}</div><button class="btn bad" onclick="delMsg(${x.id})">លុប</button></div>`).join(''):'<div style="color:var(--muted)">មិនទាន់មានសារ។</div>';
-    $('chat').scrollTop=$('chat').scrollHeight;
-  }catch(e){$('chat').innerHTML=`<span style="color:var(--bad)">${esc(e.message)}</span>`}
-}
-async function sendChat(){const v=$('ct').value.trim();if(!v)return;try{await staff('staff_chat_send',{p_class:$('cls').value,p_content:v});$('ct').value='';loadChat()}catch(e){alert('❌ '+(e.message||e))}}
-async function delMsg(id){try{await staff('staff_chat_delete',{p_class:$('cls').value,p_id:id});loadChat()}catch(e){alert('❌ '+(e.message||e))}}
 
 window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme)){const t=e.data.theme||e.data;document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light')}});
 init();
