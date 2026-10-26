@@ -14,6 +14,7 @@
 
   <!-- ⚡ Supabase JS Client (v2) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
     /* =========================================================
@@ -449,6 +450,10 @@
       margin-top: 2mm;
       margin-bottom: 1mm;
     }
+    .card-qr { display: none; position: absolute; left: 4mm; bottom: 3mm; width: 14.5mm; height: 14.5mm; z-index: 3; background: #fff; border: .3mm solid #94a3b8; border-radius: 1mm; padding: .6mm; box-sizing: border-box; }
+    .card-qr img { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
+    .qr-on .card-qr { display: block; }
+    .qr-on .card-bottom-signature { justify-content: flex-end; padding-left: 0; padding-right: 2mm; }
     .signature-box { display: flex; flex-direction: column; align-items: center; position: relative; width: 44mm; text-align: center; }
     .sig-date { font-family: inherit; font-weight: 700; font-size: 6.4px; color: #000 !important; line-height: 1.2; white-space: nowrap; text-align: center; }
 
@@ -526,6 +531,16 @@ try{const pr=window.parent&&window.parent!==window&&window.parent.document.docum
 .panel-pill-box .bb-dd-btn:hover{background:transparent}
 @media screen and (min-width:721px) and (max-width:1100px){.tb-filters{flex:1 1 auto}.tb-actions{flex:0 0 auto;margin-left:auto}}
 @media screen and (max-width:720px){.no-print-toolbar{margin:6px;padding:6px;border-radius:16px;top:0}.form-control,.btn,.bb-dd-btn,.dt-btn,.panel-pill-box{height:34px}}
+.control-panel,.no-print-bar,.no-print-toolbar{gap:6px 8px!important}
+@media screen and (min-width:721px){
+ .control-panel{flex-direction:row!important;flex-wrap:wrap!important;align-items:center}
+ .control-panel .control-row:not([style]),.control-panel .control-row:not([style]) .cp-group,.no-print-bar .tb-group,.no-print-toolbar .tb-group{display:contents!important}
+ .control-panel .control-row[style]{padding:0!important;border:0!important;flex-wrap:nowrap}
+ .no-print-bar .tb-actions,.no-print-toolbar .tb-actions{margin-left:0}
+ .panel-pill-box,.layout-switcher,.period-type-switcher{flex-wrap:nowrap}
+}
+@media screen and (max-width:720px){.tb-filters{grid-template-columns:repeat(auto-fit,minmax(125px,1fr))!important;gap:5px!important}.tb-actions{gap:5px!important}.control-panel{gap:5px!important}}
+.toolbar-label{font-size:11.5px}
 </style>
 </head>
 <body>
@@ -575,6 +590,9 @@ try{const pr=window.parent&&window.parent!==window&&window.parent.document.docum
   </div>
 
   <div class="tb-group tb-actions">
+    <button class="btn btn-ghost" id="qrBtn" onclick="toggleQr()" title="បង្ហាញ/លាក់ QR ចូលប្រព័ន្ធសិស្ស នៅជ្រុងខាងក្រោមឆ្វេងនៃកាត">
+      <i class="fa-solid fa-qrcode"></i> <span>QR</span>
+    </button>
     <button class="btn btn-primary" onclick="initPage()" title="ទាញយកទិន្នន័យឡើងវិញ">
       <i class="fa-solid fa-rotate"></i> <span>ផ្ទុកឡើងវិញ</span>
     </button>
@@ -2203,6 +2221,79 @@ async function onClassChange() {
 }
 
 /* 5. RENDER STUDENT CARDS */
+/* QR ចូលប្រព័ន្ធសិស្ស នៅជ្រុងខាងក្រោមឆ្វេង (បង្ហាញ/លាក់) */
+const QR_CACHE = {};
+let QR_TOK = {};          // { ថ្នាក់: { student_id: qr_token } }
+let QR_PW = null;         // ពាក្យសម្ងាត់គ្រូ (ក្នុងមេម៉ូរីប៉ុណ្ណោះ)
+let QR_SHOW = false;
+function qrDataUrl(text) {
+  if (!text || !window.QRCode) return '';
+  if (QR_CACHE[text]) return QR_CACHE[text];
+  try {
+    const box = document.createElement('div');
+    box.style.cssText = 'position:fixed;left:-9999px;top:0';
+    document.body.appendChild(box);
+    new QRCode(box, { text: text, width: 240, height: 240, correctLevel: QRCode.CorrectLevel.M });
+    const cv = box.querySelector('canvas'), im = box.querySelector('img');
+    let src = '';
+    try { src = cv ? cv.toDataURL('image/png') : (im ? im.src : ''); } catch (e) {}
+    box.remove();
+    return (QR_CACHE[text] = src);
+  } catch (e) { return ''; }
+}
+const qrLoginUrl = t => t ? new URL('student_portal.html?qr=' + t, location.href).href : '';
+function applyQrState() {
+  const pa = document.getElementById('printArea');
+  if (pa) pa.classList.toggle('qr-on', QR_SHOW);
+  const b = document.getElementById('qrBtn');
+  if (b) { b.classList.toggle('open', QR_SHOW); b.setAttribute('aria-pressed', QR_SHOW ? 'true' : 'false'); }
+}
+function qrAsk(msg) {
+  return new Promise(res => {
+    const bg = document.createElement('div');
+    bg.style.cssText = 'position:fixed;inset:0;z-index:100000;background:rgba(10,18,32,.55);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px';
+    bg.innerHTML = `<div style="width:min(390px,100%);background:#fff;color:#0f172a;border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.4);padding:24px 20px 18px;text-align:center;font-family:'Battambang',sans-serif">
+      <div style="width:58px;height:58px;border-radius:50%;background:#dbeafe;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:28px">🔐</div>
+      <b style="font-size:16px">បញ្ជាក់ដោយពាក្យសម្ងាត់របស់អ្នក</b>
+      <p style="margin:6px 0 12px;color:#64748b;font-size:13.5px;line-height:1.7">ដើម្បីបង្កើត QR ចូលប្រព័ន្ធសិស្ស សូមបញ្ចូលពាក្យសម្ងាត់គ្រូ ${msg ? '<br><span style="color:#e11d48">' + msg + '</span>' : ''}</p>
+      <input type="password" id="qrPw" placeholder="ពាក្យសម្ងាត់" autocomplete="current-password" style="width:100%;box-sizing:border-box;border:1.5px solid #cbd5e1;border-radius:12px;padding:11px 13px;font:inherit;outline:none;text-align:center">
+      <div style="display:flex;gap:10px;margin-top:16px"><button data-v="0" style="flex:1;border:1px solid #e2e8f0;background:#f8fafc;border-radius:13px;padding:11px;font:inherit;font-weight:700;cursor:pointer">បោះបង់</button><button data-v="1" style="flex:1;border:0;background:#0284c7;color:#fff;border-radius:13px;padding:11px;font:inherit;font-weight:700;cursor:pointer">បញ្ជាក់</button></div></div>`;
+    const inp = bg.querySelector('#qrPw');
+    const done = v => { bg.remove(); res(v ? inp.value : null); };
+    bg.addEventListener('click', e => { const b = e.target.closest('button'); if (b) done(b.dataset.v === '1'); });
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') done(true); if (e.key === 'Escape') done(false); });
+    document.body.appendChild(bg); inp.focus();
+  });
+}
+async function qrLoadTokens(cls) {
+  let msg = '';
+  for (let tries = 0; tries < 3; tries++) {
+    if (!QR_PW) { QR_PW = await qrAsk(msg); if (!QR_PW) return false; }
+    const { data, error } = await sb.rpc('staff_list_student_accounts', { p_u: CURRENT_USER && (CURRENT_USER.username || CURRENT_USER.teacher_id), p_p: QR_PW, p_class: cls });
+    if (error) { alert('❌ ' + (error.message || error)); QR_PW = null; return false; }
+    if (data === null) { QR_PW = null; msg = 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ ឬគ្មានសិទ្ធិ'; continue; }
+    const map = {};
+    (data || []).forEach(a => { if (a.has_account && a.is_active && a.qr_token) map[String(a.student_id)] = a.qr_token; });
+    QR_TOK[cls] = map;
+    return true;
+  }
+  return false;
+}
+async function toggleQr() {
+  if (QR_SHOW) { QR_SHOW = false; applyQrState(); return; }
+  const cls = (allStudents[0] && allStudents[0].grade) || cleanGrade(document.getElementById('classSelect').value || USER_CLASS);
+  if (!cls) return;
+  if (!QR_TOK[cls]) { if (!(await qrLoadTokens(cls))) return; }
+  QR_SHOW = true;
+  renderCards();
+  const miss = allStudents.filter(s => !QR_TOK[cls][String(s.id)]).length;
+  if (miss) toastQr('មានសិស្ស ' + miss + ' នាក់ មិនទាន់មានគណនី (គ្មាន QR) — សូមបង្កើតក្នុង «គណនីសិស្ស និងបណ្ណាល័យ»');
+}
+function toastQr(t) {
+  const d = document.createElement('div');
+  d.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:11px 18px;border-radius:14px;font:14px Battambang,sans-serif;z-index:100001;max-width:92vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.35)';
+  d.textContent = t; document.body.appendChild(d); setTimeout(() => d.remove(), 6000);
+}
 function renderCards() {
   const container = document.getElementById('printArea');
   if (!allStudents || allStudents.length === 0) {
@@ -2246,6 +2337,10 @@ function renderCards() {
         ? `<img src="${customLogoUrl}" class="card-watermark" style="opacity:${currentOpacity};" alt="Watermark" onerror="this.style.display='none'">`
         : '';
 
+      const qrTok = (QR_TOK[s.grade] || {})[String(s.id)];
+      const qrSrc = (QR_SHOW && qrTok) ? qrDataUrl(qrLoginUrl(qrTok)) : '';
+      const qrHtml = qrSrc ? `<div class="card-qr"><img src="${qrSrc}" alt="QR"></div>` : '';
+
       html += `
         <div class="student-card">
           <div class="card-top-header">
@@ -2269,6 +2364,7 @@ function renderCards() {
 
           <div class="card-main-body">
             ${watermarkHtml}
+            ${qrHtml}
 
             <!-- ផ្នែកចំណងជើង និងឈ្មោះសិស្ស -->
             <div class="card-titles">
@@ -2348,6 +2444,7 @@ function renderCards() {
   }
 
   container.innerHTML = html;
+  applyQrState();
   updatePaperUI();
 }
 </script>
