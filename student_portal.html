@@ -40,7 +40,7 @@ aside{background:linear-gradient(180deg,var(--side),#0a1530);color:var(--sidet);
 .who b{display:block;line-height:1.3;color:#fff}.who small{opacity:.75}
 nav button{display:flex;align-items:center;gap:12px;width:100%;background:none;border:0;color:inherit;padding:12px;border-radius:12px;cursor:pointer;text-align:left;margin-bottom:2px}
 nav button:hover{background:rgba(255,255,255,.08)}
-nav button.on{background:linear-gradient(90deg,#1d4ed8,#0369a1);color:#fff;font-weight:700}
+nav button.on{background:linear-gradient(90deg,var(--ac),color-mix(in srgb,var(--ac) 70%,#000));color:#fff;font-weight:700}
 nav svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .sp{flex:1}
 .side-foot{display:flex;gap:8px}
@@ -49,7 +49,7 @@ main{padding:22px;min-width:0}
 .top{display:none}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px}
 .hero{display:flex;align-items:center;gap:16px}
-.hero .ic{width:68px;height:68px;border-radius:20px;background:linear-gradient(135deg,#0ea5e9,#2563eb);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0}
+.hero .ic{width:68px;height:68px;border-radius:20px;background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 70%,#fff),var(--ac));display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0}
 .hero small{color:var(--muted)}.hero h2{margin:0;font-size:26px;color:var(--ac)}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
 .st{border-radius:18px;padding:16px;border:1px solid var(--line);background:var(--card);min-height:150px}
@@ -139,7 +139,7 @@ th{background:var(--in);color:var(--muted);font-weight:700}
   nav button{flex:1;min-width:0;flex-direction:column;justify-content:center;gap:3px;padding:7px 2px;margin:0;font-size:10.5px;text-align:center;border-radius:12px}
   nav button span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   nav svg{width:22px;height:22px}
-  nav button.on{background:linear-gradient(135deg,#1d4ed8,#0369a1)}
+  nav button.on{background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 70%,#000))}
   main{padding-bottom:92px!important}
   .top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
   .top button{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
@@ -198,9 +198,18 @@ const CHAT_CAN_SEND=true; // កំណត់ false ដើម្បីឱ្យ�
 let TOKEN=null,ME=null,SCORES=[],view='dash',sTab='month',chatLast=0,chatTimer=null;
 
 /* ── ពណ៌ ── */
+function applyPrimary(c){const r=document.documentElement.style;
+  if(!c){['--ac','--acs','--side'].forEach(k=>r.removeProperty(k));return}
+  r.setProperty('--ac',c);r.setProperty('--acs','color-mix(in srgb,'+c+' 16%,var(--card))');r.setProperty('--side','color-mix(in srgb,'+c+' 55%,#0b1220)')}
 function applyTheme(v){document.documentElement.setAttribute('data-theme',v==='light'?'light':'dark')}
-try{applyTheme(localStorage.getItem('krou_student_theme')||'dark')}catch(e){}
-function toggleTheme(){const n=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';applyTheme(n);try{localStorage.setItem('krou_student_theme',n)}catch(e){}}
+function syncFromIndex(){try{
+  let t=localStorage.getItem('krou_theme_manual');
+  if(localStorage.getItem('krou_theme_auto')==='1'){const h=new Date().getHours();t=(h>=6&&h<18)?'light':'dark'}
+  applyTheme(t||localStorage.getItem('krou_student_theme')||'dark');
+  applyPrimary(localStorage.getItem('krou_theme_primary'))}catch(e){applyTheme('dark')}}
+syncFromIndex();
+window.addEventListener('storage',e=>{if(['krou_theme_manual','krou_theme_auto','krou_theme_primary'].includes(e.key))syncFromIndex()});
+function toggleTheme(){const n=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';applyTheme(n);try{localStorage.setItem('krou_theme_manual',n);localStorage.setItem('krou_student_theme',n);localStorage.removeItem('krou_theme_auto')}catch(e){}}
 
 /* ── RPC ── */
 async function rpc(n,a){
