@@ -122,8 +122,10 @@ th{background:var(--in);color:var(--muted);font-weight:700}
 .doc{display:flex;align-items:center;gap:12px;padding:12px;border:1px solid var(--line);border-radius:14px;margin-bottom:8px;background:var(--in)}
 .doc .di{font-size:26px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fff;border-radius:10px;padding:2px}.doc .di img{border-radius:6px;object-fit:contain}
 .doc a{margin-left:auto;color:var(--ac);font-weight:700;text-decoration:none;white-space:nowrap}
-.chat-room{display:flex;flex-direction:column;height:calc(100vh - 56px);height:calc(100dvh - 56px);min-height:360px;padding:12px;background:transparent;border:0;margin-bottom:0}
-@media(max-width:900px){.chat-room{height:calc(100dvh - 150px)}}
+body.inroom{overflow:hidden}
+body.inroom main{height:100vh;height:100dvh;overflow:hidden;box-sizing:border-box;display:flex;flex-direction:column;padding-bottom:14px!important}
+body.inroom #view{flex:1;min-height:0;display:flex;flex-direction:column}
+.chat-room{display:flex;flex-direction:column;flex:1;min-height:0;padding:0;background:transparent;border:0;margin-bottom:0}
 .chat-room .cr-h{background:var(--card);border:1px solid var(--line);border-radius:26px;padding:8px 14px 8px 10px;margin-bottom:8px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
 .chat-room .cr-h b{font-size:15px;line-height:1.35}
 #msgs{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:6px 4px;gap:0;overscroll-behavior:contain}
@@ -141,6 +143,15 @@ th{background:var(--in);color:var(--muted);font-weight:700}
 .cx-dock{background:var(--card);border:1px solid var(--line);border-radius:28px;padding:8px 8px 8px 14px;margin-top:8px;display:flex;align-items:flex-end;gap:6px;box-shadow:0 -2px 14px rgba(0,0,0,.08)}
 .cx-dock textarea{flex:1;min-width:0;resize:none;border:0;outline:0;background:transparent;color:var(--text);font-family:inherit;font-size:15px;line-height:1.5;padding:9px 4px;max-height:120px;height:42px}
 .cx-send{width:44px;height:44px;border-radius:50%;border:0;background:linear-gradient(135deg,var(--ac),color-mix(in srgb,var(--ac) 70%,#000));color:#fff;font-size:18px;cursor:pointer;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.25)}.cx-send:active{transform:scale(.92)}
+.cx-tool{width:42px;height:42px;border-radius:50%;border:0;background:none;color:var(--text);font-size:20px;cursor:pointer;flex-shrink:0}.cx-tool:hover{background:var(--in)}
+.cx-send.rec{background:#ef4444;animation:cxp 1s infinite}@keyframes cxp{50%{opacity:.6}}
+.cx-recbar{flex:1;display:none;align-items:center;gap:10px;color:#ef4444;font-weight:700;padding:0 6px}.cx-recbar button{background:none;border:0;color:var(--muted);cursor:pointer;font-family:inherit;margin-left:auto}
+.cx-img{display:block;max-width:min(260px,64vw);max-height:300px;width:100%;object-fit:cover;border-radius:14px;cursor:zoom-in;margin:2px 0 4px}
+.cx-aud{display:block;width:min(260px,64vw);height:40px;margin:2px 0 4px}
+.cx-cap{display:block}
+.cx-lb{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;cursor:zoom-out}.cx-lb img{max-width:96vw;max-height:94vh;border-radius:8px}
+.cx-mem{display:flex;align-items:center;gap:10px;padding:8px 6px;border-bottom:1px solid var(--line)}.cx-mem:last-child{border:0}.cx-mem b{font-weight:600}.cx-mem small{color:var(--muted);display:block;font-size:12px}
+.cx-sec{font-size:12px;font-weight:700;color:var(--muted);padding:10px 6px 2px}
 .cx-ban{margin-top:8px;padding:12px;border-radius:18px;background:rgba(239,68,68,.12);color:#ef4444;font-size:13.5px;text-align:center;display:none}
 .info{display:grid;grid-template-columns:150px 1fr;gap:8px 12px}.info span{color:var(--muted)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -282,7 +293,7 @@ function start(){
   loadState();
   go(ME.must_change?'me':(view||'dash'));
 }
-function go(k){
+function go(k){document.body.classList.remove('inroom');
   if(ME&&ME.must_change&&k!=='me'){return}
   view=k;saveState();clearInterval(chatTimer);chatTimer=null;
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));
@@ -464,14 +475,14 @@ async function refreshChatList(){
   let list=[];try{list=await tk('student_chat_list',{p_after:0})||[]}catch(e){}
   chatMsgs=list;const box=$('clList');if(!box)return;
   const last=list[list.length-1],seen=getSeen(),unread=list.filter(m=>m.id>seen&&!(m.sender_role==='student'&&m.sender_code===ME.student_id)).length;
-  const prev=last?`${last.sender_role!=='student'?'គ្រូ':esc((last.sender_name||'').split(' ').pop())}៖ ${esc(String(last.content||'').slice(0,60))}`:'មិនទាន់មានសារ';
+  const prev=last?`${last.sender_role!=='student'?'គ្រូ':esc((last.sender_name||'').split(' ').pop())}៖ ${last.type==='image'?'🖼️ រូបភាព':last.type==='audio'?'🎤 សំឡេង':esc(String(last.content||'').slice(0,60))}`:'មិនទាន់មានសារ';
   box.innerHTML=`<div class="cl-item" onclick="openRoom()"><div class="cl-av">🎓</div><div class="cl-mid"><b>សិស្ស · ថ្នាក់ទី${esc(ME.grade||'')} · ${schoolYear()}</b><small class="${last?'':'dim'}">${prev}</small></div><div class="cl-end">${last?`<span class="cl-t">${ago(last.created_at)}</span>`:''}${unread?`<span class="cl-bd">${unread>99?'99+':unread}</span>`:''}</div></div>`;
 }
 async function openRoom(){
-  chatRoom=true;clearInterval(chatTimer);chatLast=0;
+  chatRoom=true;clearInterval(chatTimer);chatLast=0;document.body.classList.add('inroom');
   chatAll=[];
-  $('view').innerHTML=`<div class="card chat-room"><div class="cr-h"><button class="cr-b" onclick="closeRoom()" aria-label="ត្រឡប់">‹</button><div class="cl-av sm">🎓</div><div><b>សិស្ស · ថ្នាក់ទី${esc(ME.grade||'')} · ${schoolYear()}</b><small>សូមប្រើពាក្យសម្តីគួរសម</small></div></div><div id="msgs"></div>
-  <div id="cban" class="cx-ban"></div>${CHAT_CAN_SEND?`<div id="crow" class="cx-dock"><textarea id="ci" rows="1" maxlength="500" placeholder="ផ្ញើសារ..." oninput="this.style.height='42px';this.style.height=Math.min(this.scrollHeight,120)+'px'" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendChat()}"></textarea><button class="cx-send" onclick="sendChat()" aria-label="ផ្ញើ">➤</button></div>`:''}</div>`;
+  $('view').innerHTML=`<div class="card chat-room"><div class="cr-h"><button class="cr-b" onclick="closeRoom()" aria-label="ត្រឡប់">‹</button><div class="cl-av sm">🎓</div><div><b>សិស្ស · ថ្នាក់ទី${esc(ME.grade||'')} · ${schoolYear()}</b><small>សូមប្រើពាក្យសម្តីគួរសម</small></div><button class="cr-b" style="margin-left:auto" onclick="openMembersS()" aria-label="សមាជិក">👥</button></div><div id="msgs"></div>
+  <div id="cban" class="cx-ban"></div>${CHAT_CAN_SEND?`<div id="crow" class="cx-dock"><button class="cx-tool" id="cxImg" onclick="$('cxFile').click()" aria-label="រូបភាព">🖼️</button><input type="file" id="cxFile" accept="image/*" style="display:none" onchange="onChatImg(this)"><div class="cx-recbar" id="cxRec"><span>●</span><span id="cxRecT">0:00</span><button onclick="cancelRecS()">បោះបង់</button></div><textarea id="ci" rows="1" maxlength="500" placeholder="ផ្ញើសារ..." oninput="cxIn(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey&&!event.isComposing){event.preventDefault();sendChat()}"></textarea><button class="cx-send" id="cxBtn" onclick="cxMain()" aria-label="ផ្ញើ">🎤</button></div>`:''}</div>`;
   await pullChat(true);setSeen(chatLast);chatState();chatTimer=setInterval(()=>{pullChat(false);setSeen(chatLast);chatState()},4000);
 }
 async function chatState(){
@@ -480,11 +491,18 @@ async function chatState(){
     else if(st.teachers_only)m='បន្ទប់នេះអនុញ្ញាតឱ្យតែគ្រូសរសេរប៉ុណ្ណោះ';
     b.textContent=m;b.style.display=m?'block':'none';if(row)row.style.display=m?'none':'flex'}catch(e){}
 }
-function closeRoom(){chatRoom=false;clearInterval(chatTimer);vChat()}
+function closeRoom(){chatRoom=false;clearInterval(chatTimer);document.body.classList.remove('inroom');vChat()}
 let chatAll=[];
 const PAL=['#0d7a5f','#2563eb','#c2410c','#7c3aed','#0891b2','#be185d','#4d7c0f','#b45309'];
 const hueC=t=>{let h=0;for(const c of String(t))h=(h*31+c.charCodeAt(0))>>>0;return PAL[h%PAL.length]};
 const dLabel=iso=>{const d=new Date(iso);if(isNaN(d))return'';const n=new Date(),y=new Date(n-864e5);const same=(a,b)=>a.toDateString()===b.toDateString();return same(d,n)?'ថ្ងៃនេះ':same(d,y)?'ម្សិលមិញ':d.toLocaleDateString('en-GB')};
+function mediaHtml(m){
+  const ty=m.type||'text',u=String(m.content||'');
+  if(ty==='image'&&/^(data:image\/|https?:\/\/)/.test(u))return`<img class="cx-img" src="${esc(u)}" alt="" onclick="cxZoom(this.src)">${m.caption?`<span class="cx-cap">${esc(m.caption)}</span>`:''}`;
+  if(ty==='audio'&&/^(data:audio\/|https?:\/\/)/.test(u))return`<audio class="cx-aud" controls preload="none" src="${esc(u)}"></audio>`;
+  return esc(u);
+}
+function cxZoom(src){const d=document.createElement('div');d.className='cx-lb';d.innerHTML=`<img src="${esc(src)}" alt="">`;d.onclick=()=>d.remove();document.body.appendChild(d)}
 function renderChat(stick){
   const box=$('msgs');if(!box)return;
   if(!chatAll.length){box.innerHTML='<div class="empty">មិនទាន់មានសារទេ។ សូមចាប់ផ្តើមជជែក!</div>';return}
@@ -497,7 +515,7 @@ function renderChat(stick){
     const nm=String(m.sender_name||'').trim(),ini=nm.charAt(0)||'?';
     const av=!last?'<div class="cx-av sp"></div>':`<div class="cx-av" style="background:${t?'#c2570c':hueC(m.sender_code||nm)}">${esc(ini)}</div>`;
     const who=(!me&&first)?`<div class="cx-who${t?' t':''}">${esc(nm)}${t?' · គ្រូ':''}</div>`:'';
-    h+=`<div class="cx-row ${me?'cr':'cl'}${first?' first':''}${last?' last':''}">${av}<div class="cx-bub">${who}${esc(m.content)}<span class="cx-t">${new Date(m.created_at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</span></div></div>`;
+    h+=`<div class="cx-row ${me?'cr':'cl'}${first?' first':''}${last?' last':''}">${av}<div class="cx-bub">${who}${mediaHtml(m)}<span class="cx-t">${new Date(m.created_at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</span></div></div>`;
   });
   const near=box.scrollHeight-box.scrollTop-box.clientHeight<80;
   box.innerHTML=h;if(stick||near)box.scrollTop=box.scrollHeight;
@@ -512,9 +530,49 @@ async function pullChat(first){
     if(first||add)renderChat(first);
   }catch(e){}
 }
+function cxIn(t){t.style.height='42px';t.style.height=Math.min(t.scrollHeight,120)+'px';const b=$('cxBtn');if(b&&!(rec&&rec.state==='recording'))b.textContent=t.value.trim()?'➤':'🎤'}
+function cxMain(){const i=$('ci');if(i&&i.value.trim())sendChat();else toggleRecS()}
+function compressImg(file){return new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(file);
+  img.onload=()=>{let w=img.width,h=img.height,M=1024;if(w>M){h=Math.round(h*M/w);w=M}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.7))};img.onerror=rej;img.src=u})}
+async function sendMedia(type,data,cap){
+  try{await tk('student_chat_send_media',{p_type:type,p_content:data,p_caption:cap||null});await pullChat(false);renderChat(true)}
+  catch(e){alert('❌ '+(e.message||e))}
+}
+async function onChatImg(inp){const f=inp.files[0];inp.value='';if(!f)return;
+  try{await sendMedia('image',await compressImg(f))}catch(e){alert('❌ មិនអាចផ្ញើរូបភាពបាន')}}
+let rec=null,recChunks=[],recTm=null,recSec=0,recCancelS=false;
+const blobUrl=b=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(b)});
+function recUiS(on){const g=x=>document.getElementById(x);if(!g('cxRec'))return;g('cxRec').style.display=on?'flex':'none';g('ci').style.display=on?'none':'block';g('cxImg').style.display=on?'none':'';const b=g('cxBtn');b.classList.toggle('rec',on);b.textContent=on?'⏹':(g('ci').value.trim()?'➤':'🎤')}
+async function toggleRecS(){
+  if(rec&&rec.state==='recording'){rec.stop();return}
+  if(!navigator.mediaDevices||!window.MediaRecorder){alert('ឧបករណ៍មិនគាំទ្រការថតសំឡេង');return}
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const mt=['audio/webm;codecs=opus','audio/webm','audio/mp4','audio/aac'].find(t=>MediaRecorder.isTypeSupported(t))||'';
+    recChunks=[];recCancelS=false;rec=new MediaRecorder(stream,Object.assign(mt?{mimeType:mt}:{},{audioBitsPerSecond:24000}));
+    rec.ondataavailable=e=>{if(e.data&&e.data.size)recChunks.push(e.data)};
+    rec.onstop=async()=>{clearInterval(recTm);recUiS(false);stream.getTracks().forEach(t=>t.stop());
+      if(recCancelS||!recChunks.length)return;
+      const blob=new Blob(recChunks,{type:rec.mimeType||'audio/mp4'});
+      await sendMedia('audio',await blobUrl(blob))};
+    rec.start(250);recSec=0;document.getElementById('cxRecT').textContent='0:00';recUiS(true);
+    recTm=setInterval(()=>{recSec++;document.getElementById('cxRecT').textContent=Math.floor(recSec/60)+':'+String(recSec%60).padStart(2,'0');if(recSec>=60)rec.stop()},1000);
+  }catch(e){alert('សូមអនុញ្ញាតសិទ្ធិប្រើ Microphone')}
+}
+function cancelRecS(){recCancelS=true;if(rec&&rec.state==='recording')rec.stop()}
+async function openMembersS(){
+  const bg=document.createElement('div');bg.className='cx-lb';bg.style.cursor='default';bg.style.alignItems='flex-end';
+  bg.innerHTML='<div style="background:var(--card);color:var(--text);width:min(460px,100%);max-height:80dvh;overflow:auto;border-radius:24px 24px 0 0;padding:16px"><div style="display:flex;align-items:center;font-weight:700;margin-bottom:6px">👥 សមាជិក<button class="cr-b" style="margin-left:auto" id="cxMClose">✕</button></div><div id="cxMList" class="empty">កំពុងផ្ទុក...</div></div>';
+  bg.onclick=e=>{if(e.target===bg||e.target.id==='cxMClose')bg.remove()};document.body.appendChild(bg);
+  try{const d=await rpc('student_chat_members',{p_token:TOKEN});if(!d)throw 0;
+    const row=(n,sub,col)=>`<div class="cx-mem"><div class="cx-av" style="background:${col}">${esc((n||'?').charAt(0))}</div><div><b>${esc(n||'')}</b>${sub?`<small>${sub}</small>`:''}</div></div>`;
+    $('cxMList').className='';
+    $('cxMList').innerHTML=`<div class="cx-sec">គ្រូ (${d.teachers.length})</div>`+d.teachers.map(t=>row(t.name,'គ្រូបង្រៀន','#c2570c')).join('')+`<div class="cx-sec">សិស្ស (${d.students.length})</div>`+d.students.map(t=>row(t.name,'',hueC(t.name))).join('')}
+  catch(e){const l=$('cxMList');if(l)l.textContent='មិនអាចទាញបញ្ជីសមាជិកបានទេ (សូមដំណើរការ chat_controls.sql)'}
+}
 async function sendChat(){
   const i=$('ci'),v=i.value.trim();if(!v)return;i.disabled=true;
-  try{await tk('student_chat_send',{p_content:v});i.value='';i.style.height='42px';await pullChat(false);renderChat(true)}
+  try{await tk('student_chat_send',{p_content:v});i.value='';cxIn(i);await pullChat(false);renderChat(true)}
   catch(e){alert('❌ '+(e.message||e))}
   i.disabled=false;i.focus();
 }
