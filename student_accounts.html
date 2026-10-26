@@ -28,6 +28,16 @@ table{width:100%;border-collapse:collapse}th,td{padding:8px 10px;border-bottom:1
 th{background:var(--in);color:var(--muted)}.sc{overflow:auto;max-height:60vh}
 .pill{border-radius:999px;padding:2px 10px;font-size:12.5px;font-weight:700}.ok{background:var(--oks);color:var(--ok)}.no{background:var(--bads);color:var(--bad)}.wn{background:var(--warns);color:var(--warn)}.gr{background:var(--in);color:var(--muted)}
 .note{background:var(--warns);color:var(--warn);border-radius:10px;padding:9px 12px;font-size:13px;margin-bottom:10px}
+.dlg-bg{position:fixed;inset:0;z-index:100000;background:rgba(10,18,32,.55);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px;animation:dlgF .15s ease-out}
+@keyframes dlgF{from{opacity:0}to{opacity:1}}@keyframes dlgP{from{transform:translateY(14px) scale(.95);opacity:0}to{transform:none;opacity:1}}
+.dlg{width:min(400px,100%);background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.4);padding:26px 22px 18px;text-align:center;animation:dlgP .22s cubic-bezier(.2,.9,.3,1.2)}
+.dlg .ic{width:62px;height:62px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:30px;background:var(--acs)}
+.dlg.ok .ic{background:var(--oks)}.dlg.err .ic{background:var(--bads)}.dlg.warn .ic{background:var(--warns)}
+.dlg h3{margin:0 0 6px;font-size:17px}.dlg p{margin:0;color:var(--muted);font-size:14px;line-height:1.7;white-space:pre-line;word-break:break-word}
+.dlg .acts{display:flex;gap:10px;margin-top:20px}.dlg .acts button{flex:1;border:1px solid var(--line);background:var(--in);padding:11px;border-radius:14px;cursor:pointer;font-weight:700;font-size:14.5px}
+.dlg .acts button:focus{outline:none}.dlg .acts button.pri:focus-visible{box-shadow:0 0 0 3px var(--acs)}
+.dlg .acts button.pri{background:var(--ac);border-color:var(--ac);color:#fff}[data-theme=dark] .dlg .acts button.pri{color:#0a1220}
+.dlg.err .acts button.pri{background:var(--bad);border-color:var(--bad);color:#fff}
 .pubsw{width:46px;height:26px;border-radius:20px;border:0;background:var(--line);position:relative;cursor:pointer;flex-shrink:0;transition:.2s}.pubsw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}.pubsw.on{background:var(--ok)}.pubsw.on::after{left:23px}
 .msg{padding:8px 0;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:flex-start}.msg .t{flex:1;word-break:break-word}.msg small{color:var(--muted)}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:50;padding:14px}
@@ -156,6 +166,22 @@ async function init(){
   }
   onCls();
 }
+/* ── ផ្ទាំង popup ស្អាត (ជំនួស alert/confirm) ── */
+function dlgOpen(msg,{confirm=false,okText='យល់ព្រម',cancelText='បដិសេធ'}={}){
+  return new Promise(res=>{
+    let t=String(msg??''),kind=confirm?'warn':'info',icon=confirm?'❓':'ℹ️',title=confirm?'សូមបញ្ជាក់':'សេចក្តីជូនដំណឹង';
+    if(/^\s*✅/.test(t)){kind='ok';icon='✅';title='ជោគជ័យ';t=t.replace(/^\s*✅\s*/,'')}
+    else if(/^\s*❌/.test(t)){kind='err';icon='⚠️';title='មានបញ្ហា';t=t.replace(/^\s*❌\s*/,'')}
+    const bg=document.createElement('div');bg.className='dlg-bg';
+    bg.innerHTML=`<div class="dlg ${kind}" role="dialog"><div class="ic">${icon}</div><h3>${title}</h3><p>${esc(t)}</p><div class="acts">${confirm?`<button data-v="0">${cancelText}</button>`:''}<button class="pri" data-v="1">${confirm?okText:'យល់ព្រម'}</button></div></div>`;
+    const done=v=>{bg.remove();document.removeEventListener('keydown',kd);res(v)};
+    const kd=e=>{if(e.key==='Escape')done(false);if(e.key==='Enter')done(true)};
+    bg.addEventListener('click',e=>{const b=e.target.closest('button');if(b)done(b.dataset.v==='1');else if(e.target===bg&&confirm)done(false)});
+    document.addEventListener('keydown',kd);document.body.appendChild(bg);bg.querySelector('.pri').focus();
+  });
+}
+const uiAlert=m=>dlgOpen(m);
+const uiConfirm=(m,o)=>dlgOpen(m,{...(o||{}),confirm:true});
 let cur=1,PUB=false;
 const clsKey=c=>String(c||'').replace(/^ថ្នាក់ទី\s*/,'').trim();
 async function loadPub(){
@@ -168,9 +194,9 @@ function drawPub(){$('pubSw').classList.toggle('on',PUB);const t=$('pubTxt');t.t
   $('pubHint').textContent=PUB?'សិស្សក្នុងថ្នាក់នេះឃើញពិន្ទុ និងចំណាត់ថ្នាក់':'សិស្សមិនទាន់ឃើញពិន្ទុទេ រហូតដល់ផ្សាយ'}
 async function togglePub(){
   const c=$('cls').value;if(!c)return;const v=!PUB;
-  if(v&&!confirm('ផ្សាយលទ្ធផលដល់សិស្សថ្នាក់ '+c+'? សិស្សនឹងឃើញពិន្ទុ និងចំណាត់ថ្នាក់របស់ខ្លួន។'))return;
+  if(v&&!await uiConfirm('ផ្សាយលទ្ធផលដល់សិស្សថ្នាក់ '+c+'? សិស្សនឹងឃើញពិន្ទុ និងចំណាត់ថ្នាក់របស់ខ្លួន។'))return;
   try{await staff('staff_set_results_published',{p_class:clsKey(c),p_published:v});PUB=v;drawPub()}
-  catch(e){alert('❌ '+(e.message||e))}
+  catch(e){uiAlert('❌ '+(e.message||e))}
 }
 function tab(n){cur=n;[1,2].forEach(i=>{$('t'+i).classList.toggle('on',i===n);$('p'+i).classList.toggle('hide',i!==n)});onCls()}
 function onCls(){loadPub();if(cur===1)loadList();else loadDocs()}
@@ -192,20 +218,20 @@ function drawList(){
 }
 function genPw(){const A='abcdefghjkmnpqrstuvwxyz23456789';const b=new Uint32Array(8);crypto.getRandomValues(b);return [...b].map(x=>A[x%A.length]).join('')}
 async function setAccounts(pks,resetQr){
-  if(!pks.length){alert('មិនមានសិស្សត្រូវធ្វើ');return}
+  if(!pks.length){uiAlert('មិនមានសិស្សត្រូវធ្វើ');return}
   const items=pks.map(pk=>({pk,password:genPw()}));
   try{
     const r=await staff('staff_set_student_accounts',{p_items:items,p_reset_qr:!!resetQr});
-    if(r.error){alert('❌ '+r.error);return}
+    if(r.error){uiAlert('❌ '+r.error);return}
     items.forEach(i=>GEN[i.pk]=i.password);
-    alert(`✅ បានកំណត់គណនី ${r.ok} នាក់ (ឈ្មោះគណនី = អត្តលេខ, ពាក្យសម្ងាត់ចៃដន្យ)\nសិស្សចូលតាម QR បាន។ សូមបោះពុម្ពកាត ឬទាញ QR/CSV ឥឡូវនេះ ព្រោះពាក្យសម្ងាត់មិនបង្ហាញម្តងទៀតទេ (QR អាចបោះពុម្ពឡើងវិញបានជានិច្ច)។`+(r.skipped?`\n⚠️ រំលង ${r.skipped} នាក់ — គ្មានអត្តលេខ ឬគ្មានសិទ្ធិ`:'')+(r.duplicates?`\n⚠️ រំលង ${r.duplicates} នាក់ — អត្តលេខស្ទួនគ្នា សូមកែក្នុងព័ត៌មានសិស្ស`:''));
+    uiAlert(`✅ បានកំណត់គណនី ${r.ok} នាក់ (ឈ្មោះគណនី = អត្តលេខ, ពាក្យសម្ងាត់ចៃដន្យ)\nសិស្សចូលតាម QR បាន។ សូមបោះពុម្ពកាត ឬទាញ QR/CSV ឥឡូវនេះ ព្រោះពាក្យសម្ងាត់មិនបង្ហាញម្តងទៀតទេ (QR អាចបោះពុម្ពឡើងវិញបានជានិច្ច)។`+(r.skipped?`\n⚠️ រំលង ${r.skipped} នាក់ — គ្មានអត្តលេខ ឬគ្មានសិទ្ធិ`:'')+(r.duplicates?`\n⚠️ រំលង ${r.duplicates} នាក់ — អត្តលេខស្ទួនគ្នា សូមកែក្នុងព័ត៌មានសិស្ស`:''));
     await loadList();
-  }catch(e){alert('❌ '+(e.message||e))}
+  }catch(e){uiAlert('❌ '+(e.message||e))}
 }
-function resetQrSel(){
+async function resetQrSel(){
   const pks=[...document.querySelectorAll('.ck:checked')].map(c=>+c.value).filter(pk=>LIST.find(s=>s.pk===pk&&s.has_account));
-  if(!pks.length){alert('សូមជ្រើសសិស្សដែលមានគណនីរួច');return}
-  if(confirm(`បង្កើត QR ថ្មី និងពាក្យសម្ងាត់ថ្មីឱ្យសិស្ស ${pks.length} នាក់? QR ចាស់នឹងលែងប្រើបាន (ប្រើពេលកាតបាត់)។`))setAccounts(pks,true);
+  if(!pks.length){uiAlert('សូមជ្រើសសិស្សដែលមានគណនីរួច');return}
+  if(await uiConfirm(`បង្កើត QR ថ្មី និងពាក្យសម្ងាត់ថ្មីឱ្យសិស្ស ${pks.length} នាក់? QR ចាស់នឹងលែងប្រើបាន (ប្រើពេលកាតបាត់)។`))setAccounts(pks,true);
 }
 /* រូប QR (PNG) សម្រាប់ផ្ញើឱ្យសិស្ស ដើម្បីផ្ទុកឡើងពេលចូល */
 function qrPng(s){
@@ -222,32 +248,60 @@ function qrPng(s){
 }
 function dlData(url,name){const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),500)}
 const safeName=t=>String(t||'qr').replace(/[^\w\u1780-\u17FF-]+/g,'_').slice(0,40);
+const SCHOOL_TOP='ថ្នាលបឋម',SCHOOL_NAME='សាលាបឋមសិក្សាកំពង់ល្ពៅ';
+function rrect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
+function fitText(c,t,x,y,maxW,font,size,minSize=14){let sz=size;do{c.font=font.replace('{s}',sz);if(c.measureText(t).width<=maxW||sz<=minSize)break;sz-=1}while(sz>minSize);c.fillText(t,x,y)}
+/* កាតព័ត៌មាន + QR (PNG) */
+async function qrCard(s){
+  const qr=await qrPng(s);if(!qr)return null;
+  try{await Promise.all([document.fonts.load('700 30px Battambang'),document.fonts.load('400 24px Battambang')])}catch(e){}
+  const img=await new Promise(res=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>res(null);i.src=qr});if(!img)return null;
+  const K=2,W=380,H=560,cv=document.createElement('canvas');cv.width=W*K;cv.height=H*K;
+  const c=cv.getContext('2d');c.scale(K,K);c.textAlign='center';c.textBaseline='alphabetic';
+  const NAVY='#0b3b6b',F='Battambang,"Khmer OS Battambang",sans-serif';
+  c.fillStyle='#fff';rrect(c,0,0,W,H,16);c.fill();
+  c.save();rrect(c,0,0,W,H,16);c.clip();
+  c.fillStyle=NAVY;c.fillRect(0,0,W,78);c.fillRect(0,H-86,W,86);
+  c.fillStyle='#fff';fitText(c,SCHOOL_TOP,W/2,38,W-40,'700 {s}px '+F,26);
+  c.fillStyle='rgba(255,255,255,.92)';fitText(c,SCHOOL_NAME,W/2,64,W-40,'400 {s}px '+F,17);
+  c.fillStyle='#1b2a3a';fitText(c,s.student_name||'',W/2,122,W-40,'700 {s}px '+F,26);
+  c.fillStyle='#4a5a6c';fitText(c,'ឈ្មោះគណនី : '+(s.username||''),W/2,154,W-40,'700 {s}px '+F,16);
+  fitText(c,'លេខសម្ងាត់ : '+(GEN[s.pk]||'________'),W/2,180,W-40,'700 {s}px '+F,16);
+  // QR
+  const qs=248,qx=(W-qs)/2,qy=202;c.fillStyle='#fff';c.shadowColor='rgba(11,59,107,.25)';c.shadowBlur=10;rrect(c,qx-8,qy-8,qs+16,qs+16,12);c.fill();c.shadowBlur=0;
+  c.strokeStyle='#c7d8ec';c.lineWidth=2;rrect(c,qx-8,qy-8,qs+16,qs+16,12);c.stroke();
+  c.imageSmoothingEnabled=false;c.drawImage(img,qx,qy,qs,qs);c.imageSmoothingEnabled=true;
+  c.fillStyle='#fff';fitText(c,'ថ្នាក់ : '+($('cls').value||''),W/2,H-50,W-40,'700 {s}px '+F,19);
+  c.fillStyle='rgba(255,255,255,.9)';fitText(c,(USER&&(USER.teacher_name||USER.username))||'',W/2,H-22,W-40,'400 {s}px '+F,16);
+  c.restore();
+  return cv.toDataURL('image/png');
+}
 async function dlQr(pk){
   const s=LIST.find(x=>x.pk===pk);if(!s)return;
-  const u=await qrPng(s);if(!u){alert('មិនអាចបង្កើតរូប QR (ត្រូវការអ៊ីនធឺណិតដើម្បីផ្ទុក library)');return}
+  const u=await qrCard(s);if(!u){uiAlert('❌ មិនអាចបង្កើតរូប QR (ត្រូវការអ៊ីនធឺណិតដើម្បីផ្ទុក library)');return}
   dlData(u,`QR_${safeName(s.username)}_${safeName(s.student_name)}.png`);
 }
 async function dlAllQr(){
-  const rows=LIST.filter(s=>s.has_account&&s.is_active);if(!rows.length){alert('មិនទាន់មានគណនី');return}
-  if(rows.length>10&&!confirm(`ទាញយករូប QR ${rows.length} ឯកសារ?`))return;
+  const rows=LIST.filter(s=>s.has_account&&s.is_active);if(!rows.length){uiAlert('មិនទាន់មានគណនី');return}
+  if(rows.length>10&&!await uiConfirm(`ទាញយករូប QR ${rows.length} ឯកសារ?`))return;
   for(const s of rows){await dlQr(s.pk);await new Promise(r=>setTimeout(r,250))}
 }
 function createMissing(){setAccounts(LIST.filter(s=>!s.has_account).map(s=>s.pk),false)}
-function resetSel(){
+async function resetSel(){
   const pks=[...document.querySelectorAll('.ck:checked')].map(c=>+c.value).filter(pk=>LIST.find(s=>s.pk===pk&&s.has_account));
-  if(!pks.length){alert('សូមជ្រើសសិស្សដែលមានគណនីរួច');return}
-  if(confirm(`កំណត់ពាក្យសម្ងាត់ចៃដន្យថ្មីឱ្យសិស្ស ${pks.length} នាក់? សិស្សត្រូវចូលម្តងទៀត (QR ចាស់នៅប្រើបាន)។`))setAccounts(pks,false);
+  if(!pks.length){uiAlert('សូមជ្រើសសិស្សដែលមានគណនីរួច');return}
+  if(await uiConfirm(`កំណត់ពាក្យសម្ងាត់ចៃដន្យថ្មីឱ្យសិស្ស ${pks.length} នាក់? សិស្សត្រូវចូលម្តងទៀត (QR ចាស់នៅប្រើបាន)។`))setAccounts(pks,false);
 }
-async function toggle(pk,on){try{await staff('staff_toggle_student_account',{p_pk:pk,p_active:on});await loadList()}catch(e){alert('❌ '+(e.message||e))}}
+async function toggle(pk,on){try{await staff('staff_toggle_student_account',{p_pk:pk,p_active:on});await loadList()}catch(e){uiAlert('❌ '+(e.message||e))}}
 function csv(){
-  const rows=LIST.filter(s=>s.has_account);if(!rows.length){alert('មិនទាន់មានគណនី');return}
+  const rows=LIST.filter(s=>s.has_account);if(!rows.length){uiAlert('មិនទាន់មានគណនី');return}
   const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
   const out=[['ឈ្មោះ','ថ្នាក់','ឈ្មោះគណនី','ពាក្យសម្ងាត់ដើម','តំណ QR'],...rows.map(s=>[s.student_name,$('cls').value,s.username,GEN[s.pk]||'',qrUrl(s.qr_token)])].map(r=>r.map(q).join(',')).join('\r\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+out],{type:'text/csv;charset=utf-8'}));a.download=`student_accounts_${$('cls').value}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
 }
 function qrUrl(t){return t?new URL('student_portal.html?qr='+t,location.href).href:''}
 function printSlips(){
-  const rows=LIST.filter(s=>s.has_account&&s.is_active);if(!rows.length){alert('មិនទាន់មានគណនី');return}
+  const rows=LIST.filter(s=>s.has_account&&s.is_active);if(!rows.length){uiAlert('មិនទាន់មានគណនី');return}
   const pa=$('printArea');pa.innerHTML='';
   rows.forEach(s=>{
     const d=document.createElement('div');d.className='slip';
@@ -267,10 +321,10 @@ async function loadDocs(){
 }
 async function addDoc(){
   const title=$('dt').value.trim();let url=$('du').value.trim();const f=$('df').files[0];
-  if(!title){alert('សូមបញ្ចូលចំណងជើង');return}
-  if(!url&&!f){alert('សូមបញ្ចូលតំណ ឬជ្រើសឯកសារ');return}
-  if(url&&!/^https?:\/\//i.test(url)){alert('តំណត្រូវចាប់ផ្តើមដោយ https://');return}
-  if(f&&f.size>10*1024*1024){alert('ឯកសារធំជាង ១០ MB');return}
+  if(!title){uiAlert('សូមបញ្ចូលចំណងជើង');return}
+  if(!url&&!f){uiAlert('សូមបញ្ចូលតំណ ឬជ្រើសឯកសារ');return}
+  if(url&&!/^https?:\/\//i.test(url)){uiAlert('តំណត្រូវចាប់ផ្តើមដោយ https://');return}
+  if(f&&f.size>10*1024*1024){uiAlert('ឯកសារធំជាង ១០ MB');return}
   $('dadd').disabled=true;
   try{
     if(!await needAuth())throw new Error('បានបោះបង់');
@@ -285,10 +339,10 @@ async function addDoc(){
     const ok=await staff('staff_add_document',{p_title:title,p_category:$('dc').value.trim(),p_class:$('dk').value,p_url:url});
     if(!ok)throw new Error('មិនអាចបន្ថែម (គ្មានសិទ្ធិ ឬទិន្នន័យមិនគ្រប់)');
     $('dt').value=$('dc').value=$('du').value='';$('df').value='';await loadDocs();
-  }catch(e){alert('❌ '+(e.message||e))}
+  }catch(e){uiAlert('❌ '+(e.message||e))}
   $('dadd').disabled=false;
 }
-async function delDoc(id){if(!confirm('លុបឯកសារនេះ?'))return;try{await staff('staff_delete_document',{p_id:id});loadDocs()}catch(e){alert('❌ '+(e.message||e))}}
+async function delDoc(id){if(!await uiConfirm('លុបឯកសារនេះ?',{okText:'លុប'}))return;try{await staff('staff_delete_document',{p_id:id});loadDocs()}catch(e){uiAlert('❌ '+(e.message||e))}}
 
 window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme)){const t=e.data.theme||e.data;document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light')}});
 init();
