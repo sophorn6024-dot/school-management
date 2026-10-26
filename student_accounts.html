@@ -38,7 +38,8 @@ th{background:var(--in);color:var(--muted)}.sc{overflow:auto;max-height:60vh}
 .dlg .acts button:focus{outline:none}.dlg .acts button.pri:focus-visible{box-shadow:0 0 0 3px var(--acs)}
 .dlg .acts button.pri{background:var(--ac);border-color:var(--ac);color:#fff}[data-theme=dark] .dlg .acts button.pri{color:#0a1220}
 .dlg.err .acts button.pri{background:var(--bad);border-color:var(--bad);color:#fff}
-.pubsw{width:46px;height:26px;border-radius:20px;border:0;background:var(--line);position:relative;cursor:pointer;flex-shrink:0;transition:.2s}.pubsw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}.pubsw.on{background:var(--ok)}.pubsw.on::after{left:23px}
+.pchips{display:flex;flex-wrap:wrap;gap:7px}.pchips button{border:1px solid var(--line);background:var(--in);color:var(--muted);border-radius:20px;padding:6px 13px;cursor:pointer;font-size:13.5px;display:inline-flex;align-items:center;gap:6px}.pchips button::before{content:'🔒'}
+.pchips button.on{background:var(--oks);border-color:var(--ok);color:var(--ok);font-weight:700}.pchips button.on::before{content:'✅'}.pchips button.sem{border-style:dashed}
 .msg{padding:8px 0;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:flex-start}.msg .t{flex:1;word-break:break-word}.msg small{color:var(--muted)}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:50;padding:14px}
 .modal .box{background:var(--card);border-radius:16px;padding:18px;width:100%;max-width:360px}
@@ -69,7 +70,7 @@ th{background:var(--in);color:var(--muted)}.sc{overflow:auto;max-height:60vh}
   <div id="main" class="hide">
     <div class="tabs"><button id="t1" class="on" onclick="tab(1)">👤 គណនីសិស្ស</button><button id="t2" onclick="tab(2)">📚 ឯកសារ</button></div>
     <div class="card row"><b>ថ្នាក់៖</b><select id="cls" class="in" onchange="onCls()"></select><b id="clsTxt" class="hide"></b><span id="info" style="color:var(--muted)"></span></div>
-    <div class="card row" id="pubCard"><b>📢 ផ្សាយលទ្ធផលដល់សិស្ស៖</b><button class="pubsw" id="pubSw" onclick="togglePub()" aria-label="ផ្សាយលទ្ធផល"></button><b id="pubTxt"></b><span style="color:var(--muted);font-size:13px" id="pubHint"></span></div>
+    <div class="card" id="pubCard"><div class="row" style="margin-bottom:8px"><b>📢 ផ្សាយលទ្ធផលដល់សិស្ស</b><span style="color:var(--muted);font-size:13px" id="pubHint"></span><span style="flex:1"></span><button class="btn" onclick="setAllPub(true)">ផ្សាយទាំងអស់</button><button class="btn" onclick="setAllPub(false)">បិទទាំងអស់</button></div><div class="pchips" id="pubChips"></div></div>
 
     <!-- គណនី -->
     <div id="p1">
@@ -184,19 +185,33 @@ const uiAlert=m=>dlgOpen(m);
 const uiConfirm=(m,o)=>dlgOpen(m,{...(o||{}),confirm:true});
 let cur=1,PUB=false;
 const clsKey=c=>String(c||'').replace(/^ថ្នាក់ទី\s*/,'').trim();
+const PERIODS=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ','ឆមាសទី១','ឆមាសទី២'];
+let PUBS=new Set();
 async function loadPub(){
   const c=$('cls').value;if(!c||!SB)return;
-  try{const {data,error}=await SB.from('class_results_publish').select('published').eq('class_key',clsKey(c)).limit(1);
-    if(error)throw error;PUB=!!(data&&data[0]&&data[0].published);drawPub()}
-  catch(e){$('pubHint').textContent='(សូមដំណើរការ results_publish.sql ក្នុង Supabase)'}
+  try{const {data,error}=await SB.from('class_results_periods').select('period,published').eq('class_key',clsKey(c));
+    if(error)throw error;PUBS=new Set((data||[]).filter(x=>x.published).map(x=>x.period));drawPub()}
+  catch(e){PUBS=new Set();drawPub();$('pubHint').textContent='(សូមដំណើរការ results_publish.sql ក្នុង Supabase)'}
 }
-function drawPub(){$('pubSw').classList.toggle('on',PUB);const t=$('pubTxt');t.textContent=PUB?'បានផ្សាយ':'បិទផ្សាយ';t.style.color=PUB?'var(--ok)':'var(--bad)';
-  $('pubHint').textContent=PUB?'សិស្សក្នុងថ្នាក់នេះឃើញពិន្ទុ និងចំណាត់ថ្នាក់':'សិស្សមិនទាន់ឃើញពិន្ទុទេ រហូតដល់ផ្សាយ'}
-async function togglePub(){
-  const c=$('cls').value;if(!c)return;const v=!PUB;
-  if(v&&!await uiConfirm('ផ្សាយលទ្ធផលដល់សិស្សថ្នាក់ '+c+'? សិស្សនឹងឃើញពិន្ទុ និងចំណាត់ថ្នាក់របស់ខ្លួន។'))return;
-  try{await staff('staff_set_results_published',{p_class:clsKey(c),p_published:v});PUB=v;drawPub()}
+function drawPub(){
+  $('pubChips').innerHTML=PERIODS.map(p=>`<button class="${PUBS.has(p)?'on':''}${p.startsWith('ឆមាស')?' sem':''}" onclick="togglePub('${p}')">${p}</button>`).join('');
+  $('pubHint').textContent=PUBS.size?`បានផ្សាយ ${PUBS.size}/${PERIODS.length} · សិស្សឃើញតែខែ/ឆមាសដែលមានសញ្ញា ✅`:'មិនទាន់ផ្សាយអ្វីទេ · សិស្សមិនទាន់ឃើញពិន្ទុ';
+}
+async function setPub(periods,v){
+  const c=$('cls').value;if(!c)return;
+  try{await staff('staff_set_results_published',{p_class:clsKey(c),p_published:v,p_periods:periods});
+    periods.forEach(p=>v?PUBS.add(p):PUBS.delete(p));drawPub()}
   catch(e){uiAlert('❌ '+(e.message||e))}
+}
+async function togglePub(p){
+  const v=!PUBS.has(p);
+  if(v&&!await uiConfirm(`ផ្សាយលទ្ធផល "${p}" ដល់សិស្សថ្នាក់ ${$('cls').value}? សិស្សនឹងឃើញពិន្ទុ និងចំណាត់ថ្នាក់នៃ${p.startsWith('ឆមាស')?'':'ខែ'}នេះ។`))return;
+  setPub([p],v);
+}
+async function setAllPub(v){
+  const c=$('cls').value;if(!c)return;
+  if(!await uiConfirm(v?`ផ្សាយលទ្ធផលទាំងអស់ (ខែ និងឆមាស) ដល់សិស្សថ្នាក់ ${c}?`:`បិទផ្សាយលទ្ធផលទាំងអស់ សិស្សថ្នាក់ ${c} នឹងមិនឃើញពិន្ទុទេ?`,{okText:v?'ផ្សាយទាំងអស់':'បិទទាំងអស់'}))return;
+  setPub(PERIODS.slice(),v);
 }
 function tab(n){cur=n;[1,2].forEach(i=>{$('t'+i).classList.toggle('on',i===n);$('p'+i).classList.toggle('hide',i!==n)});onCls()}
 function onCls(){loadPub();if(cur===1)loadList();else loadDocs()}
