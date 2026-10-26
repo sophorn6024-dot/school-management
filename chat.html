@@ -134,15 +134,34 @@ video.vid{display:block;max-width:min(17.5rem,66vw);max-height:18.75rem;border-r
 .prow>i{width:1.2rem;text-align:center;color:var(--primary)}
 .prow small{display:block;font-size:.75rem;color:var(--muted)}
 .prow b,.prow a{font-size:.95rem;font-weight:600;color:var(--text);text-decoration:none;word-break:break-word}
+.cl{display:none;flex-direction:column;flex:1;min-height:0}
+.inlist .header,.inlist .search-bar,.inlist .stage,.inlist .dock{display:none!important}
+.inlist .cl{display:flex}
+.cl-top{margin:max(.5rem,env(safe-area-inset-top)) .625rem 0;padding:.75rem 1rem;display:flex;align-items:center;gap:.6rem;background:var(--header);backdrop-filter:blur(.625rem);border-radius:1.5rem;box-shadow:var(--shadow)}
+.cl-top b{flex:1;font-size:1.2rem;background:linear-gradient(90deg,#ec4899,#f43f5e);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cl-body{flex:1;min-height:0;overflow:auto;padding:1rem .875rem 5rem}
+.cl-sec{font-size:1.35rem;font-weight:800;margin:.5rem .25rem 1rem}
+.cl-item{display:flex;align-items:center;gap:.9rem;background:var(--surface);border:1px solid var(--border);border-radius:1.4rem;padding:1rem;margin-bottom:.9rem;cursor:pointer;box-shadow:var(--shadow);transition:transform .12s}
+.cl-item:active{transform:scale(.99)}.cl-item:hover{border-color:var(--primary)}
+.cl-av{width:3.5rem;height:3.5rem;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.5rem;background:linear-gradient(135deg,#9f1239,#be185d);overflow:hidden}
+.cl-av.logo2{background:#fff;border:1px solid var(--border)}.cl-av img{width:100%;height:100%;object-fit:contain}
+.cl-mid{flex:1;min-width:0}.cl-mid b{display:block;font-size:1.02rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cl-mid small{display:block;margin-top:.4rem;color:var(--muted);font-size:.875rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cl-end{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem;flex-shrink:0}
+.cl-t{color:#e11d48;font-size:.8rem;font-weight:700}
+.cl-bd{min-width:1.75rem;height:1.6rem;padding:0 .5rem;border-radius:999px;background:#be123c;color:#fff;font-weight:800;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+.roomlogo{width:2.75rem;height:2.75rem;border-radius:50%;background:linear-gradient(135deg,#9f1239,#be185d);color:#fff;display:none;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
 </style>
 </head>
 <body>
 <div class="auth" id="auth"><div class="auth-card"><div style="font-size:44px">🔒</div><h2>សូមចូលប្រើប្រាស់ជាមុនសិន!</h2><p>លោកអ្នកមិនទាន់បាន Login ចូលក្នុងប្រព័ន្ធនៅឡើយទេ។ សូម Login គណនីរបស់អ្នកដើម្បីចូលរួមការសន្ទនា។</p><button class="btn-primary" onclick="goIndex()">🔑 ទៅកាន់ទំព័រដើម</button></div></div>
 
 <div id="app">
+  <div class="cl" id="listView"><div class="cl-top"><button class="icon-btn" onclick="goIndex()" title="ថយក្រោយ"><i class="fa-solid fa-arrow-left"></i></button><b>សារសន្ទនា</b></div><div class="cl-body"><div class="cl-sec">ជជែក</div><div id="roomList"></div></div></div>
   <div class="header">
-    <button class="icon-btn" onclick="goIndex()" title="ថយក្រោយ"><i class="fa-solid fa-arrow-left"></i></button>
-    <div class="logo"><img src="logo.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement('i'),{className:'fa-solid fa-school',style:'color:#eab308;font-size:20px'}))"></div>
+    <button class="icon-btn" onclick="backBtn()" title="ថយក្រោយ"><i class="fa-solid fa-arrow-left"></i></button>
+    <div class="roomlogo" id="roomLogo"><i class="fa-solid fa-graduation-cap"></i></div>
+    <div class="logo" id="mainLogo"><img src="logo.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement('i'),{className:'fa-solid fa-school',style:'color:#eab308;font-size:20px'}))"></div>
     <div class="title" id="roomTitle"></div>
     <button class="icon-btn" onclick="toggleSearch()" title="ស្វែងរក"><i class="fa-solid fa-magnifying-glass"></i></button>
     <button class="icon-btn" onclick="openMembers()" title="សមាជិក"><i class="fa-solid fa-user-group"></i></button>
@@ -179,8 +198,9 @@ video.vid{display:block;max-width:min(17.5rem,66vw);max-height:18.75rem;border-r
 <script>
 const sb=supabase.createClient("https://nggnuobnrxiqjtcwlvwk.supabase.co","sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML");
 /* ប្តូរឈ្មោះក្រុម និងបន្ទប់ (room_id) ក្នុងតារាង chat_messages នៅទីនេះ */
-const APP_TITLE='Chat';
-const ROOM='global';
+const GLOBAL_TITLE='ក្រុមធំ-ដោះស្រាយចម្ងល់';
+let APP_TITLE=GLOBAL_TITLE;
+let ROOM='global';
 const PAGE=60, MAX_VIDEO_MB=8, MAX_IMG_W=1200;
 
 const $=id=>document.getElementById(id);
@@ -272,7 +292,7 @@ async function refresh(force){
     const added=msgs.filter(m=>prevLast!==null&&m.id>prevLast&&!isMine(m)).length;
     const stick=force||nearBottom(160);
     if(!stick)unseen+=added;
-    render(stick);
+    render(stick);markSeen();
   }catch(e){if(force)toast('មិនអាចទាញយកសារបាន៖ '+(e.message||e),true)}
   finally{busy=false}
 }
@@ -602,15 +622,69 @@ function openProfile(key){
 function closeProfile(){$('profModal').style.display='none'}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeProfile();closeMembers();closeMenu();$('lightbox').style.display='none'}});
 
+/* ---------- បញ្ជីបន្ទប់សន្ទនា (ក្រុមធំ + សារតាមថ្នាក់) ---------- */
+const ALL_CLASSES=['១','២','៣','៤(ក)','៤(ខ)','៥','៦'];
+const cleanCls=g=>String(g||'').replace(/^ថ្នាក់ទី\s*/,'').trim();
+const schoolYear=()=>{const d=new Date(),y=d.getFullYear();return d.getMonth()>=8?y+'-'+(y+1):(y-1)+'-'+y};
+function myRooms(){
+  const out=[{id:'global',title:GLOBAL_TITLE,cls:false}];
+  const cs=IS_ADMIN?ALL_CLASSES:String(ME&&ME.assigned_classes||'').split(/[,;،]+/).map(cleanCls).filter(Boolean);
+  [...new Set(cs)].forEach(c=>out.push({id:'class_'+c,title:'សិស្ស · ថ្នាក់ទី'+c+' · '+schoolYear(),cls:true}));
+  return out;
+}
+const seenK=id=>'krou_chat_seen_'+MY_CODE+'_'+id;
+const getSeen=id=>{try{return +localStorage.getItem(seenK(id))||0}catch(e){return 0}};
+const setSeenV=(id,v)=>{try{localStorage.setItem(seenK(id),String(v))}catch(e){}};
+function markSeen(){if(document.body.classList.contains('inlist')||!msgs.length)return;const m=Math.max(...msgs.map(x=>+x.id||0));if(m>getSeen(ROOM))setSeenV(ROOM,m)}
+const ago=t=>{const d=new Date(t),n=new Date(),m=Math.floor((n-d)/60000);if(isNaN(m))return'';if(m<1)return'ឥឡូវ';if(m<60)return m+' នាទីមុន';const h=Math.floor(m/60);if(h<24)return h+' ម៉ោងមុន';const dd=Math.floor(h/24);return dd===1?'ម្សិលមិញ':dd<7?dd+' ថ្ងៃមុន':d.toLocaleDateString('en-GB')};
+async function roomInfo(rm){
+  try{
+    const [l,c]=await Promise.all([
+      sb.from('chat_messages').select('*').eq('room_id',rm.id).order('id',{ascending:false}).limit(1),
+      sb.from('chat_messages').select('id',{count:'exact',head:true}).eq('room_id',rm.id).gt('id',getSeen(rm.id))]);
+    return{last:(l.data||[])[0]||null,unread:c.count||0};
+  }catch(e){return{last:null,unread:0}}
+}
+let listBusy=false;
+async function drawRoomList(){
+  if(listBusy)return;listBusy=true;
+  try{
+    const rooms=myRooms(),infos=await Promise.all(rooms.map(roomInfo));
+    $('roomList').innerHTML=rooms.map((rm,i)=>{
+      const {last,unread}=infos[i];
+      let prev='មិនទាន់មានសារ';
+      if(last){const who=last.sender_name?String(last.sender_name).trim().split(/\s+/).pop()+'៖ ':'';
+        prev=last.type==='audio'?'<i class="fa-solid fa-microphone"></i> សំឡេង':esc(who+snippetOf(last));}
+      const av=rm.cls?'<div class="cl-av"><i class="fa-solid fa-graduation-cap"></i></div>':'<div class="cl-av logo2"><img src="logo.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement(\'i\'),{className:\'fa-solid fa-school\',style:\'color:#eab308;font-size:24px\'}))"></div>';
+      return `<div class="cl-item" data-room="${esc(rm.id)}">${av}<div class="cl-mid"><b>${esc(rm.title)}</b><small>${prev}</small></div><div class="cl-end">${last?`<span class="cl-t">${ago(last.created_at)}</span>`:''}${unread?`<span class="cl-bd">${unread>99?'99+':unread}</span>`:''}</div></div>`}).join('');
+  }catch(e){}
+  listBusy=false;
+}
+$('roomList').addEventListener('click',e=>{const it=e.target.closest('.cl-item');if(it)openRoom(it.dataset.room)});
+let fromList=false;
+function openRoom(id,viaList){
+  const rm=myRooms().find(x=>x.id===id)||{id,title:id.startsWith('class_')?'សិស្ស · ថ្នាក់ទី'+id.slice(6)+' · '+schoolYear():GLOBAL_TITLE,cls:id.startsWith('class_')};
+  stopAudio();clearCtx();
+  ROOM=rm.id;APP_TITLE=rm.title;msgs=[];oldestReached=false;lastSig='';unseen=0;query='';$('searchInput').value='';
+  $('mainLogo').style.display=rm.cls?'none':'flex';$('roomLogo').style.display=rm.cls?'flex':'none';
+  fromList=viaList!==false;document.body.classList.remove('inlist');
+  fitViewport();render(true);subscribe();refresh(true);
+}
+function showList(){
+  stopAudio();try{if(chan)sb.removeChannel(chan);chan=null}catch(e){}
+  document.body.classList.add('inlist');drawRoomList();
+}
+function backBtn(){if(fromList&&!document.body.classList.contains('inlist'))showList();else goIndex()}
+
 /* ---------- init ---------- */
 window.addEventListener('DOMContentLoaded',()=>{
   if(!ME||!ME.username){$('auth').style.display='flex';return}
-  $('app').style.display='flex';$('roomTitle').textContent=APP_TITLE;
-  fitViewport();render(true);
-  loadUsers().then(()=>{lastSig='';refresh(true)});
-  subscribe();
-  setInterval(()=>{if(!document.hidden)refresh()},10000);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh()});
+  $('app').style.display='flex';
+  loadUsers().then(()=>{lastSig='';if(!document.body.classList.contains('inlist'))refresh(true)});
+  const q=new URLSearchParams(location.search).get('room');
+  if(q)openRoom(q,false);else showList();
+  setInterval(()=>{if(document.hidden)return;if(document.body.classList.contains('inlist'))drawRoomList();else refresh()},10000);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(document.body.classList.contains('inlist'))drawRoomList();else refresh()});
 });
 </script>
 </body>
