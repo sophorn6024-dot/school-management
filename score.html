@@ -220,7 +220,9 @@ html,body{background:#fff!important;color:#000!important;overflow:visible!import
 .print-report-table th .th-rpt-vert-box{overflow:visible}
 .report-paper-container{max-width:none!important;margin:0!important;position:relative;transform-origin:top left;overflow:visible}
 .print-report-table{table-layout:fixed;margin-left:auto!important;margin-right:auto!important}
-.print-report-table.rh-custom tbody tr.srow td{padding-top:0;padding-bottom:0;line-height:1.15}
+.print-report-table.rh-custom tbody tr.srow td{padding-top:1px;padding-bottom:1px;line-height:1.5}
+.print-report-table td,.print-report-table th{line-height:1.5}
+.print-report-table tr.srow td{padding-top:2px;padding-bottom:2px}
 .rpt-sign,.rpt-header-banner{break-inside:avoid;page-break-inside:avoid}
 .page-guide{position:absolute;left:0;right:0;height:0;border-top:1.5px dashed #ef4444;pointer-events:none;z-index:5}
 .page-guide span{position:absolute;right:6px;top:-9px;background:#ef4444;color:#fff;font-size:10px;font-weight:700;padding:1px 8px;border-radius:8px}
@@ -2503,7 +2505,7 @@ function closeGradeMenu(){document.getElementById('gradeMenuPopup')?.classList.r
 function selectGradeFilter(code,label){
   currentGradeFilter=code;
   document.getElementById('currentGradeFilterTxt').innerText=code==='ALL'?'និទ្ទេស':label;
-  closeGradeMenu();renderTable();
+  renderGradeMenuPopup();closeGradeMenu();renderTable();
 }
 document.addEventListener('click',(e)=>{if(!e.target.closest('.dropdown-relative'))closeGradeMenu()});
 
@@ -2667,12 +2669,15 @@ function downloadScorePDFRaster(){
   document.querySelectorAll('.page-guide').forEach(g=>{g.style.display='none'});
   document.querySelectorAll('.clean-lunar-input').forEach(i=>{i.style.border='none';i.style.background='transparent'});
 
-  const restore=()=>applyPageSetup();
+  const restore=()=>{const f=document.getElementById('pdfKhmerFix');if(f)f.remove();applyPageSetup()};
   const pxW=(d[0]-2*m)*96/25.4;
   const pxH=Math.max(element.scrollHeight,10);
   const maxPx=/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)?14e6:30e6;
   const pdfScale=Math.max(2,Math.min(5,Math.sqrt(maxPx/(pxW*Math.min(pxH,(d[1]-2*m)*96/25.4)))));
 
+  const fx=document.createElement('style');fx.id='pdfKhmerFix';
+  fx.textContent='#printableScorePaper .print-report-table td,#printableScorePaper .print-report-table th{line-height:1.7!important;padding-top:2.5px!important;padding-bottom:3.5px!important;overflow:visible!important}#printableScorePaper .print-report-table td:nth-child(2){padding-left:7px!important;padding-right:3px!important}#printableScorePaper .th-rpt-vert{line-height:1.6!important}#printableScorePaper{letter-spacing:0!important}';
+  document.head.appendChild(fx);
   html2pdf().set({
     margin:[m,m,m,m],
     filename:`Score_Report_${cls}_${period}.pdf`,
