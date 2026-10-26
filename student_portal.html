@@ -340,7 +340,13 @@ const load=m=>{$('view').innerHTML=`<div class="empty">⏳ ${m||'កំពុង
 const R2=x=>Number(Number(x).toFixed(2));
 const combine2=(a,b)=>(a>0&&b>0)?(a+b)/2:(a>0?a:(b>0?b:0));
 const rowOf=(t,p)=>SCORES.find(s=>s.score_type===t&&s.period===p);
-async function ensureScores(){if(!SCORES.length||view==='dash'){SCORES=await tk('student_scores')}}
+let RES_OPEN=true;
+async function getScores(){
+  try{const st=await rpc('student_results_status',{p_token:TOKEN});RES_OPEN=(st===null||st===undefined)?true:!!st}catch(e){RES_OPEN=true}
+  if(!RES_OPEN){SCORES=[];return SCORES}
+  SCORES=await tk('student_scores');return SCORES}
+const noRes=()=>`<div class="card" style="text-align:center;padding:34px 18px"><div style="font-size:46px">🔒</div><b style="font-size:17px">លទ្ធផលមិនទាន់ត្រូវបានផ្សាយ</b><p style="color:var(--muted);margin:8px 0 0">សូមរង់ចាំគ្រូផ្សាយលទ្ធផលរបស់ថ្នាក់អ្នក។</p></div>`;
+async function ensureScores(){if(!SCORES.length||view==='dash'){await getScores()}}
 function semCalc(months,exam){
   let sum=0,c=0;months.forEach(m=>{const r=rowOf('monthly',m);if(r&&+r.average>0){sum+=+r.average;c++}});
   const mo=c?sum/c:0,er=rowOf('semester',exam),ex=er&&+er.average>0?+er.average:0;
@@ -352,6 +358,7 @@ function gradeOf(a){a=+a;return a>=9?'A':a>=8?'B':a>=7?'C':a>=6?'D':a>=5?'E':'F'
 async function vDash(){
   load();
   try{await ensureScores()}catch(e){$('view').innerHTML=`<div class="empty">${esc(e.message)}</div>`;return}
+  if(!RES_OPEN){$('view').innerHTML=noRes();return}
   const done=ORDER.map((m,i)=>({m,i,r:rowOf('monthly',m)})).filter(x=>x.r&&+x.r.average>0);
   const cur=done.length?done[done.length-1]:null,prev=done.length>1?done[done.length-2]:null;
   const r=cur&&cur.r;
@@ -387,7 +394,8 @@ function tips(avg,up,hasPrev){
 let sMonth=MONTHS[new Date().getMonth()];
 async function vScore(){
   load();
-  try{SCORES=await tk('student_scores')}catch(e){$('view').innerHTML=`<div class="empty">${esc(e.message)}</div>`;return}
+  try{await getScores()}catch(e){$('view').innerHTML=`<div class="empty">${esc(e.message)}</div>`;return}
+  if(!RES_OPEN){$('view').innerHTML=noRes();return}
   await loadSubj();
   drawScore();
 }
