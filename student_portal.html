@@ -226,7 +226,9 @@ body.inroom[data-theme=dark],[data-theme=dark] body.inroom{background:linear-gra
 .cx-vid{display:block;max-width:min(280px,66vw);max-height:300px;border-radius:14px;margin:2px 0 4px;background:#000}
 .cx-play{display:flex;align-items:center;justify-content:center;background:var(--ac);font-size:17px;width:46px;height:46px}
 .cx-play i{margin-left:2px}
-@media(max-width:900px){body.inroom main{padding:10px 8px 84px!important}}
+html:has(body.inroom){overflow:hidden;height:100%}
+body.inroom{height:100dvh}
+@media(max-width:900px){body.inroom main{padding:8px 8px calc(76px + env(safe-area-inset-bottom))!important}body.inroom .top{display:none}}
 </style>
 </head>
 <body>
@@ -512,7 +514,7 @@ async function refreshChatList(){
   box.innerHTML=`<div class="cl-item" onclick="openRoom()"><div class="cl-av">🎓</div><div class="cl-mid"><b>សិស្ស · ថ្នាក់ទី${esc(ME.grade||'')} · ${schoolYear()}</b><small class="${last?'':'dim'}">${prev}</small></div><div class="cl-end">${last?`<span class="cl-t">${ago(last.created_at)}</span>`:''}${unread?`<span class="cl-bd">${unread>99?'99+':unread}</span>`:''}</div></div>`;
 }
 async function openRoom(){
-  chatRoom=true;clearInterval(chatTimer);chatLast=0;document.body.classList.add('inroom');
+  chatRoom=true;clearInterval(chatTimer);chatLast=0;document.body.classList.add('inroom');try{window.scrollTo(0,0);document.documentElement.scrollTop=0}catch(e){}
   chatAll=[];chatQ='';cxMem={};
   $('view').innerHTML=`<div class="card chat-room"><div class="cr-h"><button class="cx-ib" onclick="closeRoom()" aria-label="ត្រឡប់"><i class="fa-solid fa-arrow-left"></i></button><div class="cx-logo"><i class="fa-solid fa-graduation-cap"></i></div><div class="cx-title">សិស្ស · ថ្នាក់ទី${esc(ME.grade||'')} · ${schoolYear()}</div><button class="cx-ib" onclick="cxSearch()" aria-label="ស្វែងរក"><i class="fa-solid fa-magnifying-glass"></i></button><button class="cx-ib" onclick="openMembersS()" aria-label="សមាជិក"><i class="fa-solid fa-user-group"></i></button></div>
   <div class="cx-sbar" id="cxSbar"><i class="fa-solid fa-magnifying-glass" style="color:var(--muted)"></i><input id="cxSin" placeholder="ស្វែងរកសារ..." oninput="chatQ=this.value;renderChat(false)"><button class="cx-ib" style="width:30px;height:30px;font-size:14px" onclick="cxSearch()"><i class="fa-solid fa-xmark"></i></button></div>
