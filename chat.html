@@ -585,17 +585,26 @@ document.addEventListener('click',e=>{if(!e.target.closest('#emoji')&&!e.target.
 function toggleSearch(){const b=$('searchBar'),on=b.style.display==='flex';b.style.display=on?'none':'flex';if(on){$('searchInput').value='';onSearch('')}else $('searchInput').focus()}
 function onSearch(v){query=v;render(false)}
 async function openMembers(){
-  $('memModal').style.display='flex';drawMembers(uniqueUsers(Object.values(users)));
-  try{const{data}=await sb.from('users').select('id, teacher_id, teacher_name, username, role, assigned_classes, photo_url, gender, phone').order('id',{ascending:true});if(data)drawMembers(data)}catch(e){}
+  const cls=ROOM.startsWith('class_')?ROOM.slice(6):'';
+  $('memModal').style.display='flex';
+  const fit=u=>!cls||String(u.role||'').toLowerCase()==='admin'||String(u.assigned_classes||'').split(/[,;،\s]+/).map(cleanCls).includes(cls);
+  drawMembers(uniqueUsers(Object.values(users)).filter(fit));
+  try{
+    const[ur,sr]=await Promise.all([
+      sb.from('users').select('id, teacher_id, teacher_name, username, role, assigned_classes, photo_url, gender, phone').order('id',{ascending:true}),
+      cls?sb.from('students').select('id, student_name, gender, grade, photo_url').ilike('grade','%'+cls+'%').order('id',{ascending:true}):Promise.resolve({data:[]})]);
+    const st=(sr.data||[]).filter(x=>cleanCls(x.grade)===cls).map(x=>({id:'s'+x.id,teacher_name:x.student_name,username:'stu_'+x.id,photo_url:x.photo_url,_stu:1}));
+    if(ur.data)drawMembers(ur.data.filter(fit).concat(st));
+  }catch(e){}
 }
 const uniqueUsers=a=>{const s=new Set();return a.filter(u=>{const k=u.id||u.username;if(s.has(k))return false;s.add(k);return true})};
 const isMeUser=u=>!!MY_CODE&&[u.username,u.teacher_id].some(x=>String(x||'').toLowerCase()===MY_CODE);
 function drawMembers(list){
   const rank=u=>isMeUser(u)?0:(String(u.role||'').toLowerCase()==='admin'?1:2);
-  list=list.slice().sort((a,b)=>rank(a)-rank(b));
+  list=list.slice().sort((a,b)=>(a._stu?1:0)-(b._stu?1:0)||rank(a)-rank(b));
   $('memList').innerHTML=list.length?list.map(u=>{
     const nm=u.teacher_name||u.username||'',p=safeUrl(u.photo_url),me=isMeUser(u);
-    return`<div class="mem${me?' me':''}" data-who="${esc(u.username||u.teacher_id||nm)}"><div class="av" style="background:${hue(u.username||nm)}">${p?`<img src="${esc(p)}" data-ini="${esc(nm.charAt(0))}" alt="">`:esc(nm.charAt(0)||'U')}</div><div><b>${esc(nm)}${me?'<span class="chip">គណនីរបស់អ្នក</span>':''}</b><small>${esc(userSub(u)||'គ្រូបង្រៀន')}</small></div></div>`}).join(''):'<div class="empty">មិនមានបញ្ជីសមាជិកឡើយ</div>';
+    return`<div class="mem${me?' me':''}" data-who="${esc(u.username||u.teacher_id||nm)}"><div class="av" style="background:${hue(u.username||nm)}">${p?`<img src="${esc(p)}" data-ini="${esc(nm.charAt(0))}" alt="">`:esc(nm.charAt(0)||'U')}</div><div><b>${esc(nm)}${me?'<span class="chip">គណនីរបស់អ្នក</span>':''}</b><small>${esc(u._stu?'សិស្ស':(userSub(u)||'គ្រូបង្រៀន'))}</small></div></div>`}).join(''):'<div class="empty">មិនមានបញ្ជីសមាជិកឡើយ</div>';
 }
 $('memList').addEventListener('click',e=>{const r=e.target.closest('.mem');if(r)openProfile(r.dataset.who)});
 function closeMembers(){$('memModal').style.display='none'}
