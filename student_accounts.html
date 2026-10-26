@@ -248,7 +248,7 @@ function qrPng(s){
 }
 function dlData(url,name){const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>a.remove(),500)}
 const safeName=t=>String(t||'qr').replace(/[^\w\u1780-\u17FF-]+/g,'_').slice(0,40);
-const SCHOOL_TOP='ថ្នាលបឋម',SCHOOL_NAME='សាលាបឋមសិក្សាកំពង់ល្ពៅ';
+const SCHOOL_TOP='សាលាបឋម',SCHOOL_NAME='សាលាបឋមសិក្សាកំពង់ល្ពៅ';
 function rrect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath()}
 function fitText(c,t,x,y,maxW,font,size,minSize=14){let sz=size;do{c.font=font.replace('{s}',sz);if(c.measureText(t).width<=maxW||sz<=minSize)break;sz-=1}while(sz>minSize);c.fillText(t,x,y)}
 /* កាតព័ត៌មាន + QR (PNG) */
