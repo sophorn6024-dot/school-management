@@ -6,11 +6,11 @@
 <title>បន្ទប់សន្ទនា</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;900&family=Moul&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-html{font-size:clamp(16px,calc(11px + .6vw),24px)}
+html{font-size:clamp(14px,calc(12px + .3vw),16px)}
 :root,[data-theme="light"]{
   --bg:linear-gradient(135deg,#cfeafb 0%,#eaf5fd 35%,#f7fbff 70%,#fbf8ee 100%);
   --surface:#fff;--card:#f4f7fa;--border:#e3e9ef;--text:#14202b;--muted:#6b7a89;--primary:#0a6aa6;
@@ -26,8 +26,8 @@ html{font-size:clamp(16px,calc(11px + .6vw),24px)}
   --shadow:0 2px 0.75rem rgba(0,0,0,.4);--wave:#3b5366;--wave-on:#38bdf8;
   --c-user:#34d399;--c-admin:#fbbf24;--c-ai:#e879f9}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Kantumruy Pro','Khmer OS Battambang',-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
-button{font-family:inherit}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Khmer OS Battambang','Battambang',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font-family:inherit}
 .auth{display:none;min-height:100vh;align-items:center;justify-content:center;padding:1.5rem;text-align:center}
 .auth-card{background:var(--surface);border:1px solid var(--border);border-radius:1.5rem;padding:2.125rem 1.5rem;max-width:25rem;width:100%;box-shadow:var(--shadow)}
 .auth-card h2{color:#ef4444;font-size:1.0625rem;margin:0.75rem 0 0.5rem}.auth-card p{font-size:0.8125rem;color:var(--muted);line-height:1.6;margin-bottom:1.375rem}
@@ -98,6 +98,13 @@ video.vid{display:block;max-width:min(17.5rem,66vw);max-height:18.75rem;border-r
 .mlist{padding:0.625rem;overflow-y:auto;display:flex;flex-direction:column;gap:0.5rem}
 .mem{display:flex;align-items:center;gap:0.75rem;background:var(--card);border-radius:0.875rem;padding:0.5625rem 0.75rem}
 .mem.me{background:var(--chip-on);box-shadow:inset 0 0 0 2px var(--primary)}
+.ctl{display:flex;align-items:center;gap:.75rem;padding:.7rem 1.1rem;border-bottom:1px solid var(--border)}.ctl>i{color:var(--muted);width:1.3rem;text-align:center}.ctl>div{flex:1}.ctl b{font-size:.84rem;display:block;font-weight:600}.ctl small{font-size:.7rem;color:var(--muted)}
+.sw{width:2.6rem;height:1.5rem;border-radius:1rem;background:var(--border);position:relative;border:0;cursor:pointer;flex-shrink:0;transition:.2s}.sw::after{content:'';position:absolute;top:.17rem;left:.17rem;width:1.16rem;height:1.16rem;border-radius:50%;background:#fff;transition:.2s}.sw.on{background:var(--primary)}.sw.on::after{left:1.27rem}
+.dots{background:none;border:0;color:var(--muted);width:2rem;height:2rem;border-radius:50%;cursor:pointer;font-size:1rem}.dots:hover{background:var(--border)}
+.pop{position:fixed;z-index:99999;background:var(--surface);border:1px solid var(--border);border-radius:.9rem;box-shadow:var(--shadow);padding:.3rem;min-width:9rem}.pop button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--text);padding:.6rem .8rem;border-radius:.6rem;font-size:.82rem;cursor:pointer}.pop button:hover{background:var(--card)}
+.banbar{margin:.5rem .6rem 0;padding:.7rem .9rem;border-radius:.9rem;background:rgba(239,68,68,.12);color:#ef4444;font-size:.8rem;text-align:center;display:none}
+#memFoot{padding:.6rem}.delall{width:100%;background:none;border:1px solid rgba(239,68,68,.45);color:#ef4444;border-radius:.9rem;padding:.7rem;font-weight:700;font-size:.84rem;cursor:pointer;font-family:inherit}
+.chip.ban{background:#ef4444;color:#fff}.chip.tch{background:#0d7a5f;color:#fff}
 .chip{display:inline-block;margin-left:0.5rem;background:var(--primary);color:#fff;font-size:0.6875rem;font-weight:700;padding:2px 0.5625rem;border-radius:0.625rem;vertical-align:middle}
 [data-theme="dark"] .chip{color:#07151e}
 .mem .av{width:2.5rem;height:2.5rem;font-size:0.9375rem}.mem b{font-size:0.875rem;display:block}.mem small{font-size:0.75rem;color:var(--muted)}
@@ -176,7 +183,8 @@ video.vid{display:block;max-width:min(17.5rem,66vw);max-height:18.75rem;border-r
   <div class="dock" id="dock">
     <div class="emoji" id="emoji"></div>
     <div class="ctxbar" id="ctxbar"><i class="fa-solid fa-reply" id="ctxIco"></i><div class="ctxtxt"><b id="ctxTitle"></b><span id="ctxSnip"></span></div><button class="icon-btn" onclick="clearCtx()" title="បោះបង់">✕</button></div>
-    <div class="compose">
+    <div class="banbar" id="banbar"></div>
+    <div class="compose" id="compose">
       <div class="tools" id="tools">
         <button class="tool" onclick="toggleEmoji()" title="Emoji"><i class="fa-regular fa-face-smile"></i></button>
         <button class="tool" onclick="pickFile('video')" title="វីដេអូ"><i class="fa-solid fa-video"></i></button>
@@ -190,7 +198,7 @@ video.vid{display:block;max-width:min(17.5rem,66vw);max-height:18.75rem;border-r
   </div>
 </div>
 
-<div class="overlay" id="memModal" onclick="if(event.target===this)closeMembers()"><div class="modal"><div class="mhead"><span><i class="fa-solid fa-user-group"></i> សមាជិកទាំងអស់</span><button class="icon-btn" onclick="closeMembers()">✕</button></div><div class="mlist" id="memList"></div></div></div>
+<div class="overlay" id="memModal" onclick="if(event.target===this)closeMembers()"><div class="modal"><div class="mhead"><span><i class="fa-solid fa-user-group"></i> សមាជិក <small id="memCnt" style="color:var(--muted);font-weight:400"></small></span><button class="icon-btn" onclick="closeMembers()">✕</button></div><div id="memCtl"></div><div class="mlist" id="memList"></div><div id="memFoot"></div></div></div>
 <div class="overlay" id="profModal" style="z-index:120" onclick="if(event.target===this)closeProfile()"><div class="modal prof"><button class="icon-btn pclose" onclick="closeProfile()" title="បិទ">✕</button><div id="profBody"></div></div></div>
 <div class="overlay lightbox" id="lightbox" onclick="this.style.display='none'"><img id="lbImg" alt=""></div>
 <div class="toast" id="toast"></div>
@@ -499,6 +507,7 @@ function cycleSpeed(btn){const s=[1,1.5,2];rate=s[(s.indexOf(rate)+1)%s.length];
 
 /* ---------- sending ---------- */
 async function send(type,content,caption,rid){
+  const blk=blockedMsg();if(blk){toast(blk,true);throw new Error(blk)}
   if(rid===undefined)rid=takeReply();
   const payload={room_id:ROOM,sender_name:ME?.teacher_name||ME?.username||'',sender_code:ME?.username||ME?.teacher_id||'',sender_role:ME?.role||'teacher',type,content};
   if(caption)payload.caption=caption;
@@ -592,22 +601,88 @@ async function openMembers(){
   try{
     const[ur,sr]=await Promise.all([
       sb.from('users').select('id, teacher_id, teacher_name, username, role, assigned_classes, photo_url, gender, phone').order('id',{ascending:true}),
-      cls?sb.from('students').select('id, student_name, gender, grade, photo_url').ilike('grade','%'+cls+'%').order('id',{ascending:true}):Promise.resolve({data:[]})]);
-    const st=(sr.data||[]).filter(x=>cleanCls(x.grade)===cls).map(x=>({id:'s'+x.id,teacher_name:x.student_name,username:'stu_'+x.id,photo_url:x.photo_url,_stu:1}));
+      cls?sb.from('students').select('id, student_id, student_name, gender, grade, photo_url').ilike('grade','%'+cls+'%').order('id',{ascending:true}):Promise.resolve({data:[]})]);
+    const st=(sr.data||[]).filter(x=>cleanCls(x.grade)===cls).map(x=>({id:'s'+x.id,teacher_name:x.student_name,username:'stu_'+x.id,_code:String(x.student_id||'').toLowerCase(),photo_url:x.photo_url,_stu:1}));
     if(ur.data)drawMembers(ur.data.filter(fit).concat(st));
   }catch(e){}
 }
 const uniqueUsers=a=>{const s=new Set();return a.filter(u=>{const k=u.id||u.username;if(s.has(k))return false;s.add(k);return true})};
 const isMeUser=u=>!!MY_CODE&&[u.username,u.teacher_id].some(x=>String(x||'').toLowerCase()===MY_CODE);
+const codeOf=u=>String(u._code||u.username||u.teacher_id||'').toLowerCase();
 function drawMembers(list){
   const rank=u=>isMeUser(u)?0:(String(u.role||'').toLowerCase()==='admin'?1:2);
-  list=list.slice().sort((a,b)=>(a._stu?1:0)-(b._stu?1:0)||rank(a)-rank(b));
+  $('memCnt').textContent=list.length;list=list.slice().sort((a,b)=>(a._stu?1:0)-(b._stu?1:0)||rank(a)-rank(b));
+  const mod=canMod();
   $('memList').innerHTML=list.length?list.map(u=>{
-    const nm=u.teacher_name||u.username||'',p=safeUrl(u.photo_url),me=isMeUser(u);
-    return`<div class="mem${me?' me':''}" data-who="${esc(u.username||u.teacher_id||nm)}"><div class="av" style="background:${hue(u.username||nm)}">${p?`<img src="${esc(p)}" data-ini="${esc(nm.charAt(0))}" alt="">`:esc(nm.charAt(0)||'U')}</div><div><b>${esc(nm)}${me?'<span class="chip">គណនីរបស់អ្នក</span>':''}</b><small>${esc(u._stu?'សិស្ស':(userSub(u)||'គ្រូបង្រៀន'))}</small></div></div>`}).join(''):'<div class="empty">មិនមានបញ្ជីសមាជិកឡើយ</div>';
+    const nm=u.teacher_name||u.username||'',p=safeUrl(u.photo_url),me=isMeUser(u),c=codeOf(u),bn=BANS[c];
+    const adm=String(u.role||'').toLowerCase()==='admin';
+    const dots=mod&&!me&&!adm&&c&&(u._stu||IS_ADMIN)?`<button class="dots" data-code="${esc(c)}" data-nm="${esc(nm)}"><i class="fa-solid fa-ellipsis-vertical"></i></button>`:'';
+    return`<div class="mem${me?' me':''}" data-who="${esc(u.username||u.teacher_id||nm)}"><div class="av" style="background:${hue(u.username||nm)}">${p?`<img src="${esc(p)}" data-ini="${esc(nm.charAt(0))}" alt="">`:esc(nm.charAt(0)||'U')}</div><div style="flex:1;min-width:0"><b>${esc(nm)}${me?'<span class="chip">គណនីរបស់អ្នក</span>':''}${bn?'<span class="chip ban">ត្រូវហាម</span>':''}</b><small>${esc(u._stu?'សិស្ស':(userSub(u)||'គ្រូបង្រៀន'))}${bn?' · ដល់ '+esc(fmtUntil(bn)):''}</small></div>${dots}</div>`}).join(''):'<div class="empty">មិនមានបញ្ជីសមាជិកឡើយ</div>';
+  drawCtl();
 }
-$('memList').addEventListener('click',e=>{const r=e.target.closest('.mem');if(r)openProfile(r.dataset.who)});
-function closeMembers(){$('memModal').style.display='none'}
+/* ---------- ការគ្រប់គ្រងបន្ទប់: សរសេរបានតែគ្រូ / ហាម / លុបទាំងអស់ / បិទជូនដំណឹង ---------- */
+let SET={teachers_only:false},BANS={};
+const isClassRoom=()=>ROOM.startsWith('class_');
+function canMod(){if(IS_ADMIN)return true;if(!isClassRoom())return false;return String(ME&&ME.assigned_classes||'').split(/[,;،\s]+/).map(cleanCls).includes(ROOM.slice(6))}
+const fmtUntil=t=>{const d=new Date(t);return d.toLocaleDateString('en-GB')+' '+pad(d.getHours())+':'+pad(d.getMinutes())};
+const muteK=()=>'krou_chat_mute_'+MY_CODE+'_'+ROOM;
+const isMuted=()=>{try{return localStorage.getItem(muteK())==='1'}catch(e){return false}};
+async function loadControls(){
+  const room=ROOM;
+  try{
+    const[s1,b1]=await Promise.all([sb.from('chat_room_settings').select('*').eq('room_id',room).limit(1),sb.from('chat_bans').select('*').eq('room_id',room).gt('until',new Date().toISOString())]);
+    if(room!==ROOM)return;
+    SET=(s1.data&&s1.data[0])||{teachers_only:false};BANS={};(b1.data||[]).forEach(b=>BANS[String(b.user_code).toLowerCase()]=b.until);
+  }catch(e){}
+  applyComposer();
+}
+function blockedMsg(){
+  const b=BANS[MY_CODE];if(b&&new Date(b)>new Date())return'អ្នកត្រូវបានហាមមិនឱ្យសរសេរ ដល់ '+fmtUntil(b);
+  if(SET.teachers_only&&!IS_ADMIN&&!isClassRoom())return'បន្ទប់នេះអនុញ្ញាតឱ្យតែ Admin សរសេរ';
+  return'';
+}
+function applyComposer(){
+  const m=blockedMsg(),bb=$('banbar');
+  bb.style.display=m?'block':'none';bb.textContent=m;
+  $('compose').style.display=m?'none':'';
+}
+function drawCtl(){
+  const mod=canMod(),muted=isMuted();
+  $('memCtl').innerHTML=`<div class="ctl"><i class="fa-solid fa-bell-slash"></i><div><b>បិទជូនដំណឹងក្រុមនេះ</b><small>តែលើឧបករណ៍នេះ</small></div><button class="sw${muted?' on':''}" onclick="toggleMute()"></button></div>`+
+   (mod?`<div class="ctl"><i class="fa-solid fa-shield-halved"></i><div><b>${isClassRoom()?'តែគ្រូទេដែលសរសេរបាន':'តែ Admin ដែលសរសេរបាន'}</b></div><button class="sw${SET.teachers_only?' on':''}" onclick="toggleTeachersOnly()"></button></div>`:'');
+  $('memFoot').innerHTML=mod?'<button class="delall" onclick="deleteAllMsgs()"><i class="fa-solid fa-trash-can"></i> លុបសារទាំងអស់</button>':'';
+}
+function toggleMute(){try{isMuted()?localStorage.removeItem(muteK()):localStorage.setItem(muteK(),'1')}catch(e){}drawCtl()}
+async function toggleTeachersOnly(){
+  const v=!SET.teachers_only;
+  const{error}=await sb.from('chat_room_settings').upsert({room_id:ROOM,teachers_only:v,updated_by:MY_CODE,updated_at:new Date().toISOString()},{onConflict:'room_id'});
+  if(error){toast('មិនអាចរក្សាទុកបាន — សូមដំណើរការ chat_controls.sql',true);return}
+  SET.teachers_only=v;drawCtl();applyComposer();toast(v?'បានកំណត់៖ តែគ្រូទេដែលសរសេរបាន':'អនុញ្ញាតឱ្យគ្រប់គ្នាសរសេរ');
+}
+async function deleteAllMsgs(){
+  if(!confirm('លុបសារទាំងអស់ក្នុងបន្ទប់នេះ? មិនអាចត្រឡប់វិញបានទេ។'))return;
+  const{error}=await sb.from('chat_messages').delete().eq('room_id',ROOM);
+  if(error){toast('លុបមិនបាន៖ '+error.message,true);return}
+  msgs=[];lastSig='';render(true);closeMembers();toast('បានលុបសារទាំងអស់');
+}
+async function setBan(code,nm,days){
+  if(days===0){const{error}=await sb.from('chat_bans').delete().eq('room_id',ROOM).eq('user_code',code);if(error){toast('មិនបានទេ',true);return}delete BANS[code];toast('បានដកការហាម')}
+  else{const until=new Date(Date.now()+days*864e5).toISOString();
+    const{error}=await sb.from('chat_bans').upsert({room_id:ROOM,user_code:code,user_name:nm,until,banned_by:MY_CODE},{onConflict:'room_id,user_code'});
+    if(error){toast('មិនអាចហាមបាន — សូមដំណើរការ chat_controls.sql',true);return}BANS[code]=until;toast('បានហាម '+nm+' '+days+' ថ្ងៃ')}
+  const cur=[...document.querySelectorAll('#memList .mem')].length;openMembers();
+}
+function closePop(){document.querySelectorAll('.pop').forEach(p=>p.remove())}
+document.addEventListener('click',e=>{if(!e.target.closest('.pop')&&!e.target.closest('.dots'))closePop()});
+$('memList').addEventListener('click',e=>{
+  const d=e.target.closest('.dots');
+  if(d){e.stopPropagation();closePop();const code=d.dataset.code,nm=d.dataset.nm,banned=!!BANS[code];
+    const p=document.createElement('div');p.className='pop';
+    p.innerHTML='<button data-d="1">ហាម 1 ថ្ងៃ</button><button data-d="7">ហាម 7 ថ្ងៃ</button>'+(banned?'<button data-d="0">ដកការហាម</button>':'');
+    document.body.appendChild(p);const rc=d.getBoundingClientRect();p.style.top=Math.min(rc.bottom+4,innerHeight-p.offsetHeight-8)+'px';p.style.left=Math.max(8,rc.right-p.offsetWidth)+'px';
+    p.onclick=ev=>{const b=ev.target.closest('button');if(b){closePop();setBan(code,nm,+b.dataset.d)}};return}
+  const r=e.target.closest('.mem');if(r)openProfile(r.dataset.who)});
+function closeMembers(){closePop();$('memModal').style.display='none'}
 
 /* ---------- profile card ---------- */
 function openProfile(key){
@@ -665,7 +740,7 @@ async function drawRoomList(){
       if(last){const who=last.sender_name?String(last.sender_name).trim().split(/\s+/).pop()+'៖ ':'';
         prev=last.type==='audio'?'<i class="fa-solid fa-microphone"></i> សំឡេង':esc(who+snippetOf(last));}
       const av=rm.cls?'<div class="cl-av"><i class="fa-solid fa-graduation-cap"></i></div>':'<div class="cl-av logo2"><img src="logo.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement(\'i\'),{className:\'fa-solid fa-school\',style:\'color:#eab308;font-size:24px\'}))"></div>';
-      return `<div class="cl-item" data-room="${esc(rm.id)}">${av}<div class="cl-mid"><b>${esc(rm.title)}</b><small>${prev}</small></div><div class="cl-end">${last?`<span class="cl-t">${ago(last.created_at)}</span>`:''}${unread?`<span class="cl-bd">${unread>99?'99+':unread}</span>`:''}</div></div>`}).join('');
+      return `<div class="cl-item" data-room="${esc(rm.id)}">${av}<div class="cl-mid"><b>${esc(rm.title)}</b><small>${prev}</small></div><div class="cl-end">${last?`<span class="cl-t">${ago(last.created_at)}</span>`:''}${unread?`<span class="cl-bd"${localStorage.getItem('krou_chat_mute_'+MY_CODE+'_'+rm.id)==='1'?' style="background:var(--muted)"':''}>${unread>99?'99+':unread}</span>`:''}</div></div>`}).join('');
   }catch(e){}
   listBusy=false;
 }
@@ -677,7 +752,7 @@ function openRoom(id,viaList){
   ROOM=rm.id;APP_TITLE=rm.title;msgs=[];oldestReached=false;lastSig='';unseen=0;query='';$('searchInput').value='';
   $('mainLogo').style.display=rm.cls?'none':'flex';$('roomLogo').style.display=rm.cls?'flex':'none';
   fromList=viaList!==false;document.body.classList.remove('inlist');
-  fitViewport();render(true);subscribe();refresh(true);
+  SET={teachers_only:false};BANS={};applyComposer();loadControls();fitViewport();render(true);subscribe();refresh(true);
 }
 function showList(){
   stopAudio();try{if(chan)sb.removeChannel(chan);chan=null}catch(e){}
@@ -692,7 +767,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   loadUsers().then(()=>{lastSig='';if(!document.body.classList.contains('inlist'))refresh(true)});
   const q=new URLSearchParams(location.search).get('room');
   if(q)openRoom(q,false);else showList();
-  setInterval(()=>{if(document.hidden)return;if(document.body.classList.contains('inlist'))drawRoomList();else refresh()},10000);
+  setInterval(()=>{if(document.hidden)return;if(document.body.classList.contains('inlist'))drawRoomList();else{refresh();loadControls()}},10000);
   document.addEventListener('visibilitychange',()=>{if(document.hidden)return;if(document.body.classList.contains('inlist'))drawRoomList();else refresh()});
 });
 </script>
