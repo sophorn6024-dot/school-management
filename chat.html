@@ -198,7 +198,7 @@ video.vid{display:block;max-width:min(17.5rem,66vw);max-height:18.75rem;border-r
 <script>
 const sb=supabase.createClient("https://nggnuobnrxiqjtcwlvwk.supabase.co","sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML");
 /* ប្តូរឈ្មោះក្រុម និងបន្ទប់ (room_id) ក្នុងតារាង chat_messages នៅទីនេះ */
-const GLOBAL_TITLE='ក្រុមធំ-ដោះស្រាយចម្ងល់';
+const GLOBAL_TITLE='ជជែកគ្រូ';
 let APP_TITLE=GLOBAL_TITLE;
 let ROOM='global';
 const PAGE=60, MAX_VIDEO_MB=8, MAX_IMG_W=1200;
@@ -587,7 +587,7 @@ function onSearch(v){query=v;render(false)}
 async function openMembers(){
   const cls=ROOM.startsWith('class_')?ROOM.slice(6):'';
   $('memModal').style.display='flex';
-  const fit=u=>!cls||String(u.role||'').toLowerCase()==='admin'||String(u.assigned_classes||'').split(/[,;،\s]+/).map(cleanCls).includes(cls);
+  const fit=u=>!cls||(String(u.role||'').toLowerCase()!=='admin'&&String(u.assigned_classes||'').split(/[,;،\s]+/).map(cleanCls).includes(cls));
   drawMembers(uniqueUsers(Object.values(users)).filter(fit));
   try{
     const[ur,sr]=await Promise.all([
