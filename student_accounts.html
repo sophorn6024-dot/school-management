@@ -46,14 +46,15 @@ th{background:var(--in);color:var(--muted)}.sc{overflow:auto;max-height:60vh}
 .hide{display:none!important}
 /* បោះពុម្ពកាត */
 #printArea{display:none}
-@page{size:A4;margin:8mm}
+@page{size:A4 landscape;margin:0}
 @media print{
   html{background:#fff!important;color-scheme:light!important}
   body>*:not(#printArea){display:none!important}
-  #printArea{display:grid!important;grid-template-columns:1fr 1fr;gap:5mm;color:#000}
-  .slip{border:1.2px dashed #555;border-radius:3mm;padding:4mm;height:52mm;display:flex;gap:4mm;align-items:center;break-inside:avoid;font-size:11pt;line-height:1.35}
-  .slip .qr{width:30mm;height:30mm;flex-shrink:0}.slip .qr img,.slip .qr canvas{width:30mm!important;height:30mm!important}
-  .slip b{font-size:12pt}.slip .sc2{font-family:monospace;font-size:12.5pt;letter-spacing:.5px}
+  #printArea{display:block!important;color:#000}
+  .sheet{width:297mm;height:210mm;padding:2.5mm 1.5mm;display:grid;grid-template-columns:repeat(4,74mm);grid-template-rows:repeat(2,102.5mm);justify-content:center;align-content:center;gap:0;break-after:page;page-break-after:always}
+  .sheet:last-child{break-after:auto;page-break-after:auto}
+  .cardcell{display:flex;align-items:center;justify-content:center;padding:1.5mm;box-sizing:border-box;outline:.2mm dashed #c9c9c9;outline-offset:-.2mm}
+  .cardcell img{width:67mm;height:auto;display:block;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
 </head>
@@ -315,16 +316,18 @@ function csv(){
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+out],{type:'text/csv;charset=utf-8'}));a.download=`student_accounts_${$('cls').value}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
 }
 function qrUrl(t){return t?new URL('student_portal.html?qr='+t,location.href).href:''}
-function printSlips(){
+async function printSlips(){
   const rows=LIST.filter(s=>s.has_account&&s.is_active);if(!rows.length){uiAlert('មិនទាន់មានគណនី');return}
   const pa=$('printArea');pa.innerHTML='';
-  rows.forEach(s=>{
-    const d=document.createElement('div');d.className='slip';
-    d.innerHTML=`<div class="qr"></div><div><b>${esc(s.student_name)}</b><br>ថ្នាក់ ${esc($('cls').value)}<br>ឈ្មោះគណនី៖ <span class="sc2">${esc(s.username)}</span><br>ពាក្យសម្ងាត់៖ <span class="sc2">${esc(GEN[s.pk]||'(ចូលតាម QR)')}</span><br><small>${esc(new URL('student_portal.html',location.href).href)}</small></div>`;
-    pa.appendChild(d);
-    if(window.QRCode&&s.qr_token){try{new QRCode(d.querySelector('.qr'),{text:qrUrl(s.qr_token),width:140,height:140,correctLevel:QRCode.CorrectLevel.M})}catch(e){}}
-  });
-  setTimeout(()=>window.print(),400);
+  let imgs=[];
+  for(const s of rows){const u=await qrCard(s);if(!u){uiAlert('❌ មិនអាចបង្កើតរូប QR (ត្រូវការអ៊ីនធឺណិតដើម្បីផ្ទុក library)');return}imgs.push(u)}
+  for(let i=0;i<imgs.length;i+=8){
+    const sh=document.createElement('div');sh.className='sheet';
+    imgs.slice(i,i+8).forEach(u=>{const d=document.createElement('div');d.className='cardcell';d.innerHTML=`<img src="${u}" alt="">`;sh.appendChild(d)});
+    pa.appendChild(sh);
+  }
+  await Promise.all([...pa.querySelectorAll('img')].map(im=>im.decode?im.decode().catch(()=>{}):0));
+  setTimeout(()=>window.print(),300);
 }
 
 /* ── ឯកសារ ── */
