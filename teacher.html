@@ -12,6 +12,7 @@
 
   <!-- ⚡ Supabase JS Client (v2) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
     :root {
@@ -127,6 +128,26 @@
     }
     .icon-btn:hover { transform: translateY(-2px); }
     .icon-btn.edit { background: var(--primary-soft); color: var(--primary); border-color: rgba(2,132,199,.25); }
+    .trow { cursor: pointer; }
+    .trow.off { opacity: .55; }
+    .photo-click .avatar-thumb, .photo-click .avatar-fallback { width: 42px; height: 42px; box-shadow: 0 0 0 2px var(--primary-soft); transition: transform .15s; }
+    .trow:hover .photo-click .avatar-thumb, .trow:hover .photo-click .avatar-fallback { transform: scale(1.08); }
+    .badge-off { background: var(--danger-bg); color: var(--danger); font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: 6px; }
+    .vw-photo { width: 104px; height: 104px; border-radius: 24px; object-fit: cover; border: 3px solid var(--primary-soft); box-shadow: 0 8px 22px rgba(0,0,0,.25); }
+    .vw-photo.fb { display: inline-flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 800; color: #fff; background: linear-gradient(135deg, var(--primary), var(--primary-hover)); }
+    .vw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; text-align: left; }
+    .vw-item { background: var(--surface-elevated); border-radius: 12px; padding: 9px 12px; }
+    .vw-item.full { grid-column: 1 / -1; }
+    .vw-item small { display: block; font-size: 11px; color: var(--text-muted); font-weight: 700; }
+    .vw-item b { font-size: 13px; word-break: break-word; }
+    .vw-actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 22px; border-top: 1px solid var(--border); }
+    .vw-actions .btn { flex: 1 1 140px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
+    .btn.edit-b { background: var(--primary-soft); color: var(--primary); border: 1px solid rgba(2,132,199,.25); }
+    .btn.warn { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(217,119,6,.3); }
+    .btn.green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(22,163,74,.3); }
+    .btn.red { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(239,68,68,.3); }
+    @media (max-width: 700px) { .vw-grid { grid-template-columns: 1fr; } }
+    .icon-btn.qr { background: var(--green-bg); color: var(--green); border-color: rgba(22,163,74,.3); }
     .icon-btn.del { background: var(--danger-bg); color: var(--danger); border-color: rgba(239,68,68,.3); }
 
     /* MODAL */
@@ -358,13 +379,11 @@
       <table>
         <thead>
           <tr>
-            <th>ល.រ</th><th>រូបថត</th><th>អត្តលេខ</th><th>ឈ្មោះគ្រូ</th><th>ភេទ</th><th>លេខទូរសព្ទ</th>
-            <th>ថ្ងៃខែឆ្នាំកំណើត</th><th>ទីកន្លែងបច្ចុប្បន្ន</th><th>Username</th><th>តួនាទី</th>
-            <th>ថ្នាក់ទទួលបន្ទុក</th><th>សកម្មភាព</th>
+            <th>ល.រ</th><th>រូបថត</th><th>អត្តលេខ</th><th style="text-align:left">ឈ្មោះគ្រូ</th><th></th>
           </tr>
         </thead>
         <tbody id="tableBody">
-          <tr class="empty-row"><td colspan="12"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយកទិន្នន័យ...</td></tr>
+          <tr class="empty-row"><td colspan="5"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយកទិន្នន័យ...</td></tr>
         </tbody>
       </table>
     </div>
@@ -536,6 +555,27 @@
     </div>
   </div>
 
+  <!-- VIEW MODAL -->
+  <div class="modal-backdrop" id="vwBackdrop" onclick="if(event.target===this)closeView()">
+    <div class="modal-card" style="width:560px">
+      <div class="modal-header"><div class="modal-header-inner"><div class="modal-header-icon"><i class="fa-solid fa-id-badge"></i></div><div><h3>ព័ត៌មានគ្រូ</h3><p id="vwSub"></p></div></div><button type="button" class="modal-close" onclick="closeView()">✕</button></div>
+      <div class="modal-body" style="text-align:center" id="vwBody"></div>
+      <div class="vw-actions" id="vwActions"></div>
+    </div>
+  </div>
+
+  <!-- QR MODAL -->
+  <div class="modal-backdrop" id="tqrBackdrop" onclick="if(event.target===this)closeTqr()">
+    <div class="modal-card" style="width:360px;text-align:center">
+      <div class="modal-header"><div class="modal-header-inner"><div class="modal-header-icon"><i class="fa-solid fa-qrcode"></i></div><div style="text-align:left"><h3>QR ចូលប្រព័ន្ធ</h3><p id="tqrName"></p></div></div><button type="button" class="modal-close" onclick="closeTqr()">✕</button></div>
+      <div class="modal-body" style="padding:18px 22px">
+        <div id="tqrBox" style="display:inline-block;background:#fff;padding:10px;border-radius:14px"></div>
+        <p style="font-size:12px;color:var(--danger);margin-top:10px;line-height:1.6">កុំចែករំលែក — អ្នកណាស្កេនបាន អាចចូលក្នុងនាមគ្រូនេះ</p>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn cancel" onclick="tqrLoad(true)">បង្កើតថ្មី</button><div class="footer-actions"><button type="button" class="btn save" onclick="tqrDownload()">⬇ ទាញយក</button></div></div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
@@ -548,6 +588,7 @@
     const USERS_TABLE = 'users';
 
     const LIST_COLUMNS = 'id,teacher_id,teacher_name,gender,phone,dob,address,username,role,assigned_classes,photo_url';
+    const LIST_COLUMNS_ACTIVE = LIST_COLUMNS + ',is_active';
     const KHMER_MONTHS = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
 
     /* =========================================================
@@ -861,14 +902,15 @@
     ========================================================= */
     async function loadTeachers() {
       const body = document.getElementById('tableBody');
-      body.innerHTML = `<tr class="empty-row"><td colspan="12"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយកទិន្នន័យ...</td></tr>`;
+      body.innerHTML = `<tr class="empty-row"><td colspan="5"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយកទិន្នន័យ...</td></tr>`;
       try {
-        const { data, error } = await sb.from(USERS_TABLE).select(LIST_COLUMNS).order('id', { ascending: true });
+        let { data, error } = await sb.from(USERS_TABLE).select(LIST_COLUMNS_ACTIVE).order('id', { ascending: true });
+        if (error) ({ data, error } = await sb.from(USERS_TABLE).select(LIST_COLUMNS).order('id', { ascending: true }));   // មិនទាន់ run teacher_admin.sql
         if (error) throw error;
         teachers = data || [];
         renderTable();
       } catch (err) {
-        body.innerHTML = `<tr class="empty-row"><td colspan="12" style="color:var(--danger);">❌ មានបញ្ហាក្នុងការទាញយកទិន្នន័យ៖ ${escapeHtml(err.message || err)}</td></tr>`;
+        body.innerHTML = `<tr class="empty-row"><td colspan="5" style="color:var(--danger);">❌ មានបញ្ហាក្នុងការទាញយកទិន្នន័យ៖ ${escapeHtml(err.message || err)}</td></tr>`;
       }
     }
 
@@ -883,7 +925,7 @@
       const body = document.getElementById('tableBody');
 
       if (!filtered.length) {
-        body.innerHTML = `<tr class="empty-row"><td colspan="12">មិនមានទិន្នន័យគ្រូបង្រៀនឡើយ</td></tr>`;
+        body.innerHTML = `<tr class="empty-row"><td colspan="5">មិនមានទិន្នន័យគ្រូបង្រៀនឡើយ</td></tr>`;
         return;
       }
 
@@ -898,25 +940,14 @@
         const rawCls = String(t.assigned_classes || '').trim();
         const assignedCls = isAdmin ? 'គ្រប់ថ្នាក់' : (rawCls ? (rawCls.startsWith('ថ្នាក់') ? escapeHtml(rawCls) : 'ថ្នាក់ទី ' + escapeHtml(rawCls)) : '—');
 
+        const off = t.is_active === false;
         return `
-          <tr>
+          <tr class="trow ${off ? 'off' : ''}" onclick="openView(${Number(t.id)})">
             <td>${toKhmerNum(i + 1)}</td>
-            <td>${photoCell}</td>
+            <td><span class="photo-click" title="ចុចមើលព័ត៌មានលម្អិត">${photoCell}</span></td>
             <td><strong>${escapeHtml(t.teacher_id || '—')}</strong></td>
-            <td class="name-cell">${escapeHtml(t.teacher_name)}</td>
-            <td>${escapeHtml(t.gender || 'ប្រុស')}</td>
-            <td>${escapeHtml(t.phone || '—')}</td>
-            <td>${escapeHtml(t.dob || '—')}</td>
-            <td>${escapeHtml(t.address || '—')}</td>
-            <td><span class="badge-user">${escapeHtml(t.username)}</span></td>
-            <td><span class="badge-role ${isAdmin ? 'admin' : 'teacher'}">${isAdmin ? 'Admin' : 'គ្រូ'}</span></td>
-            <td>${assignedCls}</td>
-            <td>
-              <div class="row-actions">
-                <button class="icon-btn edit" title="កែប្រែ" onclick="editTeacher(${Number(t.id)})"><i class="fa-solid fa-pen"></i></button>
-                <button class="icon-btn del" title="លុប" onclick="deleteTeacherRow(${Number(t.id)})"><i class="fa-solid fa-trash"></i></button>
-              </div>
-            </td>
+            <td class="name-cell">${escapeHtml(t.teacher_name)} ${off ? '<span class="badge-off">បិទ</span>' : ''}</td>
+            <td style="color:var(--text-muted)"><i class="fa-solid fa-chevron-right"></i></td>
           </tr>`;
       }).join('');
     }
@@ -1119,6 +1150,101 @@
     }
 
     /* =========================================================
+       👤 VIEW / ACCOUNT CONTROL
+    ========================================================= */
+    let viewId = null;
+    function adminPw(msg) {
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      if (!pw) pw = prompt(msg || 'បញ្ចូលពាក្យសម្ងាត់ Admin របស់អ្នក') || '';
+      return pw;
+    }
+    function openView(id) {
+      const t = teachers.find(x => Number(x.id) === Number(id)); if (!t) return;
+      viewId = t.id;
+      const isAdmin = String(t.role).toLowerCase() === 'admin', off = t.is_active === false;
+      const rawCls = String(t.assigned_classes || '').trim();
+      const cls = isAdmin ? 'គ្រប់ថ្នាក់' : (rawCls ? (rawCls.startsWith('ថ្នាក់') ? rawCls : 'ថ្នាក់ទី ' + rawCls) : '—');
+      const photo = safeUrl(t.photo_url), initial = escapeHtml(String(t.teacher_name || '?').charAt(0));
+      const it = (l, v, full) => `<div class="vw-item ${full ? 'full' : ''}"><small>${l}</small><b>${escapeHtml(v || '—')}</b></div>`;
+      document.getElementById('vwSub').innerText = t.teacher_name || '';
+      document.getElementById('vwBody').innerHTML =
+        (photo ? `<img class="vw-photo" src="${escapeHtml(photo)}" alt="" onerror="this.outerHTML='<span class=&quot;vw-photo fb&quot;>${initial}</span>'">` : `<span class="vw-photo fb">${initial}</span>`) +
+        `<div style="margin-top:10px;font-size:17px;font-weight:800">${escapeHtml(t.teacher_name)}</div>` +
+        `<div style="margin-top:6px"><span class="badge-role ${isAdmin ? 'admin' : 'teacher'}">${isAdmin ? 'Admin' : 'គ្រូ'}</span> ` +
+        (off ? '<span class="badge-off">គណនីត្រូវបានបិទ</span>' : '<span class="badge-user">គណនីសកម្ម</span>') + '</div>' +
+        '<div class="vw-grid">' + it('អត្តលេខ', t.teacher_id) + it('ភេទ', t.gender) + it('លេខទូរសព្ទ', t.phone) + it('ថ្ងៃខែឆ្នាំកំណើត', t.dob) +
+        it('ថ្នាក់ទទួលបន្ទុក', cls) + it('Username', t.username) + it('ទីកន្លែងបច្ចុប្បន្ន', t.address, true) + '</div>';
+      const self = CURRENT_USER && String(CURRENT_USER.id) === String(t.id);
+      document.getElementById('vwActions').innerHTML =
+        `<button class="btn edit-b" onclick="closeView();editTeacher(${Number(t.id)})"><i class="fa-solid fa-pen"></i> កែប្រែ</button>` +
+        `<button class="btn green" onclick="closeView();openTqr(${Number(t.id)})"><i class="fa-solid fa-qrcode"></i> QR ចូលប្រព័ន្ធ</button>` +
+        `<button class="btn warn" onclick="resetTeacherPw(${Number(t.id)})"><i class="fa-solid fa-key"></i> កំណត់ពាក្យសម្ងាត់ឡើងវិញ</button>` +
+        (self ? '' : `<button class="btn ${off ? 'green' : 'warn'}" onclick="toggleTeacherActive(${Number(t.id)})"><i class="fa-solid ${off ? 'fa-lock-open' : 'fa-ban'}"></i> ${off ? 'បើកគណនី' : 'បិទគណនី'}</button>` +
+        `<button class="btn red" onclick="closeView();deleteTeacherRow(${Number(t.id)})"><i class="fa-solid fa-trash"></i> លុប</button>`);
+      document.getElementById('vwBackdrop').classList.add('show');
+    }
+    function closeView() { document.getElementById('vwBackdrop').classList.remove('show'); }
+    async function toggleTeacherActive(id) {
+      const t = teachers.find(x => Number(x.id) === Number(id)); if (!t) return;
+      const to = t.is_active === false;   // បើបិទស្រាប់ → បើក
+      if (!confirm(to ? `បើកគណនី "${t.teacher_name}" ឡើងវិញ?` : `បិទគណនី "${t.teacher_name}"? គ្រូនេះនឹងមិនអាចចូលប្រព័ន្ធបានទេ រហូតដល់បើកឡើងវិញ។`)) return;
+      const pw = adminPw(); if (!pw) return;
+      const { data, error } = await sb.rpc('staff_set_teacher_active', { p_u: CURRENT_USER.username, p_p: pw, p_id: t.id, p_active: to });
+      if (error) return showToast('❌ ' + (error.message || error) + ' (ត្រូវ run teacher_admin.sql)', true);
+      if (!data) return showToast('❌ ពាក្យសម្ងាត់មិនត្រឹមត្រូវ ឬគ្មានសិទ្ធិ', true);
+      showToast(to ? '✅ បានបើកគណនី' : '✅ បានបិទគណនី');
+      await loadTeachers(); openView(t.id);
+    }
+    async function resetTeacherPw(id) {
+      const t = teachers.find(x => Number(x.id) === Number(id)); if (!t) return;
+      const np = prompt(`កំណត់ពាក្យសម្ងាត់ថ្មីសម្រាប់ "${t.teacher_name}" (យ៉ាងតិច ៤ តួ)\nQR ចាស់របស់គ្រូនេះនឹងឈប់ប្រើបាន។`);
+      if (!np) return;
+      if (np.trim().length < 4) return showToast('⚠️ ពាក្យសម្ងាត់ខ្លីពេក', true);
+      const pw = adminPw(); if (!pw) return;
+      const { data, error } = await sb.rpc('staff_reset_teacher_password', { p_u: CURRENT_USER.username, p_p: pw, p_id: t.id, p_new: np });
+      if (error) return showToast('❌ ' + (error.message || error) + ' (ត្រូវ run teacher_admin.sql)', true);
+      if (!data) return showToast('❌ ពាក្យសម្ងាត់ Admin មិនត្រឹមត្រូវ ឬគ្មានសិទ្ធិ', true);
+      if (String(CURRENT_USER.id) === String(t.id)) { try { localStorage.setItem('krou_pw', np); } catch (e) {} }
+      showToast('✅ បានកំណត់ពាក្យសម្ងាត់ថ្មី — ប្រាប់គ្រូឱ្យប្រើពាក្យសម្ងាត់នេះ');
+    }
+
+    /* =========================================================
+       🔑 QR ចូលប្រព័ន្ធរបស់គ្រូ (Admin)
+    ========================================================= */
+    let tqrUser = null;
+    function openTqr(id) {
+      tqrUser = teachers.find(x => Number(x.id) === Number(id));
+      if (!tqrUser) return;
+      document.getElementById('tqrName').innerText = tqrUser.teacher_name || tqrUser.username;
+      tqrLoad(false);
+    }
+    function closeTqr() { document.getElementById('tqrBackdrop').classList.remove('show'); }
+    async function tqrLoad(reset) {
+      if (!tqrUser) return;
+      if (reset && !confirm('បង្កើត QR ថ្មី? QR ចាស់របស់គ្រូនេះនឹងឈប់ប្រើបាន។')) return;
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      if (!pw) { pw = prompt('បញ្ចូលពាក្យសម្ងាត់ Admin របស់អ្នក') || ''; if (!pw) return; }
+      const { data, error } = await sb.rpc('teacher_qr_admin', { p_u: CURRENT_USER.username, p_p: pw, p_user_id: tqrUser.id, p_reset: !!reset });
+      if (error) return showToast('❌ ' + (error.message || error) + ' (ត្រូវ run teacher_qr.sql ថ្មី)', true);
+      if (!data) { try { localStorage.removeItem('krou_pw'); } catch (e) {} return showToast('❌ ពាក្យសម្ងាត់មិនត្រឹមត្រូវ ឬគ្មានសិទ្ធិ', true); }
+      try { localStorage.setItem('krou_pw', pw); } catch (e) {}
+      const box = document.getElementById('tqrBox'); box.innerHTML = '';
+      new QRCode(box, { text: data, width: 230, height: 230, correctLevel: QRCode.CorrectLevel.M });
+      document.getElementById('tqrBackdrop').classList.add('show');
+      if (reset) showToast('✅ បានបង្កើត QR ថ្មី');
+    }
+    function tqrDownload() {
+      const cv = document.querySelector('#tqrBox canvas'); if (!cv || !tqrUser) return;
+      const o = document.createElement('canvas'); o.width = 520; o.height = 650; const c = o.getContext('2d');
+      c.fillStyle = '#fff'; c.fillRect(0, 0, 520, 650); c.fillStyle = '#0f172a'; c.textAlign = 'center';
+      c.font = '700 28px Battambang,sans-serif'; c.fillText('សាលាបឋមសិក្សាកំពង់ល្ពៅ', 260, 50);
+      c.drawImage(cv, 40, 80, 440, 440);
+      c.font = '700 30px Battambang,sans-serif'; c.fillText(tqrUser.teacher_name || tqrUser.username, 260, 572);
+      c.font = '20px Battambang,sans-serif'; c.fillStyle = '#64748b'; c.fillText('QR ចូលប្រព័ន្ធគ្រូ — កុំចែករំលែក', 260, 612);
+      const a = document.createElement('a'); a.download = 'qr-' + (tqrUser.username || 'teacher') + '.png'; a.href = o.toDataURL('image/png'); a.click();
+    }
+
+    /* =========================================================
        9. DELETE
     ========================================================= */
     async function deleteTeacherRow(id) {
@@ -1142,7 +1268,7 @@
     }
 
     document.getElementById('modalBackdrop').addEventListener('click', function (e) { if (e.target === this) closeModal(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeTqr(); closeView(); } });
     window.addEventListener('DOMContentLoaded', initPage);
   </script>
 </body>
