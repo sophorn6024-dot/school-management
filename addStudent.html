@@ -1395,7 +1395,7 @@ body{background:var(--bg)}
     let isMissingFilterActive = false;
     let searchDebounceTimer = null;
     let autoSaveTimers = {};
-    let sortDirectionAsc = false;
+    let sortDirectionAsc = true;
     let isSavingDrafts = false;
 
     let pendingImportStudents = [];
@@ -1663,20 +1663,27 @@ body{background:var(--bg)}
       }
 
       try {
-        let query = sb.from(STUDENTS_TABLE).select('*');
-        if (currentSelectedClass) {
-          query = query.in('grade', [
-            currentSelectedClass,
-            `ថ្នាក់ទី${currentSelectedClass}`,
-            `ថ្នាក់ទី ${currentSelectedClass}`
-          ]);
-        }
+        const mkQ = () => {
+          let q = sb.from(STUDENTS_TABLE).select('*');
+          if (currentSelectedClass) {
+            q = q.in('grade', [
+              currentSelectedClass,
+              `ថ្នាក់ទី${currentSelectedClass}`,
+              `ថ្នាក់ទី ${currentSelectedClass}`
+            ]);
+          }
+          return q;
+        };
 
         await probeAddrCols();
-        const { data, error } = await query.order('id', { ascending: true });
+        let { data, error } = await mkQ().order('name_sort', { ascending: true });
+        if (error) {
+          /* មិនទាន់រត់ student_name_sort.sql → ប្រើ id ហើយតម្រៀបក្នុងកម្មវិធី */
+          ({ data, error } = await mkQ().order('id', { ascending: true }));
+        }
         if (error) throw error;
 
-        studentsList = (data || []).map(row => ({
+        studentsList = (data || []).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km')).map(row => ({
           db_id: row.id,
           id: String(row.student_id || '').trim(),
           name: String(row.student_name || '').trim(),
