@@ -36,8 +36,30 @@
       --amber: #fbbf24; --amber-bg: rgba(245, 158, 11, 0.15);
     }
 
+    /* 🎨 ផ្ទៃទាំងអស់ទទួលពណ៌ពី theme មេ (ពណ៌ចម្បង ជ្រាបចូលក្នុងផ្ទៃ/ស៊ុម/ប្រអប់) */
+    :root {
+      --bg-app: color-mix(in srgb, var(--primary) 6%, #fbfcfe);
+      --surface-card: color-mix(in srgb, var(--primary) 2.5%, #ffffff);
+      --surface-elevated: color-mix(in srgb, var(--primary) 9%, #f1f5f9);
+      --border: color-mix(in srgb, var(--primary) 16%, #e2e8f0);
+      --input-border: color-mix(in srgb, var(--primary) 22%, #cbd5e1);
+      --input-bg: color-mix(in srgb, var(--primary) 2%, #ffffff);
+      --primary-soft: color-mix(in srgb, var(--primary) 15%, transparent);
+    }
+    [data-theme="dark"] {
+      --bg-app: color-mix(in srgb, var(--primary) 9%, #090e17);
+      --surface: color-mix(in srgb, var(--primary) 7%, #0f172a);
+      --surface-card: color-mix(in srgb, var(--primary) 9%, #111e33);
+      --surface-elevated: color-mix(in srgb, var(--primary) 14%, #162642);
+      --border: color-mix(in srgb, var(--primary) 22%, #1e293b);
+      --input-border: color-mix(in srgb, var(--primary) 28%, #233f66);
+      --input-bg: color-mix(in srgb, var(--primary) 10%, #162642);
+    }
+    .page-head h2, .section-title h4 { color: var(--primary); }
+    .table-panel, .modal-card, .dlg { box-shadow: 0 10px 30px color-mix(in srgb, var(--primary) 14%, transparent); }
+    table.tl tbody tr:hover, tbody tr:hover { background: color-mix(in srgb, var(--primary) 7%, transparent); }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kantumruy Pro', 'Battambang', sans-serif; }
-    html, body { background: var(--bg-app); color: var(--text-main); transition: background .25s, color .25s; min-height: 100vh; }
+    html, body { background: var(--bg-app) linear-gradient(180deg, color-mix(in srgb, var(--primary) 9%, transparent) 0%, transparent 280px) no-repeat; color: var(--text-main); transition: background .25s, color .25s; min-height: 100vh; }
     body { padding: 22px 24px 60px; }
 
     /* ══════════════ 🔒 AUTH & PERMISSION WRAPPERS ══════════════ */
@@ -127,7 +149,7 @@
       display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all .18s;
     }
     .icon-btn:hover { transform: translateY(-2px); }
-    .icon-btn.edit { background: var(--primary-soft); color: var(--primary); border-color: rgba(2,132,199,.25); }
+    .icon-btn.edit { background: var(--primary-soft); color: var(--primary); border-color: color-mix(in srgb, var(--primary) 30%, transparent); }
     .trow { cursor: pointer; }
     .trow.off { opacity: .55; }
     .photo-click .avatar-thumb, .photo-click .avatar-fallback { width: 42px; height: 42px; box-shadow: 0 0 0 2px var(--primary-soft); transition: transform .15s; }
@@ -142,7 +164,7 @@
     .vw-item b { font-size: 13px; word-break: break-word; }
     .vw-actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 22px; border-top: 1px solid var(--border); }
     .vw-actions .btn { flex: 1 1 140px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
-    .btn.edit-b { background: var(--primary-soft); color: var(--primary); border: 1px solid rgba(2,132,199,.25); }
+    .btn.edit-b { background: var(--primary-soft); color: var(--primary); border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent); }
     .btn.warn { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(217,119,6,.3); }
     .btn.green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(22,163,74,.3); }
     .btn.red { background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(239,68,68,.3); }
@@ -193,7 +215,7 @@
     }
     .photo-upload-label {
       display: inline-flex; align-items: center; gap: 6px; background: var(--primary-soft); color: var(--primary);
-      border: 1px solid rgba(2,132,199,.25); padding: 6px 12px; border-radius: 8px; font-size: 11.5px; font-weight: 700; cursor: pointer;
+      border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent); padding: 6px 12px; border-radius: 8px; font-size: 11.5px; font-weight: 700; cursor: pointer;
     }
     .photo-upload-label:hover { filter: brightness(1.1); }
     
@@ -666,7 +688,7 @@
       const root = document.documentElement;
       root.style.setProperty('--primary', primaryColor);
       root.style.setProperty('--primary-hover', primaryHover || primaryColor);
-      root.style.setProperty('--primary-soft', primarySoft || 'rgba(2, 132, 199, 0.15)');
+      root.style.setProperty('--primary-soft', primarySoft || 'color-mix(in srgb, ' + primaryColor + ' 15%, transparent)');
       root.style.setProperty('--input-focus', primaryColor);
     }
 
