@@ -1198,7 +1198,7 @@ async function reload(keepAsOf){
   try{
     const {data,error}=await sb.from('students').select('id, student_id, student_name, gender, dob, grade, dropout_semester').order('id',{ascending:true});
     if(error)throw error;
-    STU=(data||[]).filter(s=>cleanGrade(s.grade)===CUR.cls);
+    STU=(data||[]).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km')).filter(s=>cleanGrade(s.grade)===CUR.cls);
     await loadFlags();
     TEACHER=await fetchTeacher(CUR.cls);
     document.querySelectorAll('.ed[data-k]').forEach(el=>{if(INFO[el.dataset.k]===undefined)el.textContent=el.dataset.def||el.textContent});
