@@ -2376,6 +2376,7 @@ function applyDayTheme() {
   root.style.setProperty('--sidebar-active-btn-shadow', themeConfig.activeBtnShadow);
   const sp = softPalette(themeConfig, isDark);
   root.style.setProperty('--primary', sp.primary);
+  try{localStorage.setItem('krou_theme_primary',sp.primary)}catch(e){}
   root.style.setProperty('--primary-hover', sp.hover);
   root.style.setProperty('--primary-soft', sp.soft);
   /* របាចំហៀង + របាខាងក្រោម៖ gradient ស្រាលៗ */
@@ -2625,6 +2626,7 @@ async function handleLoginSubmit(e) {
     }
     CURRENT_USER = data;
     localStorage.setItem('krou_supabase_user', JSON.stringify(CURRENT_USER));
+    try { localStorage.setItem('krou_pw', p); } catch(e) {}
     TEACHER_NAME = data.teacher_name || '';
     TEACHER_PHOTO_URL = data.photo_url || '';
     USER_ROLE = data.role || 'teacher';
@@ -2670,7 +2672,7 @@ window.addEventListener('storage', function(e) {
 async function doLogout() {
   if (!(await askConfirm('តើអ្នកពិតជាចង់ចាកចេញពីប្រព័ន្ធមែនទេ?'))) return;
   stopChatNotifier();
-  localStorage.removeItem('krou_supabase_user');
+  localStorage.removeItem('krou_supabase_user');localStorage.removeItem('krou_pw');
   localStorage.removeItem('krou_active_page');
   try { history.replaceState(null, '', ' '); } catch(e) {}
   try { document.getElementById('pageFrame').src = 'about:blank'; } catch(e) {}
@@ -2680,7 +2682,7 @@ async function doLogout() {
 }
 function forceLogoutDeleted(reasonMsg) {
   stopChatNotifier();
-  localStorage.removeItem('krou_supabase_user');
+  localStorage.removeItem('krou_supabase_user');localStorage.removeItem('krou_pw');
   localStorage.removeItem('krou_active_page');
   try { history.replaceState(null, '', ' '); } catch(e) {}
   currentPage = 'dashboard';
