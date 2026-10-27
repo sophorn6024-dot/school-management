@@ -318,6 +318,40 @@
     .toast.show { opacity: 1; transform: translateY(0); }
     .toast.err { background: #dc2626; }
 
+
+    /* ── POPUP ស្អាត ── */
+    .dlg-bg { position: fixed; inset: 0; z-index: 100000; background: rgba(10,18,32,.55); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; padding: 18px; animation: fadeBackdrop .15s ease-out; }
+    .dlg { width: min(400px,100%); background: var(--surface-card); color: var(--text-main); border: 1px solid var(--border); border-radius: 24px; box-shadow: 0 30px 80px rgba(0,0,0,.4); padding: 26px 22px 18px; text-align: center; animation: modalIn .22s ease both; }
+    .dlg .ic { width: 62px; height: 62px; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 30px; background: var(--primary-soft); }
+    .dlg.ok .ic { background: var(--green-bg); } .dlg.err .ic { background: var(--danger-bg); } .dlg.warn .ic { background: var(--amber-bg); }
+    .dlg h3 { margin: 0 0 6px; font-size: 17px; } .dlg p { color: var(--text-muted); font-size: 14px; line-height: 1.7; white-space: pre-line; word-break: break-word; }
+    .dlg input { width: 100%; margin-top: 14px; height: 44px; border-radius: 12px; border: 1.5px solid var(--input-border); background: var(--input-bg); color: var(--text-main); padding: 0 14px; font-size: 14px; text-align: center; outline: none; }
+    .dlg input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-soft); }
+    .dlg .acts { display: flex; gap: 10px; margin-top: 20px; }
+    .dlg .acts button { flex: 1; border: 1px solid var(--border); background: var(--surface-elevated); color: var(--text-main); padding: 11px; border-radius: 14px; cursor: pointer; font-weight: 700; font-size: 14px; }
+    .dlg .acts button.pri { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); border-color: transparent; color: #fff; }
+    .dlg.err .acts button.pri { background: var(--danger); }
+    /* ── តារាងបែបថ្មី ── */
+    .table-panel { padding: 0; }
+    .tp-title { padding: 18px 22px 6px; font-size: 16px; font-weight: 800; }
+    table.tl { width: 100%; border-collapse: collapse; }
+    table.tl thead th { background: transparent; color: var(--text-main); text-align: left; padding: 16px 18px; font-size: 13.5px; font-weight: 800; border-bottom: 1.5px solid var(--border); border-left: 1px solid var(--border); white-space: nowrap; }
+    table.tl thead th:first-child { border-left: none; }
+    table.tl tbody td { text-align: left; padding: 11px 18px; border-bottom: 1px solid var(--border); white-space: nowrap; font-size: 13.5px; }
+    .who { display: flex; align-items: center; gap: 12px; }
+    .who .avatar-thumb, .who .avatar-fallback { width: 42px; height: 42px; box-shadow: 0 0 0 2px var(--primary-soft); flex-shrink: 0; cursor: pointer; }
+    .who b { display: block; font-size: 14px; } .who small { color: var(--text-muted); font-size: 12px; }
+    .pill { display: inline-block; padding: 4px 12px; border-radius: 999px; border: 1px solid color-mix(in srgb, var(--primary) 45%, transparent); color: var(--primary); background: var(--primary-soft); font-size: 12px; font-weight: 700; }
+    .dots { width: 34px; height: 34px; border-radius: 10px; border: 0; background: transparent; color: var(--text-muted); cursor: pointer; font-size: 17px; }
+    .dots:hover, .dots.on { background: var(--surface-elevated); color: var(--text-main); }
+    .row-menu { display: none; position: fixed; z-index: 3000; min-width: 220px; background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 18px 44px rgba(0,0,0,.3); padding: 6px; }
+    .row-menu.show { display: block; animation: calPopAnim .14s ease-out; }
+    .row-menu button { display: flex; align-items: center; gap: 11px; width: 100%; padding: 10px 12px; border: 0; background: transparent; color: var(--text-main); font-size: 13.5px; font-weight: 600; border-radius: 9px; cursor: pointer; text-align: left; }
+    .row-menu button i { width: 18px; text-align: center; color: var(--text-muted); }
+    .row-menu button:hover { background: var(--surface-elevated); }
+    .row-menu button.dng, .row-menu button.dng i { color: var(--danger); }
+    .row-menu hr { border: 0; border-top: 1px solid var(--border); margin: 4px 0; }
+    @media (max-width: 700px) { .hide-m { display: none; } table.tl thead th, table.tl tbody td { padding: 10px 12px; } }
     @media (max-width: 700px) {
       body { padding: 14px 12px 40px; }
       .form-grid { grid-template-columns: 1fr; }
@@ -376,14 +410,15 @@
     </div>
 
     <div class="table-panel">
-      <table>
+      <div class="tp-title">បញ្ជីឈ្មោះគ្រូ</div>
+      <table class="tl">
         <thead>
           <tr>
-            <th>ល.រ</th><th>រូបថត</th><th>អត្តលេខ</th><th style="text-align:left">ឈ្មោះគ្រូ</th><th></th>
+            <th>ឈ្មោះ</th><th class="hide-m">អត្តលេខ</th><th class="hide-m">ភេទ</th><th>តួនាទី</th><th class="hide-m">ថ្នាក់</th><th style="text-align:center">សកម្មភាព</th>
           </tr>
         </thead>
         <tbody id="tableBody">
-          <tr class="empty-row"><td colspan="5"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយកទិន្នន័យ...</td></tr>
+          <tr class="empty-row"><td colspan="6"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយកទិន្នន័យ...</td></tr>
         </tbody>
       </table>
     </div>
@@ -577,6 +612,7 @@
   </div>
 
   <div class="toast" id="toast"></div>
+  <div id="rowMenu" class="row-menu"></div>
 
   <script>
     /* =========================================================
@@ -669,6 +705,24 @@
     const khmerDigits = ['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
     function toKhmerNum(n) { return String(n).replace(/\d/g, d => khmerDigits[d]); }
 
+
+    /* ── POPUP ស្អាត (ជំនួស alert/confirm/prompt) ── */
+    function uiDlg(msg, o) {
+      o = o || {};
+      return new Promise(res => {
+        let kind = o.confirm || o.input ? 'warn' : 'info', icon = o.icon || (o.input ? '🔑' : (o.confirm ? '❓' : 'ℹ️')), title = o.title || (o.input ? 'បញ្ចូលព័ត៌មាន' : (o.confirm ? 'សូមបញ្ជាក់' : 'សេចក្តីជូនដំណឹង'));
+        if (o.danger) { kind = 'err'; icon = '🗑️'; }
+        const bg = document.createElement('div'); bg.className = 'dlg-bg';
+        bg.innerHTML = `<div class="dlg ${kind}" role="dialog"><div class="ic">${icon}</div><h3>${escapeHtml(title)}</h3><p>${escapeHtml(msg)}</p>${o.input ? `<input id="dlgIn" type="${o.type || 'text'}" placeholder="${escapeHtml(o.placeholder || '')}" autocomplete="new-password">` : ''}<div class="acts"><button data-v="0">បដិសេធ</button><button class="pri" data-v="1">${escapeHtml(o.okText || 'យល់ព្រម')}</button></div></div>`;
+        const inp = bg.querySelector('#dlgIn');
+        const done = v => { bg.remove(); document.removeEventListener('keydown', kd); res(v ? (o.input ? inp.value : true) : (o.input ? null : false)); };
+        const kd = e => { if (e.key === 'Escape') done(false); if (e.key === 'Enter') done(true); };
+        bg.addEventListener('click', e => { const b = e.target.closest('button'); if (b) done(b.dataset.v === '1'); else if (e.target === bg) done(false); });
+        document.addEventListener('keydown', kd); document.body.appendChild(bg); (inp || bg.querySelector('.pri')).focus();
+      });
+    }
+    const uiConfirm = (m, o) => uiDlg(m, Object.assign({ confirm: true }, o || {}));
+
     let toastTimer;
     function showToast(msg, isErr) {
       const t = document.getElementById('toast');
@@ -741,8 +795,8 @@
       }
     }
 
-    function removeTeacherPhoto() {
-      if (!confirm('តើអ្នកពិតជាចង់លុបរូបថតគ្រូនេះមែនទេ?')) return;
+    async function removeTeacherPhoto() {
+      if (!await uiConfirm('តើអ្នកពិតជាចង់លុបរូបថតគ្រូនេះមែនទេ?', { danger: true, okText: 'លុប' })) return;
       pickedPhotoBase64 = null;
       photoDeleteRequested = true;
       document.getElementById('fPhoto').value = '';
@@ -902,7 +956,7 @@
     ========================================================= */
     async function loadTeachers() {
       const body = document.getElementById('tableBody');
-      body.innerHTML = `<tr class="empty-row"><td colspan="5"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយកទិន្នន័យ...</td></tr>`;
+      body.innerHTML = `<tr class="empty-row"><td colspan="6"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយកទិន្នន័យ...</td></tr>`;
       try {
         let { data, error } = await sb.from(USERS_TABLE).select(LIST_COLUMNS_ACTIVE).order('id', { ascending: true });
         if (error) ({ data, error } = await sb.from(USERS_TABLE).select(LIST_COLUMNS).order('id', { ascending: true }));   // មិនទាន់ run teacher_admin.sql
@@ -910,7 +964,7 @@
         teachers = data || [];
         renderTable();
       } catch (err) {
-        body.innerHTML = `<tr class="empty-row"><td colspan="5" style="color:var(--danger);">❌ មានបញ្ហាក្នុងការទាញយកទិន្នន័យ៖ ${escapeHtml(err.message || err)}</td></tr>`;
+        body.innerHTML = `<tr class="empty-row"><td colspan="6" style="color:var(--danger);">❌ មានបញ្ហាក្នុងការទាញយកទិន្នន័យ៖ ${escapeHtml(err.message || err)}</td></tr>`;
       }
     }
 
@@ -925,7 +979,7 @@
       const body = document.getElementById('tableBody');
 
       if (!filtered.length) {
-        body.innerHTML = `<tr class="empty-row"><td colspan="5">មិនមានទិន្នន័យគ្រូបង្រៀនឡើយ</td></tr>`;
+        body.innerHTML = `<tr class="empty-row"><td colspan="6">មិនមានទិន្នន័យគ្រូបង្រៀនឡើយ</td></tr>`;
         return;
       }
 
@@ -943,11 +997,12 @@
         const off = t.is_active === false;
         return `
           <tr class="trow ${off ? 'off' : ''}" onclick="openView(${Number(t.id)})">
-            <td>${toKhmerNum(i + 1)}</td>
-            <td><span class="photo-click" title="ចុចមើលព័ត៌មានលម្អិត">${photoCell}</span></td>
-            <td><strong>${escapeHtml(t.teacher_id || '—')}</strong></td>
-            <td class="name-cell">${escapeHtml(t.teacher_name)} ${off ? '<span class="badge-off">បិទ</span>' : ''}</td>
-            <td style="color:var(--text-muted)"><i class="fa-solid fa-chevron-right"></i></td>
+            <td><div class="who"><span title="មើលព័ត៌មានលម្អិត">${photoCell}</span><div><b>${escapeHtml(t.teacher_name)} ${off ? '<span class="badge-off">បិទ</span>' : ''}</b><small>@${escapeHtml(t.username)}</small></div></div></td>
+            <td class="hide-m"><strong>${escapeHtml(t.teacher_id || '—')}</strong></td>
+            <td class="hide-m">${escapeHtml(t.gender || '—')}</td>
+            <td><span class="badge-role ${isAdmin ? 'admin' : 'teacher'}">${isAdmin ? 'Admin' : 'គ្រូ'}</span></td>
+            <td class="hide-m"><span class="pill">${assignedCls}</span></td>
+            <td style="text-align:center"><button class="dots" title="សកម្មភាព" onclick="event.stopPropagation();openRowMenu(event,${Number(t.id)})"><i class="fa-solid fa-ellipsis-vertical"></i></button></td>
           </tr>`;
       }).join('');
     }
@@ -1149,13 +1204,35 @@
       return false;
     }
 
+    function closeRowMenu() { const m = document.getElementById('rowMenu'); m.classList.remove('show'); document.querySelectorAll('.dots.on').forEach(b => b.classList.remove('on')); }
+    function openRowMenu(ev, id) {
+      const t = teachers.find(x => Number(x.id) === Number(id)); if (!t) return;
+      const m = document.getElementById('rowMenu'), btn = ev.currentTarget;
+      const off = t.is_active === false, self = CURRENT_USER && String(CURRENT_USER.id) === String(t.id);
+      if (m.classList.contains('show') && btn.classList.contains('on')) return closeRowMenu();
+      closeRowMenu(); btn.classList.add('on');
+      m.innerHTML = `<button onclick="closeRowMenu();openView(${t.id})"><i class="fa-solid fa-id-badge"></i>មើលព័ត៌មាន</button>
+        <button onclick="closeRowMenu();editTeacher(${t.id})"><i class="fa-solid fa-pen"></i>កែប្រែ</button>
+        <button onclick="closeRowMenu();openTqr(${t.id})"><i class="fa-solid fa-qrcode"></i>QR ចូលប្រព័ន្ធ</button>
+        <hr>
+        <button onclick="closeRowMenu();resetTeacherPw(${t.id})"><i class="fa-solid fa-key"></i>កំណត់ពាក្យសម្ងាត់ឡើងវិញ</button>` +
+        (self ? '' : `<button onclick="closeRowMenu();toggleTeacherActive(${t.id})"><i class="fa-solid ${off ? 'fa-lock-open' : 'fa-ban'}"></i>${off ? 'បើកគណនី' : 'បិទគណនី'}</button><hr>
+        <button class="dng" onclick="closeRowMenu();deleteTeacherRow(${t.id})"><i class="fa-solid fa-trash"></i>លុប</button>`);
+      m.classList.add('show');
+      const r = btn.getBoundingClientRect(), w = m.offsetWidth, h = m.offsetHeight;
+      m.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + 'px';
+      m.style.top = (r.bottom + h + 10 > innerHeight ? Math.max(8, r.top - h - 4) : r.bottom + 4) + 'px';
+    }
+    document.addEventListener('click', e => { if (!e.target.closest('#rowMenu')) closeRowMenu(); });
+    window.addEventListener('scroll', closeRowMenu, true); window.addEventListener('resize', closeRowMenu);
+
     /* =========================================================
        👤 VIEW / ACCOUNT CONTROL
     ========================================================= */
     let viewId = null;
-    function adminPw(msg) {
+    async function adminPw(msg) {
       let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
-      if (!pw) pw = prompt(msg || 'បញ្ចូលពាក្យសម្ងាត់ Admin របស់អ្នក') || '';
+      if (!pw) pw = (await uiDlg(msg || 'បញ្ចូលពាក្យសម្ងាត់ Admin របស់អ្នក ដើម្បីបន្ត', { input: true, type: 'password', placeholder: 'ពាក្យសម្ងាត់ Admin' })) || '';
       return pw;
     }
     function openView(id) {
@@ -1187,8 +1264,8 @@
     async function toggleTeacherActive(id) {
       const t = teachers.find(x => Number(x.id) === Number(id)); if (!t) return;
       const to = t.is_active === false;   // បើបិទស្រាប់ → បើក
-      if (!confirm(to ? `បើកគណនី "${t.teacher_name}" ឡើងវិញ?` : `បិទគណនី "${t.teacher_name}"? គ្រូនេះនឹងមិនអាចចូលប្រព័ន្ធបានទេ រហូតដល់បើកឡើងវិញ។`)) return;
-      const pw = adminPw(); if (!pw) return;
+      if (!await uiConfirm(to ? `បើកគណនី "${t.teacher_name}" ឡើងវិញ?` : `បិទគណនី "${t.teacher_name}"? គ្រូនេះនឹងមិនអាចចូលប្រព័ន្ធបានទេ រហូតដល់បើកឡើងវិញ។`, { icon: to ? '🔓' : '🚫', okText: to ? 'បើកគណនី' : 'បិទគណនី' })) return;
+      const pw = await adminPw(); if (!pw) return;
       const { data, error } = await sb.rpc('staff_set_teacher_active', { p_u: CURRENT_USER.username, p_p: pw, p_id: t.id, p_active: to });
       if (error) return showToast('❌ ' + (error.message || error) + ' (ត្រូវ run teacher_admin.sql)', true);
       if (!data) return showToast('❌ ពាក្យសម្ងាត់មិនត្រឹមត្រូវ ឬគ្មានសិទ្ធិ', true);
@@ -1197,10 +1274,10 @@
     }
     async function resetTeacherPw(id) {
       const t = teachers.find(x => Number(x.id) === Number(id)); if (!t) return;
-      const np = prompt(`កំណត់ពាក្យសម្ងាត់ថ្មីសម្រាប់ "${t.teacher_name}" (យ៉ាងតិច ៤ តួ)\nQR ចាស់របស់គ្រូនេះនឹងឈប់ប្រើបាន។`);
+      const np = await uiDlg(`កំណត់ពាក្យសម្ងាត់ថ្មីសម្រាប់ "${t.teacher_name}" (យ៉ាងតិច ៤ តួ)\nQR ចាស់របស់គ្រូនេះនឹងឈប់ប្រើបាន។`, { input: true, placeholder: 'ពាក្យសម្ងាត់ថ្មី (យ៉ាងតិច ៤ តួ)', okText: 'កំណត់' });
       if (!np) return;
       if (np.trim().length < 4) return showToast('⚠️ ពាក្យសម្ងាត់ខ្លីពេក', true);
-      const pw = adminPw(); if (!pw) return;
+      const pw = await adminPw(); if (!pw) return;
       const { data, error } = await sb.rpc('staff_reset_teacher_password', { p_u: CURRENT_USER.username, p_p: pw, p_id: t.id, p_new: np });
       if (error) return showToast('❌ ' + (error.message || error) + ' (ត្រូវ run teacher_admin.sql)', true);
       if (!data) return showToast('❌ ពាក្យសម្ងាត់ Admin មិនត្រឹមត្រូវ ឬគ្មានសិទ្ធិ', true);
@@ -1221,9 +1298,9 @@
     function closeTqr() { document.getElementById('tqrBackdrop').classList.remove('show'); }
     async function tqrLoad(reset) {
       if (!tqrUser) return;
-      if (reset && !confirm('បង្កើត QR ថ្មី? QR ចាស់របស់គ្រូនេះនឹងឈប់ប្រើបាន។')) return;
+      if (reset && !await uiConfirm('បង្កើត QR ថ្មី? QR ចាស់របស់គ្រូនេះនឹងឈប់ប្រើបាន។', { icon: '📱', okText: 'បង្កើតថ្មី' })) return;
       let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
-      if (!pw) { pw = prompt('បញ្ចូលពាក្យសម្ងាត់ Admin របស់អ្នក') || ''; if (!pw) return; }
+      if (!pw) { pw = (await uiDlg('បញ្ចូលពាក្យសម្ងាត់ Admin របស់អ្នក ដើម្បីបន្ត', { input: true, type: 'password', placeholder: 'ពាក្យសម្ងាត់ Admin' })) || ''; if (!pw) return; }
       const { data, error } = await sb.rpc('teacher_qr_admin', { p_u: CURRENT_USER.username, p_p: pw, p_user_id: tqrUser.id, p_reset: !!reset });
       if (error) return showToast('❌ ' + (error.message || error) + ' (ត្រូវ run teacher_qr.sql ថ្មី)', true);
       if (!data) { try { localStorage.removeItem('krou_pw'); } catch (e) {} return showToast('❌ ពាក្យសម្ងាត់មិនត្រឹមត្រូវ ឬគ្មានសិទ្ធិ', true); }
@@ -1255,7 +1332,7 @@
         showToast('⚠️ មិនអាចលុបគណនីដែលកំពុងប្រើប្រាស់បានទេ', true);
         return;
       }
-      if (!confirm('តើអ្នកពិតជាចង់លុបគ្រូ "' + (t.teacher_name || '') + '" មែនទេ?')) return;
+      if (!await uiConfirm('តើអ្នកពិតជាចង់លុបគ្រូ "' + (t.teacher_name || '') + '" មែនទេ? ទិន្នន័យនេះមិនអាចយកមកវិញបានទេ។', { danger: true, okText: 'លុប' })) return;
 
       try {
         const { error } = await sb.from(USERS_TABLE).delete().eq('id', t.id);
@@ -1268,7 +1345,7 @@
     }
 
     document.getElementById('modalBackdrop').addEventListener('click', function (e) { if (e.target === this) closeModal(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeTqr(); closeView(); } });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeTqr(); closeView(); closeRowMenu(); } });
     window.addEventListener('DOMContentLoaded', initPage);
   </script>
 </body>
