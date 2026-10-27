@@ -842,6 +842,7 @@ async function loadRosterData() {
     if (cls) query = query.in('grade', [cls, `ថ្នាក់ទី${cls}`, `ថ្នាក់ទី ${cls}`]);
     const { data: stData, error } = await query;
     if (error) throw error;
+    if (stData) stData.sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km'));
     if (stData && stData.length > 0) {
       studentsDataList = stData.map(s => ({
         id: s.id, name: s.student_name, gender: s.gender || 'ប្រុស', dob: s.dob || '',
