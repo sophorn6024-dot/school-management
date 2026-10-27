@@ -2183,12 +2183,12 @@ async function onClassChange() {
     </div>`;
 
   try {
-    const { data: stList, error: stErr } = await sb
+    let { data: stList, error: stErr } = await sb
       .from('students')
       .select('id, student_id, student_name, gender, dob, pob, address, father_name, mother_name, grade, photo_url, dropout_semester')
       .order('id', { ascending: true });
 
-    if (stErr) throw stErr;
+    if (stErr) throw stErr; stList=(stList||[]).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km'));
 
     // ត្រងសិស្សក្នុងថ្នាក់ (ដកសិស្សបោះបង់ការសិក្សាឆមាសទី១ ចេញ)
     allStudents = (stList || [])
