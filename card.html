@@ -2224,7 +2224,7 @@ async function onClassChange() {
 /* QR ចូលប្រព័ន្ធសិស្ស នៅជ្រុងខាងក្រោមឆ្វេង (បង្ហាញ/លាក់) */
 const QR_CACHE = {};
 let QR_TOK = {};          // { ថ្នាក់: { student_id: qr_token } }
-let QR_PW = null;         // ពាក្យសម្ងាត់គ្រូ (ក្នុងមេម៉ូរីប៉ុណ្ណោះ)
+let QR_PW = (function(){try{return localStorage.getItem('krou_pw')||null}catch(e){return null}})();         // ពាក្យសម្ងាត់គ្រូ (ក្នុងមេម៉ូរីប៉ុណ្ណោះ)
 let QR_SHOW = false;
 function qrDataUrl(text) {
   if (!text || !window.QRCode) return '';
@@ -2271,10 +2271,11 @@ async function qrLoadTokens(cls) {
     if (!QR_PW) { QR_PW = await qrAsk(msg); if (!QR_PW) return false; }
     const { data, error } = await sb.rpc('staff_list_student_accounts', { p_u: CURRENT_USER && (CURRENT_USER.username || CURRENT_USER.teacher_id), p_p: QR_PW, p_class: cls });
     if (error) { alert('❌ ' + (error.message || error)); QR_PW = null; return false; }
-    if (data === null) { QR_PW = null; msg = 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ ឬគ្មានសិទ្ធិ'; continue; }
+    if (data === null) { QR_PW = null; try{localStorage.removeItem('krou_pw')}catch(e){} msg = 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ ឬគ្មានសិទ្ធិ'; continue; }
     const map = {};
     (data || []).forEach(a => { if (a.has_account && a.is_active && a.qr_token) map[String(a.student_id)] = a.qr_token; });
     QR_TOK[cls] = map;
+    try{localStorage.setItem('krou_pw',QR_PW)}catch(e){}
     return true;
   }
   return false;
