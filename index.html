@@ -2582,13 +2582,12 @@ async function showMyQr(reset) {
 function closeMyQr() { document.getElementById('myQrModal').style.display = 'none'; }
 function dlMyQr() {
   const cv = document.querySelector('#myQrBox canvas'); if (!cv) return;
-  const o = document.createElement('canvas'); o.width = 520; o.height = 640; const c = o.getContext('2d');
-  c.fillStyle = '#fff'; c.fillRect(0, 0, 520, 640);
+  const o = document.createElement('canvas'); o.width = 520; o.height = 600; const c = o.getContext('2d');
+  c.fillStyle = '#fff'; c.fillRect(0, 0, 520, 600);
   c.fillStyle = '#0f172a'; c.textAlign = 'center'; c.font = '700 28px Battambang,sans-serif';
   c.fillText('សាលាបឋមសិក្សាកំពង់ល្ពៅ', 260, 50);
   c.drawImage(cv, 40, 80, 440, 440);
   c.font = '700 30px Battambang,sans-serif'; c.fillText(TEACHER_NAME || CURRENT_USER.username, 260, 570);
-  c.font = '20px Battambang,sans-serif'; c.fillStyle = '#64748b'; c.fillText('QR ចូលប្រព័ន្ធគ្រូ — កុំចែករំលែក', 260, 608);
   const a = document.createElement('a'); a.download = 'qr-teacher.png'; a.href = o.toDataURL('image/png'); a.click();
 }
 function stuTab(t) {
