@@ -2487,12 +2487,12 @@ exports.default = {
         </div>`;
 
       try {
-        let { data: stList, error: stErr } = await sb
+        const { data: stList, error: stErr } = await sb
           .from('students')
           .select('*')
           .order('id', { ascending: true });
 
-        if (stErr) throw stErr; stList=(stList||[]).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km'));
+        if (stErr) throw stErr;
 
         const isSem2 = ['ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា'].includes(month);
         allStudentsData = (stList || [])
