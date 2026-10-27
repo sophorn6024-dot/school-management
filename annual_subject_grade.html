@@ -2129,7 +2129,8 @@ exports.default = {
         if (cls) {
           studentQuery = studentQuery.in('grade', [cls, `ថ្នាក់ទី${cls}`, `ថ្នាក់ទី ${cls}`]);
         }
-        const { data: studentsData, error: studentsError } = await studentQuery;
+        let { data: studentsData, error: studentsError } = await studentQuery;
+        studentsData=(studentsData||[]).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km'));
         if (studentsError) throw new Error(`ទាញបញ្ជីសិស្សមិនបាន៖ ${studentsError.message}`);
         if (requestId !== reportLoadSeq) return;
 
