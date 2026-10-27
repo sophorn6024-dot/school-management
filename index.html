@@ -18,6 +18,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;900&family=Kantumruy+Pro:wght@300;400;500;600;700&family=Moul&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 <style>
 :root{--primary:#0284c7;--primary-hover:#0369a1;--primary-soft:#e0f2fe;--hero-title-color:#38bdf8;--hero-icon-gradient:linear-gradient(135deg,#38bdf8 0%,#2563eb 100%);--hero-bg:linear-gradient(135deg,#0284c7 0%,#0369a1 60%,#075985 100%);
 --sidebar-navy:#061a2e;--sidebar-card-navy:#0e2945;--sidebar-border:rgba(255,255,255,.08);--sidebar-active-btn-bg:linear-gradient(135deg,#38bdf8 0%,#0284c7 100%);--sidebar-active-btn-shadow:0 6px 18px rgba(2,132,199,.45);
@@ -930,11 +931,12 @@ body.solo .iframe-container{bottom:0!important}
       </div>
     </div>
     <section class="login-card">
-      <div class="login-brand"><h1>សាលាបឋមសិក្សាកំពង់ល្ពៅ</h1><p>ប្រព័ន្ធគ្រប់គ្រងសិស្ស និងគ្រូបង្រៀន</p></div>
+      <div class="login-brand"><img src="logo.png" alt="logo" style="width:84px;height:84px;border-radius:50%;display:block;margin:0 auto 10px;box-shadow:0 6px 18px rgba(0,0,0,.3)"><h1>សាលាបឋមសិក្សាកំពង់ល្ពៅ</h1><p>ប្រព័ន្ធគ្រប់គ្រងសិស្ស និងគ្រូបង្រៀន</p></div>
       <div class="login-line"></div>
       <div class="login-error" id="loginErrorBox"></div>
+      <div class="lg-role lg-sub" id="tchTabs"><button type="button" id="tcTabPw" class="on" onclick="tchTab('pw')">Password</button><button type="button" id="tcTabQr" onclick="tchTab('qr')">QR Login</button></div>
       <div id="stuLogin" style="display:none">
-        <div class="lg-role lg-sub"><button type="button" id="stTabPw" class="on" onclick="stuTab('pw')">Password</button><button type="button" id="stTabQr" onclick="stuTab('qr')">QR Login</button></div>
+        <div class="lg-role lg-sub" id="stuSubTabs"><button type="button" id="stTabPw" class="on" onclick="stuTab('pw')">Password</button><button type="button" id="stTabQr" onclick="stuTab('qr')">QR Login</button></div>
         <div id="stuPw">
           <div class="login-field"><label for="stuName">អត្តលេខសិស្ស (ឈ្មោះគណនី)</label><div class="login-input-wrap"><input id="stuName" type="text" placeholder="បញ្ចូលអត្តលេខរបស់អ្នក" autocomplete="username"></div></div>
           <div class="login-field"><label for="stuPass">ពាក្យសម្ងាត់</label><div class="login-input-wrap"><input id="stuPass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')stuSubmit()"><button class="login-toggle" type="button" onclick="var p=document.getElementById('stuPass');p.type=p.type==='password'?'text':'password'">👁️</button></div></div>
@@ -1059,6 +1061,7 @@ body.solo .iframe-container{bottom:0!important}
             <div class="shortcut-pill-btn" onclick="navigate('attendance', null)"><span>📅</span><span>វត្តមាន</span></div>
             <div class="shortcut-pill-btn" onclick="navigate('rank', null)"><span>📊</span><span>លទ្ធផល</span></div>
             <div class="shortcut-pill-btn" onclick="navigate('addStudent', null)"><span>👥</span><span>សិស្ស</span></div>
+            <div class="shortcut-pill-btn" onclick="showMyQr()"><span>📱</span><span>QR ចូលប្រព័ន្ធ</span></div>
             <div class="shortcut-pill-btn" onclick="openStudentProfileViewer()"><span>🕒</span><span>ប្រវត្តិរូបសិស្ស</span></div>
           </div>
 
@@ -2516,11 +2519,77 @@ function setLoginRole(r) {
   LOGIN_ROLE = r === 'student' ? 'student' : 'teacher';
   const st = LOGIN_ROLE === 'student';
   document.getElementById('loginAs').value = LOGIN_ROLE;
-  document.getElementById('loginForm').style.display = st ? 'none' : '';
-  document.getElementById('stuLogin').style.display = st ? '' : 'none';
+  document.getElementById('tchTabs').style.display = st ? 'none' : '';
+  document.getElementById('stuSubTabs').style.display = st ? '' : 'none';
   stuStopCam();
-  if (st) stuTab('qr');
+  if (st) { document.getElementById('loginForm').style.display = 'none'; document.getElementById('stuLogin').style.display = ''; stuTab('qr'); }
+  else tchTab('pw');
   hideLoginError();
+}
+/* ── គ្រូ: Password / QR ── */
+function tchTab(t) {
+  const q = t === 'qr';
+  document.getElementById('tcTabPw').classList.toggle('on', !q);
+  document.getElementById('tcTabQr').classList.toggle('on', q);
+  document.getElementById('loginForm').style.display = q ? 'none' : '';
+  document.getElementById('stuLogin').style.display = q ? '' : 'none';
+  document.getElementById('stuPw').style.display = 'none';
+  document.getElementById('stuQr').style.display = q ? '' : 'none';
+  if (!q) stuStopCam();
+  hideLoginError();
+}
+async function tchQrLogin(code) {
+  hideLoginError();
+  try {
+    const { data, error } = await sb.rpc('app_login_qr', { p_qr: code });
+    if (error) throw error;
+    if (!data) return showLoginError('QR មិនត្រឹមត្រូវ ឬត្រូវបានបង្កើតថ្មី។ សូមប្រើ QR ចុងក្រោយ ឬចូលដោយ Password។');
+    finishTeacherLogin(data, code);
+  } catch (err) { showLoginError('កំហុស៖ ' + (err.message || 'មិនអាចភ្ជាប់បាន')); }
+}
+function finishTeacherLogin(data, pw) {
+  CURRENT_USER = data;
+  localStorage.setItem('krou_supabase_user', JSON.stringify(CURRENT_USER));
+  try { localStorage.setItem('krou_pw', pw); } catch(e) {}
+  TEACHER_NAME = data.teacher_name || '';
+  TEACHER_PHOTO_URL = data.photo_url || '';
+  USER_ROLE = data.role || 'teacher';
+  ASSIGNED_CLASS = data.assigned_classes || data.assigned_class || '';
+  IS_ADMIN = String(USER_ROLE).toLowerCase().trim() === 'admin';
+  currentPage = 'dashboard';
+  localStorage.setItem('krou_active_page', 'dashboard');
+  try { history.replaceState(null, '', '#dashboard'); } catch(e) {}
+  stuStopCam();
+  showAppScreen('dashboard');
+}
+/* ── QR របស់ខ្លួន (បង្ហាញក្រោយ login) ── */
+async function showMyQr(reset) {
+  const pw = (function(){ try { return localStorage.getItem('krou_pw'); } catch(e) { return null; } })();
+  let p = pw;
+  if (!p) { p = prompt('បញ្ចូលពាក្យសម្ងាត់របស់អ្នក ដើម្បីបង្កើត QR'); if (!p) return; }
+  if (reset && !confirm('បង្កើត QR ថ្មី? QR ចាស់នឹងឈប់ប្រើបាន។')) return;
+  const { data, error } = await sb.rpc('teacher_qr_get', { p_u: CURRENT_USER.username, p_p: p, p_reset: !!reset });
+  if (error) return alert('❌ ' + (error.message || error));
+  if (!data) { try { localStorage.removeItem('krou_pw'); } catch(e) {} return alert('ពាក្យសម្ងាត់មិនត្រឹមត្រូវ ឬមិនទាន់ដំណើរការ teacher_qr.sql'); }
+  try { localStorage.setItem('krou_pw', p); } catch(e) {}
+  const m = document.getElementById('myQrModal'), box = document.getElementById('myQrBox');
+  box.innerHTML = '';
+  new QRCode(box, { text: data, width: 240, height: 240, correctLevel: QRCode.CorrectLevel.M });
+  document.getElementById('myQrName').textContent = TEACHER_NAME || CURRENT_USER.username;
+  m.style.display = 'flex';
+  window.__myQrTok = data;
+}
+function closeMyQr() { document.getElementById('myQrModal').style.display = 'none'; }
+function dlMyQr() {
+  const cv = document.querySelector('#myQrBox canvas'); if (!cv) return;
+  const o = document.createElement('canvas'); o.width = 520; o.height = 640; const c = o.getContext('2d');
+  c.fillStyle = '#fff'; c.fillRect(0, 0, 520, 640);
+  c.fillStyle = '#0f172a'; c.textAlign = 'center'; c.font = '700 28px Battambang,sans-serif';
+  c.fillText('សាលាបឋមសិក្សាកំពង់ល្ពៅ', 260, 50);
+  c.drawImage(cv, 40, 80, 440, 440);
+  c.font = '700 30px Battambang,sans-serif'; c.fillText(TEACHER_NAME || CURRENT_USER.username, 260, 570);
+  c.font = '20px Battambang,sans-serif'; c.fillStyle = '#64748b'; c.fillText('QR ចូលប្រព័ន្ធគ្រូ — កុំចែករំលែក', 260, 608);
+  const a = document.createElement('a'); a.download = 'qr-teacher.png'; a.href = o.toDataURL('image/png'); a.click();
 }
 function stuTab(t) {
   const q = t === 'qr';
@@ -2579,6 +2648,7 @@ async function stuQrLogin(v) {
   hideLoginError();
   const c = stuQrCode(v);
   if (!c) return showLoginError('សូមបញ្ចូលកូដ QR');
+  if (LOGIN_ROLE !== 'student') return tchQrLogin(c);
   stuPreOpen();
   try {
     const { data, error } = await sb.rpc('student_login_qr', { p_qr: c });
@@ -4215,6 +4285,7 @@ applyIcons();
   if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
 })();
 </script>
+<div id="myQrModal" style="display:none;position:fixed;inset:0;z-index:100002;background:rgba(8,12,24,.6);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:18px" onclick="if(event.target===this)closeMyQr()"><div style="width:min(340px,100%);background:var(--surface-card,#fff);color:var(--text,#0f172a);border-radius:24px;padding:22px 18px 16px;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.4)"><b style="font-size:16px">QR ចូលប្រព័ន្ធរបស់អ្នក</b><div id="myQrName" style="font-size:13px;color:var(--text-muted);margin:2px 0 12px"></div><div id="myQrBox" style="display:inline-block;background:#fff;padding:10px;border-radius:14px"></div><p style="font-size:12px;color:#e11d48;margin:10px 0 12px;line-height:1.6">កុំចែករំលែក QR នេះឱ្យអ្នកដទៃ — អ្នកណាស្កេនបាន អាចចូលក្នុងនាមអ្នក</p><div style="display:flex;gap:8px"><button onclick="dlMyQr()" style="flex:1;border:0;border-radius:12px;padding:10px;background:#0284c7;color:#fff;font:inherit;font-weight:700;cursor:pointer">ទាញយក</button><button onclick="showMyQr(true)" style="flex:1;border:1px solid var(--border);border-radius:12px;padding:10px;background:transparent;color:inherit;font:inherit;cursor:pointer">បង្កើតថ្មី</button><button onclick="closeMyQr()" style="flex:1;border:1px solid var(--border);border-radius:12px;padding:10px;background:transparent;color:inherit;font:inherit;cursor:pointer">បិទ</button></div></div></div>
 <div id="dcModal" class="dc-modal" onclick="if(event.target===this)dcClose()"><div class="dc-sheet" id="dcModalBody"></div></div>
 </body>
 </html>
