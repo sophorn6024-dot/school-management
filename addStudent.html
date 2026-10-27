@@ -796,6 +796,16 @@
     .em-footer .modal-btn { height:46px; border-radius:12px; font-size:14px; }
     .addr4 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .addr4 .form-group { margin: 0; }
+    .save-pill { position: fixed; left: 50%; top: 12px; transform: translate(-50%, -16px); z-index: 99998; padding: 9px 18px; border-radius: 999px; font-size: 13.5px; font-weight: 700; color: #fff; background: #2563eb; box-shadow: 0 10px 26px rgba(0,0,0,.3); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; white-space: nowrap; }
+    .save-pill.show { opacity: 1; transform: translate(-50%, 0); }
+    .save-pill[data-state="saved"] { background: #16a34a; }
+    .save-pill[data-state="error"] { background: #dc2626; }
+    .save-pill[data-state="saving"]::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: 8px; vertical-align: -2px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spSv .7s linear infinite; }
+    @keyframes spSv { to { transform: rotate(360deg); } }
+    #syncStatus[data-state="saving"] .ic { animation: spSv 1s linear infinite; color: #2563eb; }
+    #syncStatus[data-state="saved"] { color: #16a34a; }
+    #syncStatus[data-state="error"] { color: #dc2626; }
+    @media (min-width: 601px) { .save-pill { display: none; } }
     @media (max-width: 520px) { .addr4 { grid-template-columns: 1fr; } }
     .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 
@@ -855,6 +865,7 @@ body{background:var(--bg)}
 
   <!-- 🌟 TOAST NOTIFICATION -->
   <div id="toastNotification" class="toast-notification"></div>
+  <div id="savePill" class="save-pill" role="status" aria-live="polite"></div>
 
   <!-- 🌟 HIDDEN FILE INPUTS -->
   <input type="file" id="rowPhotoFileInput" accept="image/*" style="display:none;" onchange="onRowPhotoFileSelected(this)">
@@ -930,10 +941,6 @@ body{background:var(--bg)}
         <div class="ctl search-box">
           <svg class="ic" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
           <input type="text" id="searchInput" placeholder="ស្វែងរក" oninput="handleSearch()" aria-label="ស្វែងរកតាមឈ្មោះ ឬអត្តលេខ">
-        </div>
-
-        <div class="ctl search-box" id="villageBox">
-          <select id="villageFilter" onchange="applyFilterAndRender()" aria-label="ត្រងតាមភូមិ" style="border:0;background:transparent;color:inherit;font:inherit;width:100%;min-width:120px;outline:none;cursor:pointer"><option value="">ភូមិទាំងអស់</option></select>
         </div>
 
         <div class="ctl chip-btn" id="syncStatus" onclick="refreshDataForce()" title="ចុចដើម្បី Refresh ទិន្នន័យឡើងវិញ">
@@ -1403,6 +1410,17 @@ body{background:var(--bg)}
     window.addEventListener('storage', e => { if (e.key === 'krou_theme_manual' && e.newValue) applyTheme(e.newValue); });
 
     let toastTimer = null;
+    /* សញ្ញារក្សាទុក (បង្ហាញលើទូរសព្ទផង ព្រោះអក្សរក្នុងប៊ូតុងត្រូវលាក់) */
+    let _saveHideT;
+    function setSyncState(state, text) {
+      const t = document.getElementById('syncStatusText'); if (t) t.innerText = text;
+      const chip = document.getElementById('syncStatus'); if (chip) chip.dataset.state = state;
+      const pill = document.getElementById('savePill'); if (!pill) return;
+      clearTimeout(_saveHideT);
+      if (state === 'idle') { pill.classList.remove('show'); return; }
+      pill.dataset.state = state; pill.innerText = text; pill.classList.add('show');
+      if (state === 'saved') _saveHideT = setTimeout(() => pill.classList.remove('show'), 2200);
+    }
     function showToast(msg, isError) {
       const toast = document.getElementById('toastNotification');
       toast.innerText = msg;
@@ -1682,9 +1700,8 @@ body{background:var(--bg)}
         }));
 
         applyFilterAndRender();
-        rebuildVillageFilter();
         migrateAddrCols();
-        document.getElementById('syncStatusText').innerText = "ស្វ័យប្រវត្តិ";
+        setSyncState('idle', "ស្វ័យប្រវត្តិ");
         loadClassesWithData();
       } catch (err) {
         console.error(err);
@@ -1720,7 +1737,7 @@ body{background:var(--bg)}
     function triggerAutoSave(realIdx) {
       const s = studentsList[realIdx];
       if (!s || s.isDraft) return;
-      document.getElementById('syncStatusText').innerText = "💾 កំពុងរក្សាទុក...";
+      setSyncState('saving', "💾 កំពុងរក្សាទុក...");
       clearTimeout(autoSaveTimers[s._uid]);
       autoSaveTimers[s._uid] = setTimeout(() => executeAutoSaveRow(s), 900);
     }
@@ -1734,7 +1751,7 @@ body{background:var(--bg)}
       }
 
       if (await isStudentIdDuplicate(s.id, s.db_id, s._uid)) {
-        document.getElementById('syncStatusText').innerText = "⚠️ អត្តលេខស្ទួន";
+        setSyncState('error', "⚠️ អត្តលេខស្ទួន");
         showToast(`⚠️ អត្តលេខ «${s.id}» មានរួចហើយ! មិនអាចរក្សាទុកបានទេ`, true);
         return;
       }
@@ -1749,9 +1766,9 @@ body{background:var(--bg)}
           if (error) throw error;
           s.db_id = data.id;
         }
-        document.getElementById('syncStatusText').innerText = "រក្សាទុករួចរាល់";
+        setSyncState('saved', "✓ រក្សាទុករួចរាល់");
       } catch (err) {
-        document.getElementById('syncStatusText').innerText = "⚠️ រក្សាទុកមិនបាន";
+        setSyncState('error', "⚠️ រក្សាទុកមិនបាន");
         showToast("❌ " + err.message, true);
       }
     }
@@ -2038,15 +2055,12 @@ body{background:var(--bg)}
         if (currentStatusFilter === 'ឈប់រៀន' && !isDropout) return false;
 
         if (isMissingFilterActive && getMissingFields(s).length === 0) return false;
-        const vf = (document.getElementById('villageFilter') || {}).value;
-        if (vf && (getParts(s, 'address').village || '').trim() !== vf) return false;
 
         return true;
       });
 
       visibleList = filtered.filter(s => !s.isDraft);
       renderTable(filtered);
-      try { if (document.activeElement && document.activeElement.id !== 'villageFilter') rebuildVillageFilter(); } catch (e) {}
     }
 
     function renderTable(list) {
@@ -2779,14 +2793,6 @@ body{background:var(--bg)}
       closeKhmerCalendar();
     });
 
-    function rebuildVillageFilter() {
-      const sel = document.getElementById('villageFilter'); if (!sel) return;
-      const cur = sel.value, cnt = {};
-      studentsList.forEach(s => { if (s.isDraft) return; const v = (getParts(s, 'address').village || '').trim(); if (v) cnt[v] = (cnt[v] || 0) + 1; });
-      const names = Object.keys(cnt).sort((a, b) => a.localeCompare(b, 'km'));
-      sel.innerHTML = '<option value="">ភូមិទាំងអស់</option>' + names.map(n => `<option value="${esc(n)}">${esc(n)} (${cnt[n]})</option>`).join('');
-      if (cur && cnt[cur]) sel.value = cur;
-    }
     /* បំបែកអាសយដ្ឋានចាស់ៗចូលជួរថ្មី ម្ដងគត់ (ស្ងាត់ៗ) */
     let _migrating = false;
     async function migrateAddrCols() {
