@@ -2094,10 +2094,10 @@ async function loadStudents(){
   document.getElementById('tableArea').innerHTML='<div style="text-align:center;padding:50px;color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><p style="margin-top:10px;">កំពុងទាញយកទិន្នន័យ...</p></div>';
   try{
     await loadDynamicSubjects(curPure);
-    const {data:stList,error:stErr}=await sb.from('students')
+    let {data:stList,error:stErr}=await sb.from('students')
       .select('id, student_id, student_name, gender, grade, dropout_semester')
       .order('id',{ascending:true});
-    if(stErr)throw stErr;
+    if(stErr)throw stErr; stList=(stList||[]).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km'));
 
     const isSem2=(period==='ឆមាសទី២'||SEMESTER_2_MONTHS.includes(period));
     displayedStudents=(stList||[])
