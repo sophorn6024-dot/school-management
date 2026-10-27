@@ -2760,12 +2760,12 @@ exports.default = {
       document.getElementById('studentTableBody').innerHTML = '<tr><td colspan="11" style="padding:40px; color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><p style="margin-top:10px;">កំពុងទាញយកទិន្នន័យ...</p></td></tr>';
 
       try {
-        const { data: stList, error: stErr } = await sb
+        let { data: stList, error: stErr } = await sb
           .from('students')
           .select('id, student_id, student_name, gender, grade, dropout_semester')
           .order('id', { ascending: true });
 
-        if (stErr) throw stErr;
+        if (stErr) throw stErr; stList=(stList||[]).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km'));
 
         rawStudentsList = (stList || []).filter(s => cleanGrade(s.grade) === curPure);
 
@@ -2952,7 +2952,7 @@ exports.default = {
       try {
         const { error } = await sb.from('book_loans').upsert(records, { onConflict: 'student_id,assigned_class' });
         if (error) throw error;
-        showToast('✅ បានរក្សាទុកទិន្នន័យជោគជ័យ!');
+        showToast('✅ បានរក្សាទុកទិន្នន័យក្នុង Supabase ជោគជ័យ!');
       } catch (err) {
         alert('❌ មិនអាចរក្សាទុកបានទេ៖ ' + err.message);
       }
