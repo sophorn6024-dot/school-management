@@ -129,7 +129,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 let USER=null;try{USER=JSON.parse(localStorage.getItem('krou_supabase_user')||'null')}catch(e){}
 const IS_ADMIN=!!USER&&String(USER.role||'').toLowerCase().trim()==='admin';
 const cg=g=>String(g||'').replace(/^ថ្នាក់ទី\s*/,'').trim();
-let PW=null,LIST=[],GEN={},authCb=null;
+let PW=(function(){try{return localStorage.getItem('krou_pw')||null}catch(e){return null}})(),LIST=[],GEN={},authCb=null;
 try{document.documentElement.setAttribute('data-theme',localStorage.getItem('krou_theme_manual')==='dark'?'dark':'light')}catch(e){}
 function goBack(){try{if(window.parent&&window.parent!==window){window.parent.postMessage({type:'NAVIGATE',page:'reportsHub'},'*');return}}catch(e){}history.length>1?history.back():location.href='index.html'}
 
@@ -139,7 +139,7 @@ async function okAuth(){
   const p=$('ap').value;if(!p)return;
   try{const {data,error}=await SB.rpc('app_login',{p_username:USER.username,p_password:p});if(error)throw error;
     if(!data){$('ae').textContent='ពាក្យសម្ងាត់មិនត្រឹមត្រូវ';return}
-    PW=p;$('authm').classList.add('hide');if(authCb)authCb(true);authCb=null;
+    PW=p;try{localStorage.setItem('krou_pw',p)}catch(e){}$('authm').classList.add('hide');if(authCb)authCb(true);authCb=null;
   }catch(e){$('ae').textContent='កំហុស៖ '+(e.message||e)}
 }
 function cancelAuth(){$('authm').classList.add('hide');if(authCb)authCb(false);authCb=null}
@@ -147,7 +147,7 @@ async function staff(name,args){
   if(!await needAuth())throw new Error('បានបោះបង់');
   const {data,error}=await SB.rpc(name,{p_u:USER.username,p_p:PW,...args});
   if(error)throw error;
-  if(data===null){PW=null;throw new Error('ការផ្ទៀងផ្ទាត់បរាជ័យ ឬគ្មានសិទ្ធិ')}
+  if(data===null){PW=null;try{localStorage.removeItem('krou_pw')}catch(e){}throw new Error('ការផ្ទៀងផ្ទាត់បរាជ័យ ឬគ្មានសិទ្ធិ')}
   return data;
 }
 
