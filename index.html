@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" id="metaThemeColor" content="#090e17">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="សាលាកំពង់ល្ពៅ">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>ប្រព័ន្ធគ្រប់គ្រងសិស្ស និងគ្រូបង្រៀន</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js" defer></script>
 <script>(function(){try{var t=localStorage.getItem('krou_theme_manual');if(localStorage.getItem('krou_theme_auto')==='1'){var hh=new Date().getHours();t=(hh>=6&&hh<18)?'light':'dark'}if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);var m=document.getElementById('metaThemeColor');if(m)m.content=t==='dark'?'#090e17':'#f8fafc'}}catch(e){}})();</script>
@@ -424,6 +431,50 @@ body.chat-page .iframe-container{top:0;bottom:0}
 .dc-nav button{width:32px;height:32px}.dc-banner{font-size:12px;padding:5px 12px;margin-bottom:6px}.dc-dow{font-size:12px;padding:4px 0}
 .dc-day{min-height:38px}.dc-day .n{font-size:14.5px}.dc-day .l{font-size:9.5px}
 .dc-detail{padding:8px 13px;margin-top:6px}.dc-detail b{font-size:13.5px}.dc-detail span,.dc-detail em{font-size:12px}.dc-list{margin-top:6px;padding-top:5px;max-height:54px}.dc-list div{font-size:12px}
+}
+/* ===== 📅 DIGITAL CALENDAR ===== */
+.dash-cal-card,.dc-sheet{background:linear-gradient(155deg,color-mix(in srgb,var(--surface-card) 92%,#06b6d4),var(--surface-card) 55%,color-mix(in srgb,var(--surface-card) 90%,#8b5cf6));border:1px solid color-mix(in srgb,var(--border) 70%,#22d3ee);box-shadow:0 10px 30px rgba(6,182,212,.12),inset 0 1px 0 rgba(255,255,255,.06);color:var(--text)}
+.dc-title b{font-size:19px;font-weight:800;letter-spacing:.2px;font-variant-numeric:tabular-nums;background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.dc-ico{background:linear-gradient(135deg,rgba(6,182,212,.2),rgba(139,92,246,.2));color:#06b6d4;border:1px solid rgba(6,182,212,.3)}
+.dc-nav button{border-radius:12px;background:color-mix(in srgb,var(--surface-elevated) 80%,#06b6d4 8%)}
+.dc-todaybtn{color:#06b6d4;border:1px solid rgba(6,182,212,.35);padding:5px 11px;border-radius:999px;font-size:12px}
+.dc-x{display:none;width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--surface-elevated);color:var(--text);font-size:14px;cursor:pointer;margin-left:4px}
+.dc-sil{display:flex;align-items:center;gap:10px;padding:8px 12px;margin-bottom:8px;border-radius:16px;background:linear-gradient(135deg,rgba(245,158,11,.18),rgba(251,191,36,.08));border:1px solid rgba(245,158,11,.35)}
+.dc-sil .lot{font-size:22px;line-height:1}.dc-sil div{flex:1;min-width:0;line-height:1.35}
+.dc-sil small{display:block;font-size:10.5px;color:#b45309;font-weight:700}.dc-sil b{font-size:13px;color:var(--text)}
+.dc-sil .dt{font-weight:800;font-size:13px;font-variant-numeric:tabular-nums;color:#b45309;background:rgba(245,158,11,.2);padding:6px 10px;border-radius:10px}
+[data-theme="dark"] .dc-sil small,[data-theme="dark"] .dc-sil .dt{color:#fcd34d}
+.dc-grid{gap:4px}
+.dc-dow{font-size:11px;letter-spacing:.3px}
+.dc-day{min-height:42px;border-radius:13px;background:color-mix(in srgb,var(--surface-elevated) 55%,transparent);border:1px solid transparent}
+.dc-day .n{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.dc-day .l{font-size:9px}
+.dc-day.hol{background:rgba(244,63,94,.12);border-color:rgba(244,63,94,.25)}
+.dc-day.wsil{background:linear-gradient(160deg,rgba(245,158,11,.2),rgba(245,158,11,.06));border-color:rgba(245,158,11,.45)}
+.dc-day.wsil .l{color:#b45309;font-weight:800}[data-theme="dark"] .dc-day.wsil .l{color:#fcd34d}
+.dc-day .sil{position:absolute;top:2px;right:3px;font-style:normal;font-size:7.5px;font-weight:800;line-height:1;background:#f59e0b;color:#fff;padding:2px 3.5px;border-radius:6px}
+.dc-day.today{background:linear-gradient(135deg,#06b6d4,#8b5cf6);border-color:transparent;box-shadow:0 8px 20px rgba(6,182,212,.4),0 0 0 3px rgba(6,182,212,.15);animation:none}
+.dc-day.today .l{color:rgba(255,255,255,.9)}
+.dc-day.sel{box-shadow:inset 0 0 0 2px #06b6d4;background:color-mix(in srgb,#06b6d4 10%,transparent)}
+.dc-detail{background:linear-gradient(135deg,rgba(6,182,212,.1),rgba(139,92,246,.08));border:1px solid color-mix(in srgb,var(--border) 70%,#06b6d4)}
+.dc-detail em.sl{color:#b45309}[data-theme="dark"] .dc-detail em.sl{color:#fcd34d}
+.dc-leg{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:8px;font-size:10.5px;color:var(--text-muted);font-weight:600}
+.dc-leg i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.lg1{background:#f59e0b}.lg2{background:#f43f5e}.lg3{background:linear-gradient(135deg,#06b6d4,#8b5cf6)}
+.dc-open-btn{display:none}
+.dc-modal{display:none;position:fixed;inset:0;z-index:100000;background:rgba(8,12,24,.6);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center}
+.dc-modal.show{display:flex}
+body.dc-lock{overflow:hidden}
+.dc-sheet{display:block;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;border-radius:26px 26px 0 0;padding:16px 14px calc(18px + env(safe-area-inset-bottom));animation:dcUp .28s ease}
+.dc-sheet .dc-x{display:inline-block}
+.dc-sheet .dc-day{min-height:46px;height:auto;overflow:visible}
+.dc-sheet .dc-day .n{font-size:16px}.dc-sheet .dc-day .l{font-size:9.5px}.dc-sheet .dc-day .sil{font-size:8px}
+.dc-sheet .dc-list{max-height:none}
+@keyframes dcUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@media (min-width:769px){.dc-modal{display:none!important}}
+@media (max-width:768px){
+.dc-open-btn{display:flex;align-items:center;gap:12px;width:100%;margin-top:10px;padding:11px 14px;border-radius:18px;border:1px solid rgba(6,182,212,.35);background:linear-gradient(135deg,rgba(6,182,212,.16),rgba(139,92,246,.14));color:var(--text);font-family:inherit;cursor:pointer;text-align:left}
+.dc-open-btn .oi{font-size:22px}.dc-open-btn .ot{flex:1;line-height:1.35}.dc-open-btn b{display:block;font-size:14px}.dc-open-btn small{font-size:11px;color:var(--text-muted);font-weight:600}.dc-open-btn .oa{font-size:20px;color:#06b6d4}
 }
 /* ===== 📁 REPORTS HUB (ទូរស័ព្ទ) ===== */
 @media (max-width:768px){
@@ -979,6 +1030,7 @@ body.solo .iframe-container{bottom:0!important}
               </div>
             </div>
             </div>
+            <button type="button" class="dc-open-btn" onclick="dcOpen()"><span class="oi">📅</span><span class="ot"><b>ប្រតិទិន</b><small>ថ្ងៃសីល · ថ្ងៃបុណ្យ · ចន្ទគតិ</small></span><span class="oa">›</span></button>
             <aside class="dash-cal-card" id="dashCal"></aside>
           </div>
 
@@ -2458,11 +2510,10 @@ function showAppScreen(pageToOpen) {
 /* ── ជ្រើសប្រភេទអ្នកប្រើ: គ្រូ / សិស្ស ── */
 let LOGIN_ROLE = (function(){
   try { const q = new URLSearchParams(location.search).get('login'); if (q === 'student' || q === 'teacher') return q; } catch(e) {}
-  try { return localStorage.getItem('krou_login_role') === 'student' ? 'student' : 'teacher'; } catch(e) { return 'teacher'; }
+  return 'teacher';   // ចូលក្នុងនាមគ្រូជានិច្ច
 })();
 function setLoginRole(r) {
   LOGIN_ROLE = r === 'student' ? 'student' : 'teacher';
-  try { localStorage.setItem('krou_login_role', LOGIN_ROLE); } catch(e) {}
   const st = LOGIN_ROLE === 'student';
   document.getElementById('loginAs').value = LOGIN_ROLE;
   document.getElementById('loginForm').style.display = st ? 'none' : '';
@@ -3087,8 +3138,14 @@ async function refreshStats() {
     }
   }
   try {
-    const { data: students, error } = await sb.from('students').select('id, student_id, student_name, grade, gender, dropout_semester').order('id', { ascending: true });
+    let { data: students, error } = await sb.from('students').select('id, student_id, student_name, grade, gender, dropout_semester').order('id', { ascending: true });
     if (error) console.warn("Students query error:", error.message);
+    /* គ្រូ៖ បង្ហាញតែសិស្សក្នុងថ្នាក់ខ្លួន */
+    if (!IS_ADMIN && students) {
+      const mine = cleanGrade(ASSIGNED_CLASS);
+      students = mine ? students.filter(s => cleanGrade(s.grade) === mine) : [];
+    }
+    window.__myStudentIds = new Set((students || []).map(s => String(s.student_id || s.id)));
     const totalStudents = students ? students.length : 0;
     const classMap = {};
     (students || []).forEach(s => {
@@ -3166,9 +3223,12 @@ async function checkDashboardTasks(targetCls, currentMonth, todayDay, totalClass
       if (todaySubEl) { todaySubEl.style.color = ""; todaySubEl.innerText = "ត្រូវកត់វត្តមាន"; }
     }
     let scoreQuery = sb.from('scores').select('student_id, total, average').eq('score_type', 'monthly').eq('period', currentMonth);
-    if (curPure) scoreQuery = scoreQuery.eq('assigned_class', curPure);
+    if (curPure && !IS_ADMIN) scoreQuery = scoreQuery.eq('assigned_class', curPure);
     const { data: scoreData } = await scoreQuery;
-    let scoredCount = scoreData ? scoreData.length : 0;
+    const _ids = window.__myStudentIds;
+    const _seen = new Set();
+    (scoreData || []).forEach(r => { const k = String(r.student_id); if (!_ids || _ids.has(k)) _seen.add(k); });
+    let scoredCount = _seen.size;
     const totalStudentsCount = totalClassStudents || 1;
     const pct = Math.min(100, Math.round((scoredCount / totalStudentsCount) * 100));
     const scoreDescEl = document.getElementById('taskScoreDesc');
@@ -3654,6 +3714,15 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
     return null;
   }
+  function nextSil(today){
+    for(var i=0;i<40;i++){
+      var t=new Date(today.getFullYear(),today.getMonth(),today.getDate()+i);
+      if(holy(t.getFullYear(),t.getMonth()+1,t.getDate())){var o=safe(t.getFullYear(),t.getMonth()+1,t.getDate());return {days:i,date:t,o:o}}
+    }
+    return null;
+  }
+  window.dcOpen=function(){var m=document.getElementById('dcModal');if(!m)return;m.classList.add('show');document.body.classList.add('dc-lock');dcRender()};
+  window.dcClose=function(){var m=document.getElementById('dcModal');if(m)m.classList.remove('show');document.body.classList.remove('dc-lock')};
   window.dcShift=function(n){var m=view.m+n,y=view.y;while(m<0){m+=12;y--}while(m>11){m-=12;y++}view={y:y,m:m};dcRender()};
   window.dcToday=function(){var t=new Date();view={y:t.getFullYear(),m:t.getMonth()};sel={y:t.getFullYear(),m:t.getMonth(),d:t.getDate()};dcRender()};
   window.dcPick=function(y,m,d){sel={y:y,m:m,d:d};dcRender()};
@@ -3665,27 +3734,30 @@ window.addEventListener('DOMContentLoaded', async () => {
     var a=safe(y,m0+1,1),b=safe(y,m0+1,dim),mid=safe(y,m0+1,15)||a;
     var lunar=[a&&a.mn,b&&b.mn].filter(function(v,i,s){return v&&s.indexOf(v)===i}).join(' · ');
     var sub='ខែ'+lunar;
-    var nh=nextHoliday(now),ban='';
+    var nh=nextHoliday(now),ban='',ns=nextSil(now),silB='';
+    if(ns){silB='<div class="dc-sil"><span class="lot">🪷</span><div><small>ថ្ងៃសីលបន្ទាប់</small><b>'+(ns.days===0?'ថ្ងៃនេះ':kn(ns.days)+' ថ្ងៃទៀត')+' · '+(ns.o?kn(ns.o.kd)+(ns.o.ph===0?'កើត':'រោច'):'')+'</b></div><span class="dt">'+kn(ns.date.getDate())+' '+GMN[ns.date.getMonth()]+'</span></div>'}
     if(nh){ban='<div class="dc-banner"><span>🎊</span><b>'+(nh.days===0?'ថ្ងៃនេះ':kn(nh.days)+' ថ្ងៃទៀត')+'</b><span>· '+kn(nh.date.getDate())+' '+GMN[nh.date.getMonth()]+' · '+nh.reason+'</span></div>'}
     var h='<div class="dc-head"><div class="dc-ico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg></div><div class="dc-title" onclick="dcToday()" title="ត្រឡប់ទៅថ្ងៃនេះ"><b>'+GMN[m0]+' '+y+'</b><small>'+sub+'</small></div>'+
-      '<button type="button" class="dc-todaybtn" onclick="dcToday()">ថ្ងៃនេះ</button><div class="dc-nav"><button type="button" onclick="dcShift(-1)" aria-label="ខែមុន">‹</button><button type="button" onclick="dcShift(1)" aria-label="ខែក្រោយ">›</button></div></div>'+ban+
+      '<button type="button" class="dc-todaybtn" onclick="dcToday()">ថ្ងៃនេះ</button><div class="dc-nav"><button type="button" onclick="dcShift(-1)" aria-label="ខែមុន">‹</button><button type="button" onclick="dcShift(1)" aria-label="ខែក្រោយ">›</button></div><button type="button" class="dc-x" onclick="dcClose()" aria-label="បិទ">✕</button></div>'+silB+ban+
       '<div class="dc-grid">'+['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'].map(function(w,i){return '<div class="dc-dow'+(i===0?' sun':'')+'"><span class="f">'+w+'</span><span class="s">'+({0:'អា',1:'ច',2:'អ',3:'ពុ',4:'ព្រ',5:'សុ',6:'សៅ'})[i]+'</span></div>'}).join('');
     for(var i=0;i<first;i++)h+='<div></div>';
     for(var d=1;d<=dim;d++){
       var o=safe(y,m0+1,d),dow=(first+d-1)%7,isT=(y===now.getFullYear()&&m0===now.getMonth()&&d===now.getDate());
       var isS=sel&&sel.y===y&&sel.m===m0&&sel.d===d;
-      var cls='dc-day'+(dow===0?' sun':'')+(H[d]?' hol':'')+(isT?' today':'')+(isS&&!isT?' sel':'');
-      h+='<div class="'+cls+'" role="button" tabindex="0" onclick="dcPick('+y+','+m0+','+d+')"'+(H[d]?' title="'+H[d]+'"':'')+'><span class="n">'+d+'</span><span class="l">'+(o?o.kd+(o.ph===0?'កើត':'រោច'):'')+'</span>'+(holy(y,m0+1,d)?'<i class="dot"></i>':'')+'</div>';
+      var cls='dc-day'+(holy(y,m0+1,d)?' wsil':'')+(dow===0?' sun':'')+(H[d]?' hol':'')+(isT?' today':'')+(isS&&!isT?' sel':'');
+      h+='<div class="'+cls+'" role="button" tabindex="0" onclick="dcPick('+y+','+m0+','+d+')"'+(H[d]?' title="'+H[d]+'"':'')+'><span class="n">'+d+'</span><span class="l">'+(o?o.kd+(o.ph===0?'កើត':'រោច'):'')+'</span>'+(holy(y,m0+1,d)?'<i class="sil">សីល</i>':'')+'</div>';
     }
     h+='</div>';
     if(!sel){var t1=new Date();sel={y:t1.getFullYear(),m:t1.getMonth(),d:t1.getDate()}}
     var so=safe(sel.y,sel.m+1,sel.d),sdw=new Date(sel.y,sel.m,sel.d).getDay(),sh=holidays(sel.y,sel.m)[sel.d];
     h+='<div class="dc-detail"><b>ថ្ងៃ'+DWK[sdw]+' ទី'+sel.d+' ខែ'+GMN[sel.m]+' ឆ្នាំ'+sel.y+'</b>'+
        (so?'<span>'+so.kd+(so.ph===0?'កើត':'រោច')+' ខែ'+so.mn+' ឆ្នាំ'+so.animal+' '+(so.sak||'')+' ពុទ្ធសករាជ '+so.be+'</span>':'')+
-       (sh?'<em>🎌 '+sh+'</em>':'')+'</div>';
+       (holy(sel.y,sel.m+1,sel.d)?'<em class="sl">🪷 ថ្ងៃសីល</em>':'')+(sh?'<em>🎌 '+sh+'</em>':'')+'</div>';
+    h+='<div class="dc-leg"><span><i class="lg1"></i>ថ្ងៃសីល</span><span><i class="lg2"></i>ថ្ងៃបុណ្យ/ឈប់សម្រាក</span><span><i class="lg3"></i>ថ្ងៃនេះ</span></div>';
     var days=Object.keys(H).map(Number).sort(function(p,q){return p-q});
     h+='<div class="dc-list">'+(days.length?days.map(function(d){return '<div class="dc-hi" onclick="dcPick('+y+','+m0+','+d+')"><b>'+d+'</b><span>'+H[d]+'</span></div>'}).join(''):'<div class="dc-none">គ្មានថ្ងៃបុណ្យក្នុងខែនេះ</div>')+'</div>';
     host.innerHTML=h;
+    var mb=document.getElementById('dcModalBody');if(mb&&document.getElementById('dcModal').classList.contains('show'))mb.innerHTML=h;
   };
   function boot(){ if(typeof momentkh!=='undefined')dcRender(); }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
@@ -4116,5 +4188,33 @@ applyIcons();
   for (var n = 1; n <= 5; n++) tryLoad('login_hero_' + n, n - 1, 0);
 })();
 </script>
+<button type="button" id="pwaBtn" class="pwa-btn" onclick="pwaInstall()" style="display:none"><span>📲</span><b>តម្លើង App</b><i onclick="event.stopPropagation();pwaHide()" aria-label="បិទ">✕</i></button>
+<div id="pwaIos" class="pwa-ios" style="display:none" onclick="this.style.display='none'"><div>ដើម្បីតម្លើងលើ iPhone៖<br>ចុចប៊ូតុង <b>Share ⬆️</b> រួចជ្រើស <b>«Add to Home Screen»</b><br><small>ចុចកន្លែងណាក៏បានដើម្បីបិទ</small></div></div>
+<style>
+.pwa-btn{position:fixed;right:14px;bottom:calc(var(--mnav-reserve,20px) + 8px);z-index:9000;display:flex;align-items:center;gap:8px;padding:10px 12px 10px 14px;border:0;border-radius:999px;background:linear-gradient(135deg,#06b6d4,#8b5cf6);color:#fff;font-family:inherit;font-size:13.5px;box-shadow:0 10px 26px rgba(6,182,212,.45);cursor:pointer}
+.pwa-btn i{font-style:normal;margin-left:4px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.25);display:inline-flex;align-items:center;justify-content:center;font-size:11px}
+@media (min-width:769px){.pwa-btn{bottom:18px}}
+.pwa-ios{position:fixed;inset:0;z-index:100001;background:rgba(8,12,24,.6);display:flex;align-items:flex-end;justify-content:center;padding:18px}
+.pwa-ios div{background:var(--surface-card,#fff);color:var(--text,#0f172a);border-radius:20px;padding:18px 20px;text-align:center;line-height:1.9;max-width:380px;margin-bottom:20px}
+</style>
+<script>
+(function(){
+  var ev=null,standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;
+  function hidden(){try{return localStorage.getItem('krou_pwa_hide')==='1'}catch(e){return false}}
+  function show(){if(standalone||hidden())return;var b=document.getElementById('pwaBtn');if(b)b.style.display='flex'}
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;show()});
+  window.addEventListener('appinstalled',function(){var b=document.getElementById('pwaBtn');if(b)b.style.display='none'});
+  window.pwaInstall=function(){
+    if(ev){ev.prompt();ev.userChoice.finally(function(){ev=null;var b=document.getElementById('pwaBtn');if(b)b.style.display='none'})}
+    else if(ios){document.getElementById('pwaIos').style.display='flex'}
+    else alert('សូមបើកម៉ឺនុយ browser (⋮) រួចជ្រើស «Install app» ឬ «Add to Home screen»');
+  };
+  window.pwaHide=function(){try{localStorage.setItem('krou_pwa_hide','1')}catch(e){}document.getElementById('pwaBtn').style.display='none'};
+  document.addEventListener('DOMContentLoaded',function(){if(ios)show()});
+  if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
+})();
+</script>
+<div id="dcModal" class="dc-modal" onclick="if(event.target===this)dcClose()"><div class="dc-sheet" id="dcModalBody"></div></div>
 </body>
 </html>
