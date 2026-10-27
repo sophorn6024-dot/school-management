@@ -794,6 +794,9 @@
     .em-age { float:right; font-size:11px; font-weight:700; color:var(--primary); background:rgba(2,132,199,.12); padding:1px 8px; border-radius:12px; }
     .em-footer { padding:14px 16px; gap:12px; }
     .em-footer .modal-btn { height:46px; border-radius:12px; font-size:14px; }
+    .addr4 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .addr4 .form-group { margin: 0; }
+    @media (max-width: 520px) { .addr4 { grid-template-columns: 1fr; } }
     .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 
     @media (max-width: 1100px) {
@@ -1283,8 +1286,10 @@ body{background:var(--bg)}
               <div class="form-group"><label>ទូរស័ព្ទ</label><input type="tel" class="modal-input" id="modalPhone"></div>
               <div class="form-group"><label>ស្ថានភាព (Semester ឈប់រៀន)</label><input type="text" class="modal-input" id="modalDropout" placeholder="ទុកទទេបើកំពុងរៀន"></div>
             </div>
-            <div class="form-group" style="margin-bottom:12px;"><label>ទីកន្លែងកំណើត (ភូមិ, ឃុំ, ស្រុក, ខេត្ត)</label><input type="text" class="modal-input" id="modalPob" placeholder="ភូមិ, ឃុំ, ស្រុក, ខេត្ត"></div>
-            <div class="form-group"><label>អាសយដ្ឋានបច្ចុប្បន្ន (ភូមិ, ឃុំ, ស្រុក, ខេត្ត)</label><input type="text" class="modal-input" id="modalAddress" placeholder="ភូមិ, ឃុំ, ស្រុក, ខេត្ត"></div>
+            <div class="form-group" style="margin-bottom:12px;"><label>ទីកន្លែងកំណើត</label>
+              <div class="addr4"><div class="form-group"><label>ភូមិ</label><input type="text" class="modal-input" id="mPob_village" placeholder="ភូមិ"></div><div class="form-group"><label>ឃុំ / សង្កាត់</label><input type="text" class="modal-input" id="mPob_commune" placeholder="ឃុំ / សង្កាត់"></div><div class="form-group"><label>ស្រុក / ខណ្ឌ / ក្រុង</label><input type="text" class="modal-input" id="mPob_district" placeholder="ស្រុក / ខណ្ឌ"></div><div class="form-group"><label>ខេត្ត / រាជធានី</label><input type="text" class="modal-input" id="mPob_province" placeholder="ខេត្ត / រាជធានី"></div></div></div>
+            <div class="form-group" style="margin-bottom:12px;"><label>អាសយដ្ឋានបច្ចុប្បន្ន</label>
+              <div class="addr4"><div class="form-group"><label>ភូមិ</label><input type="text" class="modal-input" id="mAddr_village" placeholder="ភូមិ"></div><div class="form-group"><label>ឃុំ / សង្កាត់</label><input type="text" class="modal-input" id="mAddr_commune" placeholder="ឃុំ / សង្កាត់"></div><div class="form-group"><label>ស្រុក / ខណ្ឌ / ក្រុង</label><input type="text" class="modal-input" id="mAddr_district" placeholder="ស្រុក / ខណ្ឌ"></div><div class="form-group"><label>ខេត្ត / រាជធានី</label><input type="text" class="modal-input" id="mAddr_province" placeholder="ខេត្ត / រាជធានី"></div></div></div>
           </div>
         </div>
 
@@ -1839,18 +1844,57 @@ body{background:var(--bg)}
     }
 
     /* 5. ADDRESS HELPERS */
+    /* បំបែក ភូមិ / ឃុំ / ស្រុក / ខេត្ត ពីអក្សរ — ស្គាល់តាមពាក្យនាំមុខ (ភូមិ, ឃុំ/សង្កាត់, ស្រុក/ខណ្ឌ/ក្រុង, ខេត្ត/រាជធានី)
+       បើមិនស្គាល់ ប្រើទីតាំងតាមលំដាប់ (មិនឱ្យភូមិរើទៅឃុំទៀតទេ) */
+    const ADDR_KEYS = ['village', 'commune', 'district', 'province'];
+    function addrLevel(p) {
+      if (/^ភូមិ/.test(p)) return 0;
+      if (/^(ឃុំ|សង្កាត់)/.test(p)) return 1;
+      if (/^(ស្រុក|ខណ្ឌ|ក្រុង)/.test(p)) return 2;
+      if (/^(ខេត្ត|រាជធានី)/.test(p)) return 3;
+      return -1;
+    }
     function parseAddressParts(addrStr) {
-      if (!addrStr) return { village: '', commune: '', district: '', province: '' };
-      const parts = addrStr.split(',').map(p => p.trim()).filter(Boolean);
-      if (parts.length >= 4) return { village: parts[0], commune: parts[1], district: parts[2], province: parts[3] };
-      if (parts.length === 3) return { village: '', commune: parts[0], district: parts[1], province: parts[2] };
-      if (parts.length === 2) return { village: '', commune: '', district: parts[0], province: parts[1] };
-      return { village: '', commune: '', district: '', province: parts[0] || '' };
+      const out = { village: '', commune: '', district: '', province: '' };
+      if (!addrStr) return out;
+      const parts = String(addrStr).split(/[,،;]/).map(p => p.trim()).filter(Boolean);
+      if (!parts.length) return out;
+      if (parts.length >= 4) {
+        out.village = parts[0]; out.commune = parts[1]; out.district = parts[2]; out.province = parts.slice(3).join(', ');
+        return out;
+      }
+      const lv = parts.map(addrLevel);
+      if (lv.some(x => x >= 0)) {
+        // ដាក់តាមពាក្យនាំមុខ ហើយបំពេញផ្នែកដែលមិនស្គាល់តាមលំដាប់
+        let last = -1; const used = [false, false, false, false]; const asg = new Array(parts.length).fill(-1);
+        parts.forEach((p, i) => { if (lv[i] >= 0 && !used[lv[i]]) { asg[i] = lv[i]; used[lv[i]] = true; } });
+        const li = parts.length - 1;
+        if (asg[li] < 0 && !used[3]) { asg[li] = 3; used[3] = true; }   // ផ្នែកចុងក្រោយ = ខេត្ត
+        parts.forEach((p, i) => {
+          if (asg[i] >= 0) { last = asg[i]; return; }
+          let k = last + 1; while (k < 4 && used[k]) k++;
+          if (k > 3) { k = 0; while (k < 4 && used[k]) k++; }
+          if (k < 4) { asg[i] = k; used[k] = true; last = k; }
+        });
+        parts.forEach((p, i) => { if (asg[i] >= 0) out[ADDR_KEYS[asg[i]]] = p; });
+        return out;
+      }
+      if (parts.length === 3) { out.commune = parts[0]; out.district = parts[1]; out.province = parts[2]; }
+      else if (parts.length === 2) { out.district = parts[0]; out.province = parts[1]; }
+      else out.province = parts[0];
+      return out;
     }
 
     function joinAddressParts(village, commune, district, province) {
-      const parts = [village, commune, district, province].map(s => (s || '').trim()).filter(Boolean);
-      return Array.from(new Set(parts)).join(', ');
+      return [village, commune, district, province].map(s => (s || '').trim()).filter(Boolean).join(', ');
+    }
+    function fillAddr(pref, str) {
+      const a = parseAddressParts(str);
+      ADDR_KEYS.forEach(k => { const el = document.getElementById(pref + '_' + k); if (el) el.value = a[k]; });
+    }
+    function readAddr(pref) {
+      const g = k => (document.getElementById(pref + '_' + k) || { value: '' }).value;
+      return joinAddressParts(g('village'), g('commune'), g('district'), g('province'));
     }
 
     function syncDraftFromDom(realIdx) {
@@ -2291,8 +2335,8 @@ body{background:var(--bg)}
       document.getElementById('modalAgeDisplay').innerText = `អាយុ: ${ageNow !== '' ? ageNow : '-'}`;
       document.getElementById('modalPhone').value = s.phone || '';
       document.getElementById('modalDropout').value = s.dropoutSemester || '';
-      document.getElementById('modalPob').value = s.pob || '';
-      document.getElementById('modalAddress').value = s.address || '';
+      fillAddr('mPob', s.pob);
+      fillAddr('mAddr', s.address);
       document.getElementById('modalFather').value = s.father || '';
       document.getElementById('modalFatherJob').value = s.fatherJob || '';
       document.getElementById('modalMother').value = s.mother || '';
@@ -2327,8 +2371,8 @@ body{background:var(--bg)}
       s.dob = document.getElementById('modalDobText').dataset.rawDate || null;
       s.phone = document.getElementById('modalPhone').value.trim();
       s.dropoutSemester = document.getElementById('modalDropout').value.trim();
-      s.pob = document.getElementById('modalPob').value.trim();
-      s.address = document.getElementById('modalAddress').value.trim();
+      s.pob = readAddr('mPob');
+      s.address = readAddr('mAddr');
       s.father = document.getElementById('modalFather').value.trim();
       s.fatherJob = document.getElementById('modalFatherJob').value.trim();
       s.mother = document.getElementById('modalMother').value.trim();
