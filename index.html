@@ -2825,6 +2825,7 @@ async function verifySession() {
       forceLogoutDeleted('⚠️ គណនីរបស់អ្នកត្រូវបានលុបចេញពីប្រព័ន្ធរួចហើយ! សូមចូលប្រើប្រាស់ដោយគណនីថ្មី។');
       return false;
     }
+    try { const ac = await sb.from(TEACHERS_TABLE).select('is_active').eq('id', data.id).maybeSingle(); if (ac && ac.data && ac.data.is_active === false) { forceLogoutDeleted('⚠️ គណនីរបស់អ្នកត្រូវបានបិទដោយអ្នកគ្រប់គ្រង។'); return false; } } catch(e) {}
     CURRENT_USER = data;
     localStorage.setItem('krou_supabase_user', JSON.stringify(CURRENT_USER));
     TEACHER_NAME = data.teacher_name || '';
