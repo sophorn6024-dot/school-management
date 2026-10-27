@@ -1173,8 +1173,7 @@
         teacher_id: codeVal || null,
         phone: document.getElementById('fPhone').value.trim() || null,
         dob: document.getElementById('fDob').value || null,
-        address: document.getElementById('fAddress').value.trim() || null,
-        updated_at: new Date().toISOString()
+        address: document.getElementById('fAddress').value.trim() || null
       };
       
       const password = document.getElementById('fPassword').value;
@@ -1197,22 +1196,14 @@
       saveBtn.innerText = '⏳ កំពុងរក្សា...';
 
       try {
-        if (payload.teacher_id && await isDuplicate('teacher_id', payload.teacher_id)) {
-          showToast('⚠️ អត្តលេខនេះមានរួចហើយ', true);
-          return false;
+        const pw = await adminPw('បញ្ចូលពាក្យសម្ងាត់ Admin របស់អ្នក ដើម្បីរក្សាទុក');
+        if (!pw) return false;
+        const { error } = await sb.rpc('staff_save_teacher', { p_u: CURRENT_USER.username, p_p: pw, p_id: editingId, p_data: payload });
+        if (error) {
+          if (/ពាក្យសម្ងាត់ Admin មិនត្រឹមត្រូវ|គ្មានសិទ្ធិ/.test(error.message || '')) { try { localStorage.removeItem('krou_pw'); } catch (e) {} }
+          throw error;
         }
-        if (await isDuplicate('username', payload.username)) {
-          showToast('⚠️ Username នេះមានគេប្រើរួចហើយ', true);
-          return false;
-        }
-
-        if (editingId !== null) {
-          const { error } = await sb.from(USERS_TABLE).update(payload).eq('id', editingId);
-          if (error) throw error;
-        } else {
-          const { error } = await sb.from(USERS_TABLE).insert([payload]);
-          if (error) throw error;
-        }
+        try { if (editingId !== null && String(editingId) === String(CURRENT_USER.id) && payload.password) localStorage.setItem('krou_pw', payload.password); } catch (e) {}
 
         closeModal();
         showToast('✅ បានរក្សាទុកព័ត៌មានគ្រូជោគជ័យ!');
@@ -1356,7 +1347,8 @@
       if (!await uiConfirm('តើអ្នកពិតជាចង់លុបគ្រូ "' + (t.teacher_name || '') + '" មែនទេ? ទិន្នន័យនេះមិនអាចយកមកវិញបានទេ។', { danger: true, okText: 'លុប' })) return;
 
       try {
-        const { error } = await sb.from(USERS_TABLE).delete().eq('id', t.id);
+        const pw = await adminPw(); if (!pw) return;
+        const { error } = await sb.rpc('staff_delete_teacher', { p_u: CURRENT_USER.username, p_p: pw, p_id: t.id });
         if (error) throw error;
         showToast('🗑️ បានលុបព័ត៌មានគ្រូរួចរាល់!');
         loadTeachers();
