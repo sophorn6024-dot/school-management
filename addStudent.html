@@ -1742,7 +1742,21 @@ body{background:var(--bg)}
       autoSaveTimers[s._uid] = setTimeout(() => executeAutoSaveRow(s), 900);
     }
 
+    /* 🛡️ ការពារបន្ថែមជាន់គ្នា៖ មិនឱ្យរក្សាទុកស្របគ្នាម្ដងទៀត ពេលកំពុងរក្សាទុក (ចុចពីរដង/ប្រព័ន្ធយឺត) */
+    let _busyAll = false, _busyModal = false;
+    function friendlyErr(err) {
+      const m = String((err && err.message) || err || '');
+      if ((err && err.code === '23505') || /duplicate key|unique/i.test(m)) return 'អត្តលេខនេះមានក្នុងប្រព័ន្ធរួចហើយ (ស្ទួន)';
+      return m;
+    }
     async function executeAutoSaveRow(s) {
+      if (!s) return;
+      if (s._saving) { s._again = true; return; }
+      s._saving = true;
+      try { await _executeAutoSaveRow(s); }
+      finally { s._saving = false; if (s._again) { s._again = false; executeAutoSaveRow(s); } }
+    }
+    async function _executeAutoSaveRow(s) {
       if (!s || s.isDraft) return;
       const v = validateStudent(s);
       if (!v.ok) {
@@ -1769,11 +1783,18 @@ body{background:var(--bg)}
         setSyncState('saved', "✓ រក្សាទុករួចរាល់");
       } catch (err) {
         setSyncState('error', "⚠️ រក្សាទុកមិនបាន");
-        showToast("❌ " + err.message, true);
+        showToast("❌ " + friendlyErr(err), true);
       }
     }
 
     async function saveDraftRow(realIdx) {
+      const _s = studentsList[realIdx];
+      if (!_s) return;
+      if (_s._savingDraft) return;
+      _s._savingDraft = true;
+      try { await _saveDraftRow(realIdx); } finally { _s._savingDraft = false; }
+    }
+    async function _saveDraftRow(realIdx) {
       if (guardLocked()) return;
       const s = studentsList[realIdx];
       if (!s) return;
@@ -1807,11 +1828,16 @@ body{background:var(--bg)}
         if (!studentsList.some(x => x.isDraft)) hideBottomNavBar();
         loadClassesWithData();
       } catch (err) {
-        alert("❌ ការរក្សាទុកបរាជ័យ៖ " + err.message);
+        alert("❌ ការរក្សាទុកបរាជ័យ៖ " + friendlyErr(err));
       }
     }
 
     async function saveAllDraftRows() {
+      if (_busyAll) return;
+      _busyAll = true;
+      try { await _saveAllDraftRows(); } finally { _busyAll = false; }
+    }
+    async function _saveAllDraftRows() {
       if (guardLocked()) return;
       const drafts = studentsList.filter(s => s.isDraft);
       if (!drafts.length) return;
@@ -1849,7 +1875,7 @@ body{background:var(--bg)}
         loadStudentsFromSupabase();
         hideBottomNavBar();
       } catch (err) {
-        alert("❌ មិនអាចរក្សាទុកបានទេ៖ " + err.message);
+        alert("❌ មិនអាចរក្សាទុកបានទេ៖ " + friendlyErr(err));
       }
     }
 
@@ -2413,6 +2439,11 @@ body{background:var(--bg)}
     function openEditModalFromMenu() { if (activeRowIndex !== null) openEditModal(activeRowIndex); }
 
     async function saveModalChanges() {
+      if (_busyModal) return;
+      _busyModal = true;
+      try { await _saveModalChanges(); } finally { _busyModal = false; }
+    }
+    async function _saveModalChanges() {
       if (guardLocked()) return;
       const s = studentsList[activeRowIndex];
       if (!s) return;
