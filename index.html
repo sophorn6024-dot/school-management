@@ -477,6 +477,20 @@ body.dc-lock{overflow:hidden}
 .dc-open-btn{display:flex;align-items:center;gap:12px;width:100%;margin-top:10px;padding:11px 14px;border-radius:18px;border:1px solid rgba(6,182,212,.35);background:linear-gradient(135deg,rgba(6,182,212,.16),rgba(139,92,246,.14));color:var(--text);font-family:inherit;cursor:pointer;text-align:left}
 .dc-open-btn .oi{font-size:22px}.dc-open-btn .ot{flex:1;line-height:1.35}.dc-open-btn b{display:block;font-size:14px}.dc-open-btn small{font-size:11px;color:var(--text-muted);font-weight:600}.dc-open-btn .oa{font-size:20px;color:#06b6d4}
 }
+
+/* ── POPUP ស្អាត (ជំនួស alert/confirm/prompt របស់ browser) ── */
+.dlg-bg{position:fixed;inset:0;z-index:200000;background:rgba(10,18,32,.55);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px;animation:dlgF .15s ease-out}
+@keyframes dlgF{from{opacity:0}to{opacity:1}}
+.dlg{width:min(400px,100%);background:var(--surface-card,#fff);color:var(--text,#0f172a);border:1px solid var(--border,#e2e8f0);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.4);padding:26px 22px 18px;text-align:center;animation:dcUp .22s ease both}
+.dlg .ic{width:62px;height:62px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:30px;background:color-mix(in srgb,var(--primary) 15%,transparent)}
+.dlg.ok .ic{background:rgba(16,185,129,.16)}.dlg.err .ic{background:rgba(239,68,68,.15)}.dlg.warn .ic{background:rgba(245,158,11,.18)}
+.dlg h3{margin:0 0 6px;font-size:17px}.dlg p{margin:0;color:var(--text-muted,#64748b);font-size:14px;line-height:1.7;white-space:pre-line;word-break:break-word}
+.dlg input{width:100%;margin-top:14px;height:44px;border-radius:12px;border:1.5px solid var(--border,#cbd5e1);background:var(--surface-elevated,#f1f5f9);color:var(--text,#0f172a);padding:0 14px;font-size:14px;text-align:center;outline:none}
+.dlg input:focus{border-color:var(--primary)}
+.dlg .acts{display:flex;gap:10px;margin-top:20px}
+.dlg .acts button{flex:1;border:1px solid var(--border,#e2e8f0);background:var(--surface-elevated,#f1f5f9);color:var(--text,#0f172a);padding:11px;border-radius:14px;cursor:pointer;font-weight:700;font-size:14px;font-family:inherit}
+.dlg .acts button.pri{background:linear-gradient(135deg,var(--primary),var(--primary-hover,var(--primary)));border-color:transparent;color:#fff}
+.dlg.err .acts button.pri{background:#ef4444}
 /* ===== 📁 REPORTS HUB (ទូរស័ព្ទ) ===== */
 @media (max-width:768px){
 #reportsHubView{padding-bottom:calc(var(--mnav-reserve) + 28px)}
@@ -2556,12 +2570,34 @@ function finishTeacherLogin(data, pw) {
   stuStopCam();
   showAppScreen('dashboard');
 }
+
+/* ── POPUP ស្អាត ── */
+function uiDlg(msg, o) {
+  o = o || {};
+  return new Promise(res => {
+    let t = String(msg == null ? '' : msg), kind = (o.confirm || o.input) ? 'warn' : 'info', icon = o.icon || (o.input ? '🔑' : (o.confirm ? '❓' : 'ℹ️')), title = o.title || (o.input ? 'បញ្ចូលព័ត៌មាន' : (o.confirm ? 'សូមបញ្ជាក់' : 'សេចក្តីជូនដំណឹង'));
+    if (/^\s*✅/.test(t)) { kind = 'ok'; icon = '✅'; title = 'ជោគជ័យ'; t = t.replace(/^\s*✅\s*/, ''); }
+    else if (/^\s*❌/.test(t)) { kind = 'err'; icon = '⚠️'; title = 'មានបញ្ហា'; t = t.replace(/^\s*❌\s*/, ''); }
+    else if (/^\s*⚠️/.test(t)) { kind = 'warn'; icon = '⚠️'; title = 'សូមពិនិត្យ'; t = t.replace(/^\s*⚠️\s*/, ''); }
+    if (o.danger) { kind = 'err'; icon = '🗑️'; }
+    const esc = x => String(x).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const bg = document.createElement('div'); bg.className = 'dlg-bg';
+    bg.innerHTML = `<div class="dlg ${kind}" role="dialog"><div class="ic">${icon}</div><h3>${esc(title)}</h3><p>${esc(t)}</p>${o.input ? `<input id="dlgIn" type="${o.type || 'text'}" placeholder="${esc(o.placeholder || '')}" autocomplete="new-password">` : ''}<div class="acts">${(o.confirm || o.input) ? '<button data-v="0">បដិសេធ</button>' : ''}<button class="pri" data-v="1">${esc(o.okText || ((o.confirm || o.input) ? 'យល់ព្រម' : 'យល់ព្រម'))}</button></div></div>`;
+    const inp = bg.querySelector('#dlgIn');
+    const done = v => { bg.remove(); document.removeEventListener('keydown', kd); res(v ? (o.input ? inp.value : true) : (o.input ? null : false)); };
+    const kd = e => { if (e.key === 'Escape') done(false); if (e.key === 'Enter') done(true); };
+    bg.addEventListener('click', e => { const b = e.target.closest('button'); if (b) done(b.dataset.v === '1'); else if (e.target === bg && (o.confirm || o.input)) done(false); });
+    document.addEventListener('keydown', kd); document.body.appendChild(bg); (inp || bg.querySelector('.pri')).focus();
+  });
+}
+const uiConfirm = (m, o) => uiDlg(m, Object.assign({ confirm: true }, o || {}));
+window.alert = function (m) { uiDlg(m); };   // alert ទាំងអស់ក្លាយជាផ្ទាំងស្អាត
 /* ── QR របស់ខ្លួន (បង្ហាញក្រោយ login) ── */
 async function showMyQr(reset) {
   const pw = (function(){ try { return localStorage.getItem('krou_pw'); } catch(e) { return null; } })();
   let p = pw;
-  if (!p) { p = prompt('បញ្ចូលពាក្យសម្ងាត់របស់អ្នក ដើម្បីបង្កើត QR'); if (!p) return; }
-  if (reset && !confirm('បង្កើត QR ថ្មី? QR ចាស់នឹងឈប់ប្រើបាន។')) return;
+  if (!p) { p = await uiDlg('បញ្ចូលពាក្យសម្ងាត់របស់អ្នក ដើម្បីបង្កើត QR', { input: true, type: 'password', placeholder: 'ពាក្យសម្ងាត់' }); if (!p) return; }
+  if (reset && !await uiConfirm('បង្កើត QR ថ្មី? QR ចាស់នឹងឈប់ប្រើបាន។', { icon: '📱', okText: 'បង្កើតថ្មី' })) return;
   const { data, error } = await sb.rpc('teacher_qr_get', { p_u: CURRENT_USER.username, p_p: p, p_reset: !!reset });
   if (error) return alert('❌ ' + (error.message || error));
   if (!data) { try { localStorage.removeItem('krou_pw'); } catch(e) {} return alert('ពាក្យសម្ងាត់មិនត្រឹមត្រូវ ឬមិនទាន់ដំណើរការ teacher_qr.sql'); }
