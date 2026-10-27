@@ -57,6 +57,27 @@ th{background:var(--in);color:var(--muted)}.sc{overflow:auto;max-height:60vh}
   .cardcell img{width:67mm;height:auto;display:block;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
+<script>
+/* ដាក់ logo សាលាចំកណ្ដាល QR (ត្រូវប្រើ correctLevel H ដើម្បីនៅតែស្កេនបាន) */
+var QR_LOGO=new Image();QR_LOGO.src='logo.png';
+function qrStampLogo(box){
+  try{
+    var cv=box.querySelector('canvas'),im=box.querySelector('img');if(!cv)return;
+    var paint=function(){
+      if(cv.__logo||!QR_LOGO.complete||!QR_LOGO.naturalWidth)return;
+      var c=cv.getContext('2d'),W=cv.width,s=Math.round(W*0.22),p=Math.round(W*0.018),x=Math.round((W-s)/2);
+      c.fillStyle='#fff';c.beginPath();
+      if(c.roundRect)c.roundRect(x-p,x-p,s+2*p,s+2*p,s*0.22);else c.rect(x-p,x-p,s+2*p,s+2*p);c.fill();
+      c.save();c.beginPath();if(c.roundRect)c.roundRect(x,x,s,s,s*0.18);else c.rect(x,x,s,s);c.clip();
+      c.drawImage(QR_LOGO,x,x,s,s);c.restore();cv.__logo=1;
+    };
+    paint();
+    var sync=function(){if(im&&cv.__logo)im.src=cv.toDataURL('image/png')};
+    sync();setTimeout(sync,60);setTimeout(sync,200);
+    if(!cv.__logo)QR_LOGO.addEventListener('load',function(){paint();sync()});
+  }catch(e){}
+}
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -254,8 +275,8 @@ function qrPng(s){
   return new Promise(res=>{
     if(!window.QRCode||!s.qr_token)return res(null);
     const box=document.createElement('div');box.style.cssText='position:fixed;left:-9999px;top:0';document.body.appendChild(box);
-    new QRCode(box,{text:qrUrl(s.qr_token),width:480,height:480,correctLevel:QRCode.CorrectLevel.M});
-    setTimeout(()=>{
+    new QRCode(box,{text:qrUrl(s.qr_token),width:480,height:480,correctLevel:QRCode.CorrectLevel.H});
+    setTimeout(()=>{qrStampLogo(box);
       const cv=box.querySelector('canvas'),im=box.querySelector('img');let src=null;
       try{src=cv?cv.toDataURL('image/png'):(im?im.src:null)}catch(e){}
       box.remove();res(src);
