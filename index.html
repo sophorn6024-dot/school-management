@@ -2535,7 +2535,7 @@ let currentPvIndex = 0;
 let profilePickedPhotoBase64 = null;
 let profilePhotoDeleteRequested = false;
 
-function cleanGrade(g) { return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').trim(); }
+function cleanGrade(g) { return String(g || '').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').replace(/\s+/g, '').trim(); }
 
 function showAuthScreen() {
   try { document.getElementById('loginGreet').textContent = timeGreeting() + ' !'; } catch(e) {}
@@ -3369,12 +3369,14 @@ async function checkDashboardTasks(targetCls, currentMonth, todayDay, totalClass
     const _seen = new Set();
     (scoreData || []).forEach(r => { const k = String(r.student_id); if (!_ids || _ids.has(k)) _seen.add(k); });
     let scoredCount = _seen.size;
-    const totalStudentsCount = totalClassStudents || 1;
-    const pct = Math.min(100, Math.round((scoredCount / totalStudentsCount) * 100));
+    const totalStudentsCount = totalClassStudents || 0;
+    if (!totalStudentsCount) scoredCount = 0;
+    const pct = totalStudentsCount ? Math.min(100, Math.round((scoredCount / totalStudentsCount) * 100)) : 0;
     const scoreDescEl = document.getElementById('taskScoreDesc');
     const scorePctEl = document.getElementById('taskScorePercent');
     if (scoreDescEl) {
-      if (pct >= 100 && totalStudentsCount > 0) { scoreDescEl.className = "task-desc-green"; scoreDescEl.innerText = `✅ ${scoredCount}/${totalStudentsCount} នាក់ (បញ្ចូលរួចរាល់)`; }
+      if (!totalStudentsCount) { scoreDescEl.className = "task-desc-slate"; scoreDescEl.innerText = 'មិនទាន់មានសិស្សក្នុងថ្នាក់'; }
+      else if (pct >= 100) { scoreDescEl.className = "task-desc-green"; scoreDescEl.innerText = `✅ ${scoredCount}/${totalStudentsCount} នាក់ (បញ្ចូលរួចរាល់)`; }
       else { scoreDescEl.className = "task-desc-slate"; scoreDescEl.innerText = `${scoredCount}/${totalStudentsCount} នាក់បានបញ្ចូល`; }
     }
     if (scorePctEl) {
