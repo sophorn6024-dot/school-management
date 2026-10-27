@@ -3384,7 +3384,7 @@ async function loadStudentsForProfileViewer() {
     }
     const { data, error } = await query;
     if (error) throw error;
-    cachedStudentsRoster = data || [];
+    cachedStudentsRoster = (data || []).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km'));
     populateStudentDropdown();
   } catch (err) { studentSelect.innerHTML = '<option value="">មិនមានទិន្នន័យ</option>'; }
 }
