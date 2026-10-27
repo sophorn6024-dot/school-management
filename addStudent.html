@@ -932,6 +932,10 @@ body{background:var(--bg)}
           <input type="text" id="searchInput" placeholder="ស្វែងរក" oninput="handleSearch()" aria-label="ស្វែងរកតាមឈ្មោះ ឬអត្តលេខ">
         </div>
 
+        <div class="ctl search-box" id="villageBox">
+          <select id="villageFilter" onchange="applyFilterAndRender()" aria-label="ត្រងតាមភូមិ" style="border:0;background:transparent;color:inherit;font:inherit;width:100%;min-width:120px;outline:none;cursor:pointer"><option value="">ភូមិទាំងអស់</option></select>
+        </div>
+
         <div class="ctl chip-btn" id="syncStatus" onclick="refreshDataForce()" title="ចុចដើម្បី Refresh ទិន្នន័យឡើងវិញ">
           <svg class="ic" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-15-6.7L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 15 6.7l3-2.7"/><path d="M16 16h5v5"/></svg>
           <span id="syncStatusText" class="btn-label">ស្វ័យប្រវត្តិ</span>
@@ -1650,6 +1654,7 @@ body{background:var(--bg)}
           ]);
         }
 
+        await probeAddrCols();
         const { data, error } = await query.order('id', { ascending: true });
         if (error) throw error;
 
@@ -1663,6 +1668,9 @@ body{background:var(--bg)}
           phone: row.phone || '',
           pob: row.pob || '',
           address: row.address || '',
+          pobP: partsFromRow(row, 'pob'),
+          addrP: partsFromRow(row, 'addr'),
+          _needAddrCols: ('pob_village' in row) && !(row.pob_village || row.pob_commune || row.pob_district || row.pob_province || row.addr_village || row.addr_commune || row.addr_district || row.addr_province) && !!(row.pob || row.address),
           father: row.father_name || '',
           fatherJob: row.father_job || '',
           mother: row.mother_name || '',
@@ -1674,6 +1682,8 @@ body{background:var(--bg)}
         }));
 
         applyFilterAndRender();
+        rebuildVillageFilter();
+        migrateAddrCols();
         document.getElementById('syncStatusText').innerText = "ស្វ័យប្រវត្តិ";
         loadClassesWithData();
       } catch (err) {
@@ -1701,7 +1711,8 @@ body{background:var(--bg)}
         mother_job: s.motherJob ? String(s.motherJob).trim() : null,
         photo_url: s.photoUrl || null,
         dropout_semester: s.dropoutSemester ? String(s.dropoutSemester).trim() : null,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
+        ...(HAS_ADDR_COLS === false ? {} : { ...addrCols('pob', getParts(s, 'pob')), ...addrCols('addr', getParts(s, 'address')) })
       };
     }
 
@@ -1888,6 +1899,34 @@ body{background:var(--bg)}
     function joinAddressParts(village, commune, district, province) {
       return [village, commune, district, province].map(s => (s || '').trim()).filter(Boolean).join(', ');
     }
+    /* ផ្នែកអាសយដ្ឋាន៖ ប្រើជួរដាច់ដោយឡែក (s.pobP / s.addrP) បើមាន បើគ្មាន បំបែកពីអក្សរ */
+    let HAS_ADDR_COLS = null;   // null = មិនទាន់ដឹង, true/false បន្ទាប់ពីត្រួតពិនិត្យ
+    function getParts(s, which) {
+      const p = which === 'pob' ? s.pobP : s.addrP;
+      return p || parseAddressParts(which === 'pob' ? s.pob : s.address);
+    }
+    function partsFromRow(row, pre) {
+      const o = { village: row[pre + '_village'] || '', commune: row[pre + '_commune'] || '', district: row[pre + '_district'] || '', province: row[pre + '_province'] || '' };
+      return (o.village || o.commune || o.district || o.province) ? o : null;
+    }
+    function addrCols(pre, parts) {
+      return { [pre + '_village']: parts.village || null, [pre + '_commune']: parts.commune || null, [pre + '_district']: parts.district || null, [pre + '_province']: parts.province || null };
+    }
+    function withAddrCols(row) {
+      if (HAS_ADDR_COLS === false) return row;
+      return Object.assign({}, row, addrCols('pob', parseAddressParts(row.pob)), addrCols('addr', parseAddressParts(row.address)));
+    }
+    async function probeAddrCols() {
+      if (HAS_ADDR_COLS !== null) return;
+      try { const { error } = await sb.from(STUDENTS_TABLE).select('pob_village').limit(1); HAS_ADDR_COLS = !error; } catch (e) { HAS_ADDR_COLS = false; }
+    }
+    function fillAddrP(pref, parts) {
+      ADDR_KEYS.forEach(k => { const el = document.getElementById(pref + '_' + k); if (el) el.value = (parts && parts[k]) || ''; });
+    }
+    function readAddrP(pref) {
+      const g = k => (document.getElementById(pref + '_' + k) || { value: '' }).value.trim();
+      return { village: g('village'), commune: g('commune'), district: g('district'), province: g('province') };
+    }
     function fillAddr(pref, str) {
       const a = parseAddressParts(str);
       ADDR_KEYS.forEach(k => { const el = document.getElementById(pref + '_' + k); if (el) el.value = a[k]; });
@@ -1911,8 +1950,10 @@ body{background:var(--bg)}
       s.sex = data.sex || s.sex || '';
       s.grade = data.grade || s.grade || getDefaultGrade();
       s.phone = data.phone || '';
-      s.pob = joinAddressParts(data.pob_village, data.pob_commune, data.pob_district, data.pob_province);
-      s.address = joinAddressParts(data.addr_village, data.addr_commune, data.addr_district, data.addr_province);
+      s.pobP = { village: data.pob_village || '', commune: data.pob_commune || '', district: data.pob_district || '', province: data.pob_province || '' };
+      s.addrP = { village: data.addr_village || '', commune: data.addr_commune || '', district: data.addr_district || '', province: data.addr_province || '' };
+      s.pob = joinAddressParts(s.pobP.village, s.pobP.commune, s.pobP.district, s.pobP.province);
+      s.address = joinAddressParts(s.addrP.village, s.addrP.commune, s.addrP.district, s.addrP.province);
       s.father = data.father || '';
       s.fatherJob = data.fatherJob || '';
       s.mother = data.mother || '';
@@ -1960,6 +2001,7 @@ body{background:var(--bg)}
 
       if (field.startsWith('pob_')) {
         const tr = input.closest('tr');
+        s.pobP = { village: tr.querySelector('input[data-field="pob_village"]').value.trim(), commune: tr.querySelector('input[data-field="pob_commune"]').value.trim(), district: tr.querySelector('input[data-field="pob_district"]').value.trim(), province: tr.querySelector('input[data-field="pob_province"]').value.trim() };
         s.pob = joinAddressParts(
           tr.querySelector('input[data-field="pob_village"]').value,
           tr.querySelector('input[data-field="pob_commune"]').value,
@@ -1970,6 +2012,7 @@ body{background:var(--bg)}
 
       if (field.startsWith('addr_')) {
         const tr = input.closest('tr');
+        s.addrP = { village: tr.querySelector('input[data-field="addr_village"]').value.trim(), commune: tr.querySelector('input[data-field="addr_commune"]').value.trim(), district: tr.querySelector('input[data-field="addr_district"]').value.trim(), province: tr.querySelector('input[data-field="addr_province"]').value.trim() };
         s.address = joinAddressParts(
           tr.querySelector('input[data-field="addr_village"]').value,
           tr.querySelector('input[data-field="addr_commune"]').value,
@@ -1995,12 +2038,15 @@ body{background:var(--bg)}
         if (currentStatusFilter === 'ឈប់រៀន' && !isDropout) return false;
 
         if (isMissingFilterActive && getMissingFields(s).length === 0) return false;
+        const vf = (document.getElementById('villageFilter') || {}).value;
+        if (vf && (getParts(s, 'address').village || '').trim() !== vf) return false;
 
         return true;
       });
 
       visibleList = filtered.filter(s => !s.isDraft);
       renderTable(filtered);
+      try { if (document.activeElement && document.activeElement.id !== 'villageFilter') rebuildVillageFilter(); } catch (e) {}
     }
 
     function renderTable(list) {
@@ -2026,8 +2072,8 @@ body{background:var(--bg)}
         const formattedDob = formatToInputDate(s.dob);
         const age = calculateAge(formattedDob);
 
-        const pob = escParts(parseAddressParts(s.pob));
-        const addr = escParts(parseAddressParts(s.address));
+        const pob = escParts(getParts(s, 'pob'));
+        const addr = escParts(getParts(s, 'address'));
 
         const showMissing = isMissingFilterActive && !s.isDraft;
         const photoUrl = safeUrl(s.photoUrl);
@@ -2335,8 +2381,8 @@ body{background:var(--bg)}
       document.getElementById('modalAgeDisplay').innerText = `អាយុ: ${ageNow !== '' ? ageNow : '-'}`;
       document.getElementById('modalPhone').value = s.phone || '';
       document.getElementById('modalDropout').value = s.dropoutSemester || '';
-      fillAddr('mPob', s.pob);
-      fillAddr('mAddr', s.address);
+      fillAddrP('mPob', getParts(s, 'pob'));
+      fillAddrP('mAddr', getParts(s, 'address'));
       document.getElementById('modalFather').value = s.father || '';
       document.getElementById('modalFatherJob').value = s.fatherJob || '';
       document.getElementById('modalMother').value = s.mother || '';
@@ -2371,8 +2417,9 @@ body{background:var(--bg)}
       s.dob = document.getElementById('modalDobText').dataset.rawDate || null;
       s.phone = document.getElementById('modalPhone').value.trim();
       s.dropoutSemester = document.getElementById('modalDropout').value.trim();
-      s.pob = readAddr('mPob');
-      s.address = readAddr('mAddr');
+      s.pobP = readAddrP('mPob'); s.addrP = readAddrP('mAddr');
+      s.pob = joinAddressParts(s.pobP.village, s.pobP.commune, s.pobP.district, s.pobP.province);
+      s.address = joinAddressParts(s.addrP.village, s.addrP.commune, s.addrP.district, s.addrP.province);
       s.father = document.getElementById('modalFather').value.trim();
       s.fatherJob = document.getElementById('modalFatherJob').value.trim();
       s.mother = document.getElementById('modalMother').value.trim();
@@ -2486,7 +2533,7 @@ body{background:var(--bg)}
       }
 
       try {
-        const { error } = await sb.from(STUDENTS_TABLE).insert(pendingImportStudents);
+        const { error } = await sb.from(STUDENTS_TABLE).insert(pendingImportStudents.map(withAddrCols));
         if (error) throw error;
         showToast(`🎉 បាននាំចូលសិស្ស ${pendingImportStudents.length} នាក់ជោគជ័យ!`);
         closeImportModal();
@@ -2567,7 +2614,7 @@ body{background:var(--bg)}
             }
           }
 
-          const { error } = await sb.from(STUDENTS_TABLE).insert(rows);
+          const { error } = await sb.from(STUDENTS_TABLE).insert(rows.map(withAddrCols));
           if (error) throw error;
           showToast(`🎉 នាំចូលបាន ${rows.length} នាក់ជោគជ័យ!`);
           closeImportModal();
@@ -2732,6 +2779,31 @@ body{background:var(--bg)}
       closeKhmerCalendar();
     });
 
+    function rebuildVillageFilter() {
+      const sel = document.getElementById('villageFilter'); if (!sel) return;
+      const cur = sel.value, cnt = {};
+      studentsList.forEach(s => { if (s.isDraft) return; const v = (getParts(s, 'address').village || '').trim(); if (v) cnt[v] = (cnt[v] || 0) + 1; });
+      const names = Object.keys(cnt).sort((a, b) => a.localeCompare(b, 'km'));
+      sel.innerHTML = '<option value="">ភូមិទាំងអស់</option>' + names.map(n => `<option value="${esc(n)}">${esc(n)} (${cnt[n]})</option>`).join('');
+      if (cur && cnt[cur]) sel.value = cur;
+    }
+    /* បំបែកអាសយដ្ឋានចាស់ៗចូលជួរថ្មី ម្ដងគត់ (ស្ងាត់ៗ) */
+    let _migrating = false;
+    async function migrateAddrCols() {
+      if (_migrating || HAS_ADDR_COLS !== true) return;
+      const todo = studentsList.filter(s => s._needAddrCols && s.db_id);
+      if (!todo.length) return;
+      _migrating = true;
+      try {
+        for (const s of todo) {
+          const body = { ...addrCols('pob', parseAddressParts(s.pob)), ...addrCols('addr', parseAddressParts(s.address)) };
+          const { error } = await sb.from(STUDENTS_TABLE).update(body).eq('id', s.db_id);
+          if (error) break;
+          s._needAddrCols = false;
+        }
+      } catch (e) {}
+      _migrating = false;
+    }
     function handleSearch() {
       clearTimeout(searchDebounceTimer);
       searchDebounceTimer = setTimeout(applyFilterAndRender, 60);
