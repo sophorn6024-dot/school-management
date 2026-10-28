@@ -282,38 +282,28 @@
     .cal-cell.selected .n, .cal-cell.selected .l { color: #fff; }
     .cal-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px 12px; border-top: 1px solid #e2e8f0; }
     .cal-btn-today, .cal-btn-clear, .cal-btn-close { background: transparent; border: none; font-size: 13px; font-weight: 800; cursor: pointer; padding: 6px 10px; border-radius: 8px; }
-    .tb-btn .tb-lbl{font-weight:400;color:#94a3b8}
-    .tb-btn .dbadge{background:rgba(255,255,255,.08);padding:2px 8px;border-radius:6px;display:inline-flex;align-items:center;gap:5px}
-    .khmer-cal-popup,.khmer-cal-popup *{font-family:'Khmer OS Battambang','Battambang',sans-serif}
-    .khmer-cal-popup .cal-month{font-family:'Khmer OS Muol Light','Moul',cursive}
-    .cal-popup-backdrop{z-index:3900}.khmer-cal-popup{z-index:4000}
-    @media print{.khmer-cal-popup,.cal-popup-backdrop{display:none!important}}
-
-    /* 🔣 ត្រូវតែរក្សា font របស់ Font Awesome (បើមិនដូច្នោះ icon នឹងបាត់ ព្រោះ * { font-family !important }) */
-    i.fa, i.fa-solid, i.fa-regular, i.fa-brands, i[class^="fa-"], i[class*=" fa-"], .fa-solid, .fa-regular, .fa-brands {
-      font-family: 'Font Awesome 6 Free' !important;
-    }
-    i.fa-brands, .fa-brands { font-family: 'Font Awesome 6 Brands' !important; font-weight: 400; }
-    i.fa-solid, .fa-solid { font-weight: 900; }
-    i.fa-regular, .fa-regular { font-weight: 400; }
-    i.fa-solid, i.fa-regular, i.fa-brands { font-style: normal; }
-    /* 📱 Toolbar ទូរស័ព្ទ : មិនចាំបាច់អូស */
-    @media (max-width: 720px) {
+    /* icons: FA font must survive the global font override */
+    i.fa-solid, .fa-solid { font-family: 'Font Awesome 6 Free' !important; font-weight: 900 !important; }
+    i.fa-regular, .fa-regular { font-family: 'Font Awesome 6 Free' !important; font-weight: 400 !important; }
+    /* theme-aware toolbar */
+    .tb-btn { background: var(--surface); color: var(--text); border-color: var(--border); }
+    .tb-btn:hover { background: var(--bg); border-color: var(--primary); }
+    .tb-btn.primary { background: #0284c7; color: #fff; }
+    .tb-btn.green { background: #059669; color: #fff; border-color: transparent; }
+    .top-toolbar > * { min-width: 0; }
+    .tb-btn .dbadge { background: rgba(2,132,199,.14); padding: 2px 8px; border-radius: 7px; font-size: 12px; font-weight: 700; }
+    .cal-popup-backdrop { z-index: 2900; } .khmer-cal-popup { z-index: 3000; }
+    .khmer-cal-popup .cal-month { font-family: 'Khmer OS Muol Light','Moul',cursive !important; }
+    .khmer-cal-popup i.fa-solid { font-family: 'Font Awesome 6 Free' !important; }
+    .sign-dates { font-size: 11px; font-weight: 700; line-height: 1.7; }
+    @media print { .khmer-cal-popup, .cal-popup-backdrop { display: none !important; } }
+    @media (max-width: 768px) {
       body { padding: 8px 8px 60px; }
-      .top-toolbar { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-      .top-toolbar > .dd-wrap, .top-toolbar > .tb-btn { width: 100%; }
-      .top-toolbar .dd-wrap > .tb-btn { width: 100%; }
-      .tb-btn { padding: 0 9px; font-size: 12.5px; min-width: 0; }
-      .tb-btn > span { overflow: hidden; text-overflow: ellipsis; }
+      .top-toolbar { gap: 5px; }
+      .tb-btn { height: 34px; padding: 0 10px; font-size: 12px; gap: 6px; }
+      .tb-btn .dbadge { display: none; }
       .dd-popup { max-width: calc(100vw - 20px); }
-      .tb-btn .tb-lbl { display: none; }
-      .top-toolbar > * { min-width: 0; }
-      .dd-wrap { display: block; }
-      .tb-btn { overflow: hidden; }
-      .tb-btn > span { min-width: 0; }
-      .tb-btn #txtClassSelect, .tb-btn #txtRulesFormat { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     }
-
   </style>
 </head>
 
@@ -482,18 +472,16 @@
         </div>
       </div>
 
-      <button type="button" class="tb-btn" onclick="openKhmerCalendar('teacher')">
-        <span class="tb-lbl">គ្រូ</span>
-        <span id="teacherDateBadge" class="dbadge"></span>
+      <button type="button" class="tb-btn" onclick="openKhmerCalendar('teacher')" title="ថ្ងៃខែហត្ថលេខា គ្រូ">
+        <i class="fa-solid fa-file-signature" style="color:#60a5fa;"></i> <span>គ្រូ</span> <span class="dbadge" id="teacherDateBadge"></span>
       </button>
-      <button type="button" class="tb-btn" onclick="openKhmerCalendar('principal')">
-        <span class="tb-lbl">នាយក</span>
-        <span id="principalDateBadge" class="dbadge"></span>
+      <button type="button" class="tb-btn" onclick="openKhmerCalendar('principal')" title="ថ្ងៃខែហត្ថលេខា នាយក">
+        <i class="fa-solid fa-stamp" style="color:#f59e0b;"></i> <span>នាយក</span> <span class="dbadge" id="principalDateBadge"></span>
       </button>
       <button type="button" class="tb-btn" onclick="openPageSetup()">
         <i class="fa-solid fa-sliders" style="color:#c084fc;"></i> <span>កំណត់ទំព័រ</span>
       </button>
-      <button type="button" class="tb-btn" style="background:#059669;" onclick="downloadPDF()">
+      <button type="button" class="tb-btn green" onclick="downloadPDF()">
         <i class="fa-solid fa-file-pdf"></i> <span>ទាញយក PDF</span>
       </button>
       <button type="button" class="tb-btn primary" onclick="printReport()">
@@ -537,7 +525,7 @@
           <!-- ✍️ Signatures (ចន្លោះទំនេរ មិនមានហត្ថលេខាគំរូ) -->
           <div class="sign-row">
             <div class="sign-col" style="margin-top: 36px;">
-              <div id="principalDateBox" style="font-size:11px;font-weight:700;line-height:1.7;"></div>
+              <div class="sign-dates" id="principalDateBox"></div>
               <div class="f-moul sign-title">បានឃើញនិងឯកភាព</div>
               <div class="f-moul sign-title" style="margin-top:4px;">នាយកសាលា</div>
               <div class="sign-space"></div>
@@ -545,7 +533,7 @@
             </div>
 
             <div class="sign-col">
-              <div id="teacherDateBox" style="font-size:11px;font-weight:700;line-height:1.7;"></div>
+              <div class="sign-dates" id="teacherDateBox"></div>
               <div class="f-moul sign-title" style="margin-top:6px;">គ្រូទទួលបន្ទុកថ្នាក់</div>
               <div class="sign-space"></div>
               <div class="sign-name" id="lblTeacherName">សេង សុភាស់</div>
@@ -1774,6 +1762,22 @@ exports.default = {
     const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    /* 📄 ទាញទិន្នន័យជាផ្នែកៗ ១០០០ ជួរម្ដង រហូតអស់ (Supabase កំណត់ ១០០០ ជួរ/សំណួរ) */
+    const __all = async (mk) => {
+      const PS = 1000; let out = [], from = 0;
+      for (;;) {
+        let r = await mk().order('id', { ascending: true }).range(from, from + PS - 1);
+        if (r.error && from === 0) r = await mk().range(from, from + PS - 1);
+        if (r.error) return { data: null, error: r.error };
+        const d = r.data || [];
+        out = out.concat(d);
+        if (d.length < PS) break;
+        from += PS;
+      }
+      return { data: out, error: null };
+    };
+
+
     function readSession() {
       try { return JSON.parse(localStorage.getItem('krou_supabase_user') || 'null'); } catch (e) { return null; }
     }
@@ -1838,11 +1842,6 @@ exports.default = {
     const USER_CLASS = CURRENT_USER?.assigned_classes || CURRENT_USER?.assigned_class || "៤(ក)";
     const TEACHER_NAME = CURRENT_USER?.teacher_name || "សេង សុភាស់";
     const IS_ADMIN = String(USER_ROLE).toLowerCase().trim() === 'admin';
-
-    function applyTheme(t) { document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
-    applyTheme(localStorage.getItem('krou_theme_manual') || 'dark');
-    window.addEventListener('message', e => { if (e.data && (e.data.type === 'THEME_CHANGE' || e.data.theme)) applyTheme(e.data.theme || e.data); });
-    window.addEventListener('storage', e => { if (e.key === 'krou_theme_manual') applyTheme(e.newValue); });
 
     let currentSelectedClass = cleanGrade(USER_CLASS) || '៤(ក)';
     let currentPeriod = 'តុលា';
@@ -2137,13 +2136,13 @@ exports.default = {
         // ទាញពិន្ទុតាមប្រភេទជាមុន។ កុំ filter period/class តឹងពេក ព្រោះ
         // form បញ្ចូលពិន្ទុខ្លះរក្សាទុក 'តុលា' ខ្លះអាចរក្សាទុក 'ខែតុលា'
         // ហើយ assigned_class អាចមាន/គ្មានពាក្យ 'ថ្នាក់ទី'។
-        let scoreQuery = sb.from('scores').select(
-          'id, student_id, assigned_class, score_type, period, scores, total, average, rank, grade_label, result, created_at, updated_at'
-        );
         const dbScoreType = selectedPeriodType === 'annual' ? 'annual' : selectedPeriodType;
-        scoreQuery = scoreQuery.eq('score_type', dbScoreType);
-
-        const { data: allScoresData, error: scoresError } = await scoreQuery;
+        const { data: allScoresData, error: scoresError } = await __all(() => {
+          const q = sb.from('scores').select(
+            'id, student_id, assigned_class, score_type, period, scores, total, average, rank, grade_label, result, created_at, updated_at'
+          ).eq('score_type', dbScoreType);
+          return cls ? q.in('assigned_class', [cls, `ថ្នាក់ទី${cls}`, `ថ្នាក់ទី ${cls}`, `ថ្នាក់${cls}`, `ថ្នាក់ ${cls}`]) : q;
+        });
         if (scoresError) throw new Error(`ទាញពិន្ទុមិនបាន៖ ${scoresError.message}`);
         if (requestId !== reportLoadSeq) return;
 
@@ -2585,10 +2584,20 @@ exports.default = {
 
     window.addEventListener('resize', fitPaper);
 
-    const KHMER_DIGITS = ['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
-    const KHMER_MONTHS = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
-    function toKhmerNum(n) { return String(n).replace(/\d/g, d => KHMER_DIGITS[d]); }
-    const SIGN_KEY = 'gradeSubjSignDates_v1';
+    const SD_MONTHS_KH = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+    const KH_DIG = ['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
+    function toKhNum(n) { return String(n).replace(/\d/g, d => KH_DIG[d]); }
+
+    /* 🎨 Theme: ដើរតាម form មេ (krou_theme_manual / THEME_CHANGE) */
+    function applyTheme(t) { document.documentElement.setAttribute('data-theme', t === 'light' ? 'light' : 'dark'); }
+    try { applyTheme(localStorage.getItem('krou_theme_manual') || 'dark'); } catch (e) {}
+    window.addEventListener('message', e => { if (e.data && (e.data.type === 'THEME_CHANGE' || e.data.theme)) applyTheme(e.data.theme || e.data); });
+    window.addEventListener('storage', e => { if (e.key === 'krou_theme_manual') applyTheme(e.newValue); });
+
+    /* =========================================================
+       📅 ប្រតិទិនចន្ទគតិ (MomentKH) សម្រាប់ថ្ងៃហត្ថលេខា គ្រូ + នាយក
+    ========================================================= */
+    const SIGN_KEY = 'subjGradesSignDates_v1';
     const SIGN_ROLES = { teacher: 'គ្រូបន្ទុកថ្នាក់', principal: 'នាយកសាលា' };
     const signDates = { teacher: { blank: false, date: '' }, principal: { blank: true, date: '' } };   // date '' = ថ្ងៃនេះ
     let activeCalendarTarget = 'teacher', calView = null;
@@ -2622,10 +2631,10 @@ exports.default = {
       return n.kd === 1 && n.ph === 0;
     }
     function lunarLine(o) {
-      return 'ថ្ងៃ' + SD_DOW[o.dow] + ' ' + toKhmerNum(o.kd) + (o.ph === 0 ? 'កើត' : 'រោច') + ' ខែ' + o.mname + ' ឆ្នាំ' + o.animal + ' ' + o.sak + ' ពុទ្ធសករាជ ' + toKhmerNum(o.be);
+      return 'ថ្ងៃ' + SD_DOW[o.dow] + ' ' + toKhNum(o.kd) + (o.ph === 0 ? 'កើត' : 'រោច') + ' ខែ' + o.mname + ' ឆ្នាំ' + o.animal + ' ' + o.sak + ' ពុទ្ធសករាជ ' + toKhNum(o.be);
     }
     function solarLine(y, m, d, place) {
-      return (place ? 'កំពង់ល្ពៅ ' : '') + 'ថ្ងៃទី' + toKhmerNum(d) + ' ខែ' + KHMER_MONTHS[m - 1] + ' ឆ្នាំ' + toKhmerNum(y);
+      return (place ? 'ធ្វើនៅកំពង់ល្ពៅ ' : '') + 'ថ្ងៃទី' + toKhNum(d) + ' ខែ' + SD_MONTHS_KH[m - 1] + ' ឆ្នាំ' + toKhNum(y);
     }
     function renderSignDates() {
       ['teacher', 'principal'].forEach(role => {
@@ -2633,24 +2642,22 @@ exports.default = {
         const badge = document.getElementById(role === 'teacher' ? 'teacherDateBadge' : 'principalDateBadge');
         const p = signParts(role);
         let html = '', btn;
-        if (st.blank && role === 'principal') {
-          html = '';
-          btn = '<i class="fa-regular fa-calendar-xmark" style="color:#f59e0b;"></i> មិនដាក់';
-        } else if (st.blank) {
-          let be = ''; try { be = toKhmerNum(sdInfo(p.y, p.m, p.d).be); } catch (e) {}
-          html = '<div>ថ្ងៃ.................... ខែ.......... ឆ្នាំ........... ពុទ្ធសករាជ ' + be + '</div><div>កំពង់ល្ពៅ ថ្ងៃទី...... ខែ...... ឆ្នាំ' + toKhmerNum(p.y) + '</div>';
-          btn = '<i class="fa-regular fa-calendar" style="color:#60a5fa;"></i> ទទេ';
+        if (st.blank && role === 'principal') { html = ''; btn = 'មិនដាក់'; }
+        else if (st.blank) {
+          let be = ''; try { be = toKhNum(sdInfo(p.y, p.m, p.d).be); } catch (e) {}
+          html = '<div>ថ្ងៃ.................... ខែ.......... ឆ្នាំ........... ពុទ្ធសករាជ ' + be + '</div><div>ធ្វើនៅកំពង់ល្ពៅ ថ្ងៃទី...... ខែ...... ឆ្នាំ' + toKhNum(p.y) + '</div>';
+          btn = 'ទទេ';
         } else {
           try { html = '<div>' + lunarLine(sdInfo(p.y, p.m, p.d)) + '</div>'; } catch (e) { html = '<div>&nbsp;</div>'; }
           html += '<div>' + solarLine(p.y, p.m, p.d, role === 'teacher') + '</div>';
-          btn = '<i class="fa-regular fa-calendar-check" style="color:#10b981;"></i> ថ្ងៃទី' + toKhmerNum(p.d) + ' ' + KHMER_MONTHS[p.m - 1];
+          btn = p.d + ' ' + SD_MONTHS_KH[p.m - 1];
         }
         if (box) box.innerHTML = html;
-        if (badge) badge.innerHTML = btn;
+        if (badge) badge.textContent = btn;
       });
       if (document.getElementById('khmerCalPopup').classList.contains('show')) renderCalendarDays();
     }
-    function signChanged() { saveSignDates(); renderSignDates(); }
+    function signChanged() { saveSignDates(); renderSignDates(); try { fitPaper(); } catch (e) {} }
 
     function renderCalendarDays() {
       if (typeof momentkh === 'undefined') return;
@@ -2667,11 +2674,11 @@ exports.default = {
         const cls = 'cal-cell' + (inM ? '' : ' out') + (o.dow === 0 ? ' sun' : '') + (sdIsHoly(Y, M, D) ? ' holy' : '')
           + ((t.getFullYear() === Y && t.getMonth() + 1 === M && t.getDate() === D) ? ' today' : '')
           + ((!cur.blank && sel.y === Y && sel.m === M && sel.d === D) ? ' selected' : '');
-        html += '<button type="button" class="' + cls + '" onclick="calPick(' + Y + ',' + M + ',' + D + ')"><span class="n">' + toKhmerNum(D) + '</span><span class="l">' + toKhmerNum(o.kd) + (o.ph === 0 ? 'កើត' : 'រោច') + '</span></button>';
+        html += '<button type="button" class="' + cls + '" onclick="calPick(' + Y + ',' + M + ',' + D + ')"><span class="n">' + toKhNum(D) + '</span><span class="l">' + toKhNum(o.kd) + (o.ph === 0 ? 'កើត' : 'រោច') + '</span></button>';
       }
       document.getElementById('calDaysGrid').innerHTML = html;
-      document.getElementById('calMonth').textContent = KHMER_MONTHS[m - 1] + ' ' + toKhmerNum(y);
-      document.getElementById('calSub').textContent = 'ខែ' + lm.join(' – ខែ') + ' · ព.ស. ' + be.map(toKhmerNum).join(' – ');
+      document.getElementById('calMonth').textContent = SD_MONTHS_KH[m - 1] + ' ' + toKhNum(y);
+      document.getElementById('calSub').textContent = 'ខែ' + lm.join(' – ខែ') + ' · ព.ស. ' + be.map(toKhNum).join(' – ');
       document.getElementById('calRole').textContent = '✍ ថ្ងៃខែហត្ថលេខា · ' + SIGN_ROLES[role];
       document.getElementById('calSel').innerHTML = cur.blank ? (role === 'principal' ? 'មិនដាក់ថ្ងៃខែ' : 'ទុកទទេ សម្រាប់សរសេរដោយដៃ')
         : '<div><b>' + lunarLine(sdInfo(sel.y, sel.m, sel.d)) + '</b></div><div>' + solarLine(sel.y, sel.m, sel.d, false) + '</div>';
@@ -2679,7 +2686,7 @@ exports.default = {
     }
     function openKhmerCalendar(target) {
       activeCalendarTarget = target;
-      closePageSetup();
+      closeAllDropdowns();
       const p = signParts(target); calView = { y: p.y, m: p.m };
       renderCalendarDays();
       document.getElementById('calBackdrop').classList.add('show');
@@ -2703,9 +2710,7 @@ exports.default = {
     function calBlank() {
       signDates[activeCalendarTarget].blank = true; signChanged(); closeCalendarPopup();
     }
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeCalendarPopup(); closePageSetup(); closeAllDropdowns(); } });
-    loadSignDates();
-
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeCalendarPopup(); closeAllDropdowns(); } });
     function downloadPDF() {
       const element = document.getElementById('printableReportPaper');
       const pDim = PAPERS[PS.paper];
@@ -2728,13 +2733,15 @@ exports.default = {
       window.print();
     }
 
+    loadSignDates();
+
     window.addEventListener('DOMContentLoaded', async () => {
+      renderSignDates();
       const isAuth = await checkAuthentication();
       if (!isAuth) return;
 
       await initAdminClassDropdown();
       await loadReportData();
-      renderSignDates();
       applyPsStyles();
       setTimeout(fitPaper, 100);
     });
