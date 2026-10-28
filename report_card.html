@@ -1381,6 +1381,22 @@
     const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    /* 📄 ទាញទិន្នន័យជាផ្នែកៗ ១០០០ ជួរម្ដង រហូតអស់ (Supabase កំណត់ ១០០០ ជួរ/សំណួរ) */
+    const __all = async (mk) => {
+      const PS = 1000; let out = [], from = 0;
+      for (;;) {
+        let r = await mk().order('id', { ascending: true }).range(from, from + PS - 1);
+        if (r.error && from === 0) r = await mk().range(from, from + PS - 1);
+        if (r.error) return { data: null, error: r.error };
+        const d = r.data || [];
+        out = out.concat(d);
+        if (d.length < PS) break;
+        from += PS;
+      }
+      return { data: out, error: null };
+    };
+
+
     function readSession() {
       try { return JSON.parse(localStorage.getItem('krou_supabase_user') || 'null'); } catch(e) { return null; }
     }
@@ -2013,11 +2029,11 @@
         /* ទាញតាមលេខសម្គាល់សិស្ស (មិនពឹងលើឈ្មោះថ្នាក់ ដែលអាចរក្សាទុកខុសទម្រង់) */
         const stIds = [];
         stData.forEach(s => { [s.student_id, s.id].forEach(v => { if (v !== null && v !== undefined && v !== '') stIds.push(String(v).trim()); }); });
-        const { data: scData, error: scErr } = await sb
+        const { data: scData, error: scErr } = await __all(() => sb
           .from('scores')
           .select('*')
           .in('student_id', [...new Set(stIds)])
-          .eq('score_type', dataType);
+          .eq('score_type', dataType));
         if (scErr) throw scErr;
 
         const scoreMap = {};
@@ -2047,10 +2063,10 @@
         window.__noScoreNote = '';
 
         // ៤. ទាញយកអវត្តមាន
-        const { data: attData } = await sb
+        const { data: attData } = await __all(() => sb
           .from('attendance')
           .select('student_id, status')
-          .in('student_id', [...new Set(stIds)]);
+          .in('student_id', [...new Set(stIds)]));
 
         const unexcusedMap = {};
         const excusedMap = {};
@@ -2067,16 +2083,17 @@
         /* មុខវិជ្ជាណាដែលមានពិន្ទុយ៉ាងហោចណាស់ ១ នាក់ក្នុងថ្នាក់ → បង្ហាញគ្រប់សិស្សទាំងអស់ (សិស្សគ្មានពិន្ទុ ទុកទទេ) */
         const _allMaps = (reportMode === 'monthly') ? [scoreMap] : [scoreMapS1, scoreMapS2];
         const _hasCache = {};
-        const classHas = (sub) => {
-          const k = [sub.code, sub.key, sub.id, sub.name].join('|');
+        const hasIn = (sub, maps, tag) => {
+          const k = tag + '|' + [sub.code, sub.key, sub.id, sub.name].join('|');
           if (k in _hasCache) return _hasCache[k];
           let ok = false;
-          for (const m of _allMaps) {
+          for (const m of maps) {
             for (const sid of Object.keys(m)) { if (getSubjectScore(m[sid], sub) !== null) { ok = true; break; } }
             if (ok) break;
           }
           return (_hasCache[k] = ok);
         };
+        const classHas = (sub) => hasIn(sub, _allMaps, 'all');
 
         // ៥. រៀបចំទិន្នន័យ
         studentsList = stData.map(st => {
@@ -2089,7 +2106,7 @@
 
           let totalScore = 0;
           let activeSubjectCount = 0;
-          let wSum = 0, wCnt = 0;
+          let wSum = 0, wCnt = 0, dCnt = 0;
 
           if (reportMode === 'monthly') {
             let rawGroups = [];
@@ -2119,6 +2136,7 @@
                 (g.children || []).forEach(c => {
                   const scoreVal = getSubjectScore(sc, c);
                   if (classHas(c)) {
+                    dCnt += coefOf(c);
                     activeChildren.push({
                       name: c.name,
                       max: c.max || 10,
@@ -2143,6 +2161,7 @@
               } else {
                 const scoreVal = getSubjectScore(sc, g);
                 if (classHas(g)) {
+                  dCnt += coefOf(g);
                   activeGroups.push({
                     parentName: g.parentName,
                     isGroup: false,
@@ -2159,7 +2178,8 @@
               }
             });
 
-            const avgScore = wCnt > 0 ? (wSum / wCnt) : (dbAvg[sid1] || dbAvg[sid2] || 0);
+            /* ចែកតាមមុខវិជ្ជាទាំងអស់ក្នុងថ្នាក់ (មានពិន្ទុ ≥១ នាក់) មិនមែនតាមមុខដែលសិស្សម្នាក់ៗមាន */
+            const avgScore = (wCnt > 0 && dCnt > 0) ? (wSum / dCnt) : 0;
 
             return {
               id: st.student_id || st.id,
@@ -2179,7 +2199,7 @@
               ? dbSubData.map(x => ({ name: x.name, code: x.code || `sub_${x.id}`, id: x.id, max: Number(x.max_score)||10, coef: Number(x.coefficient) }))
               : JSON.parse(JSON.stringify(DEFAULT_SEMESTER_TEMPLATE));
 
-            let t1 = 0, c1 = 0, t2 = 0, c2 = 0;
+            let t1 = 0, c1 = 0, t2 = 0, c2 = 0, d1 = 0, d2 = 0;
             const _cf = coefOf;
             const yearSubjects = [];
 
@@ -2187,6 +2207,8 @@
               const v1 = getSubjectScore(sc1, sub);
               const v2 = getSubjectScore(sc2, sub);
               if (!classHas(sub)) return;
+              if (hasIn(sub, [scoreMapS1], 's1')) d1 += _cf(sub);
+              if (hasIn(sub, [scoreMapS2], 's2')) d2 += _cf(sub);
 
               if (v1 !== null) { t1 += v1 * _cf(sub); c1 += _cf(sub); }
               if (v2 !== null) { t2 += v2 * _cf(sub); c2 += _cf(sub); }
@@ -2206,8 +2228,8 @@
               });
             });
 
-            const avg1 = c1 > 0 ? (t1 / c1) : (dbAvgS1[sid1] || dbAvgS1[sid2] || 0);
-            const avg2 = c2 > 0 ? (t2 / c2) : (dbAvgS2[sid1] || dbAvgS2[sid2] || 0);
+            const avg1 = (c1 > 0 && d1 > 0) ? (t1 / d1) : 0;
+            const avg2 = (c2 > 0 && d2 > 0) ? (t2 / d2) : 0;
             let yearAvg = 0;
             if (avg1 > 0 && avg2 > 0) yearAvg = (avg1 + avg2) / 2;
             else if (avg1 > 0) yearAvg = avg1;
@@ -2233,12 +2255,13 @@
               : JSON.parse(JSON.stringify(DEFAULT_SEMESTER_TEMPLATE));
 
             const scSem = (selectedSemester === 'ឆមាសទី២') ? sc2 : sc1;
-            let semTotal = 0, semCount = 0, semW = 0, semWc = 0;
+            let semTotal = 0, semCount = 0, semW = 0, semWc = 0, semD = 0;
             const activeSemSubjects = [];
 
             semList.forEach(sub => {
               const v = getSubjectScore(scSem, sub);
               if (!classHas(sub)) return;
+              if (hasIn(sub, [(selectedSemester === 'ឆមាសទី២') ? scoreMapS2 : scoreMapS1], 'sem')) semD += coefOf(sub);
               if (v !== null) {
                 semTotal += v;
                 semCount++;
@@ -2252,8 +2275,7 @@
               });
             });
 
-            const _dbS = (selectedSemester === 'ឆមាសទី២') ? dbAvgS2 : dbAvgS1;
-            const semAvg = semWc > 0 ? (semW / semWc) : (_dbS[sid1] || _dbS[sid2] || 0);
+            const semAvg = (semWc > 0 && semD > 0) ? (semW / semD) : 0;
 
             return {
               id: st.student_id || st.id,
@@ -2272,7 +2294,7 @@
 
         // ៦. គណនាចំណាត់ថ្នាក់
         const scoreKey = 'avgScore';
-        const sorted = [...studentsList].sort((a, b) => b[scoreKey] - a[scoreKey]);
+        const sorted = studentsList.filter(s => s[scoreKey] > 0).sort((a, b) => b[scoreKey] - a[scoreKey]);
         const rankMap = {};
         let lastScore = null, lastRank = 0;
         sorted.forEach((item, index) => {
@@ -2286,7 +2308,7 @@
         });
 
         studentsList.forEach(s => {
-          s.rank = rankMap[s.id] || 1;
+          s.rank = (s[scoreKey] > 0 && rankMap[s.id]) ? rankMap[s.id] : '';
         });
 
         currentStudentIndex = 0;
@@ -2390,7 +2412,7 @@
                 tbodyHtml += `<td style="text-align:left; padding-left:8px;">${c.name}</td>`;
                 tbodyHtml += `<td>${c.max}</td>`;
                 tbodyHtml += `<td class="bold-val">${c.score === null ? '' : c.score}</td>`;
-                tbodyHtml += `<td style="color:#dc2626; font-weight:800;">${st.rank}</td>`;
+                tbodyHtml += `<td style="color:#dc2626; font-weight:800;">${st.rank || ''}</td>`;
                 tbodyHtml += `<td class="${grClass}">${c.grade ? formatGrade(c.grade) : ''}</td>`;
                 tbodyHtml += `<td></td>`;
                 tbodyHtml += `</tr>`;
@@ -2402,7 +2424,7 @@
               tbodyHtml += `<td colspan="2" style="font-weight:700;">${g.parentName}</td>`;
               tbodyHtml += `<td>${g.max}</td>`;
               tbodyHtml += `<td class="bold-val">${g.score === null ? '' : g.score}</td>`;
-              tbodyHtml += `<td style="color:#dc2626; font-weight:800;">${st.rank}</td>`;
+              tbodyHtml += `<td style="color:#dc2626; font-weight:800;">${st.rank || ''}</td>`;
               tbodyHtml += `<td class="${grClass}">${g.grade ? formatGrade(g.grade) : ''}</td>`;
               tbodyHtml += `<td></td>`;
               tbodyHtml += `</tr>`;
@@ -2413,13 +2435,13 @@
         summaryRowsHtml = `
           <tr style="background:#f8fafc;">
             <td colspan="3" class="summary-cell-text" style="text-align:left; padding-left:12px;">
-              ពិន្ទុសរុប ${st.totalScore.toFixed(2)} • មធ្យមភាគ ${st.avgScore.toFixed(2)}
+              ពិន្ទុសរុប ${st.avgScore > 0 ? st.totalScore.toFixed(2) : '-'} • មធ្យមភាគ ${st.avgScore > 0 ? st.avgScore.toFixed(2) : '-'}
             </td>
             <td colspan="2" class="summary-cell-text">
-              ចំណាត់ថ្នាក់ទី <span style="color:#dc2626; font-weight:800;">${st.rank}</span>
+              ${st.rank ? 'ចំណាត់ថ្នាក់ទី <span style="color:#dc2626; font-weight:800;">' + st.rank + '</span>' : ''}
             </td>
             <td colspan="3" class="summary-cell-text gr-${st.gradeLabel}">
-              និទ្ទេស ${formatGrade(st.gradeLabel)}
+              ${st.gradeLabel && st.gradeLabel !== '-' ? 'និទ្ទេស ' + formatGrade(st.gradeLabel) : ''}
             </td>
           </tr>
           <tr style="background:#f8fafc;">
@@ -2484,10 +2506,10 @@
           </tr>
           <tr style="background:#f8fafc;">
             <td colspan="3" class="summary-cell-text" style="text-align:left; padding-left:10px;">
-              ចំណាត់ថ្នាក់ប្រចាំឆ្នាំទី <span style="color:#dc2626; font-weight:800;">${st.rank}</span>
+              ${st.rank ? 'ចំណាត់ថ្នាក់ប្រចាំឆ្នាំទី <span style="color:#dc2626; font-weight:800;">' + st.rank + '</span>' : ''}
             </td>
             <td colspan="2" class="summary-cell-text gr-${st.gradeLabel}">
-              និទ្ទេស ${formatGrade(st.gradeLabel)}
+              ${st.gradeLabel && st.gradeLabel !== '-' ? 'និទ្ទេស ' + formatGrade(st.gradeLabel) : ''}
             </td>
             <td colspan="3" class="summary-cell-text">
               អវត្តមាន ឥតច្បាប់ ${st.absentUnexcused} • មានច្បាប់ ${st.absentExcused} • សរុប ${totalAbsent}
@@ -2528,13 +2550,13 @@
         summaryRowsHtml = `
           <tr style="background:#f8fafc;">
             <td colspan="2" class="summary-cell-text" style="text-align:left; padding-left:12px;">
-              ពិន្ទុសរុប ${st.totalScore.toFixed(2)} • មធ្យមភាគ ${st.avgScore.toFixed(2)}
+              ពិន្ទុសរុប ${st.avgScore > 0 ? st.totalScore.toFixed(2) : '-'} • មធ្យមភាគ ${st.avgScore > 0 ? st.avgScore.toFixed(2) : '-'}
             </td>
             <td colspan="2" class="summary-cell-text">
-              ចំណាត់ថ្នាក់ទី <span style="color:#dc2626; font-weight:800;">${st.rank}</span>
+              ${st.rank ? 'ចំណាត់ថ្នាក់ទី <span style="color:#dc2626; font-weight:800;">' + st.rank + '</span>' : ''}
             </td>
             <td colspan="2" class="summary-cell-text gr-${st.gradeLabel}">
-              និទ្ទេស ${formatGrade(st.gradeLabel)}
+              ${st.gradeLabel && st.gradeLabel !== '-' ? 'និទ្ទេស ' + formatGrade(st.gradeLabel) : ''}
             </td>
           </tr>
           <tr style="background:#f8fafc;">
@@ -2575,8 +2597,7 @@
           <div class="student-meta-line f-siemreap">
             សិស្សឈ្មោះ: <span class="hl-val">${st.name}</span> •
             ភេទ <span class="hl-val">${st.gender}</span> •
-            អត្តលេខ <span class="hl-val">${st.id}</span> •
-            ចំណាត់ថ្នាក់ទី <span class="hl-rank">${st.rank}</span>
+            អត្តលេខ <span class="hl-val">${st.id}</span>${st.rank ? ' • ចំណាត់ថ្នាក់ទី <span class="hl-rank">' + st.rank + '</span>' : ''}
           </div>
 
           <table class="report-table f-siemreap">
