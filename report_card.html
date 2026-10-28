@@ -1489,6 +1489,8 @@
       return 'F';
     }
 
+    /* មេគុណមុខវិជ្ជា (ដូចស្រង់ពិន្ទុ៖ មេគុណ ≤ 0 ឬគ្មាន → ១) */
+    function coefOf(sub) { const c = Number(sub && sub.coef); return c > 0 ? c : 1; }
     function normP(s) { return String(s || '').replace(/\s+/g, ''); }
     function selectedMonthOld() { return selectedMonth; }
     function showToastRC(msg) {
@@ -1934,10 +1936,17 @@
 
       try {
         // ១. ទាញយកសិស្សពិត
-        const { data: allSt, error: stErr } = await sb.from('students').select('*').order('id', { ascending: true });
-        if (stErr) throw stErr;
+        let { data: allSt, error: stErr } = await sb.from('students').select('*').order('id', { ascending: true });
+        if (stErr) throw stErr; allSt=(allSt||[]).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km'));
 
-        const stData = (allSt || []).filter(s => cleanGrade(s.grade) === pure);
+        /* ដូចស្រង់ពិន្ទុ៖ សិស្សបោះបង់ឆមាសទី១ មិនរាប់ក្នុងឆមាសទី២ (ប៉ះពាល់ចំណាត់ថ្នាក់) */
+        const _S2M = ['ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា'];
+        const _isSem2 = (reportMode === 'monthly') ? _S2M.includes(selectedMonth) : (reportMode === 'semester' && selectedSemester === 'ឆមាសទី២');
+        const stData = (allSt || []).filter(s => cleanGrade(s.grade) === pure).filter(s => {
+          const drop = String(s.dropout_semester || '').trim();
+          if (_isSem2 && (drop.includes('ឆមាស១') || drop.includes('ឆមាសទី១') || drop === '១')) return false;
+          return true;
+        });
 
         if (!stData || stData.length === 0) {
           studentsList = [];
@@ -1980,6 +1989,7 @@
         const scoreMap = {};
         const scoreMapS1 = {};
         const scoreMapS2 = {};
+        const dbAvg = {}, dbAvgS1 = {}, dbAvgS2 = {};
 
         (scData || []).forEach(row => {
           let scObj = row.scores || {};
@@ -1988,13 +1998,14 @@
           }
           const sid = String(row.student_id).trim();
           const per = normP(row.period);
+          const _av = (row.average !== undefined && row.average !== null) ? Number(row.average) : 0;
           if (reportMode === 'monthly') {
             if (per === normP(selectedMonth)) {
-              scoreMap[sid] = scObj;
+              scoreMap[sid] = scObj; dbAvg[sid] = _av;
             }
           } else {
-            if (per === normP('ឆមាសទី១') || per === normP('ឆមាសទី1')) scoreMapS1[sid] = scObj;
-            if (per === normP('ឆមាសទី២') || per === normP('ឆមាសទី2')) scoreMapS2[sid] = scObj;
+            if (per === normP('ឆមាសទី១') || per === normP('ឆមាសទី1')) { scoreMapS1[sid] = scObj; dbAvgS1[sid] = _av; }
+            if (per === normP('ឆមាសទី២') || per === normP('ឆមាសទី2')) { scoreMapS2[sid] = scObj; dbAvgS2[sid] = _av; }
           }
         });
 
@@ -2030,6 +2041,7 @@
 
           let totalScore = 0;
           let activeSubjectCount = 0;
+          let wSum = 0, wCnt = 0;
 
           if (reportMode === 'monthly') {
             let rawGroups = [];
@@ -2040,10 +2052,11 @@
                 rawGroups.push({
                   parentName: p.name,
                   isGroup: children.length > 0,
-                  children: children.map(c => ({ name: c.name, code: c.code || `sub_${c.id}`, id: c.id, max: Number(c.max_score)||10 })),
+                  children: children.map(c => ({ name: c.name, code: c.code || `sub_${c.id}`, id: c.id, max: Number(c.max_score)||10, coef: Number(c.coefficient) })),
                   code: p.code || `sub_${p.id}`,
                   id: p.id,
-                  max: Number(p.max_score) || 10
+                  max: Number(p.max_score) || 10,
+                  coef: Number(p.coefficient)
                 });
               });
             } else {
@@ -2066,6 +2079,7 @@
                     });
                     totalScore += scoreVal;
                     activeSubjectCount++;
+                    wSum += scoreVal * coefOf(c); wCnt += coefOf(c);
                   }
                 });
 
@@ -2088,11 +2102,12 @@
                   });
                   totalScore += scoreVal;
                   activeSubjectCount++;
+                  wSum += scoreVal * coefOf(g); wCnt += coefOf(g);
                 }
               }
             });
 
-            const avgScore = activeSubjectCount > 0 ? (totalScore / activeSubjectCount) : 0;
+            const avgScore = wCnt > 0 ? (wSum / wCnt) : (dbAvg[sid1] || dbAvg[sid2] || 0);
 
             return {
               id: st.student_id || st.id,
@@ -2109,10 +2124,11 @@
 
           } else if (reportMode === 'yearly') {
             const yList = (dbSubData && dbSubData.length > 0)
-              ? dbSubData.map(x => ({ name: x.name, code: x.code || `sub_${x.id}`, id: x.id, max: Number(x.max_score)||10 }))
+              ? dbSubData.map(x => ({ name: x.name, code: x.code || `sub_${x.id}`, id: x.id, max: Number(x.max_score)||10, coef: Number(x.coefficient) }))
               : JSON.parse(JSON.stringify(DEFAULT_SEMESTER_TEMPLATE));
 
             let t1 = 0, c1 = 0, t2 = 0, c2 = 0;
+            const _cf = coefOf;
             const yearSubjects = [];
 
             yList.forEach(sub => {
@@ -2120,8 +2136,8 @@
               const v2 = getSubjectScore(sc2, sub);
               if (v1 === null && v2 === null) return;
 
-              if (v1 !== null) { t1 += v1; c1++; }
-              if (v2 !== null) { t2 += v2; c2++; }
+              if (v1 !== null) { t1 += v1 * _cf(sub); c1 += _cf(sub); }
+              if (v2 !== null) { t2 += v2 * _cf(sub); c2 += _cf(sub); }
 
               let subAvg;
               if (v1 !== null && v2 !== null) subAvg = (v1 + v2) / 2;
@@ -2137,12 +2153,12 @@
               });
             });
 
-            const avg1 = c1 > 0 ? (t1 / c1) : 0;
-            const avg2 = c2 > 0 ? (t2 / c2) : 0;
+            const avg1 = c1 > 0 ? (t1 / c1) : (dbAvgS1[sid1] || dbAvgS1[sid2] || 0);
+            const avg2 = c2 > 0 ? (t2 / c2) : (dbAvgS2[sid1] || dbAvgS2[sid2] || 0);
             let yearAvg = 0;
-            if (c1 > 0 && c2 > 0) yearAvg = (avg1 + avg2) / 2;
-            else if (c1 > 0) yearAvg = avg1;
-            else if (c2 > 0) yearAvg = avg2;
+            if (avg1 > 0 && avg2 > 0) yearAvg = (avg1 + avg2) / 2;
+            else if (avg1 > 0) yearAvg = avg1;
+            else if (avg2 > 0) yearAvg = avg2;
 
             return {
               id: st.student_id || st.id,
@@ -2160,11 +2176,11 @@
 
           } else {
             const semList = (dbSubData && dbSubData.length > 0)
-              ? dbSubData.map(x => ({ name: x.name, code: x.code || `sub_${x.id}`, id: x.id, max: Number(x.max_score)||10 }))
+              ? dbSubData.map(x => ({ name: x.name, code: x.code || `sub_${x.id}`, id: x.id, max: Number(x.max_score)||10, coef: Number(x.coefficient) }))
               : JSON.parse(JSON.stringify(DEFAULT_SEMESTER_TEMPLATE));
 
             const scSem = (selectedSemester === 'ឆមាសទី២') ? sc2 : sc1;
-            let semTotal = 0, semCount = 0;
+            let semTotal = 0, semCount = 0, semW = 0, semWc = 0;
             const activeSemSubjects = [];
 
             semList.forEach(sub => {
@@ -2172,6 +2188,7 @@
               if (v === null) return;
               semTotal += v;
               semCount++;
+              semW += v * coefOf(sub); semWc += coefOf(sub);
               activeSemSubjects.push({
                 name: sub.name,
                 max: sub.max || 10,
@@ -2180,7 +2197,8 @@
               });
             });
 
-            const semAvg = semCount > 0 ? (semTotal / semCount) : 0;
+            const _dbS = (selectedSemester === 'ឆមាសទី២') ? dbAvgS2 : dbAvgS1;
+            const semAvg = semWc > 0 ? (semW / semWc) : (_dbS[sid1] || _dbS[sid2] || 0);
 
             return {
               id: st.student_id || st.id,
