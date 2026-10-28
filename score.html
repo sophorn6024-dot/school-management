@@ -1801,6 +1801,22 @@ const SUPABASE_URL="https://nggnuobnrxiqjtcwlvwk.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
+    /* 📄 ទាញទិន្នន័យជាផ្នែកៗ ១០០០ ជួរម្ដង រហូតអស់ (Supabase កំណត់ ១០០០ ជួរ/សំណួរ) */
+    const __all = async (mk) => {
+      const PS = 1000; let out = [], from = 0;
+      for (;;) {
+        let r = await mk().order('id', { ascending: true }).range(from, from + PS - 1);
+        if (r.error && from === 0) r = await mk().range(from, from + PS - 1);
+        if (r.error) return { data: null, error: r.error };
+        const d = r.data || [];
+        out = out.concat(d);
+        if (d.length < PS) break;
+        from += PS;
+      }
+      return { data: out, error: null };
+    };
+
+
 function readSession(){try{return JSON.parse(localStorage.getItem('krou_supabase_user')||'null')}catch(e){return null}}
 const CURRENT_USER=readSession();
 const USER_ROLE=CURRENT_USER?.role||"teacher";
@@ -2109,8 +2125,8 @@ async function loadStudents(){
       })
       .map(s=>({id:String(s.student_id||s.id),name:s.student_name||'គ្មានឈ្មោះ',sex:s.gender||'ប្រុស'}));
 
-    const {data:scList}=await sb.from('scores').select('*')
-      .eq('assigned_class',curPure).eq('score_type',scoreType).eq('period',period);
+    const {data:scList}=await __all(() => sb.from('scores').select('*')
+      .eq('assigned_class',curPure).eq('score_type',scoreType).eq('period',period));
 
     savedScoresData={};
     savedDbAverages={};
@@ -2132,7 +2148,7 @@ async function loadStudents(){
 async function loadAttendanceData(cls,period){
   studentAbsenceData={};
   try{
-    const {data}=await sb.from('attendance').select('student_id, status').eq('assigned_class',cls);
+    const {data}=await __all(() => sb.from('attendance').select('student_id, status').eq('assigned_class',cls));
     (data||[]).forEach(r=>{
       const st=String(r.status||'').trim().toUpperCase();
       if(['C','A','ច','អ','ឈប់','ABSENT'].includes(st)){
