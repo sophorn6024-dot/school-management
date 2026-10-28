@@ -1972,6 +1972,22 @@ exports.default = {
     const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    /* 📄 ទាញទិន្នន័យជាផ្នែកៗ ១០០០ ជួរម្ដង រហូតអស់ (Supabase កំណត់ ១០០០ ជួរ/សំណួរ) */
+    const __all = async (mk) => {
+      const PS = 1000; let out = [], from = 0;
+      for (;;) {
+        let r = await mk().order('id', { ascending: true }).range(from, from + PS - 1);
+        if (r.error && from === 0) r = await mk().range(from, from + PS - 1);
+        if (r.error) return { data: null, error: r.error };
+        const d = r.data || [];
+        out = out.concat(d);
+        if (d.length < PS) break;
+        from += PS;
+      }
+      return { data: out, error: null };
+    };
+
+
     /* 2. AUTH GUARD */
     function readSession() {
       try { return JSON.parse(localStorage.getItem('krou_supabase_user') || 'null'); } catch(e) { return null; }
@@ -2694,12 +2710,12 @@ exports.default = {
         </div>`;
 
       try {
-        const { data: stList, error: stErr } = await sb
+        let { data: stList, error: stErr } = await sb
           .from('students')
           .select('*')
           .order('id', { ascending: true });
 
-        if (stErr) throw stErr;
+        if (stErr) throw stErr; stList=(stList||[]).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km'));
 
         const students = (stList || [])
           .filter(s => cleanGrade(s.grade) === curPure)
@@ -2723,11 +2739,11 @@ exports.default = {
 
         const studentIds = students.map(s => s.id);
 
-        const { data: scData, error: scErr } = await sb
+        const { data: scData, error: scErr } = await __all(() => sb
           .from('scores')
           .select('student_id, score_type, period, scores, total, average, rank, grade_label')
           .eq('assigned_class', curPure)
-          .in('student_id', studentIds);
+          .in('student_id', studentIds));
 
         if (scErr) console.warn("Scores error:", scErr);
 
@@ -2772,12 +2788,12 @@ exports.default = {
         const attMap = {};
         students.forEach(st => attMap[st.id] = { sem1_p:0, sem1_a:0, sem2_p:0, sem2_a:0 });
 
-        const { data: attData } = await sb
+        const { data: attData } = await __all(() => sb
           .from('attendance')
           .select('student_id, attendance_date, status')
           .eq('assigned_class', curPure)
           .in('student_id', studentIds)
-          .in('status', ['A', 'C']);
+          .in('status', ['A', 'C']));
 
         (attData || []).forEach(r => {
           const sid = String(r.student_id);
