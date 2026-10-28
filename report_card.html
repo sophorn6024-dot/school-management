@@ -2030,6 +2030,20 @@
           if (excusedCodes.includes(st)) excusedMap[sid] = (excusedMap[sid] || 0) + 1;
         });
 
+        /* មុខវិជ្ជាណាដែលមានពិន្ទុយ៉ាងហោចណាស់ ១ នាក់ក្នុងថ្នាក់ → បង្ហាញគ្រប់សិស្សទាំងអស់ (សិស្សគ្មានពិន្ទុ ទុកទទេ) */
+        const _allMaps = (reportMode === 'monthly') ? [scoreMap] : [scoreMapS1, scoreMapS2];
+        const _hasCache = {};
+        const classHas = (sub) => {
+          const k = [sub.code, sub.key, sub.id, sub.name].join('|');
+          if (k in _hasCache) return _hasCache[k];
+          let ok = false;
+          for (const m of _allMaps) {
+            for (const sid of Object.keys(m)) { if (getSubjectScore(m[sid], sub) !== null) { ok = true; break; } }
+            if (ok) break;
+          }
+          return (_hasCache[k] = ok);
+        };
+
         // ៥. រៀបចំទិន្នន័យ
         studentsList = stData.map(st => {
           const sid1 = String(st.student_id || '').trim();
@@ -2070,13 +2084,15 @@
                 const activeChildren = [];
                 (g.children || []).forEach(c => {
                   const scoreVal = getSubjectScore(sc, c);
-                  if (scoreVal !== null) {
+                  if (classHas(c)) {
                     activeChildren.push({
                       name: c.name,
                       max: c.max || 10,
                       score: scoreVal,
-                      grade: calculateGrade(scoreVal)
+                      grade: scoreVal !== null ? calculateGrade(scoreVal) : ''
                     });
+                  }
+                  if (scoreVal !== null) {
                     totalScore += scoreVal;
                     activeSubjectCount++;
                     wSum += scoreVal * coefOf(c); wCnt += coefOf(c);
@@ -2092,14 +2108,16 @@
                 }
               } else {
                 const scoreVal = getSubjectScore(sc, g);
-                if (scoreVal !== null) {
+                if (classHas(g)) {
                   activeGroups.push({
                     parentName: g.parentName,
                     isGroup: false,
                     max: g.max || 10,
                     score: scoreVal,
-                    grade: calculateGrade(scoreVal)
+                    grade: scoreVal !== null ? calculateGrade(scoreVal) : ''
                   });
+                }
+                if (scoreVal !== null) {
                   totalScore += scoreVal;
                   activeSubjectCount++;
                   wSum += scoreVal * coefOf(g); wCnt += coefOf(g);
@@ -2134,22 +2152,23 @@
             yList.forEach(sub => {
               const v1 = getSubjectScore(sc1, sub);
               const v2 = getSubjectScore(sc2, sub);
-              if (v1 === null && v2 === null) return;
+              if (!classHas(sub)) return;
 
               if (v1 !== null) { t1 += v1 * _cf(sub); c1 += _cf(sub); }
               if (v2 !== null) { t2 += v2 * _cf(sub); c2 += _cf(sub); }
 
-              let subAvg;
+              let subAvg = null;
               if (v1 !== null && v2 !== null) subAvg = (v1 + v2) / 2;
-              else subAvg = (v1 !== null) ? v1 : v2;
+              else if (v1 !== null) subAvg = v1;
+              else if (v2 !== null) subAvg = v2;
 
               yearSubjects.push({
                 name: sub.name,
                 max: sub.max || 10,
-                s1: (v1 !== null) ? v1 : '-',
-                s2: (v2 !== null) ? v2 : '-',
+                s1: (v1 !== null) ? v1 : '',
+                s2: (v2 !== null) ? v2 : '',
                 avg: subAvg,
-                grade: calculateGrade(subAvg)
+                grade: subAvg !== null ? calculateGrade(subAvg) : ''
               });
             });
 
@@ -2185,15 +2204,17 @@
 
             semList.forEach(sub => {
               const v = getSubjectScore(scSem, sub);
-              if (v === null) return;
-              semTotal += v;
-              semCount++;
-              semW += v * coefOf(sub); semWc += coefOf(sub);
+              if (!classHas(sub)) return;
+              if (v !== null) {
+                semTotal += v;
+                semCount++;
+                semW += v * coefOf(sub); semWc += coefOf(sub);
+              }
               activeSemSubjects.push({
                 name: sub.name,
                 max: sub.max || 10,
                 score: v,
-                grade: calculateGrade(v)
+                grade: v !== null ? calculateGrade(v) : ''
               });
             });
 
@@ -2334,9 +2355,9 @@
                 }
                 tbodyHtml += `<td style="text-align:left; padding-left:8px;">${c.name}</td>`;
                 tbodyHtml += `<td>${c.max}</td>`;
-                tbodyHtml += `<td class="bold-val">${c.score}</td>`;
+                tbodyHtml += `<td class="bold-val">${c.score === null ? '' : c.score}</td>`;
                 tbodyHtml += `<td style="color:#dc2626; font-weight:800;">${st.rank}</td>`;
-                tbodyHtml += `<td class="${grClass}">${formatGrade(c.grade)}</td>`;
+                tbodyHtml += `<td class="${grClass}">${c.grade ? formatGrade(c.grade) : ''}</td>`;
                 tbodyHtml += `<td></td>`;
                 tbodyHtml += `</tr>`;
               });
@@ -2346,9 +2367,9 @@
               tbodyHtml += `<td>${rowCounter++}</td>`;
               tbodyHtml += `<td colspan="2" style="font-weight:700;">${g.parentName}</td>`;
               tbodyHtml += `<td>${g.max}</td>`;
-              tbodyHtml += `<td class="bold-val">${g.score}</td>`;
+              tbodyHtml += `<td class="bold-val">${g.score === null ? '' : g.score}</td>`;
               tbodyHtml += `<td style="color:#dc2626; font-weight:800;">${st.rank}</td>`;
-              tbodyHtml += `<td class="${grClass}">${formatGrade(g.grade)}</td>`;
+              tbodyHtml += `<td class="${grClass}">${g.grade ? formatGrade(g.grade) : ''}</td>`;
               tbodyHtml += `<td></td>`;
               tbodyHtml += `</tr>`;
             }
@@ -2399,7 +2420,7 @@
           tbodyHtml = `<tr><td colspan="8" style="padding: 24px; color:#ef4444; font-weight:bold;">⚠️ សិស្សនេះមិនទាន់មានពិន្ទុប្រឡងឆមាសនៅឡើយទេ</td></tr>`;
         } else {
           ySubs.forEach((row, i) => {
-            const avgTxt = Number(row.avg).toFixed(2).replace(/\.00$/, '');
+            const avgTxt = (row.avg === null || row.avg === undefined) ? '' : Number(row.avg).toFixed(2).replace(/\.00$/, '');
             tbodyHtml += `
               <tr>
                 <td>${i + 1}</td>
@@ -2408,7 +2429,7 @@
                 <td>${row.s1}</td>
                 <td>${row.s2}</td>
                 <td class="bold-val">${avgTxt}</td>
-                <td class="gr-${row.grade}">${formatGrade(row.grade)}</td>
+                <td class="gr-${row.grade}">${row.grade ? formatGrade(row.grade) : ''}</td>
                 <td></td>
               </tr>
             `;
@@ -2462,8 +2483,8 @@
                 <td>${i + 1}</td>
                 <td class="sub-name">${row.name}</td>
                 <td>${row.max}</td>
-                <td class="bold-val">${row.score}</td>
-                <td class="gr-${row.grade}">${formatGrade(row.grade)}</td>
+                <td class="bold-val">${row.score === null ? '' : row.score}</td>
+                <td class="gr-${row.grade}">${row.grade ? formatGrade(row.grade) : ''}</td>
                 <td></td>
               </tr>
             `;
