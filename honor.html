@@ -217,7 +217,7 @@
 
     /* សម្រាប់គំរូទាំង ៦ ផ្សេងទៀត (Banner, Bee, Arrow, etc.) */
     .vector-podium-row-1 { display: flex; justify-content: center; width: 100%; }
-    .vector-podium-row-2, .vector-podium-row-3 { display: flex; justify-content: center; gap: 45px; width: 100%; }
+    .vector-podium-row-2, .vector-podium-row-3 { display: flex; justify-content: space-between; gap: 20px; width: 100%; }
 
     .rank-card-slot {
       position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -1164,155 +1164,155 @@
       const name = student?.name || '...';
       const nameColorClass = `r-color-${rank}`;
       const isTop1 = (rank === 1);
+      const s = isTop1 ? 1.12 : 1;           /* លេខ១ ធំជាងបន្តិច */
+      const VW = 330, VH = 170;               /* viewBox ស្តង់ដារ */
+      const id = (n) => `${template}${rank}${n}`;
 
-      // 1. គំរូ ៖ ព្រួញបៃតង
-      if (template === 'arrow') {
-        const boxW = isTop1 ? 350 : 320;
-        const fontSize = isTop1 ? '25px' : '22px';
-        return `
-          <div style="position:relative; width:${boxW}px; height:110px; display:flex; flex-direction:column; align-items:center;">
-            <div style="position:relative; margin-bottom:-14px; z-index:3;">
-              <svg width="44" height="44" viewBox="0 0 34 34">
-                <circle cx="17" cy="17" r="15" fill="#f59e0b" stroke="#d97706" stroke-width="2"/>
-                <circle cx="17" cy="17" r="12" fill="#ffffff"/>
-              </svg>
-              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:15px; color:#b91c1c;">${khRank}</span>
-            </div>
-            <div style="position:relative; width:100%; height:74px;">
-              <svg width="100%" height="74" viewBox="0 0 320 68" preserveAspectRatio="none">
-                <path d="M12 6 L285 6 L312 34 L285 62 L12 62 L12 6 Z" fill="#15803d"/>
-                <path d="M18 12 L280 12 L302 34 L280 56 L18 56 Z" fill="#ffffff" stroke="#15803d" stroke-width="2"/>
-                <path d="M12 62 L0 62 L12 50 Z" fill="#14532d"/>
-              </svg>
-              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:${fontSize}; padding-right:24px;">${name}</div>
-            </div>
-          </div>
-        `;
-      }
+      /* បដាអក្សរលេខចំណាត់ថ្នាក់ (ក្រហម មានស៊ុមស) */
+      const numHtml = (x, y, size, color, stroke) => `
+        <span class="font-moul" style="position:absolute; left:${x * s}px; top:${y * s}px; transform:translate(-50%,-50%); font-size:${size * s}px; line-height:1; color:${color || '#e11d1d'}; -webkit-text-stroke:${stroke || '1.5px #fff'}; paint-order:stroke fill; text-shadow:0 2px 3px rgba(0,0,0,.25); white-space:nowrap;">${khRank}</span>`;
+      const nameHtml = (cx, cy, w) => `
+        <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; left:${(cx - w / 2) * s}px; top:${(cy - 20) * s}px; width:${w * s}px; height:${40 * s}px; display:flex; align-items:center; justify-content:center; font-size:${(isTop1 ? 24 : 21.5)}px;">${name}</div>`;
+      const wrap = (defs, body, overlay) => `
+        <div style="position:relative; width:${VW * s}px; height:${VH * s}px;">
+          <svg width="${VW * s}" height="${VH * s}" viewBox="0 0 ${VW} ${VH}" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:absolute; inset:0; overflow:visible;">
+            <defs>${defs}</defs>${body}
+          </svg>${overlay}
+        </div>`;
 
-      // 2. គំរូ ៖ បដាកណ្ដាល
-      if (template === 'banner') {
-        const boxW = isTop1 ? 350 : 320;
-        const boxH = isTop1 ? 120 : 110;
-        const fontSize = isTop1 ? '25px' : '22px';
-        return `
-          <div style="position:relative; width:${boxW}px; height:${boxH}px; display:flex; align-items:center; justify-content:center;">
-            <svg width="${boxW}" height="${boxH}" viewBox="0 0 270 95" fill="none">
-              <path d="M70 16 L200 16 L185 88 L85 88 Z" fill="#1e3a8a"/>
-              <path d="M100 88 L170 88 L180 96 L90 96 Z" fill="#15803d"/>
-              <rect x="18" y="22" width="234" height="58" rx="29" fill="#ffffff" stroke="#f59e0b" stroke-width="3.5"/>
-              <circle cx="135" cy="14" r="16" fill="#ffffff" stroke="#f59e0b" stroke-width="3"/>
-            </svg>
-            <span class="font-moul" style="position:absolute; top:3px; font-size:15px; color:#b91c1c;">${khRank}</span>
-            <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; top:48px; font-size:${fontSize}; width:${boxW - 40}px;">${name}</div>
-          </div>
-        `;
-      }
-
-      // 3. គំរូ ៖ ឃ្មុំ
-      if (template === 'bee') {
-        const boxW = isTop1 ? 330 : 305;
-        const fontSize = isTop1 ? '24px' : '21.5px';
-        return `
-          <div style="position:relative; width:${boxW}px; height:130px; display:flex; flex-direction:column; align-items:center;">
-            <svg width="84" height="58" viewBox="0 0 70 50" fill="none" style="margin-bottom:-12px; z-index:2;">
-              <ellipse cx="20" cy="18" rx="14" ry="8" fill="#bae6fd" opacity="0.8" transform="rotate(-25 20 18)"/>
-              <ellipse cx="50" cy="18" rx="14" ry="8" fill="#bae6fd" opacity="0.8" transform="rotate(25 50 18)"/>
-              <ellipse cx="35" cy="30" rx="20" ry="16" fill="#f59e0b"/>
-              <path d="M22 24 Q35 20 48 24 M20 32 Q35 28 50 32" stroke="#000" stroke-width="3.5" stroke-linecap="round"/>
-              <circle cx="28" cy="28" r="4.5" fill="#000"/><circle cx="27" cy="26" r="1.5" fill="#fff"/>
-              <circle cx="42" cy="28" r="4.5" fill="#000"/><circle cx="41" cy="26" r="1.5" fill="#fff"/>
-              <path d="M31 35 Q35 39 39 35" stroke="#b91c1c" stroke-width="2" stroke-linecap="round"/>
-              <path d="M28 16 Q24 8 20 10 M42 16 Q46 8 50 10" stroke="#000" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            <div style="position:relative; width:100%; height:62px; background:#fff; border:3.5px solid #f59e0b; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
-              <span class="font-moul" style="position:absolute; top:-16px; left:14px; font-size:22px; color:#1d4ed8;">${khRank}</span>
-              <div class="student-name-text font-moul ${nameColorClass}" style="font-size:${fontSize}; width:90%;">${name}</div>
-            </div>
-          </div>
-        `;
-      }
-
-      // 4. គំរូ ៖ បង្អួច
-      if (template === 'window') {
-        const boxW = isTop1 ? 340 : 315;
-        const fontSize = isTop1 ? '24px' : '21.5px';
-        return `
-          <div style="position:relative; width:${boxW}px; height:120px; display:flex; flex-direction:column; align-items:center;">
-            <div style="position:relative; margin-bottom:-12px; z-index:3;">
-              <svg width="120" height="30" viewBox="0 0 110 28" fill="none">
-                <path d="M10 14 Q55 0 100 14 L95 24 Q55 12 15 24 Z" fill="#b91c1c"/>
-                <circle cx="55" cy="14" r="12" fill="#fff" stroke="#f59e0b" stroke-width="2.5"/>
-              </svg>
-              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:14px; color:#b91c1c;">${khRank}</span>
-            </div>
-            <div style="position:relative; width:100%; height:78px; display:flex; align-items:center; justify-content:center;">
-              <svg width="100%" height="78" viewBox="0 0 260 68" fill="none">
-                <rect x="48" y="6" width="164" height="56" rx="4" fill="#ffffff" stroke="#854d0e" stroke-width="4.5"/>
-                <path d="M14 2 L48 6 L48 62 L14 66 Z" fill="#854d0e"/>
-                <rect x="21" y="10" width="22" height="46" fill="#7dd3fc" stroke="#5b3408" stroke-width="2"/>
-                <path d="M246 2 L212 6 L212 62 L246 66 Z" fill="#854d0e"/>
-                <rect x="217" y="10" width="22" height="46" fill="#7dd3fc" stroke="#5b3408" stroke-width="2"/>
-              </svg>
-              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; font-size:${fontSize}; width:160px;">${name}</div>
-            </div>
-          </div>
-        `;
-      }
-
-      // 5. គំរូ ៖ ឆ្មា
-      if (template === 'cat') {
-        const boxW = isTop1 ? 320 : 295;
-        const fontSize = isTop1 ? '24px' : '21.5px';
-        return `
-          <div style="position:relative; width:${boxW}px; height:130px; display:flex; flex-direction:column; align-items:center;">
-            <div style="display:flex; align-items:flex-end; gap:8px; margin-bottom:-14px; z-index:2;">
-              <svg width="50" height="50" viewBox="0 0 45 45">
-                <circle cx="22" cy="25" r="17" fill="#fb923c"/>
-                <polygon points="10,12 18,5 20,15" fill="#fb923c"/>
-                <polygon points="35,12 27,5 25,15" fill="#fb923c"/>
-                <circle cx="17" cy="23" r="3" fill="#000"/><circle cx="28" cy="23" r="3" fill="#000"/>
-                <circle cx="22.5" cy="28" r="2" fill="#b91c1c"/>
-              </svg>
-              <span class="font-moul" style="font-size:22px; color:#f59e0b; margin-bottom:5px;">${khRank}</span>
-              <svg width="50" height="50" viewBox="0 0 45 45">
-                <circle cx="22" cy="25" r="17" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
-                <polygon points="10,12 18,5 20,15" fill="#f8fafc" stroke="#e2e8f0"/>
-                <polygon points="35,12 27,5 25,15" fill="#f8fafc" stroke="#e2e8f0"/>
-                <circle cx="17" cy="23" r="3" fill="#0284c7"/><circle cx="28" cy="23" r="3" fill="#0284c7"/>
-                <circle cx="22.5" cy="28" r="2" fill="#ec4899"/>
-              </svg>
-            </div>
-            <div style="position:relative; width:100%; height:60px; background:#fff; border:3.5px solid #b91c1c; border-radius:14px; display:flex; align-items:center; justify-content:center; box-shadow:0 3px 10px rgba(0,0,0,0.08);">
-              <div class="student-name-text font-moul ${nameColorClass}" style="font-size:${fontSize}; width:90%;">${name}</div>
-            </div>
-          </div>
-        `;
-      }
-
-      // 6. គំរូ ៖ ឆ្លាក់មាស
+      /* 1) ឆ្លាក់មាស : មេដាយមាសលើក្រុង + ប្រអប់ស ស៊ុមមាស + ស្លឹកលម្អសងខាង */
       if (template === 'kbach') {
-        const boxW = isTop1 ? 340 : 315;
-        const fontSize = isTop1 ? '24px' : '21.5px';
-        return `
-          <div style="position:relative; width:${boxW}px; height:125px; display:flex; flex-direction:column; align-items:center;">
-            <div style="position:relative; margin-bottom:-10px; z-index:3;">
-              <svg width="74" height="36" viewBox="0 0 60 30" fill="none">
-                <path d="M30 2 L38 14 L52 14 L42 22 L46 30 L30 24 L14 30 L18 22 L8 14 L22 14 Z" fill="#eab308" stroke="#a16207" stroke-width="1.2"/>
-                <circle cx="30" cy="18" r="9" fill="#ffffff" stroke="#ca8a04" stroke-width="2.5"/>
-              </svg>
-              <span class="font-moul" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:14px; color:#b91c1c; padding-top:6px;">${khRank}</span>
-            </div>
-            <div style="position:relative; width:100%; height:75px; display:flex; align-items:center; justify-content:center;">
-              <svg width="100%" height="75" viewBox="0 0 260 60" fill="none">
-                <path d="M55 30 Q20 4 4 30 Q20 56 55 30 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="2.5"/>
-                <path d="M205 30 Q240 4 256 30 Q240 56 205 30 Z" fill="#fef08a" stroke="#ca8a04" stroke-width="2.5"/>
-                <rect x="48" y="6" width="164" height="48" rx="4" fill="#ffffff" stroke="#eab308" stroke-width="3.5"/>
-              </svg>
-              <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; font-size:${fontSize}; width:160px;">${name}</div>
-            </div>
-          </div>
-        `;
+        const leaf = `
+          <path d="M72 105 C58 66 26 66 4 105 C26 144 58 144 72 105 Z" fill="url(#${id('lf')})" stroke="#f2c200" stroke-width="3"/>
+          <path d="M66 105 C54 74 30 74 12 105 C30 136 54 136 66 105 Z" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.5"/>
+          <g stroke="#2aa5c9" stroke-width="2.4" stroke-linecap="round" fill="none">
+            <path d="M24 105 H56 M40 89 V121 M29 94 L51 116 M51 94 L29 116"/>
+            <circle cx="40" cy="105" r="6"/>
+          </g>
+          <g fill="#2aa5c9"><circle cx="24" cy="105" r="2.4"/><circle cx="56" cy="105" r="2.4"/><circle cx="40" cy="89" r="2.4"/><circle cx="40" cy="121" r="2.4"/></g>`;
+        const defs = `
+          <linearGradient id="${id('gd')}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde68a"/><stop offset=".55" stop-color="#e0a812"/><stop offset="1" stop-color="#a8740a"/></linearGradient>
+          <linearGradient id="${id('lf')}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e7ec5b"/><stop offset="1" stop-color="#b9c91f"/></linearGradient>`;
+        const body = `
+          <path d="M112 56 Q132 46 140 34 Q146 10 165 3 Q184 10 190 34 Q198 46 218 56 Q192 62 165 62 Q138 62 112 56 Z" fill="url(#${id('gd')})" stroke="#9a6b08" stroke-width="1.5"/>
+          <path d="M126 56 Q146 52 154 40 M204 56 Q184 52 176 40" stroke="#fff6c2" stroke-width="2" fill="none" opacity=".8"/>
+          <rect x="70" y="64" width="190" height="86" rx="3" fill="#fff" stroke="#f2c200" stroke-width="5"/>
+          <rect x="77" y="71" width="176" height="72" fill="none" stroke="#e2e8f0" stroke-width="1.5"/>
+          ${leaf}
+          <g transform="translate(330,0) scale(-1,1)">${leaf}</g>
+          <circle cx="165" cy="32" r="25" fill="#fff" stroke="#e0a812" stroke-width="4"/>
+          <circle cx="165" cy="32" r="20.5" fill="#fff" stroke="#f5d060" stroke-width="2"/>`;
+        return wrap(defs, body, numHtml(165, 33, 27) + nameHtml(165, 107, 168));
+      }
+
+      /* 2) ឃ្មុំ : ឃ្មុំកាន់ផ្ទាំងសរសេរឈ្មោះ លេខពណ៌នៅខាងឆ្វេង */
+      if (template === 'bee') {
+        const defs = `
+          <linearGradient id="${id('sg')}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e6ebf2"/></linearGradient>
+          <radialGradient id="${id('hg')}" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#ffe27a"/><stop offset=".6" stop-color="#f7a823"/><stop offset="1" stop-color="#e17f0c"/></radialGradient>
+          <linearGradient id="${id('ng')}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#e11d48"/></linearGradient>`;
+        const body = `
+          <ellipse cx="262" cy="34" rx="42" ry="20" fill="#9bd6f5" opacity=".9" transform="rotate(-22 262 34)"/>
+          <ellipse cx="305" cy="62" rx="26" ry="13" fill="#b9e3fa" opacity=".9" transform="rotate(18 305 62)"/>
+          <path d="M268 96 Q312 92 322 128 Q314 156 276 158 L262 150 Z" fill="#f7a823"/>
+          <path d="M286 94 Q296 124 288 156 M304 98 Q312 126 304 154" stroke="#2b1a0a" stroke-width="9" stroke-linecap="round" fill="none"/>
+          <path d="M322 128 L334 142 L318 142 Z" fill="#2b1a0a"/>
+          <rect x="8" y="82" width="262" height="78" rx="16" fill="url(#${id('sg')})" stroke="#f5a623" stroke-width="5"/>
+          <rect x="14" y="88" width="250" height="66" rx="11" fill="none" stroke="#fff" stroke-width="2" opacity=".9"/>
+          <circle cx="212" cy="54" r="42" fill="url(#${id('hg')})"/>
+          <ellipse cx="193" cy="52" rx="12.5" ry="15" fill="#fff"/><ellipse cx="231" cy="52" rx="12.5" ry="15" fill="#fff"/>
+          <circle cx="195" cy="55" r="7.5" fill="#5a3417"/><circle cx="229" cy="55" r="7.5" fill="#5a3417"/>
+          <circle cx="197" cy="52" r="2.6" fill="#fff"/><circle cx="231" cy="52" r="2.6" fill="#fff"/>
+          <path d="M196 74 Q212 90 228 74" stroke="#7a3b10" stroke-width="3" stroke-linecap="round" fill="none"/>
+          <ellipse cx="178" cy="70" rx="6" ry="4" fill="#f58a6b" opacity=".6"/><ellipse cx="246" cy="70" rx="6" ry="4" fill="#f58a6b" opacity=".6"/>
+          <path d="M196 16 Q186 -4 166 6 M228 16 Q238 -4 258 6" stroke="#2b1a0a" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+          <ellipse cx="248" cy="88" rx="12" ry="7" fill="#2b1a0a"/>`;
+        return wrap(defs, body,
+          numHtml(48, 70, 42, '#e11d48', '2px #fff') + nameHtml(139, 122, 214));
+      }
+
+      /* 3) ឆ្មា : ឆ្មា ២ ក្បាល (ទឹកក្រូច + ស) លើផ្ទាំងស៊ុមក្រហម */
+      if (template === 'cat') {
+        const cat = (cx, fur, stroke, eye, nose, bow, stripe) => `
+          <polygon points="${cx - 34},40 ${cx - 28},6 ${cx - 6},26" fill="${fur}" stroke="${stroke}" stroke-width="2"/>
+          <polygon points="${cx + 34},40 ${cx + 28},6 ${cx + 6},26" fill="${fur}" stroke="${stroke}" stroke-width="2"/>
+          <polygon points="${cx - 28},34 ${cx - 25},16 ${cx - 13},27" fill="#f9b4c6"/>
+          <polygon points="${cx + 28},34 ${cx + 25},16 ${cx + 13},27" fill="#f9b4c6"/>
+          <ellipse cx="${cx}" cy="56" rx="36" ry="32" fill="${fur}" stroke="${stroke}" stroke-width="2"/>
+          ${stripe ? `<path d="M${cx - 10} 30 L${cx - 8} 40 M${cx} 28 V40 M${cx + 10} 30 L${cx + 8} 40" stroke="#c46a12" stroke-width="3" stroke-linecap="round"/>` : ''}
+          <ellipse cx="${cx - 14}" cy="54" rx="8.5" ry="10" fill="#fff" stroke="#333" stroke-width="1"/><ellipse cx="${cx + 14}" cy="54" rx="8.5" ry="10" fill="#fff" stroke="#333" stroke-width="1"/>
+          <ellipse cx="${cx - 14}" cy="56" rx="6.5" ry="8" fill="${eye}"/><ellipse cx="${cx + 14}" cy="56" rx="6.5" ry="8" fill="${eye}"/>
+          <circle cx="${cx - 14}" cy="56" r="3.4" fill="#0b1b3a"/><circle cx="${cx + 14}" cy="56" r="3.4" fill="#0b1b3a"/>
+          <circle cx="${cx - 12}" cy="52" r="1.8" fill="#fff"/><circle cx="${cx + 16}" cy="52" r="1.8" fill="#fff"/>
+          <path d="M${cx - 4} 66 H${cx + 4} L${cx} 72 Z" fill="${nose}"/>
+          <path d="M${cx} 72 Q${cx - 6} 80 ${cx - 12} 74 M${cx} 72 Q${cx + 6} 80 ${cx + 12} 74" stroke="#7a2a2a" stroke-width="2" fill="none" stroke-linecap="round"/>
+          <path d="M${cx - 38} 62 L${cx - 54} 58 M${cx - 38} 68 L${cx - 54} 70 M${cx + 38} 62 L${cx + 54} 58 M${cx + 38} 68 L${cx + 54} 70" stroke="#999" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M${cx} 90 L${cx - 18} 80 V100 Z M${cx} 90 L${cx + 18} 80 V100 Z" fill="${bow}"/><circle cx="${cx}" cy="90" r="5" fill="${bow}" stroke="#00000022"/>`;
+        const body = `
+          <rect x="14" y="98" width="302" height="66" rx="14" fill="#f3f3f3" stroke="#b91c1c" stroke-width="4"/>
+          <rect x="20" y="104" width="290" height="54" rx="10" fill="none" stroke="#fff" stroke-width="2"/>
+          ${cat(118, '#f39c3d', '#b8661a', '#1f5fd6', '#2b2b2b', '#e11d1d', true)}
+          ${cat(212, '#fbfbfb', '#c9c9c9', '#2b7de9', '#f06292', '#ec4899', false)}
+          <ellipse cx="96" cy="100" rx="13" ry="7" fill="#f7a54a" stroke="#b8661a" stroke-width="1.5"/><ellipse cx="140" cy="100" rx="13" ry="7" fill="#f7a54a" stroke="#b8661a" stroke-width="1.5"/>
+          <ellipse cx="190" cy="100" rx="13" ry="7" fill="#fff" stroke="#c9c9c9" stroke-width="1.5"/><ellipse cx="234" cy="100" rx="13" ry="7" fill="#fff" stroke="#c9c9c9" stroke-width="1.5"/>`;
+        return wrap('', body, numHtml(165, 84, 34, '#facc15', '2px #c47a00') + nameHtml(165, 132, 262));
+      }
+
+      /* 4) បដាកណ្ដាល : ប្រអប់ ៦ ជ្រុង ស៊ុមពណ៌ឆ្លាស់ + ផ្ទាំងខៀវខាងលើ/បៃតងខាងក្រោម */
+      if (template === 'banner') {
+        const defs = `
+          <linearGradient id="${id('hx')}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3b1f78"/><stop offset=".3" stop-color="#d4181a"/><stop offset=".65" stop-color="#f59e0b"/><stop offset="1" stop-color="#fcd53a"/></linearGradient>
+          <linearGradient id="${id('bl')}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d3fd0"/><stop offset="1" stop-color="#0a1c86"/></linearGradient>
+          <linearGradient id="${id('gr')}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16a34a"/><stop offset="1" stop-color="#0b6b13"/></linearGradient>`;
+        const body = `
+          <path d="M40 38 H290 L326 92 L290 146 H40 L4 92 Z" fill="url(#${id('hx')})" stroke="#555" stroke-width="1.5"/>
+          <path d="M52 50 H278 L306 92 L278 134 H52 L24 92 Z" fill="#fff" stroke="#9ca3af" stroke-width="1.5"/>
+          <path d="M118 24 H212 L200 52 H130 Z" fill="url(#${id('bl')})" stroke="#4b5563" stroke-width="1.5"/>
+          <path d="M100 134 H230 L216 160 H114 Z" fill="url(#${id('gr')})" stroke="#4b5563" stroke-width="1.5"/>`;
+        return wrap(defs, body, numHtml(165, 12, 30) + nameHtml(165, 92, 196));
+      }
+
+      /* 5) បង្អួច : បង្អួចឈើបើកទ្វារសងខាង + ខ្សែបូក្រហមមានមេដាយលេខ */
+      if (template === 'window') {
+        const quad = (c, u0, u1, v0, v1) => {
+          const f = (u, v) => {
+            const x = (1 - u) * ((1 - v) * c[0][0] + v * c[3][0]) + u * ((1 - v) * c[1][0] + v * c[2][0]);
+            const y = (1 - u) * ((1 - v) * c[0][1] + v * c[3][1]) + u * ((1 - v) * c[1][1] + v * c[2][1]);
+            return `${x.toFixed(1)},${y.toFixed(1)}`;
+          };
+          return `${f(u0, v0)} ${f(u1, v0)} ${f(u1, v1)} ${f(u0, v1)}`;
+        };
+        const L = [[6, 58], [78, 70], [78, 148], [6, 168]];
+        const shutter = (cs) => `
+          <polygon points="${cs.map(p => p.join(',')).join(' ')}" fill="#8a5a24" stroke="#5b3a12" stroke-width="2"/>
+          <polygon points="${quad(cs, .14, .86, .09, .47)}" fill="url(#${id('sk')})" stroke="#5b3a12" stroke-width="2"/>
+          <polygon points="${quad(cs, .14, .86, .53, .91)}" fill="url(#${id('sk')})" stroke="#5b3a12" stroke-width="2"/>`;
+        const defs = `
+          <linearGradient id="${id('sk')}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bfe6fb"/><stop offset="1" stop-color="#6fb9e6"/></linearGradient>
+          <linearGradient id="${id('rb')}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c62828"/><stop offset="1" stop-color="#8e1414"/></linearGradient>`;
+        const body = `
+          <path d="M44 40 L70 30 Q120 8 165 14 Q210 8 260 30 L286 40 L262 52 Q165 30 68 52 Z" fill="url(#${id('rb')})"/>
+          <rect x="78" y="62" width="174" height="88" fill="#fff" stroke="#8a5a24" stroke-width="5"/>
+          ${shutter(L)}
+          <g transform="translate(330,0) scale(-1,1)">${shutter(L)}</g>
+          <circle cx="165" cy="28" r="23" fill="#fff" stroke="#d9c9c9" stroke-width="3"/>`;
+        return wrap(defs, body, numHtml(165, 29, 27) + nameHtml(165, 106, 156));
+      }
+
+      /* 6) ព្រួញបៃតង : បូរាងព្រួញ ស៊ុមបៃតង + មេដាយមាសលេខ */
+      if (template === 'arrow') {
+        const defs = `
+          <linearGradient id="${id('ab')}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".6" stop-color="#e9e9e9"/><stop offset="1" stop-color="#c6c6c6"/></linearGradient>
+          <linearGradient id="${id('mg')}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f5e27a"/><stop offset="1" stop-color="#a89412"/></linearGradient>`;
+        const body = `
+          <path d="M22 70 H252 L314 108 L252 146 H22 Z" fill="url(#${id('ab')})" stroke="#0a7a0a" stroke-width="8" stroke-linejoin="round"/>
+          <path d="M22 70 Q4 74 4 90 V126 Q4 142 22 146 Z" fill="#0a7a0a"/>
+          <path d="M10 68 Q-2 80 8 98 V70 Z" fill="#064d06" opacity=".6"/>
+          <path d="M32 138 H250 L296 108" stroke="#fff" stroke-width="2" opacity=".7" fill="none"/>
+          <path d="M44 56 H98 L106 72 H36 Z" fill="url(#${id('mg')})" opacity=".85"/>
+          <circle cx="71" cy="36" r="29" fill="url(#${id('mg')})" stroke="#8a7a0c" stroke-width="2"/>
+          <circle cx="71" cy="36" r="23" fill="#fff" stroke="#d8c94a" stroke-width="2"/>`;
+        return wrap(defs, body, numHtml(71, 37, 28) + nameHtml(146, 108, 188));
       }
     }
 
@@ -1370,6 +1370,19 @@
       }
 
       fitPaper();
+      fitNames();
+    }
+
+    /* 🔤 បង្រួមទំហំអក្សរឈ្មោះ បើវែងលើសប្រអប់ */
+    function fitNames() {
+      const run = () => document.querySelectorAll('#podiumArea .student-name-text').forEach(el => {
+        el.style.fontSize = '';
+        let fs = parseFloat(getComputedStyle(el).fontSize) || 21;
+        let guard = 40;
+        while (el.scrollWidth > el.clientWidth + 1 && fs > 11 && guard-- > 0) { fs -= 0.5; el.style.fontSize = fs + 'px'; }
+      });
+      run();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(run);
     }
 
     /* ══════════════ 🛠️ CUSTOM DROPDOWN ENGINE ══════════════ */
