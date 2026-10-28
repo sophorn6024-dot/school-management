@@ -702,6 +702,40 @@
       .paper-stage.layout-2col .report-sheet { width: 100% !important; height: 100% !important; }
     }
   </style>
+<style>
+/* 🎛️ Toolbar ថ្មី៖ ១ ជួរ រៀបជាក្រុម មានខ្សែបែងចែក (ទូរសព្ទនៅដដែល) */
+@media screen and (min-width: 769px) {
+  .top-toolbar { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; align-items: center; gap: 8px; padding: 10px 18px; background: linear-gradient(180deg,#0f172a,#111c33); }
+  .top-toolbar .tb-row-1, .top-toolbar .tb-row-2 { display: contents; }
+  .top-toolbar .tb-row-1 > .pill-btn:first-child { order: 1; }
+  .top-toolbar #csClass { order: 2; }
+  .top-toolbar .student-nav-group { order: 3; }
+  .top-toolbar #csReportType { order: 10; flex: 0 0 auto !important; display: flex !important; align-items: center; gap: 8px; }
+  .top-toolbar #csMonth { order: 11; }
+  .top-toolbar #csSemester { order: 12; }
+  .top-toolbar .tb-row-2 > .tb-group { order: 13; }
+  .top-toolbar #btnOpenCal { order: 20; }
+  .top-toolbar #btnOpenCalP { order: 21; }
+  .top-toolbar .tb-row-1 > .tb-group { order: 30; }
+  .top-toolbar .tb-row-2 > .pill-btn[onclick^="downloadPDF"] { order: 40; margin-left: auto; }
+  .top-toolbar .tb-row-2 > .pill-btn.primary { order: 41; }
+  .top-toolbar #csReportType::before, .top-toolbar #btnOpenCal::before { content: ''; }
+  .top-toolbar #csReportType { margin-left: 6px; padding-left: 14px; border-left: 1px solid rgba(148,163,184,.28); }
+  .top-toolbar #btnOpenCal { margin-left: 6px; }
+  .top-toolbar .tb-row-1 > .tb-group { margin-left: 6px; }
+  .top-toolbar .pill-btn, .top-toolbar .cs-btn, .top-toolbar .student-nav-group {
+    height: 36px; border-radius: 10px; background: rgba(255,255,255,.05); border: 1px solid rgba(148,163,184,.25); box-shadow: none;
+  }
+  .top-toolbar .student-nav-group .cs-btn { background: transparent; border: none; }
+  .top-toolbar .pill-btn:hover, .top-toolbar .cs-btn:hover { background: rgba(255,255,255,.1); border-color: rgba(148,163,184,.5); }
+  .top-toolbar .pill-btn.primary { background: #00875a; border-color: #00875a; }
+  .top-toolbar .pill-btn.primary:hover { background: #00734c; }
+  .top-toolbar .cselect.month .cs-btn { background: rgba(14,165,233,.12); border-color: rgba(14,165,233,.55); }
+  .top-toolbar .pill-btn, .top-toolbar .cs-btn { font-size: 12.5px; padding: 0 12px; }
+}
+[data-theme="light"] .top-toolbar .pill-btn, [data-theme="light"] .top-toolbar .cs-btn, [data-theme="light"] .top-toolbar .student-nav-group { background: #f8fafc; border-color: #cbd5e1; }
+[data-theme="light"] .top-toolbar #csReportType { border-left-color: #cbd5e1; }
+</style>
 </head>
 <body>
 
