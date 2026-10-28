@@ -2224,6 +2224,22 @@ exports.default = {
     const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    /* 📄 ទាញទិន្នន័យជាផ្នែកៗ ១០០០ ជួរម្ដង រហូតអស់ (Supabase កំណត់ ១០០០ ជួរ/សំណួរ) */
+    const __all = async (mk) => {
+      const PS = 1000; let out = [], from = 0;
+      for (;;) {
+        let r = await mk().order('id', { ascending: true }).range(from, from + PS - 1);
+        if (r.error && from === 0) r = await mk().range(from, from + PS - 1);
+        if (r.error) return { data: null, error: r.error };
+        const d = r.data || [];
+        out = out.concat(d);
+        if (d.length < PS) break;
+        from += PS;
+      }
+      return { data: out, error: null };
+    };
+
+
     /* =========================================================
        2. SESSION & AUTH GUARD
     ========================================================= */
@@ -2520,11 +2536,12 @@ exports.default = {
       var lastDateStr = `${y}-${String(m+1).padStart(2,'0')}-${String(lastDay).padStart(2,'0')}`;
 
       try {
-        const { data: attList, error: attErr } = await sb
+        const { data: attList, error: attErr } = await __all(() => sb
           .from('attendance')
           .select('student_id, attendance_date, status, note, assigned_class')
           .gte('attendance_date', firstDateStr)
-          .lte('attendance_date', lastDateStr);
+          .lte('attendance_date', lastDateStr)
+          .in('assigned_class', [curPure, 'ថ្នាក់ទី' + curPure, 'ថ្នាក់ទី ' + curPure, 'ថ្នាក់' + curPure, 'ថ្នាក់ ' + curPure]));
 
         if (attErr) console.warn('Attendance query warning:', attErr);
 
@@ -3360,10 +3377,11 @@ exports.default = {
         var firstStr = `${currentYear}-${String(mIdx+1).padStart(2,'0')}-01`;
         var lastStr = `${currentYear}-${String(mIdx+1).padStart(2,'0')}-${String(endOfMonthDate.getDate()).padStart(2,'0')}`;
         
-        const { data: attList } = await sb.from('attendance')
+        const { data: attList } = await __all(() => sb.from('attendance')
           .select('student_id, attendance_date, status, assigned_class')
           .gte('attendance_date', firstStr)
-          .lte('attendance_date', lastStr);
+          .lte('attendance_date', lastStr)
+          .in('assigned_class', [curPure, 'ថ្នាក់ទី' + curPure, 'ថ្នាក់ទី ' + curPure, 'ថ្នាក់' + curPure, 'ថ្នាក់ ' + curPure]));
 
         (attList || []).forEach(r => {
           if (cleanGrade(r.assigned_class) === curPure) {
@@ -3572,9 +3590,10 @@ exports.default = {
           dropout_semester: s.dropout_semester
         }));
 
-        const { data: attList } = await sb.from('attendance')
+        const { data: attList } = await __all(() => sb.from('attendance')
           .select('student_id, attendance_date, status, assigned_class')
-          .in('status', ['C', 'A']);
+          .in('status', ['C', 'A'])
+          .in('assigned_class', [curPure, 'ថ្នាក់ទី' + curPure, 'ថ្នាក់ទី ' + curPure, 'ថ្នាក់' + curPure, 'ថ្នាក់ ' + curPure]));
 
         var mData = {};
         (attList || []).forEach(r => {
