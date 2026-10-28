@@ -1100,11 +1100,11 @@
     let currentPeriodChild = GM[prevMonthIndex];
 
     let currentTop5Students = [
-      { name: "សេសៈ សេសៈ", imageUrl: "" },
-      { name: "នា នា", imageUrl: "" },
-      { name: "មាន់ មាន់", imageUrl: "" },
-      { name: "កូ កូ", imageUrl: "" },
-      { name: "កេះ លីណា", imageUrl: "" }
+      { name: "", imageUrl: "" },
+      { name: "", imageUrl: "" },
+      { name: "", imageUrl: "" },
+      { name: "", imageUrl: "" },
+      { name: "", imageUrl: "" }
     ];
 
     /* ══════════════ 📱 AUTO-FIT RESPONSIVE SCALER ══════════════ */
@@ -1131,7 +1131,7 @@
     /* ══════════════ 🎨 RENDER PHOTO CARD & 6 TEMPLATES ══════════════ */
     function getPhotoCard(rank, student) {
       const khRank = kn(rank);
-      const name = student?.name || '...';
+      const name = student?.name || '';
       const img = student?.imageUrl || PLACEHOLDER_IMG;
       const nameColorClass = `r-color-${rank}`;
       const isTop1 = (rank === 1);
@@ -1161,7 +1161,7 @@
 
     function getVectorCardSvg(template, rank, student) {
       const khRank = kn(rank);
-      const name = student?.name || '...';
+      const name = student?.name || '';
       const nameColorClass = `r-color-${rank}`;
       const isTop1 = (rank === 1);
       const s = isTop1 ? 1.12 : 1;           /* លេខ១ ធំជាងបន្តិច */
@@ -1169,10 +1169,10 @@
       const id = (n) => `${template}${rank}${n}`;
 
       /* បដាអក្សរលេខចំណាត់ថ្នាក់ (ក្រហម មានស៊ុមស) */
-      const numHtml = (x, y, size, color, stroke) => `
-        <span class="font-moul" style="position:absolute; left:${x * s}px; top:${y * s}px; transform:translate(-50%,-50%); font-size:${size * s}px; line-height:1; color:${color || '#e11d1d'}; -webkit-text-stroke:${stroke || '1.5px #fff'}; paint-order:stroke fill; text-shadow:0 2px 3px rgba(0,0,0,.25); white-space:nowrap;">${khRank}</span>`;
+      const numHtml = (x, y, size, color, stroke, grad) => `
+        <span class="font-moul" style="position:absolute; left:${x * s}px; top:${y * s}px; transform:translate(-50%,-50%); font-size:${size * s}px; line-height:1.15; ${grad ? `background:${grad}; -webkit-background-clip:text; background-clip:text; color:transparent; -webkit-text-fill-color:transparent; filter:drop-shadow(0 2px 2px rgba(0,0,0,.3));` : `color:${color || '#e11d1d'}; -webkit-text-stroke:${stroke || '1.5px #fff'}; paint-order:stroke fill; text-shadow:0 2px 3px rgba(0,0,0,.25);`} white-space:nowrap;">${khRank}</span>`;
       const nameHtml = (cx, cy, w) => `
-        <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; left:${(cx - w / 2) * s}px; top:${(cy - 20) * s}px; width:${w * s}px; height:${40 * s}px; display:flex; align-items:center; justify-content:center; font-size:${(isTop1 ? 24 : 21.5)}px;">${name}</div>`;
+        <div class="student-name-text font-moul ${nameColorClass}" style="position:absolute; left:${(cx - w / 2) * s}px; top:${(cy - 20) * s}px; width:${w * s}px; height:${40 * s}px; display:flex; align-items:center; justify-content:center; font-size:${(isTop1 ? 34 : 30)}px;" data-max="${isTop1 ? 34 : 30}">${name}</div>`;
       const wrap = (defs, body, overlay) => `
         <div style="position:relative; width:${VW * s}px; height:${VH * s}px;">
           <svg width="${VW * s}" height="${VH * s}" viewBox="0 0 ${VW} ${VH}" fill="none" xmlns="http://www.w3.org/2000/svg" style="position:absolute; inset:0; overflow:visible;">
@@ -1205,30 +1205,33 @@
         return wrap(defs, body, numHtml(165, 33, 27) + nameHtml(165, 107, 168));
       }
 
-      /* 2) ឃ្មុំ : ឃ្មុំកាន់ផ្ទាំងសរសេរឈ្មោះ លេខពណ៌នៅខាងឆ្វេង */
+      /* 2) ឃ្មុំ : ឃ្មុំធំមើលលើផ្ទាំង ខ្លួនឆ្នូតនៅខាងស្ដាំ លេខពណ៌នៅខាងឆ្វេង */
       if (template === 'bee') {
         const defs = `
-          <linearGradient id="${id('sg')}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e6ebf2"/></linearGradient>
-          <radialGradient id="${id('hg')}" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#ffe27a"/><stop offset=".6" stop-color="#f7a823"/><stop offset="1" stop-color="#e17f0c"/></radialGradient>
-          <linearGradient id="${id('ng')}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2563eb"/><stop offset="1" stop-color="#e11d48"/></linearGradient>`;
+          <linearGradient id="${id('sg')}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#dfe5ee"/></linearGradient>
+          <radialGradient id="${id('hg')}" cx=".4" cy=".3" r=".85"><stop offset="0" stop-color="#ffe680"/><stop offset=".55" stop-color="#f8a91e"/><stop offset="1" stop-color="#e07a08"/></radialGradient>
+          <radialGradient id="${id('bg')}" cx=".35" cy=".3" r=".9"><stop offset="0" stop-color="#ffd24d"/><stop offset="1" stop-color="#e58a0b"/></radialGradient>`;
         const body = `
-          <ellipse cx="262" cy="34" rx="42" ry="20" fill="#9bd6f5" opacity=".9" transform="rotate(-22 262 34)"/>
-          <ellipse cx="305" cy="62" rx="26" ry="13" fill="#b9e3fa" opacity=".9" transform="rotate(18 305 62)"/>
-          <path d="M268 96 Q312 92 322 128 Q314 156 276 158 L262 150 Z" fill="#f7a823"/>
-          <path d="M286 94 Q296 124 288 156 M304 98 Q312 126 304 154" stroke="#2b1a0a" stroke-width="9" stroke-linecap="round" fill="none"/>
-          <path d="M322 128 L334 142 L318 142 Z" fill="#2b1a0a"/>
-          <rect x="8" y="82" width="262" height="78" rx="16" fill="url(#${id('sg')})" stroke="#f5a623" stroke-width="5"/>
-          <rect x="14" y="88" width="250" height="66" rx="11" fill="none" stroke="#fff" stroke-width="2" opacity=".9"/>
-          <circle cx="212" cy="54" r="42" fill="url(#${id('hg')})"/>
-          <ellipse cx="193" cy="52" rx="12.5" ry="15" fill="#fff"/><ellipse cx="231" cy="52" rx="12.5" ry="15" fill="#fff"/>
-          <circle cx="195" cy="55" r="7.5" fill="#5a3417"/><circle cx="229" cy="55" r="7.5" fill="#5a3417"/>
-          <circle cx="197" cy="52" r="2.6" fill="#fff"/><circle cx="231" cy="52" r="2.6" fill="#fff"/>
-          <path d="M196 74 Q212 90 228 74" stroke="#7a3b10" stroke-width="3" stroke-linecap="round" fill="none"/>
-          <ellipse cx="178" cy="70" rx="6" ry="4" fill="#f58a6b" opacity=".6"/><ellipse cx="246" cy="70" rx="6" ry="4" fill="#f58a6b" opacity=".6"/>
-          <path d="M196 16 Q186 -4 166 6 M228 16 Q238 -4 258 6" stroke="#2b1a0a" stroke-width="4.5" stroke-linecap="round" fill="none"/>
-          <ellipse cx="248" cy="88" rx="12" ry="7" fill="#2b1a0a"/>`;
+          <ellipse cx="268" cy="34" rx="48" ry="23" fill="#a5dcf7" stroke="#7cc4ec" stroke-width="1.5" transform="rotate(-24 268 34)"/>
+          <ellipse cx="312" cy="66" rx="30" ry="15" fill="#bfe8fb" stroke="#8fcdee" stroke-width="1.5" transform="rotate(20 312 66)"/>
+          <path d="M256 92 Q326 84 334 128 Q330 168 262 160 Z" fill="url(#${id('bg')})"/>
+          <path d="M284 90 Q298 126 282 162 M306 92 Q318 126 304 160" stroke="#2b1a0a" stroke-width="11" stroke-linecap="round" fill="none"/>
+          <path d="M332 122 L346 134 L332 146 Z" fill="#2b1a0a"/>
+          <polygon points="22,92 34,82 246,82 260,94 260,148 246,160 34,160 22,148" fill="url(#${id('sg')})" stroke="#f5a623" stroke-width="6" stroke-linejoin="round"/>
+          <polygon points="30,96 38,88 242,88 252,97 252,145 242,154 38,154 30,145" fill="none" stroke="#fff" stroke-width="2.5" opacity=".95"/>
+          <circle cx="214" cy="56" r="49" fill="url(#${id('hg')})"/>
+          <path d="M176 36 Q190 20 214 18" stroke="#fff3b0" stroke-width="4" stroke-linecap="round" fill="none" opacity=".7"/>
+          <ellipse cx="193" cy="55" rx="15.5" ry="19" fill="#fff" stroke="#3b2208" stroke-width="1.5"/><ellipse cx="236" cy="55" rx="15.5" ry="19" fill="#fff" stroke="#3b2208" stroke-width="1.5"/>
+          <circle cx="196" cy="59" r="10" fill="#5a3417"/><circle cx="233" cy="59" r="10" fill="#5a3417"/>
+          <circle cx="196" cy="59" r="5.5" fill="#1a0d03"/><circle cx="233" cy="59" r="5.5" fill="#1a0d03"/>
+          <circle cx="199" cy="54" r="3.2" fill="#fff"/><circle cx="236" cy="54" r="3.2" fill="#fff"/>
+          <path d="M194 82 Q214 100 234 82 Q214 90 194 82 Z" fill="#8a1c0c" stroke="#7a2a10" stroke-width="2" stroke-linejoin="round"/>
+          <ellipse cx="170" cy="76" rx="7" ry="5" fill="#f4876b" opacity=".55"/><ellipse cx="258" cy="76" rx="7" ry="5" fill="#f4876b" opacity=".55"/>
+          <path d="M194 14 Q182 -8 158 6 M236 14 Q250 -8 274 8" stroke="#2b1a0a" stroke-width="5" stroke-linecap="round" fill="none"/>
+          <circle cx="158" cy="6" r="4" fill="#2b1a0a"/><circle cx="274" cy="8" r="4" fill="#2b1a0a"/>
+          <ellipse cx="250" cy="92" rx="14" ry="8" fill="#2b1a0a"/>`;
         return wrap(defs, body,
-          numHtml(48, 70, 42, '#e11d48', '2px #fff') + nameHtml(139, 122, 214));
+          numHtml(46, 76, 46, '', '', 'linear-gradient(180deg,#2563eb 0%,#7c3aed 50%,#e11d48 100%)') + nameHtml(140, 122, 206));
       }
 
       /* 3) ឆ្មា : ឆ្មា ២ ក្បាល (ទឹកក្រូច + ស) លើផ្ទាំងស៊ុមក្រហម */
@@ -1376,10 +1379,11 @@
     /* 🔤 បង្រួមទំហំអក្សរឈ្មោះ បើវែងលើសប្រអប់ */
     function fitNames() {
       const run = () => document.querySelectorAll('#podiumArea .student-name-text').forEach(el => {
-        el.style.fontSize = '';
-        let fs = parseFloat(getComputedStyle(el).fontSize) || 21;
-        let guard = 40;
-        while (el.scrollWidth > el.clientWidth + 1 && fs > 11 && guard-- > 0) { fs -= 0.5; el.style.fontSize = fs + 'px'; }
+        let fs = parseFloat(el.dataset.max) || 28;
+        el.style.fontSize = fs + 'px';
+        let guard = 80;
+        /* ចាប់ពីទំហំធំបំផុត រួចបង្រួមរហូតសមប្រអប់ */
+        while ((el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1) && fs > 11 && guard-- > 0) { fs -= 0.5; el.style.fontSize = fs + 'px'; }
       });
       run();
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(run);
@@ -1659,7 +1663,7 @@
 
         if (top5.length > 0) {
           currentTop5Students = top5;
-          while (currentTop5Students.length < 5) currentTop5Students.push({ name: '...', imageUrl: PLACEHOLDER_IMG });
+          while (currentTop5Students.length < 5) currentTop5Students.push({ name: '', imageUrl: PLACEHOLDER_IMG });
         }
       } catch(e) {}
 
