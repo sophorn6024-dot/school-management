@@ -671,6 +671,22 @@
     i.fa-regular, .fa-regular { font-weight: 400; }
     i.fa-solid, i.fa-regular, i.fa-brands { font-style: normal; }
 </style>
+<style>
+/* 🎛️ Toolbar ដូចព្រឹត្តបត្រពិន្ទុ៖ ១ ជួរ ក្រុមស្អាត ប៊ូតុងកម្ពស់ស្មើគ្នា */
+@media screen and (min-width: 769px) {
+  .no-print-toolbar { flex-wrap: wrap; justify-content: flex-start; gap: 8px 10px; padding: 10px 18px; }
+  .no-print-toolbar .tb-group { gap: 8px; flex-wrap: wrap; }
+  .no-print-toolbar .tb-filters { flex: 1 1 auto; }
+  .no-print-toolbar .tb-actions { margin-left: auto; padding-left: 14px; border-left: 1px solid var(--tb-border); }
+  .no-print-toolbar .panel-pill-box { height: 36px; padding: 0 10px; border-radius: 10px; gap: 8px; background: var(--ctrl-group-bg); border: 1px solid var(--tb-border); }
+  .no-print-toolbar .panel-pill-box .bb-dd-btn,
+  .no-print-toolbar .panel-pill-box .dt-btn { height: 28px; border-radius: 8px; border: none; background: transparent; box-shadow: none; }
+  .no-print-toolbar .panel-pill-box .bb-dd-btn:hover,
+  .no-print-toolbar .panel-pill-box .dt-btn:hover { background: rgba(148,163,184,.16); }
+  .no-print-toolbar .btn { height: 36px; border-radius: 10px; padding: 0 14px; font-size: 12.5px; font-weight: 700; }
+  .no-print-toolbar .btn-ghost { background: var(--ctrl-group-bg); border: 1px solid var(--tb-border); }
+}
+</style>
 </head>
 
 <body>
@@ -1938,6 +1954,22 @@ exports.default = {
     const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    /* 📄 ទាញទិន្នន័យជាផ្នែកៗ ១០០០ ជួរម្ដង រហូតអស់ (Supabase កំណត់ ១០០០ ជួរ/សំណួរ) */
+    const __all = async (mk) => {
+      const PS = 1000; let out = [], from = 0;
+      for (;;) {
+        let r = await mk().order('id', { ascending: true }).range(from, from + PS - 1);
+        if (r.error && from === 0) r = await mk().range(from, from + PS - 1);
+        if (r.error) return { data: null, error: r.error };
+        const d = r.data || [];
+        out = out.concat(d);
+        if (d.length < PS) break;
+        from += PS;
+      }
+      return { data: out, error: null };
+    };
+
+
     /* 2. AUTH GUARD */
     function readSession() {
       try { return JSON.parse(localStorage.getItem('krou_supabase_user') || 'null'); } catch(e) { return null; }
@@ -2423,11 +2455,11 @@ exports.default = {
 
         const studentIds = students.map(s => String(s.student_id || s.id));
 
-        const { data: scData, error: scErr } = await sb
+        const { data: scData, error: scErr } = await __all(() => sb
           .from('scores')
           .select('student_id, score_type, period, average, rank')
           .eq('assigned_class', curPure)
-          .in('student_id', studentIds);
+          .in('student_id', studentIds));
 
         if (scErr) console.warn("Scores fetch warning:", scErr);
 
