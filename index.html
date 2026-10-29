@@ -227,6 +227,10 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 /* ===== 💬 CHAT TOAST ===== */
 .chat-toast{position:fixed;left:50%;top:max(12px,env(safe-area-inset-top));transform:translate(-50%,-160%);width:min(calc(100% - 24px),420px);z-index:10100;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:18px;background:var(--surface-card);border:1px solid var(--border);box-shadow:0 14px 36px rgba(0,0,0,.3);cursor:pointer;opacity:0;pointer-events:none;transition:transform .45s cubic-bezier(.34,1.4,.5,1),opacity .3s}
 .chat-toast.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+.login-toast{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translate(-50%,-180%);width:min(calc(100% - 24px),400px);z-index:10200;display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:18px;background:var(--surface-card,#fff);color:var(--text,#0f172a);border:1px solid rgba(34,197,94,.45);box-shadow:0 14px 36px rgba(0,0,0,.28);opacity:0;pointer-events:none;transition:transform .45s cubic-bezier(.34,1.4,.5,1),opacity .3s}
+.login-toast.show{transform:translate(-50%,0);opacity:1}
+.login-toast .lt-ic{flex:0 0 auto;width:34px;height:34px;border-radius:50%;background:#22c55e;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px}
+.login-toast b{display:block;font-size:14px}.login-toast small{display:block;font-size:12.5px;opacity:.75;margin-top:1px}
 .ct-ico{width:38px;height:38px;border-radius:12px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .ct-txt{min-width:0;flex:1}
 .ct-name{font-weight:700;font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1198,6 +1202,7 @@ function qrStampLogo(box){
 </div>
 
 <div class="upd-toast" id="updToast" role="status"><span class="ui">⟳</span><div style="flex:1;min-width:0"><b>កំណែថ្មីមានហើយ</b><small>ចុច «ផ្ទុកឡើងវិញ» ដើម្បីទទួលបានការកែប្រែថ្មីៗ</small></div><button class="ub" type="button" onclick="location.reload()">ផ្ទុកឡើងវិញ</button><button class="ux" type="button" onclick="dismissUpdate()" aria-label="បិទ">✕</button></div>
+<div class="login-toast" id="loginToast" role="status" aria-live="polite"><span class="lt-ic">✓</span><div style="min-width:0"><b>ចូលប្រព័ន្ធបានជោគជ័យ</b><small id="loginToastName"></small></div></div>
 <div class="chat-toast" id="chatToast" onclick="openChatFromToast()">
   <div class="ct-ico">💬</div>
   <div class="ct-txt"><div class="ct-name"></div><div class="ct-msg"></div></div>
@@ -2606,6 +2611,7 @@ function finishTeacherLogin(data, pw) {
   try { history.replaceState(null, '', '#dashboard'); } catch(e) {}
   stuStopCam();
   showAppScreen('dashboard');
+  loginToast();
 }
 
 /* ── POPUP ស្អាត ── */
@@ -2830,6 +2836,7 @@ async function handleLoginSubmit(e) {
       btn.disabled = false;
       btnText.innerText = '🚪 ចូលប្រើប្រាស់ប្រព័ន្ធ';
       showAppScreen('dashboard');
+      loginToast();
     }, 400);
   } catch (err) {
     console.error(err);
@@ -2854,7 +2861,6 @@ window.addEventListener('storage', function(e) {
     try { document.getElementById('pageFrame').src = 'about:blank'; } catch(err) {}
     try { history.replaceState(null, '', location.pathname + location.search); } catch(err) {}
     showAuthScreen();
-    try { showLoginError('អ្នកបានចាកចេញពី tab ផ្សេង'); } catch(err) {}
   } else if (e.newValue && !CURRENT_USER) {
     location.reload();
   }
@@ -3214,6 +3220,14 @@ async function recountChatUnread() {
     const { count, error } = await q;
     if (!error && typeof count === 'number') setChatUnread(count);
   } catch(e) {}
+}
+function loginToast() {
+  try {
+    const t = document.getElementById('loginToast'); if (!t) return;
+    const nm = (CURRENT_USER && (CURRENT_USER.teacher_name || CURRENT_USER.student_name || CURRENT_USER.username)) || '';
+    document.getElementById('loginToastName').textContent = nm ? 'សូមស្វាគមន៍ ' + nm : 'សូមស្វាគមន៍';
+    setTimeout(() => { t.classList.add('show'); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove('show'), 3500); }, 350);
+  } catch (e) {}
 }
 function showChatToast(rec) {
   const t = document.getElementById('chatToast');
