@@ -247,6 +247,8 @@
     .footer-col .sign-space { height: 42px; }
 
 
+    .honor-paper.compact { justify-content: flex-start; }
+    .honor-paper.compact .podium-container { flex: 0 0 auto; justify-content: flex-start; gap: 30px; margin: 24px 0 36px; }
     /* ══════════════ 🖼️ RASTER TEMPLATE MODE (ប្រើរូបគំរូជាផ្ទៃក្រោយ) ══════════════ */
     #rasterLayer { display:none; position:absolute; inset:0; z-index:1; }
     #rasterLayer img { position:absolute; left:0; top:0; width:100%; height:100%; display:block; -webkit-user-drag:none; }
@@ -1231,6 +1233,11 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       }
 
       const paper = document.getElementById('honorPaper');
+      paper.classList.toggle('compact', t === 'original' && anyData && s.some(x => !(x && x.name)));
+      const rowHide = (a, b) => (anyData && !(s[a] && s[a].name) && !(s[b] && s[b].name)) ? 'display:none;' : '';
+      const r2 = area.querySelector('.photo-podium-row-2'), r3 = area.querySelector('.photo-podium-row-3');
+      if (r2) r2.style.cssText += rowHide(1, 2);
+      if (r3) r3.style.cssText += rowHide(3, 4);
       const R = RASTER[t];
       if (R) {
         paper.classList.add('raster');
@@ -1239,7 +1246,11 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         paper.style.setProperty('--hy', R.hy + 'px');
         paper.style.setProperty('--hs', R.hs);
         paper.style.setProperty('--tb', (R.tb + 2) + 'px');
-        paper.style.setProperty('--fy', Math.min(R.last + 34, 925) + 'px');
+        const hasR = s.map(x => !!(x && x.name));
+        const anyR = hasR.some(Boolean);
+        let lastPx = R.last;
+        if (anyR) lastPx = Math.max(...R.t.map((tr, i) => hasR[i] ? (tr[1] + tr[3]) * 1123 / 100 : 0));
+        paper.style.setProperty('--fy', Math.min(lastPx + 24, 925) + 'px');
         /* លាក់ប្រអប់ដែលគ្មានសិស្ស (បើមានសិស្សតិចជាង ៥) */
         const has = s.map(x => !!(x && x.name));
         const anyData = has.some(Boolean);
