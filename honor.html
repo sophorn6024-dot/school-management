@@ -1123,11 +1123,10 @@
     // 🌟 1. បង្ហាញទម្រង់រូបថតមុនគេ (original)
     let currentSelectedTemplate = 'original';
 
-    // 🌟 2. ពេលបើកដំបូង បង្ហាញ «ខែមុន» ជាស្វ័យប្រវត្តិ
+    // 🌟 2. ពេលបើកដំបូង បង្ហាញ «ខែបច្ចុប្បន្ន» ជាស្វ័យប្រវត្តិ
     let currentPeriodType = 'monthly';
     const nowInit = new Date();
-    const prevMonthIndex = (nowInit.getMonth() - 1 + 12) % 12;
-    let currentPeriodChild = GM[prevMonthIndex];
+    let currentPeriodChild = GM[nowInit.getMonth()];   /* ខែបច្ចុប្បន្ន */
 
     let currentTop5Students = [
       { name: "", imageUrl: "" },
@@ -1584,7 +1583,10 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         const SEM1 = ['វិច្ឆិកា', 'ធ្នូ', 'មករា', 'កុម្ភៈ', 'មីនា', 'មេសា'];
         const SEM2 = ['ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា'];
 
-        const { data: students } = await __all(() => sb.from('students').select('id, student_id, student_name, grade, photo_url, dropout_semester'));
+        let stRes = await __all(() => sb.from('students').select('id, student_id, student_name, grade, photo_url, dropout_semester'));
+        if (stRes.error) stRes = await __all(() => sb.from('students').select('id, student_id, student_name, grade, photo_url'));
+        if (stRes.error) stRes = await __all(() => sb.from('students').select('*'));
+        const students = stRes.data || [];
         const isSem2 = (currentPeriodChild === 'ឆមាសទី២' || currentPeriodChild === 'ប្រចាំឆមាសទី២' || SEM2.includes(currentPeriodChild));
         const classStudents = (students || [])
           .filter(s => cleanGrade(s.grade) === currentSelectedClass)
@@ -1597,7 +1599,7 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         let scoreRows = [];
         if (sIds.length) {
           const t = currentPeriodType;
-          let q = () => sb.from('scores').select('student_id, score_type, period, average').eq('assigned_class', currentSelectedClass).in('student_id', sIds);
+          let q = () => sb.from('scores').select('student_id, score_type, period, average').in('student_id', sIds);
           if (t === 'monthly') { const base = q; q = () => base().eq('score_type', 'monthly').eq('period', currentPeriodChild); }
           else if (t === 'exam_semester') { const base = q; q = () => base().eq('score_type', 'semester').eq('period', currentPeriodChild); }
           const r = await __all(q);
@@ -1621,7 +1623,7 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         list.sort((a, b) => b.avg - a.avg);
         currentTop5Students = list.slice(0, 5);
         while (currentTop5Students.length < 5) currentTop5Students.push({ name: '', imageUrl: PLACEHOLDER_IMG });
-      } catch(e) {}
+      } catch(e) { console.error('honor roll load failed', e); }
 
       renderActiveTemplate();
     }
