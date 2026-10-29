@@ -2861,10 +2861,18 @@ window.addEventListener('storage', function(e) {
     try { document.getElementById('pageFrame').src = 'about:blank'; } catch(err) {}
     try { history.replaceState(null, '', location.pathname + location.search); } catch(err) {}
     showAuthScreen();
+    clearLoginFields();
   } else if (e.newValue && !CURRENT_USER) {
     location.reload();
   }
 });
+function clearLoginFields() {
+  ['loginUsername','loginPassword','stuName','stuPass','stuQrCode'].forEach(id => {
+    const el = document.getElementById(id); if (el) { el.value = ''; if (el.type === 'text' && id === 'loginPassword') el.type = 'password'; }
+  });
+  try { const f = document.getElementById('stuQrFile'); if (f) f.value = ''; } catch(e) {}
+  try { hideLoginError(); } catch(e) {}
+}
 async function doLogout() {
   if (!(await askConfirm('តើអ្នកពិតជាចង់ចាកចេញពីប្រព័ន្ធមែនទេ?'))) return;
   stopChatNotifier();
@@ -2875,6 +2883,8 @@ async function doLogout() {
   currentPage = 'dashboard';
   CURRENT_USER = null;
   showAuthScreen();
+  clearLoginFields();
+  setTimeout(clearLoginFields, 150);   /* បើ browser បំពេញ autofill ឡើងវិញ */
 }
 function forceLogoutDeleted(reasonMsg) {
   stopChatNotifier();
