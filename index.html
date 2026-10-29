@@ -3239,7 +3239,7 @@ async function recountChatUnread() {
   } catch(e) {}
 }
 /* ── Web Push (ជូនដំណឹងទោះបិទ browser) ── */
-const VAPID_PUBLIC_KEY = 'BPO-zpK9-9-a1d3LVDCryW2c-qIFZ1FSbnGymeAijSEchZ8aI8CbreIPMZwqhpA0CcYD-UktDb1ErMpa2plP_bc';
+const VAPID_PUBLIC_KEY = 'BF7qMZqmio0xaYL3nWgbK8KF6sWVU8b8qZm7EU3QwE5pKDhNTxk4c032wO9XyLOgjKJdDuYr_fv_eKK7_l8VnzI';
 function pushSupported() { return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window && /^https:/.test(location.protocol); }
 function _b64u(k) { const p = '='.repeat((4 - k.length % 4) % 4), b = (k + p).replace(/-/g, '+').replace(/_/g, '/'), r = atob(b); return Uint8Array.from([...r].map(c => c.charCodeAt(0))); }
 function pushIsStaff() { return !!(CURRENT_USER && (CURRENT_USER.username || CURRENT_USER.teacher_id)); }
@@ -3247,7 +3247,18 @@ async function pushSaveSub() {
   try {
     if (!pushSupported() || !pushIsStaff() || Notification.permission !== 'granted') return;
     const reg = await navigator.serviceWorker.ready;
-    const sub = (await reg.pushManager.getSubscription()) || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: _b64u(VAPID_PUBLIC_KEY) });
+    const appKey = _b64u(VAPID_PUBLIC_KEY);
+    let sub = await reg.pushManager.getSubscription();
+    if (sub) {   /* បើសោប្តូរ (VAPID ថ្មី) ត្រូវចុះឈ្មោះឡើងវិញ */
+      try {
+        const cur = sub.options && sub.options.applicationServerKey ? new Uint8Array(sub.options.applicationServerKey) : null;
+        if (cur && (cur.length !== appKey.length || cur.some((v, i) => v !== appKey[i]))) {
+          try { await sb.from('push_subscriptions').delete().eq('endpoint', sub.endpoint); } catch (e) {}
+          await sub.unsubscribe(); sub = null;
+        }
+      } catch (e) {}
+    }
+    if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: appKey });
     const j = sub.toJSON();
     await sb.from('push_subscriptions').upsert({
       user_code: String(CURRENT_USER.username || CURRENT_USER.teacher_id || '').toLowerCase(),
