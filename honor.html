@@ -1507,6 +1507,7 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       loadHonorRoll();
     }
 
+    let loadSeq = 0;
     async function loadHonorRoll() {
       document.getElementById('lblDocumentClass').innerText = `ថ្នាក់ទី${currentSelectedClass}`;
 
@@ -1524,31 +1525,75 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         if (teacher) document.getElementById('lblTeacherName').innerText = teacher.teacher_name || '';
       } catch(e) {}
 
-      // ទាញយកសិស្ស Top 5
+      // ទាញយកសិស្ស Top 5 តាមខែ/ឆមាស/ឆ្នាំ ដែលបានជ្រើស (គណនាដូចទំព័រចំណាត់ថ្នាក់)
+      const mySeq = ++loadSeq;
       try {
-        const { data: students } = await sb.from('students').select('id, student_id, student_name, grade, photo_url');
-        const classStudents = (students || []).filter(s => cleanGrade(s.grade) === currentSelectedClass);
+        const __all = async (mk) => {
+          const PS = 1000; let out = [], from = 0;
+          for (;;) {
+            let r = await mk().order('id', { ascending: true }).range(from, from + PS - 1);
+            if (r.error && from === 0) r = await mk().range(from, from + PS - 1);
+            if (r.error) return { data: null, error: r.error };
+            const d = r.data || [];
+            out = out.concat(d);
+            if (d.length < PS) break;
+            from += PS;
+          }
+          return { data: out, error: null };
+        };
+        const R2 = x => Number(Number(x).toFixed(2));
+        const combine2 = (a, b) => (a > 0 && b > 0) ? (a + b) / 2 : (a > 0 ? a : (b > 0 ? b : 0));
+        const calcSemester = (my, months, examPeriod) => {
+          let sum = 0, cnt = 0;
+          months.forEach(m => {
+            const row = my.find(sc => sc.score_type === 'monthly' && sc.period === m);
+            if (row && Number(row.average) > 0) { sum += Number(row.average); cnt++; }
+          });
+          const monthly = cnt > 0 ? sum / cnt : 0;
+          const ex = my.find(sc => sc.score_type === 'semester' && sc.period === examPeriod);
+          const exam = (ex && Number(ex.average) > 0) ? Number(ex.average) : 0;
+          return R2(combine2(monthly, exam));
+        };
+        const SEM1 = ['វិច្ឆិកា', 'ធ្នូ', 'មករា', 'កុម្ភៈ', 'មីនា', 'មេសា'];
+        const SEM2 = ['ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា'];
+
+        const { data: students } = await __all(() => sb.from('students').select('id, student_id, student_name, grade, photo_url, dropout_semester'));
+        const isSem2 = (currentPeriodChild === 'ឆមាសទី២' || currentPeriodChild === 'ប្រចាំឆមាសទី២' || SEM2.includes(currentPeriodChild));
+        const classStudents = (students || [])
+          .filter(s => cleanGrade(s.grade) === currentSelectedClass)
+          .filter(s => {
+            const drop = String(s.dropout_semester || '').trim();
+            return !(isSem2 && (drop.includes('ឆមាស១') || drop.includes('ឆមាសទី១') || drop === '១'));
+          });
         const sIds = classStudents.map(s => String(s.student_id || s.id));
 
-        const { data: scores } = await sb.from('scores').select('student_id, average, period, score_type').in('student_id', sIds);
+        let scoreRows = [];
+        if (sIds.length) {
+          const t = currentPeriodType;
+          let q = () => sb.from('scores').select('student_id, score_type, period, average').eq('assigned_class', currentSelectedClass).in('student_id', sIds);
+          if (t === 'monthly') { const base = q; q = () => base().eq('score_type', 'monthly').eq('period', currentPeriodChild); }
+          else if (t === 'exam_semester') { const base = q; q = () => base().eq('score_type', 'semester').eq('period', currentPeriodChild); }
+          const r = await __all(q);
+          scoreRows = r.data || [];
+        }
+        if (mySeq !== loadSeq) return;   /* មានការជ្រើសថ្មីជាងនេះ — បោះបង់លទ្ធផលចាស់ */
+
+        const byStu = {};
+        scoreRows.forEach(r => { (byStu[String(r.student_id)] = byStu[String(r.student_id)] || []).push(r); });
 
         const list = classStudents.map(st => {
           const sid = String(st.student_id || st.id);
-          const sc = (scores || []).find(s => String(s.student_id) === sid);
-          return {
-            name: st.student_name,
-            imageUrl: st.photo_url || PLACEHOLDER_IMG,
-            avg: Number(sc?.average || 0)
-          };
-        });
+          const my = byStu[sid] || [];
+          let avg = 0;
+          if (currentPeriodType === 'monthly' || currentPeriodType === 'exam_semester') avg = Number(my[0]?.average || 0);
+          else if (currentPeriodType === 'semester_total') avg = currentPeriodChild === 'ប្រចាំឆមាសទី២' ? calcSemester(my, SEM2, 'ឆមាសទី២') : calcSemester(my, SEM1, 'ឆមាសទី១');
+          else avg = R2(combine2(calcSemester(my, SEM1, 'ឆមាសទី១'), calcSemester(my, SEM2, 'ឆមាសទី២')));
+          return { name: st.student_name, imageUrl: st.photo_url || PLACEHOLDER_IMG, avg };
+        }).filter(x => x.avg > 0);
 
-        list.sort((a,b) => b.avg - a.avg);
-        const top5 = list.slice(0, 5);
-
-        if (top5.length > 0) {
-          currentTop5Students = top5;
-          while (currentTop5Students.length < 5) currentTop5Students.push({ name: '', imageUrl: PLACEHOLDER_IMG });
-        }
+        list.sort((a, b) => b.avg - a.avg);
+        currentTop5Students = list.slice(0, 5);
+        while (currentTop5Students.length < 5) currentTop5Students.push({ name: '', imageUrl: PLACEHOLDER_IMG });
       } catch(e) {}
 
       renderActiveTemplate();
