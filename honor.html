@@ -182,8 +182,7 @@
     }
     .period-title {
       font-size: 17px; margin-top: 3px; font-weight: bold;
-      background: linear-gradient(135deg, #1d4ed8, #b91c1c);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      color: #4c1d95; background: none; border: 0; box-shadow: none;
     }
 
     /* ══════════════ 🏆 PODIUM RANKS CONTAINER ══════════════ */
@@ -1183,9 +1182,7 @@
             </span>
           </div>
           <div style="margin-top:6px; display:flex; justify-content:center;">
-            <span class="font-moul ${nameColorClass}" style="white-space:nowrap; background:#fff; border:1.5px solid #fbbf24; padding:5px 16px; border-radius:8px; font-size:${isTop1 ? '17px' : '15px'}; box-shadow:0 2px 6px rgba(0,0,0,0.06);">
-              ${name}
-            </span>
+            <div class="student-name-text font-moul ${nameColorClass}" data-max="${isTop1 ? 17 : 15}" style="width:${w + 14}px; height:34px; background:#fff; border:1.5px solid #fbbf24; padding:0 7px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; overflow:hidden; box-sizing:border-box;"><span class="nm" style="white-space:nowrap; line-height:1.5;">${name}</span></div>
           </div>
         </div>
       `;
@@ -1246,9 +1243,9 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
           const rank = i + 1;
           let [x, y, w, h] = b;
           if (t === 'bee') w = w * 0.84;               /* ដៃឃ្មុំគ្របជ្រុងស្តាំ */
-          const maxPx = Math.round(h * 1123 / 100 * 0.56);
+          const maxPx = Math.round(h * 1123 / 100 * 0.44);
           const name = (s[i] && s[i].name) || '';
-          return `<div class="rname student-name-text font-moul r-color-${rank}" data-max="${maxPx}" style="left:${x}%; top:${y}%; width:${w}%; height:${h}%; font-size:${maxPx}px;">${name}</div>`;
+          return `<div class="rname student-name-text font-moul r-color-${rank}" data-max="${maxPx}" style="left:${x}%; top:${y}%; width:${w}%; height:${h}%; font-size:${maxPx}px;"><span class="nm" style="white-space:nowrap; line-height:1.5;">${name}</span></div>`;
         }).join('');
       } else {
         paper.classList.remove('raster');
@@ -1260,14 +1257,20 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     /* 🔤 បង្រួមទំហំអក្សរឈ្មោះ បើវែងលើសប្រអប់ */
     function fitNames() {
       const run = () => document.querySelectorAll('.student-name-text').forEach(el => {
+        const nm = el.querySelector('.nm');
+        if (!nm) return;
         let fs = parseFloat(el.dataset.max) || 28;
         el.style.fontSize = fs + 'px';
-        let guard = 80;
-        /* ចាប់ពីទំហំធំបំផុត រួចបង្រួមរហូតសមប្រអប់ */
-        while ((el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1) && fs > 11 && guard-- > 0) { fs -= 0.5; el.style.fontSize = fs + 'px'; }
+        const cs = getComputedStyle(el);
+        const availW = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 6;
+        const availH = el.clientHeight - 2;
+        let guard = 120;
+        /* បង្រួមរហូតអក្សរទាំងមូលសមក្នុងស៊ុម (វាស់លើ span មិនមែនលើប្រអប់) */
+        while ((nm.offsetWidth > availW || nm.offsetHeight > availH) && fs > 8 && guard-- > 0) { fs -= 0.5; el.style.fontSize = fs + 'px'; }
       });
       run();
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(run);
+      setTimeout(run, 400);
     }
 
     /* ══════════════ 🛠️ CUSTOM DROPDOWN ENGINE ══════════════ */
