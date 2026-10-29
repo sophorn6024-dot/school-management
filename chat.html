@@ -224,9 +224,18 @@ const MY_CODE=String(ME?.username||ME?.teacher_id||'').toLowerCase();
 const MY_NAME=String(ME?.teacher_name||ME?.username||'').trim();
 const IS_ADMIN=String(ME?.role||'').toLowerCase()==='admin';
 function goIndex(){if(window.parent&&window.parent!==window){try{window.parent.postMessage({type:'NAVIGATE',page:'dashboard'},'*');return}catch(e){}}location.href='index.html'}
-function applyTheme(t){document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light')}
-applyTheme((()=>{try{const u=new URLSearchParams(location.search).get('theme');let p=null;try{p=window.parent.document.documentElement.getAttribute('data-theme')}catch(e){}return u||p||localStorage.getItem('krou_theme_manual')||'light'}catch(e){return'light'}})());
-window.addEventListener('message',e=>{if(e.data&&e.data.type==='THEME_CHANGE')applyTheme(e.data.theme)});
+function applyPrimary(c){
+  const r=document.documentElement.style;
+  if(!c){['--primary','--wave-on','--chip-on-text','--chip-on'].forEach(k=>r.removeProperty(k));return}
+  r.setProperty('--primary',c);r.setProperty('--wave-on',c);r.setProperty('--chip-on-text',c);
+  r.setProperty('--chip-on','color-mix(in srgb,'+c+' 16%,var(--surface))');
+}
+function applyTheme(t,d){document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');if(d&&d.primary)applyPrimary(d.primary)}
+(()=>{let th=null,pr=null;try{const q=new URLSearchParams(location.search);th=q.get('theme');pr=q.get('primary');
+  try{const pd=window.parent.document.documentElement;th=th||pd.getAttribute('data-theme');pr=pr||pd.style.getPropertyValue('--primary')||getComputedStyle(pd).getPropertyValue('--primary')}catch(e){}
+  th=th||localStorage.getItem('krou_theme_manual')||'light'}catch(e){th='light'}
+  applyTheme(th);if(pr&&pr.trim())applyPrimary(pr.trim())})();
+window.addEventListener('message',e=>{if(e.data&&e.data.type==='THEME_CHANGE'&&e.data.theme)applyTheme(e.data.theme,e.data)});
 window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue)applyTheme(e.newValue)});
 
 /* ---------- viewport (keyboard-safe on all devices) ---------- */
@@ -707,12 +716,22 @@ function closeProfile(){$('profModal').style.display='none'}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeProfile();closeMembers();closeMenu();$('lightbox').style.display='none'}});
 
 /* ---------- បញ្ជីបន្ទប់សន្ទនា (ក្រុមធំ + សារតាមថ្នាក់) ---------- */
-const ALL_CLASSES=['១','២','៣','៤(ក)','៤(ខ)','៥','៦'];
+let REAL_CLASSES=[];try{REAL_CLASSES=JSON.parse(localStorage.getItem('krou_real_classes')||'[]')}catch(e){}
+/* ថ្នាក់ដែលមានពិតប្រាកដ = ថ្នាក់ដែលមានសិស្ស ឬមានគ្រូទទួលបន្ទុក */
+async function loadRealClasses(){
+  try{
+    const set=new Set();let from=0;
+    for(;;){const r=await sb.from('students').select('grade').range(from,from+999);if(r.error)throw r.error;const d=r.data||[];d.forEach(x=>{const g=cleanCls(x.grade);if(g)set.add(g)});if(d.length<1000)break;from+=1000}
+    Object.values(users||{}).forEach(u=>{if(u&&u.assigned_classes)String(u.assigned_classes).split(/[,;،]+/).map(cleanCls).filter(Boolean).forEach(g=>set.add(g))});
+    const arr=[...set].sort((a,b)=>a.localeCompare(b,'km'));
+    if(arr.length){REAL_CLASSES=arr;try{localStorage.setItem('krou_real_classes',JSON.stringify(arr))}catch(e){}}
+  }catch(e){}
+}
 const cleanCls=g=>String(g||'').replace(/^ថ្នាក់ទី\s*/,'').trim();
 const schoolYear=()=>{const d=new Date(),y=d.getFullYear();return d.getMonth()>=8?y+'-'+(y+1):(y-1)+'-'+y};
 function myRooms(){
   const out=[{id:'global',title:GLOBAL_TITLE,cls:false}];
-  const cs=IS_ADMIN?ALL_CLASSES:String(ME&&ME.assigned_classes||'').split(/[,;،]+/).map(cleanCls).filter(Boolean);
+  const cs=IS_ADMIN?REAL_CLASSES:String(ME&&ME.assigned_classes||'').split(/[,;،]+/).map(cleanCls).filter(Boolean);
   [...new Set(cs)].forEach(c=>out.push({id:'class_'+c,title:'សិស្ស · ថ្នាក់ទី'+c+' · '+schoolYear(),cls:true}));
   return out;
 }
@@ -754,6 +773,7 @@ function openRoom(id,viaList){
   fromList=viaList!==false;document.body.classList.remove('inlist');
   SET={teachers_only:false};BANS={};applyComposer();loadControls();fitViewport();render(true);subscribe();refresh(true);
 }
+async function refreshRealClasses(){const b=JSON.stringify(REAL_CLASSES);await loadRealClasses();if(JSON.stringify(REAL_CLASSES)!==b&&document.body.classList.contains('inlist')){const t=()=>listBusy?setTimeout(t,150):drawRoomList();t()}}
 function showList(){
   stopAudio();try{if(chan)sb.removeChannel(chan);chan=null}catch(e){}
   document.body.classList.add('inlist');drawRoomList();
@@ -764,7 +784,8 @@ function backBtn(){if(fromList&&!document.body.classList.contains('inlist'))show
 window.addEventListener('DOMContentLoaded',()=>{
   if(!ME||!ME.username){$('auth').style.display='flex';return}
   $('app').style.display='flex';
-  loadUsers().then(()=>{lastSig='';if(!document.body.classList.contains('inlist'))refresh(true)});
+  loadUsers().then(()=>{lastSig='';if(!document.body.classList.contains('inlist'))refresh(true);if(IS_ADMIN)refreshRealClasses()});
+  if(IS_ADMIN)refreshRealClasses();
   const q=new URLSearchParams(location.search).get('room');
   if(q)openRoom(q,false);else showList();
   setInterval(()=>{if(document.hidden)return;if(document.body.classList.contains('inlist'))drawRoomList();else{refresh();loadControls()}},10000);
