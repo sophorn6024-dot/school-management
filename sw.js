@@ -1,4 +1,4 @@
-
+/* Service worker: network-first (ទំព័រថ្មីជានិច្ច) → ប្រើ cache ពេលគ្មានអ៊ីនធឺណិត */
 const CACHE = 'kpl-v1';
 self.addEventListener('install', e => { self.skipWaiting(); });
 self.addEventListener('activate', e => {
@@ -17,6 +17,7 @@ self.addEventListener('fetch', e => {
   );
 });
 
+/* ── Web Push: ជូនដំណឹងសារ ទោះបិទ browser ── */
 self.addEventListener('push', e => {
   let d = {};
   try { d = e.data ? e.data.json() : {}; } catch (_) { d = { body: e.data ? e.data.text() : '' }; }
