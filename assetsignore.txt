@@ -1,0 +1,8 @@
+.assetsignore
+wrangler.jsonc
+.git
+node_modules
+push
+*.sql
+*.md
+*.ts
