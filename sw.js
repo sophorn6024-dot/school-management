@@ -16,3 +16,23 @@ self.addEventListener('fetch', e => {
     }).catch(() => caches.match(r).then(m => m || caches.match('index.html')))
   );
 });
+
+/* ── Web Push: ជូនដំណឹងសារ ទោះបិទ browser ── */
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (_) { d = { body: e.data ? e.data.text() : '' }; }
+  e.waitUntil(self.registration.showNotification(d.title || 'សារថ្មី', {
+    body: d.body || '', icon: 'icon-192.png', badge: 'icon-192.png',
+    tag: d.tag || 'chat', renotify: true, data: { url: d.url || './#chat' }
+  }));
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const url = new URL((e.notification.data && e.notification.data.url) || './#chat', self.registration.scope).href;
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cs => {
+    for (const c of cs) {
+      if (c.url.startsWith(self.registration.scope)) { c.postMessage({ type: 'GOTO_CHAT' }); return c.focus(); }
+    }
+    return self.clients.openWindow(url);
+  }));
+});
