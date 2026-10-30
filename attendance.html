@@ -653,7 +653,46 @@
     .vt-date .dbadge{background:rgba(2,132,199,.12);padding:1px 8px;border-radius:10px;font-size:11.5px;white-space:nowrap;margin-left:4px}
     @media print{.khmer-sgc-popup,.sgc-popup-backdrop{display:none!important}}
     @media (max-width:700px){.vt-date .dbadge{display:none}}
-  </style>
+  
+    /* ══════════ 🪑 ប្លង់តុ (មើលវត្តមានតាមប្លង់តុ) ══════════ */
+    .view-toggle { display:inline-flex; gap:2px; padding:3px; border-radius:12px; background:var(--surface-elevated); border:1px solid var(--border); }
+    .view-toggle button { border:none; background:transparent; color:var(--text-muted); font-weight:700; font-size:12px; padding:6px 12px; border-radius:9px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; }
+    .view-toggle button.active { background:var(--primary); color:#fff; box-shadow:0 2px 8px rgba(37,99,235,.3); }
+    .sv-wrap { display:flex; flex-direction:column; gap:12px; }
+    .sv-front { display:flex; gap:12px; align-items:center; }
+    .sv-front.right { flex-direction:row; }
+    .sv-board { flex:1; height:50px; border-radius:11px; background:#0b3d2e; border:5px solid #7b3f12; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; box-shadow:0 4px 0 #4a2508, inset 0 0 16px rgba(0,0,0,.45); font-family:'Khmer OS Muol Light','Moul',cursive; }
+    .sv-tdesk { width:110px; height:50px; border-radius:12px; background:linear-gradient(#fde68a,#fcd34d); color:#5b3a00; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; box-shadow:0 4px 0 #b7791f; font-family:'Khmer OS Muol Light','Moul',cursive; }
+    .sv-floor { background:var(--surface-elevated); border-radius:18px; padding:12px 10px; overflow-x:auto; }
+    .sv-room { display:flex; flex-direction:column; gap:10px; min-width:max-content; width:100%; }
+    .sv-row { display:flex; align-items:stretch; gap:10px; }
+    .sv-rno { width:26px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+    .sv-rno span { width:24px; height:24px; border-radius:50%; background:var(--surface); color:var(--text-muted); font-weight:700; font-size:11px; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(0,0,0,.15); }
+    .sv-desk { flex:1 1 0; min-width:170px; display:flex; gap:5px; background:#fff4cf; border:2px solid #f0c971; border-radius:16px; padding:5px; box-shadow:0 4px 0 #e0a93f, 0 8px 12px rgba(0,0,0,.12); }
+    [data-theme="dark"] .sv-desk { background:#4a3b1a; border-color:#8a6a25; box-shadow:0 4px 0 #2e2410, 0 8px 12px rgba(0,0,0,.35); }
+    .sv-seat { flex:1 1 0; min-width:0; min-height:48px; border-radius:12px; border:1.5px dashed #f3d48a; background:#fffaf0; display:flex; align-items:center; justify-content:center; position:relative; }
+    [data-theme="dark"] .sv-seat { background:#3a2f16; border-color:#6b5420; }
+    .sv-seat .dash { width:22px; height:5px; border-radius:5px; background:rgba(120,100,60,.28); }
+    .sv-chip { width:100%; height:100%; min-height:44px; border-radius:10px; border:1.5px solid; display:flex; align-items:center; gap:5px; padding:0 8px 0 4px; cursor:pointer; position:relative; user-select:none; -webkit-user-select:none; box-shadow:0 3px 0 rgba(0,0,0,.1); transition:transform .1s; }
+    .sv-chip:active { transform:scale(.96); }
+    .sv-chip.s-P { background:var(--p-bg); border-color:var(--p-bd); }
+    .sv-chip.s-A { background:var(--a-bg); border-color:var(--a-bd); }
+    .sv-chip.s-L { background:var(--l-bg); border-color:var(--l-bd); }
+    .sv-chip.s-C { background:var(--c-bg); border-color:var(--c-bd); }
+    .sv-chip.dim { opacity:.3; }
+    .sv-av { width:26px; height:26px; border-radius:50%; background:#c2410c; color:#fff; font-weight:700; font-size:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .sv-chip .sv-ic { font-size:11px; flex-shrink:0; }
+    .sv-chip.s-P .sv-ic { color:var(--p-txt); } .sv-chip.s-A .sv-ic { color:var(--a-txt); } .sv-chip.s-L .sv-ic { color:var(--l-txt); } .sv-chip.s-C .sv-ic { color:var(--c-txt); }
+    .sv-nm { font-size:12px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; color:var(--text); }
+    .sv-chev { position:absolute; top:-8px; right:-5px; width:22px; height:22px; border-radius:50%; border:1px solid var(--border); background:var(--surface); color:var(--text-muted); font-size:10px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 4px rgba(0,0,0,.2); }
+    .sv-un { margin-top:2px; }
+    .sv-un h4 { font-size:12.5px; margin-bottom:8px; color:var(--text-muted); }
+    .sv-un-list { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px; }
+    .sv-empty { text-align:center; padding:34px 14px; color:var(--text-muted); line-height:1.8; }
+    .sv-edit { display:inline-flex; align-items:center; gap:6px; margin-top:10px; padding:8px 16px; border-radius:12px; border:1px solid var(--border); background:var(--surface-elevated); color:var(--text); font-weight:700; font-size:12.5px; cursor:pointer; }
+    .sv-edit:hover { border-color:var(--primary); }
+    @media (max-width:600px) { .sv-tdesk { width:78px; font-size:11px; } .sv-desk { min-width:150px; } }
+</style>
 </head>
 
 <body>
@@ -816,6 +855,10 @@
               <span style="font-size:11.5px; color:var(--text-muted);">ប្រព័ន្ធរក្សាទុកស្វ័យប្រវត្តិ</span>
             </div>
             <span id="dayNoRecord" style="display:none; align-items:center; gap:5px; flex:1; margin:0 10px; padding:0; background:none; border:none; color:#d97706; font-size:12px; font-weight:600; line-height:1.4;">⚠️ មិនទាន់កត់ត្រាថ្ងៃនេះ ៖ ស្ថានភាពខាងក្រោមជាលំនាំដើម</span>
+            <div class="view-toggle" role="tablist" aria-label="របៀបបង្ហាញ">
+              <button type="button" id="vtList" class="active" onclick="setDailyView('list')"><i class="fa-solid fa-list"></i> បញ្ជី</button>
+              <button type="button" id="vtSeat" onclick="setDailyView('seat')"><i class="fa-solid fa-table-cells-large"></i> ប្លង់តុ</button>
+            </div>
             <span style="font-size:11.5px; font-weight:600; color:#059669; background:var(--p-bg); padding:4px 10px; border-radius:20px;">✓ សកម្ម</span>
           </div>
 
@@ -2346,6 +2389,7 @@ exports.default = {
        4. INIT
     ========================================================= */
     async function initPage() {
+      syncViewToggle();
       if (!CURRENT_USER || !CURRENT_USER.username) {
         document.getElementById('mainPageContent').style.display = 'none';
         document.getElementById('authDeniedWrap').style.display = 'flex';
@@ -2479,6 +2523,7 @@ exports.default = {
 
     function onClassChange() {
       currentClassName = document.getElementById('classSelect').value;
+      syncViewToggle();
       loadDailyAttendanceData();
     }
 
@@ -2593,6 +2638,7 @@ exports.default = {
         updateStatsCounters();
         return;
       }
+      if (dailyViewMode === 'seat') { renderSeatView(container); return; }
       var q = (document.getElementById('searchBox').value || '').trim().toLowerCase();
       var list = rawStudentsData.filter(s => (s.name||'').toLowerCase().includes(q) || (s.id||'').toLowerCase().includes(q));
 
@@ -2641,6 +2687,89 @@ exports.default = {
           </div>
         `;
       });
+      container.innerHTML = html;
+    }
+
+    /* =========================================================
+       🪑 មើល/ស្រង់វត្តមានតាមប្លង់តុ (ប្លង់មកពីទំព័រ "ប្លង់តុ" — seating.html)
+    ========================================================= */
+    var dailyViewMode = (function () { try { return localStorage.getItem('krou_att_view') === 'seat' ? 'seat' : 'list'; } catch (e) { return 'list'; } })();
+    var seatLayouts = {};      // { ថ្នាក់: layout | null }
+    var seatLoading = {};
+
+    function setDailyView(mode) {
+      dailyViewMode = mode === 'seat' ? 'seat' : 'list';
+      try { localStorage.setItem('krou_att_view', dailyViewMode); } catch (e) {}
+      if (dailyViewMode === 'seat') delete seatLayouts[cleanGrade(currentClassName)];   // ទាញប្លង់ថ្មីបំផុតរាល់ពេលបើក
+      syncViewToggle();
+      renderDailyList();
+    }
+    function syncViewToggle() {
+      var a = document.getElementById('vtList'), b = document.getElementById('vtSeat');
+      if (a) a.classList.toggle('active', dailyViewMode === 'list');
+      if (b) b.classList.toggle('active', dailyViewMode === 'seat');
+    }
+    async function fetchSeatLayout(cls) {
+      var lay = null;
+      try {
+        var r = await sb.from('seating_charts').select('layout').eq('assigned_class', cls).maybeSingle();
+        if (!r.error && r.data && r.data.layout) lay = r.data.layout;
+      } catch (e) {}
+      if (!lay) { try { lay = JSON.parse(localStorage.getItem('krou_seating_v1:' + cls) || 'null'); } catch (e) {} }
+      if (lay && (!lay.seats || typeof lay.seats !== 'object' || !Object.keys(lay.seats).length)) lay = lay && lay.seats ? lay : null;
+      return lay;
+    }
+    function openSeatEditor() {
+      try { if (window.parent && window.parent !== window) { window.parent.postMessage({ type: 'NAVIGATE', page: 'seating' }, '*'); return; } } catch (e) {}
+      location.href = 'seating.html';
+    }
+    function seatChipHtml(s, q) {
+      var st = dailyAttendanceState[s.id] || 'P', meta = STATUS_META[st] || STATUS_META.P;
+      var dim = q && !((s.name || '').toLowerCase().includes(q) || (s.id || '').toLowerCase().includes(q));
+      var sid = String(s.id).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      return '<div class="sv-chip s-' + st + (dim ? ' dim' : '') + '" onclick="toggleQuickPresentAbsent(\'' + sid + '\')" title="' + escapeHtml(s.name) + ' · ' + meta.label + '">' +
+        '<span class="sv-av">' + escapeHtml(Array.from(s.name || '?')[0]) + '</span><i class="fa-solid ' + meta.icon + ' sv-ic"></i><span class="sv-nm">' + escapeHtml(s.name) + '</span>' +
+        '<button type="button" class="sv-chev" onclick="event.stopPropagation();openStatusActionSheet(\'' + sid + '\')" title="ជ្រើសរើសស្ថានភាពផ្សេង"><i class="fa-solid fa-chevron-down"></i></button></div>';
+    }
+    function renderSeatView(container) {
+      var cls = cleanGrade(currentClassName);
+      if (!(cls in seatLayouts)) {
+        if (!seatLoading[cls]) {
+          seatLoading[cls] = true;
+          fetchSeatLayout(cls).then(function (lay) { seatLayouts[cls] = lay; seatLoading[cls] = false; if (dailyViewMode === 'seat' && cleanGrade(currentClassName) === cls) renderDailyList(); });
+        }
+        container.innerHTML = '<div class="sv-empty"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយកប្លង់តុ...</div>';
+        return;
+      }
+      var lay = seatLayouts[cls];
+      if (!lay || !lay.seats || !Object.keys(lay.seats).length) {
+        container.innerHTML = '<div class="sv-empty">🪑 ថ្នាក់ទី ' + escapeHtml(cls) + ' មិនទាន់មានប្លង់តុទេ។<br>សូមរៀបចំប្លង់តុជាមុន រួចត្រឡប់មកស្រង់វត្តមានតាមប្លង់។<br><button type="button" class="sv-edit" onclick="openSeatEditor()"><i class="fa-solid fa-pen-ruler"></i> រៀបចំប្លង់តុ</button></div>';
+        return;
+      }
+      var rows = Math.max(1, +lay.rows || 1), cols = Math.max(1, +lay.cols || 1), per = Math.max(1, +lay.per || 1);
+      var q = (document.getElementById('searchBox').value || '').trim().toLowerCase();
+      var byId = {}; rawStudentsData.forEach(function (s) { byId[s.id] = s; });
+      var placed = {}, html = '';
+      var tdesk = '<div class="sv-tdesk">តុគ្រូ</div>';
+      html += '<div class="sv-wrap"><div class="sv-front">' + (lay.teacher === 'right' ? '' : tdesk) + '<div class="sv-board">ក្តារខៀន</div>' + (lay.teacher === 'right' ? tdesk : '') + '</div>';
+      html += '<div class="sv-floor"><div class="sv-room">';
+      for (var r = 0; r < rows; r++) {
+        html += '<div class="sv-row"><div class="sv-rno"><span>' + (r + 1) + '</span></div>';
+        for (var c = 0; c < cols; c++) {
+          html += '<div class="sv-desk">';
+          for (var k = 0; k < per; k++) {
+            var id = lay.seats[r + '_' + c + '_' + k], s = id && byId[String(id)];
+            if (s && !placed[s.id]) { placed[s.id] = 1; html += '<div class="sv-seat">' + seatChipHtml(s, q) + '</div>'; }
+            else html += '<div class="sv-seat"><span class="dash"></span></div>';
+          }
+          html += '</div>';
+        }
+        html += '</div>';
+      }
+      html += '</div></div>';
+      var un = rawStudentsData.filter(function (s) { return !placed[s.id]; });
+      if (un.length) html += '<div class="sv-un"><h4>👤 សិស្សមិនទាន់មានកន្លែងក្នុងប្លង់ (' + un.length + ' នាក់)</h4><div class="sv-un-list">' + un.map(function (s) { return '<div style="position:relative">' + seatChipHtml(s, q) + '</div>'; }).join('') + '</div></div>';
+      html += '<div style="text-align:center"><button type="button" class="sv-edit" onclick="openSeatEditor()"><i class="fa-solid fa-pen-ruler"></i> កែប្លង់តុ</button></div></div>';
       container.innerHTML = html;
     }
 
