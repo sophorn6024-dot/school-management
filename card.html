@@ -2254,7 +2254,7 @@ function qrDataUrl(text) {
     const box = document.createElement('div');
     box.style.cssText = 'position:fixed;left:-9999px;top:0';
     document.body.appendChild(box);
-    new QRCode(box, { text: text, width: 240, height: 240, correctLevel: QRCode.CorrectLevel.H });
+    new QRCode(box, { text: text, width: 480, height: 480, correctLevel: QRCode.CorrectLevel.H });
     qrStampLogo(box);
     const cv = box.querySelector('canvas'), im = box.querySelector('img');
     let src = '';
