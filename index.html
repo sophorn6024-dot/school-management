@@ -1040,6 +1040,7 @@ function qrStampLogo(box){
       <div class="nav-link-btn" data-page="score" onclick="navigate('score', this)"><span class="nav-icon-box">📊</span><span class="nav-text">ស្រង់ពិន្ទុ</span></div>
       <div class="nav-link-btn" data-page="card" onclick="navigate('card', this)"><span class="nav-icon-box">🪪</span><span class="nav-text">កាតសិស្ស (ID Card)</span></div>
       <div class="nav-link-btn" data-page="group" onclick="navigate('group', this)"><span class="nav-icon-box">👥</span><span class="nav-text">បែងចែកជាក្រុម</span></div>
+      <div class="nav-link-btn" data-page="seating" onclick="navigate('seating', this)"><span class="nav-icon-box">🪑</span><span class="nav-text">ប្លង់តុសិស្ស</span></div>
       <div class="nav-link-btn" data-page="book" onclick="navigate('book', this)"><span class="nav-icon-box">📖</span><span class="nav-text">ការខ្ចី-សងសៀវភៅ</span></div>
       <div class="nav-link-btn" data-page="chat" onclick="navigate('chat', this)"><span class="nav-icon-box">💬</span><span class="nav-text">សារសន្ទនា</span><span class="nav-badge" data-chat-badge></span></div>
       <div class="nav-link-btn" data-page="reportsHub" onclick="navigate('reportsHub', this)"><span class="nav-icon-box">📄</span><span class="nav-text">របាយការណ៍</span></div>
@@ -3135,6 +3136,7 @@ const MORE_ITEMS = [
   { page: 'chat', t: 'សារសន្ទនា', d: 'អាណាព្យាបាល · គ្រូក្នុងសាលា · គ្រូទាំងអស់', i: 'chat', badge: true },
   { page: 'card', t: 'កាតសិស្ស (ID Card)', d: 'បង្កើត និងបោះពុម្ពកាតសិស្ស', i: 'idcard' },
   { page: 'group', t: 'បែងចែកជាក្រុម', d: 'ចែកសិស្សជាក្រុមសិក្សា', i: 'group' },
+  { page: 'seating', t: 'ប្លង់តុសិស្ស', d: 'រៀបចំកៅអីសិស្ស · ស្រង់វត្តមានតាមប្លង់តុ', i: 'group' },
   { page: 'book', t: 'ការខ្ចី-សងសៀវភៅ', d: 'តាមដានការខ្ចី និងសងសៀវភៅ', i: 'book' },
   { page: 'reportsHub', t: 'របាយការណ៍', d: 'បញ្ជីឈ្មោះ · តារាងចំណាត់ថ្នាក់ · ព្រឹត្តិបត្រ · ឯកសារ', i: 'report' },
   { page: 'student_accounts', t: 'គណនីសិស្ស និងបណ្ណាល័យ', d: 'បង្កើតគណនីសិស្ស · ឯកសារ · សារថ្នាក់', i: 'student' },
@@ -4254,7 +4256,7 @@ function applyIcons() {
   const set = (sel, key) => document.querySelectorAll(sel).forEach(el => { el.innerHTML = ICONS[key]; });
   document.querySelectorAll('.hero-building-icon').forEach(el => { el.innerHTML = SCHOOL3D; });
   set('.chip.g', 'users'); set('.chip.a', 'clock'); set('.dc-ico', 'calendar');
-  const navMap = { dashboard: 'dashboard', addStudent: 'student', card: 'idcard', group: 'group', book: 'book', attendance: 'attendance', score: 'score', chat: 'chat', reportsHub: 'report', teacher: 'teacher' };
+  const navMap = { dashboard: 'dashboard', addStudent: 'student', card: 'idcard', group: 'group', seating: 'group', book: 'book', attendance: 'attendance', score: 'score', chat: 'chat', reportsHub: 'report', teacher: 'teacher' };
   document.querySelectorAll('.nav-link-btn[data-page]').forEach(b => { const k = navMap[b.dataset.page]; const box = b.querySelector('.nav-icon-box'); if (k && box) { box.innerHTML = ico3d(k); setAccent(b, k); } });
   const sc = { "navigate('score', null)": 'score', "navigate('attendance', null)": 'attendance', "navigate('rank', null)": 'rank', "navigate('addStudent', null)": 'student', 'openStudentProfileViewer()': 'history' };
   document.querySelectorAll('.shortcut-pill-btn').forEach(b => { const k = sc[b.getAttribute('onclick')]; const sp = b.querySelector('span'); if (k && sp) { sp.innerHTML = ico3d(k); setAccent(b, k); } });
