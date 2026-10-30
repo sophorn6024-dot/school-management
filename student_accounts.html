@@ -308,6 +308,16 @@ async function qrCard(s){
   const qs=248,qx=(W-qs)/2,qy=202;c.fillStyle='#fff';c.shadowColor='rgba(11,59,107,.25)';c.shadowBlur=10;rrect(c,qx-8,qy-8,qs+16,qs+16,12);c.fill();c.shadowBlur=0;
   c.strokeStyle='#c7d8ec';c.lineWidth=2;rrect(c,qx-8,qy-8,qs+16,qs+16,12);c.stroke();
   c.imageSmoothingEnabled=false;c.drawImage(img,qx,qy,qs,qs);c.imageSmoothingEnabled=true;
+  /* logo: គូរឡើងវិញដោយផ្ទាល់លើកាត (ច្បាស់ពេញ) ជំនួស logo ដែលត្រូវបានពង្រីក/បង្រួមជាមួយ QR */
+  try{
+    if(!(QR_LOGO.complete&&QR_LOGO.naturalWidth))await new Promise(r=>{QR_LOGO.onload=r;QR_LOGO.onerror=r;setTimeout(r,1500)});
+    if(QR_LOGO.naturalWidth){
+      const ls=Math.round(qs*0.22),lp=qs*0.026,lx=qx+(qs-ls)/2,ly=qy+(qs-ls)/2;
+      c.imageSmoothingQuality='high';
+      c.fillStyle='#fff';rrect(c,lx-lp,ly-lp,ls+2*lp,ls+2*lp,ls*0.22);c.fill();
+      c.save();rrect(c,lx,ly,ls,ls,ls*0.18);c.clip();c.drawImage(QR_LOGO,lx,ly,ls,ls);c.restore();
+    }
+  }catch(e){}
   c.fillStyle='#fff';fitText(c,'ថ្នាក់ : '+($('cls').value||''),W/2,H-50,W-40,'700 {s}px '+F,19);
   c.fillStyle='rgba(255,255,255,.9)';fitText(c,(USER&&(USER.teacher_name||USER.username))||'',W/2,H-22,W-40,'400 {s}px '+F,16);
   c.restore();
