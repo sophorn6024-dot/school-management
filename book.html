@@ -2207,7 +2207,10 @@ exports.default = {
     let rawStudentsList = [];
     let bookRecordsMap = {};
 
-    let savedSignatureDataUrl = localStorage.getItem('krou_teacher_signature') || '';
+    /* ហត្ថលេខារក្សាទុកដាច់ដោយឡែកតាមគណនីគ្រូនីមួយៗ (មិនចែករំលែកគ្នាលើ browser តែមួយ) */
+    const SIG_KEY = 'krou_teacher_signature_v2:' + String((CURRENT_USER && CURRENT_USER.username) || '').trim().toLowerCase();
+    function readSavedSig() { try { return localStorage.getItem(SIG_KEY) || ''; } catch (e) { return ''; } }
+    let savedSignatureDataUrl = readSavedSig();
     let activeSigTab = 'draw';
     let uploadedSigBase64 = null;
 
@@ -2656,7 +2659,8 @@ exports.default = {
         savedSignatureDataUrl = uploadedSigBase64;
       }
 
-      localStorage.setItem('krou_teacher_signature', savedSignatureDataUrl);
+      try { localStorage.setItem(SIG_KEY, savedSignatureDataUrl); }
+      catch (e) { showToast('❌ រក្សាទុកមិនបាន (រូបធំពេក ឬ browser ពេញ)'); return; }
       loadDisplaySignature();
       closeSignatureModal();
       showToast('🖋️ បានរក្សាទុកហត្ថលេខាជោគជ័យ!');
@@ -2665,7 +2669,7 @@ exports.default = {
     function removeSavedSignature() {
       if (!confirm('តើអ្នកពិតជាចង់លុបហត្ថលេខានេះមែនទេ?')) return;
       savedSignatureDataUrl = '';
-      localStorage.removeItem('krou_teacher_signature');
+      try { localStorage.removeItem(SIG_KEY); } catch (e) {}
       loadDisplaySignature();
       closeSignatureModal();
       showToast('🗑️ បានលុបហត្ថលេខារួចរាល់');
