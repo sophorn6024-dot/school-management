@@ -598,7 +598,23 @@
       #selPop { display: none !important; }
       .signature-interactive-box { border: none !important; background: transparent !important; }
     }
-  </style>
+  
+    /* ══════════════ ផ្ទាំង POPUP ស្អាត (ជំនួស alert/confirm របស់ browser) ══════════════ */
+    .dlg-bg { position: fixed; inset: 0; z-index: 100000; background: rgba(10,18,32,.55); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; padding: 18px; animation: dlgF .15s ease-out; }
+    @keyframes dlgF { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes dlgP { from { transform: scale(.88) translateY(10px); opacity: 0; } to { transform: none; opacity: 1; } }
+    .dlg { width: min(400px, 100%); background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: 24px; box-shadow: 0 30px 80px rgba(0,0,0,.4); padding: 26px 22px 18px; text-align: center; animation: dlgP .22s cubic-bezier(.2,.9,.3,1.2); }
+    .dlg .ic { width: 62px; height: 62px; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 30px; background: var(--primary-soft); }
+    .dlg.err .ic { background: rgba(220,38,38,.14); } .dlg.warn .ic { background: rgba(217,119,6,.16); }
+    .dlg h3 { margin: 0 0 6px; font-size: 17px; font-weight: 700; }
+    .dlg p { margin: 0; color: var(--text-muted); font-size: 14px; line-height: 1.7; white-space: pre-line; word-break: break-word; }
+    .dlg .acts { display: flex; gap: 10px; margin-top: 20px; }
+    .dlg .acts button { flex: 1; border: 1px solid var(--border); background: var(--surface-elevated); color: var(--text); padding: 11px; border-radius: 14px; cursor: pointer; font-weight: 700; font-size: 14.5px; font-family: inherit; }
+    .dlg .acts button:focus { outline: none; }
+    .dlg .acts button.pri { background: var(--primary); border-color: var(--primary); color: #fff; }
+    .dlg .acts button.pri:focus-visible { box-shadow: 0 0 0 3px var(--primary-soft); }
+    .dlg.err .acts button.pri, .dlg.danger .acts button.pri { background: var(--color-lost); border-color: var(--color-lost); }
+</style>
 </head>
 <body>
 
@@ -2215,6 +2231,26 @@ exports.default = {
     let uploadedSigBase64 = null;
 
 
+
+    /* ── ផ្ទាំង popup ស្អាត ── */
+    function dlgOpen(msg, { confirm = false, okText = 'យល់ព្រម', cancelText = 'បដិសេធ', danger = false, title = '' } = {}) {
+      return new Promise(res => {
+        let t = String(msg == null ? '' : msg), kind = confirm ? 'warn' : 'info', icon = confirm ? '❓' : 'ℹ️', ttl = title || (confirm ? 'សូមបញ្ជាក់' : 'សេចក្តីជូនដំណឹង');
+        if (/^\s*✅/.test(t)) { kind = 'ok'; icon = '✅'; ttl = title || 'ជោគជ័យ'; t = t.replace(/^\s*✅\s*/, ''); }
+        else if (/^\s*❌/.test(t)) { kind = 'err'; icon = '⚠️'; ttl = title || 'មានបញ្ហា'; t = t.replace(/^\s*❌\s*/, ''); }
+        if (danger) { kind = 'danger'; icon = '🗑️'; }
+        const bg = document.createElement('div'); bg.className = 'dlg-bg';
+        bg.innerHTML = `<div class="dlg ${kind}" role="dialog" aria-modal="true"><div class="ic">${icon}</div><h3>${escapeHtmlDlg(ttl)}</h3><p>${escapeHtmlDlg(t)}</p><div class="acts">${confirm ? `<button type="button" data-v="0">${cancelText}</button>` : ''}<button type="button" class="pri" data-v="1">${confirm ? okText : 'យល់ព្រម'}</button></div></div>`;
+        const done = v => { bg.remove(); document.removeEventListener('keydown', kd); res(v); };
+        const kd = e => { if (e.key === 'Escape') done(false); if (e.key === 'Enter') done(true); };
+        bg.addEventListener('click', e => { const b = e.target.closest('button'); if (b) done(b.dataset.v === '1'); else if (e.target === bg && confirm) done(false); });
+        document.addEventListener('keydown', kd); document.body.appendChild(bg); bg.querySelector('.pri').focus();
+      });
+    }
+    function escapeHtmlDlg(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+    const uiAlert = m => dlgOpen(m);
+    const uiConfirm = (m, o) => dlgOpen(m, Object.assign({}, o || {}, { confirm: true }));
+
     function showToast(msg) {
       const t = document.getElementById('toastNotif');
       t.innerText = msg;
@@ -2647,13 +2683,13 @@ exports.default = {
     function applyAndSaveSignature() {
       if (activeSigTab === 'draw') {
         if (isCanvasBlank()) {
-          alert('សូមគូរហត្ថលេខាលើផ្ទាំងសិន!');
+          uiAlert('សូមគូរហត្ថលេខាលើផ្ទាំងសិន!');
           return;
         }
         savedSignatureDataUrl = canvas.toDataURL('image/png');
       } else {
         if (!uploadedSigBase64) {
-          alert('សូមជ្រើសរើសរូបភាពហត្ថលេខាសិន!');
+          uiAlert('សូមជ្រើសរើសរូបភាពហត្ថលេខាសិន!');
           return;
         }
         savedSignatureDataUrl = uploadedSigBase64;
@@ -2666,8 +2702,8 @@ exports.default = {
       showToast('🖋️ បានរក្សាទុកហត្ថលេខាជោគជ័យ!');
     }
 
-    function removeSavedSignature() {
-      if (!confirm('តើអ្នកពិតជាចង់លុបហត្ថលេខានេះមែនទេ?')) return;
+    async function removeSavedSignature() {
+      if (!await uiConfirm('តើអ្នកពិតជាចង់លុបហត្ថលេខានេះមែនទេ?', { danger: true, okText: 'លុប', title: 'លុបហត្ថលេខា' })) return;
       savedSignatureDataUrl = '';
       try { localStorage.removeItem(SIG_KEY); } catch (e) {}
       loadDisplaySignature();
@@ -2905,16 +2941,16 @@ exports.default = {
       renderTable();
     }
 
-    function bulkActionAllStudents() {
+    async function bulkActionAllStudents() {
       const activeSubjects = SUBJECT_KEYS.filter(k => document.getElementById('chk_' + k).checked);
       if (activeTab === 'borrow') {
-        if (!confirm('តើអ្នកពិតជាចង់ចែកសៀវភៅមុខវិជ្ជាសកម្មទាំងនេះ ជូនសិស្សទាំងអស់ក្នុងថ្នាក់មែនទេ?')) return;
+        if (!await uiConfirm('តើអ្នកពិតជាចង់ចែកសៀវភៅមុខវិជ្ជាសកម្មទាំងនេះ ជូនសិស្សទាំងអស់ក្នុងថ្នាក់មែនទេ?', { okText: 'ចែកទាំងអស់', title: 'ចែកសៀវភៅទាំងថ្នាក់' })) return;
         rawStudentsList.forEach(s => {
           const sid = String(s.student_id || s.id);
           activeSubjects.forEach(k => { bookRecordsMap[sid].borrow[k] = true; });
         });
       } else {
-        if (!confirm('តើអ្នកពិតជាចង់កំណត់ថា "បានសងគ្រប់គ្នា" សម្រាប់មុខវិជ្ជាសកម្មមែនទេ?')) return;
+        if (!await uiConfirm('តើអ្នកពិតជាចង់កំណត់ថា "បានសងគ្រប់គ្នា" សម្រាប់មុខវិជ្ជាសកម្មមែនទេ?', { okText: 'បានសងទាំងអស់', title: 'កំណត់ការសង' })) return;
         rawStudentsList.forEach(s => {
           const sid = String(s.student_id || s.id);
           activeSubjects.forEach(k => { bookRecordsMap[sid].returnStatus[k] = 'returned'; });
@@ -2958,7 +2994,7 @@ exports.default = {
         if (error) throw error;
         showToast('✅ បានរក្សាទុកទិន្នន័យជោគជ័យ!');
       } catch (err) {
-        alert('❌ មិនអាចរក្សាទុកបានទេ៖ ' + err.message);
+        uiAlert('❌ មិនអាចរក្សាទុកបានទេ៖ ' + err.message);
       }
     }
 
