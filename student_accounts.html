@@ -275,7 +275,7 @@ function qrPng(s){
   return new Promise(res=>{
     if(!window.QRCode||!s.qr_token)return res(null);
     const box=document.createElement('div');box.style.cssText='position:fixed;left:-9999px;top:0';document.body.appendChild(box);
-    new QRCode(box,{text:qrUrl(s.qr_token),width:480,height:480,correctLevel:QRCode.CorrectLevel.H});
+    new QRCode(box,{text:qrUrl(s.qr_token),width:744,height:744,correctLevel:QRCode.CorrectLevel.H});
     setTimeout(()=>{qrStampLogo(box);
       const cv=box.querySelector('canvas'),im=box.querySelector('img');let src=null;
       try{src=cv?cv.toDataURL('image/png'):(im?im.src:null)}catch(e){}
@@ -293,7 +293,7 @@ async function qrCard(s){
   const qr=await qrPng(s);if(!qr)return null;
   try{await Promise.all([document.fonts.load('700 30px Battambang'),document.fonts.load('400 24px Battambang')])}catch(e){}
   const img=await new Promise(res=>{const i=new Image();i.onload=()=>res(i);i.onerror=()=>res(null);i.src=qr});if(!img)return null;
-  const K=2,W=380,H=560,cv=document.createElement('canvas');cv.width=W*K;cv.height=H*K;
+  const K=3,W=380,H=560,cv=document.createElement('canvas');cv.width=W*K;cv.height=H*K;
   const c=cv.getContext('2d');c.scale(K,K);c.textAlign='center';c.textBaseline='alphabetic';
   const NAVY='#0b3b6b',F='Battambang,"Khmer OS Battambang",sans-serif';
   c.fillStyle='#fff';rrect(c,0,0,W,H,16);c.fill();
@@ -312,13 +312,13 @@ async function qrCard(s){
   try{
     if(!(QR_LOGO.complete&&QR_LOGO.naturalWidth))await new Promise(r=>{QR_LOGO.onload=r;QR_LOGO.onerror=r;setTimeout(r,1500)});
     if(QR_LOGO.naturalWidth){
-      const ls=Math.round(qs*0.22),lp=qs*0.026,lx=qx+(qs-ls)/2,ly=qy+(qs-ls)/2;
+      const ls=Math.round(qs*0.27),lp=qs*0.026,lx=qx+(qs-ls)/2,ly=qy+(qs-ls)/2;
       c.imageSmoothingQuality='high';
       c.fillStyle='#fff';rrect(c,lx-lp,ly-lp,ls+2*lp,ls+2*lp,ls*0.22);c.fill();
       c.save();rrect(c,lx,ly,ls,ls,ls*0.18);c.clip();c.drawImage(QR_LOGO,lx,ly,ls,ls);c.restore();
     }
   }catch(e){}
-  c.fillStyle='#fff';fitText(c,'ថ្នាក់ : '+($('cls').value||''),W/2,H-50,W-40,'700 {s}px '+F,19);
+  c.fillStyle='#fff';fitText(c,'ថ្នាក់ទី : '+($('cls').value||''),W/2,H-50,W-40,'700 {s}px '+F,19);
   c.fillStyle='rgba(255,255,255,.9)';fitText(c,(USER&&(USER.teacher_name||USER.username))||'',W/2,H-22,W-40,'400 {s}px '+F,16);
   c.restore();
   return cv.toDataURL('image/png');
