@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="km" data-theme="dark">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>កាលវិភាគសិក្សា - សាលាបឋមសិក្សាកំពង់ល្ពៅ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Moul&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root,[data-theme="light"]{
+  --bg:#eef6fb;--bg2:#f6fbf8;--surface:#fff;--card:rgba(255,255,255,.82);--elev:#eef3f8;--border:#cfe0ec;
+  --text:#0f172a;--muted:#5b6b80;--primary:#0369a1;--primary-soft:rgba(3,105,161,.12);--danger:#dc2626;--ok:#059669;
+  --th:#0b3b6b;--th-text:#fff;--now:rgba(245,158,11,.16);--shadow:0 8px 28px rgba(15,23,42,.08);--breakbg:#f1f5f9;
+}
+[data-theme="dark"]{
+  --bg:#0a1220;--bg2:#0c1626;--surface:#131e33;--card:rgba(19,30,51,.84);--elev:#1a2840;--border:#23324d;
+  --text:#f1f5f9;--muted:#9aa8bd;--primary:#38bdf8;--primary-soft:rgba(56,189,248,.14);--danger:#f87171;--ok:#34d399;
+  --th:#12335a;--th-text:#fff;--now:rgba(245,158,11,.2);--shadow:0 8px 28px rgba(0,0,0,.45);--breakbg:#17233a;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{overflow-x:hidden}
+body{font-family:'Khmer OS Battambang','Battambang',sans-serif;background:linear-gradient(135deg,var(--bg),var(--bg2));color:var(--text);font-size:13.5px;line-height:1.5;min-height:100vh;padding:12px 14px 60px;transition:background .25s,color .25s}
+button,input,select{font-family:inherit}
+.moul{font-family:'Khmer OS Muol Light','Moul',cursive!important;font-weight:400}
+i.fa-solid,i.fa-regular,.fa-solid,.fa-regular{font-family:'Font Awesome 6 Free'!important}
+.auth-wrap{display:none;min-height:80vh;align-items:center;justify-content:center;text-align:center;padding:20px}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:34px 26px;max-width:420px;box-shadow:var(--shadow)}
+.auth-card h2{color:var(--danger);font-size:17px;margin:10px 0}.auth-card p{color:var(--muted);margin-bottom:18px}
+.btn-go{background:linear-gradient(135deg,#0284c7,#7c3aed);color:#fff;padding:10px 24px;border:none;border-radius:12px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+
+.topbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:10px 16px;box-shadow:var(--shadow);backdrop-filter:blur(8px)}
+.topbar .ttl{display:flex;align-items:center;gap:10px;font-size:15px;margin-right:auto}.topbar .ttl i{color:var(--primary);font-size:20px}
+.pill-sel{height:40px;border-radius:16px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);padding:0 14px;font-size:13px;font-weight:700;outline:none;cursor:pointer;max-width:100%}
+.class-badge{background:linear-gradient(135deg,#0284c7,#2563eb);color:#fff;padding:8px 16px;border-radius:16px;font-weight:700;font-size:13px;display:none}
+.tb-btn{height:40px;padding:0 16px;border-radius:14px;border:1px solid var(--border);background:var(--elev);color:var(--text);font-weight:700;font-size:13.5px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.tb-btn:hover{border-color:var(--primary)}
+.tb-btn.pri{background:linear-gradient(135deg,#0369a1,#0284c7);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(3,105,161,.3)}
+.tb-btn.sm{height:34px;padding:0 12px;font-size:12.5px;border-radius:11px}
+.tb-btn.danger{color:var(--danger)}
+.tb-btn:disabled{opacity:.55;cursor:not-allowed}
+.tb-btn.dirty{animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(2,132,199,.5)}50%{box-shadow:0 0 0 7px rgba(2,132,199,0)}}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:16px;box-shadow:var(--shadow);margin-top:14px;backdrop-filter:blur(8px)}
+.dayrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;color:var(--muted);font-size:12.5px}
+.dchip{height:32px;padding:0 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);font-weight:700;cursor:pointer;font-size:12.5px}
+.dchip.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.hint{font-size:11.5px;color:var(--muted);margin:2px 0 10px}
+
+.tw{overflow-x:auto;border-radius:16px;border:1px solid var(--border)}
+table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--surface)}
+.tt th{background:var(--th);color:var(--th-text);padding:11px 6px;font-size:13.5px;border:1px solid rgba(255,255,255,.12);position:relative}
+.tt th.now{background:#b45309}
+.tt td{border:1px solid var(--border);padding:5px;text-align:center;vertical-align:middle;height:60px}
+.tt td.time{width:116px;min-width:104px;background:var(--elev);font-weight:700;font-size:12.5px;line-height:1.35}
+.tt td.time small{display:block;color:var(--muted);font-weight:400;font-size:11px}
+.tt td.time.cur{background:var(--now);outline:2px solid #f59e0b;outline-offset:-2px}
+.tt tr.sess td{height:30px;background:var(--primary-soft);color:var(--primary);font-weight:700;text-align:left;padding-left:12px;font-size:12.5px;letter-spacing:.2px}
+.tt tr.brk td{height:34px;background:var(--breakbg);color:var(--muted);font-weight:700;font-size:12.5px}
+.tt td.cell{cursor:pointer;transition:background .12s}
+.tt td.cell:hover{background:var(--primary-soft)}
+.tt td.cell.now{background:var(--now)}
+.sub{display:block;border-radius:11px;padding:8px 6px;font-weight:700;font-size:12.5px;color:#1e293b;line-height:1.35;box-shadow:0 2px 0 rgba(0,0,0,.1)}
+.add{color:var(--muted);opacity:.5;font-size:15px}
+.cell.cur .sub{outline:2.5px solid #f59e0b}
+
+.summary{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.sm-chip{display:inline-flex;align-items:center;gap:7px;border-radius:20px;padding:5px 12px;color:#1e293b;font-weight:700;font-size:12px}
+.sm-chip b{background:rgba(255,255,255,.65);border-radius:12px;padding:0 8px}
+
+.pop{position:fixed;z-index:6000;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:18px;box-shadow:0 18px 44px rgba(0,0,0,.35);padding:12px;width:290px;max-width:calc(100vw - 16px);display:none}
+.pop.show{display:block}
+.pop h4{font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.pchips{display:flex;flex-wrap:wrap;gap:6px;max-height:210px;overflow-y:auto}
+.pchip{border:none;border-radius:12px;padding:8px 11px;font-weight:700;font-size:12.5px;color:#1e293b;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.1)}
+.pchip:hover{transform:translateY(-1px)}
+.pfoot{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+
+.mbg{position:fixed;inset:0;background:rgba(10,18,32,.6);backdrop-filter:blur(5px);z-index:9000;display:none;align-items:center;justify-content:center;padding:14px}
+.mbg.show{display:flex}
+.modal{background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:22px;width:min(560px,100%);max-height:88vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.modal header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border);font-weight:700}
+.modal header button{background:none;border:none;color:var(--muted);font-size:17px;cursor:pointer}
+.modal .bd{padding:12px 18px;overflow-y:auto;flex:1}
+.modal .ft{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.modal h5{font-size:13px;margin:6px 0 8px;color:var(--primary)}
+.prow{display:grid;grid-template-columns:30px 100px 82px 82px 1fr;gap:6px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border)}
+.prow .no{width:26px;height:26px;border-radius:50%;background:var(--elev);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11.5px;color:var(--muted)}
+.prow select,.prow input,.srow input[type=text]{height:34px;border:1.5px solid var(--border);border-radius:10px;background:var(--elev);color:var(--text);padding:0 8px;font-size:12.5px;outline:none;min-width:0;width:100%}
+.prow select:focus,.prow input:focus,.srow input:focus{border-color:var(--primary)}
+.prow .acts{display:flex;gap:4px;justify-content:flex-end}
+.ib{width:30px;height:30px;border-radius:9px;border:1px solid var(--border);background:var(--elev);color:var(--muted);cursor:pointer;font-size:12px}.ib:hover{color:var(--primary);border-color:var(--primary)}.ib.d:hover{color:var(--danger);border-color:var(--danger)}
+.wiz{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.wiz label{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--muted);font-weight:700}
+.wiz select,.wiz input{height:36px;border:1.5px solid var(--border);border-radius:10px;background:var(--elev);color:var(--text);padding:0 8px;font-size:13px;outline:none;width:100%}
+.wiz select:focus,.wiz input:focus{border-color:var(--primary)}
+.srow{display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:1px solid var(--border)}
+.srow input[type=color]{width:38px;height:34px;border:1.5px solid var(--border);border-radius:10px;padding:2px;background:var(--elev);cursor:pointer}
+@media(max-width:560px){.prow{grid-template-columns:26px 1fr 1fr;}.prow .t2{grid-column:2/3}.prow .acts{grid-column:1/-1;justify-content:flex-start}}
+
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#0f172a;color:#fff;padding:11px 20px;border-radius:14px;font-weight:700;font-size:13px;box-shadow:0 10px 28px rgba(0,0,0,.35);z-index:99999;opacity:0;pointer-events:none;transition:all .25s;max-width:calc(100vw - 30px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.dlg-bg{position:fixed;inset:0;z-index:100000;background:rgba(10,18,32,.55);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px}
+.dlg{width:min(400px,100%);background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.4);padding:26px 22px 18px;text-align:center}
+.dlg .ic{width:60px;height:60px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(217,119,6,.16)}
+.dlg h3{font-size:17px;margin-bottom:6px}.dlg p{color:var(--muted);line-height:1.7;white-space:pre-line}
+.dlg .acts{display:flex;gap:10px;margin-top:20px}.dlg .acts button{flex:1;border:1px solid var(--border);background:var(--elev);color:var(--text);padding:11px;border-radius:14px;cursor:pointer;font-weight:700;font-size:14.5px}
+.dlg .acts button.pri{background:#0284c7;border-color:#0284c7;color:#fff}.dlg.danger .acts button.pri{background:var(--danger);border-color:var(--danger)}
+
+.print-only{display:none}
+@media(max-width:560px){body{padding:8px 8px 50px}.topbar{padding:10px}.tb-btn span.t{display:none}.tb-btn{padding:0 13px}.pill-sel{flex:1}.tt td.time{min-width:84px;width:84px}}
+@page{size:A4 landscape;margin:10mm}
+@media print{
+  body{background:#fff!important;color:#000!important;padding:0}
+  .no-print,.toast,.mbg,.pop,.hint,.dayrow{display:none!important}
+  .print-only{display:block!important}
+  .card{background:#fff!important;border:none;box-shadow:none;padding:0;margin:0;backdrop-filter:none}
+  .tw{overflow:visible;border:none}
+  table.tt{min-width:0;background:#fff}
+  .tt th{background:#0b3b6b!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;border:1px solid #000}
+  .tt td{border:1px solid #000;height:46px;color:#000}
+  .tt td.time,.tt tr.sess td,.tt tr.brk td{background:#f1f5f9!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;color:#000}
+  .tt td.cell.now,.tt td.time.cur,.tt th.now{background:inherit!important;outline:none}
+  .tt th.now{background:#0b3b6b!important}
+  .sub{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none;color:#000}
+  .cell.cur .sub{outline:none}
+  .add{display:none}
+  .summary{margin-top:8px}.sm-chip{-webkit-print-color-adjust:exact;print-color-adjust:exact;border:1px solid #94a3b8}
+  .ph{text-align:center;margin-bottom:8px}.ph .k{font-size:13px;line-height:1.8}.ph .t{font-size:16px;margin-top:6px}.ph .s{font-size:12px;margin-top:2px}
+  .pf{display:flex!important;justify-content:space-between;margin-top:18px;font-size:12.5px;page-break-inside:avoid}
+  .pf>div{text-align:center;width:40%}.pf .sp{height:60px}
+}
+</style>
+</head>
+<body>
+
+<div class="auth-wrap" id="authWrap">
+  <div class="auth-card"><div style="font-size:38px">🔒</div><h2>សូមចូលប្រើប្រាស់ជាមុនសិន!</h2><p>លោកអ្នកមិនទាន់បាន Login ចូលក្នុងប្រព័ន្ធនៅឡើយទេ។</p>
+  <a href="index.html" class="btn-go" onclick="goToIndex(event)">🔑 ទៅកាន់ទំព័រដើម (Login)</a></div>
+</div>
+
+<div id="app" style="display:none">
+  <div class="topbar no-print">
+    <div class="ttl moul"><i class="fa-solid fa-table-list"></i> កាលវិភាគសិក្សា</div>
+    <span class="class-badge" id="clsBadge"></span>
+    <select class="pill-sel" id="clsSel" style="display:none" onchange="onClassChange()"></select>
+    <button class="tb-btn" onclick="openSettings()"><i class="fa-solid fa-sliders"></i><span class="t">កំណត់ម៉ោង/មុខវិជ្ជា</span></button>
+    <button class="tb-btn" id="copyBtn" onclick="openCopy()"><i class="fa-regular fa-copy"></i><span class="t">ចម្លងពីថ្នាក់ផ្សេង</span></button>
+    <button class="tb-btn pri" id="saveBtn" onclick="saveSchedule()"><i class="fa-regular fa-floppy-disk"></i><span class="t">រក្សាទុក</span></button>
+    <button class="tb-btn" onclick="window.print()"><i class="fa-solid fa-print"></i><span class="t">បោះពុម្ព</span></button>
+  </div>
+
+  <div class="card">
+    <div class="ph print-only">
+      <div class="k moul">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
+      <div class="s moul" style="margin-top:8px;font-size:12.5px;text-align:left">សាលាបឋមសិក្សាកំពង់ល្ពៅ</div>
+      <div class="t moul">កាលវិភាគសិក្សាប្រចាំសប្តាហ៍</div>
+      <div class="s" id="printSub"></div>
+    </div>
+    <div class="dayrow no-print"><span>ថ្ងៃសិក្សា៖</span><span id="dchips" style="display:contents"></span></div>
+    <div class="hint no-print">💡 ចុចលើប្រអប់ណាមួយដើម្បីជ្រើសមុខវិជ្ជា។ ជួរមួយអាចដាក់ដូចគ្នាទាំងសប្តាហ៍ក្នុងមួយចុច។ ថ្ងៃ និងម៉ោងបច្ចុប្បន្នមានពណ៌លើក។</div>
+    <div class="tw"><table class="tt" id="tt"></table></div>
+    <div class="summary" id="summary"></div>
+    <div class="pf print-only" style="display:none">
+      <div><b class="moul" style="font-size:12px">បានឃើញ និងឯកភាព</b><br><b class="moul" style="font-size:12px">នាយកសាលា</b><div class="sp"></div></div>
+      <div>ថ្ងៃ..........ខែ..........ឆ្នាំ............<br><b class="moul" style="font-size:12px">គ្រូបន្ទុកថ្នាក់</b><div class="sp"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="pop" id="pop"></div>
+
+<div class="mbg" id="setModal" onclick="if(event.target===this)closeSettings()">
+  <div class="modal">
+    <header><span><i class="fa-solid fa-sliders"></i> កំណត់ម៉ោង និងមុខវិជ្ជា</span><button onclick="closeSettings()">✕</button></header>
+    <div class="bd">
+      <h5>⚡ រៀបម៉ោងស្វ័យប្រវត្តិ (តាមគំរូ)</h5>
+      <div class="wiz" id="wiz">
+        <label>ពេល<select id="wSess" onchange="wizSess()"><option value="morning">ពេលព្រឹក</option><option value="afternoon">ពេលរសៀល</option></select></label>
+        <label>ចាប់ផ្តើម<input type="time" id="wStart" value="07:00"></label>
+        <label>ចំនួនម៉ោងសិក្សា<input type="number" id="wCount" min="1" max="8" value="5" onchange="wizCount()"></label>
+        <label>នាទី/ម៉ោង<input type="number" id="wMins" min="10" max="120" value="40"></label>
+        <label>ចេញលេង (នាទី)<input type="number" id="wRec" min="0" max="60" value="15"></label>
+        <label>គំរូ (មុខវិជ្ជា ២ម៉ោង+១ម៉ោង...)<select id="wPat" onchange="wizPat()"><option value="2+1+2">2 + 1 + 2</option><option value="1+2+2">1 + 2 + 2</option><option value="2+2+1">2 + 2 + 1</option><option value="1+1+1+1+1">1+1+1+1+1 (មួយម៉ោងៗ)</option><option value="custom">កំណត់ខ្លួនឯង...</option></select></label>
+        <label id="wCustWrap" style="display:none">គំរូផ្ទាល់ខ្លួន<input type="text" id="wCust" placeholder="ឧ. 3+2 ឬ 1+2+2"></label>
+        <label>ចេញលេងបន្ទាប់ពី<select id="wAfter"></select></label>
+      </div>
+      <div class="hint" style="margin:8px 0 6px">💡 គំរូ <b>2+1+2</b> = មុខវិជ្ជា ១ រៀន ២ ម៉ោងជាប់ · មុខវិជ្ជា ២ រៀន ១ ម៉ោង · មុខវិជ្ជា ៣ រៀន ២ ម៉ោងជាប់ (ក្រឡារួមគ្នា)។ ការរៀបនេះជំនួសម៉ោងរបស់ពេលដែលបានជ្រើស។</div>
+      <button class="tb-btn sm pri" onclick="applyWizard()"><i class="fa-solid fa-wand-magic-sparkles"></i> រៀបម៉ោងឥឡូវ</button>
+      <h5 style="margin-top:18px">⏰ ម៉ោងសិក្សា (កែលម្អិត)</h5>
+      <div id="pRows"></div>
+      <div style="display:flex;gap:8px;margin:10px 0 16px;flex-wrap:wrap">
+        <button class="tb-btn sm" onclick="addPeriod('class')"><i class="fa-solid fa-plus"></i> បន្ថែមម៉ោងសិក្សា</button>
+        <button class="tb-btn sm" onclick="addPeriod('break')"><i class="fa-solid fa-plus"></i> បន្ថែមម៉ោងសម្រាក</button>
+        <button class="tb-btn sm danger" onclick="resetDefault()"><i class="fa-solid fa-rotate-left"></i> ត្រឡប់ទៅលំនាំដើម</button>
+      </div>
+      <h5>📚 មុខវិជ្ជា</h5>
+      <div id="sRows"></div>
+      <button class="tb-btn sm" style="margin-top:10px" onclick="addSubject()"><i class="fa-solid fa-plus"></i> បន្ថែមមុខវិជ្ជា</button>
+    </div>
+    <div class="ft"><button class="tb-btn pri" onclick="applySettings()">រួចរាល់</button></div>
+  </div>
+</div>
+
+<div class="mbg" id="copyModal" onclick="if(event.target===this)closeCopy()">
+  <div class="modal" style="width:min(420px,100%)">
+    <header><span><i class="fa-regular fa-copy"></i> ចម្លងកាលវិភាគពីថ្នាក់ផ្សេង</span><button onclick="closeCopy()">✕</button></header>
+    <div class="bd"><p style="color:var(--muted);margin-bottom:10px">ជ្រើសថ្នាក់ដែលមានកាលវិភាគរួចហើយ ដើម្បីយកមកកែតាមថ្នាក់នេះ។ កាលវិភាគបច្ចុប្បន្ននឹងត្រូវជំនួស។</p>
+      <select class="pill-sel" id="copySel" style="width:100%"></select></div>
+    <div class="ft"><button class="tb-btn" onclick="closeCopy()">បិទ</button><button class="tb-btn pri" onclick="doCopy()">ចម្លង</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ───────── SUPABASE + AUTH ───────── */
+const SUPABASE_URL="https://nggnuobnrxiqjtcwlvwk.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+function readSession(){try{return JSON.parse(localStorage.getItem('krou_supabase_user')||'null')}catch(e){return null}}
+const USER=readSession();
+const IS_ADMIN=String((USER&&USER.role)||'').toLowerCase().trim()==='admin';
+const USER_CLASS=(USER&&(USER.assigned_classes||USER.assigned_class))||'';
+function cleanGrade(g){return String(g||'').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/,'').trim()}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark')}
+applyTheme(new URLSearchParams(location.search).get('theme')||localStorage.getItem('krou_theme_manual')||'dark');
+window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme))applyTheme(e.data.theme||e.data)});
+function goToIndex(e){if(e)e.preventDefault();try{if(window.parent!==window){window.parent.postMessage({type:'OPEN_LOGIN',action:'LOGIN'},'*');window.parent.location.href='index.html';return}}catch(x){}location.href='index.html'}
+
+/* ───────── UI HELPERS ───────── */
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2800)}
+function uiConfirm(msg,{okText='យល់ព្រម',danger=false,title='សូមបញ្ជាក់'}={}){
+  return new Promise(res=>{
+    const bg=document.createElement('div');bg.className='dlg-bg';
+    bg.innerHTML=`<div class="dlg ${danger?'danger':''}" role="dialog"><div class="ic">${danger?'🗑️':'❓'}</div><h3>${esc(title)}</h3><p>${esc(msg)}</p><div class="acts"><button data-v="0">បដិសេធ</button><button class="pri" data-v="1">${esc(okText)}</button></div></div>`;
+    const done=v=>{bg.remove();document.removeEventListener('keydown',kd);res(v)};
+    const kd=e=>{if(e.key==='Escape')done(false);if(e.key==='Enter')done(true)};
+    bg.addEventListener('click',e=>{const b=e.target.closest('button');if(b)done(b.dataset.v==='1');else if(e.target===bg)done(false)});
+    document.addEventListener('keydown',kd);document.body.appendChild(bg);bg.querySelector('.pri').focus();
+  });
+}
+
+/* ───────── DATA MODEL ───────── */
+const DAYS=['ច័ន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
+const JS_DAY_TO_IDX={1:0,2:1,3:2,4:3,5:4,6:5};      // Date.getDay() → DAYS index
+const PALETTE=['#bfdbfe','#bbf7d0','#fde68a','#fbcfe8','#ddd6fe','#fed7aa','#99f6e4','#fecaca','#e9d5ff','#d9f99d','#a5f3fc','#fecdd3'];
+const DEF_SUBJECTS=['ភាសាខ្មែរ','គណិតវិទ្យា','វិទ្យាសាស្ត្រ','សិក្សាសង្គម','អប់រំកាយ និងសុខភាព','ភាសាអង់គ្លេស','សិល្បៈ'];
+const PATTERNS={'2+1+2':[2,1,2],'1+2+2':[1,2,2],'2+2+1':[2,2,1],'1+1+1+1+1':[1,1,1,1,1]};
+let _pid=0;const newPid=()=>'p'+Date.now().toString(36)+(++_pid);
+function m2t(x){x=((x%1440)+1440)%1440;return String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0')}
+function t2m(t){const m=/^(\d{1,2}):(\d{2})$/.exec(t||'');return m?(+m[1])*60+(+m[2]):null}
+/* បង្កើតម៉ោងសិក្សា ១ ពេល (ព្រឹក/រសៀល) តាមគំរូប្លុក ឧ. 2+1+2 = មុខវិជ្ជា ២ ម៉ោង + ១ ម៉ោង + ២ ម៉ោង */
+function genSession(session,{start='07:00',mins=40,recess=15,pattern=[2,1,2],recessAfter=0}){
+  const periods=[],blocks=[];let t=t2m(start);if(t===null)t=420;
+  pattern.forEach((size,bi)=>{
+    const ids=[];
+    for(let k=0;k<size;k++){const id=newPid();periods.push({id,session,type:'class',start:m2t(t),end:m2t(t+mins)});t+=mins;ids.push(id)}
+    if(size>1)blocks.push(ids);
+    if(recess>0&&recessAfter===bi+1&&bi<pattern.length-1){periods.push({id:newPid(),session,type:'break',start:m2t(t),end:m2t(t+recess)});t+=recess}
+  });
+  return{periods,blocks};
+}
+function autoRecessAfter(pattern){
+  const total=pattern.reduce((a,b)=>a+b,0);let best=0,bd=1e9,acc=0;
+  for(let i=0;i<pattern.length-1;i++){acc+=pattern[i];const d=Math.abs(acc-total/2);if(d<bd-1e-9){bd=d;best=i+1}}
+  return best;
+}
+function defData(){
+  const pat=PATTERNS['2+1+2'];
+  const g=genSession('morning',{start:'07:00',mins:40,recess:15,pattern:pat,recessAfter:autoRecessAfter(pat)});
+  const g2=genSession('afternoon',{start:'13:00',mins:40,recess:15,pattern:pat,recessAfter:autoRecessAfter(pat)});
+  return{days:[0,1,2,3,4],periods:g.periods.concat(g2.periods),blocks:g.blocks.concat(g2.blocks),subjects:DEF_SUBJECTS.map((n,i)=>({name:n,color:PALETTE[i%PALETTE.length]})),cells:{}};
+}
+let curClass='',D=defData(),dirty=false,popCell=null,loadSeq=0,pidSeq=100;
+const SESS={morning:'ពេលព្រឹក',afternoon:'ពេលរសៀល'};
+function setDirty(v){dirty=v;document.getElementById('saveBtn').classList.toggle('dirty',v)}
+const subj=n=>D.subjects.find(s=>s.name===n);
+const kh=n=>String(n).replace(/\d/g,d=>'០១២៣៤៥៦៧៨៩'[d]);
+const tfmt=t=>kh(t||'');
+
+/* ───────── RENDER ───────── */
+function nowInfo(){
+  const n=new Date(),day=JS_DAY_TO_IDX[n.getDay()],mins=n.getHours()*60+n.getMinutes();return{day,mins};
+}
+function toMin(t){return t2m(t)}
+function render(){
+  const {day:today,mins}=nowInfo();
+  // day chips
+  document.getElementById('dchips').innerHTML=DAYS.map((d,i)=>`<button class="dchip ${D.days.includes(i)?'on':''}" onclick="toggleDay(${i})">${d}</button>`).join('');
+  const days=D.days.slice().sort((a,b)=>a-b);
+  let h='<thead><tr><th style="width:116px">ម៉ោង</th>'+days.map(d=>`<th class="${d===today?'now':''}">${DAYS[d]}</th>`).join('')+'</tr></thead><tbody>';
+  let lastSess='';
+  const first={},skip=new Set();(D.blocks||[]).forEach(ids=>{first[ids[0]]=ids;ids.slice(1).forEach(x=>skip.add(x))});
+  D.periods.forEach((p,pi)=>{
+    if(p.session!==lastSess){lastSess=p.session;h+=`<tr class="sess"><td colspan="${days.length+1}">${p.session==='morning'?'🌅':'🌤️'} ${SESS[p.session]||p.session}</td></tr>`}
+    const s=toMin(p.start),e=toMin(p.end),cur=s!==null&&e!==null&&mins>=s&&mins<e;
+    const tm=`${tfmt(p.start)} – ${tfmt(p.end)}`;
+    if(p.type==='break'){h+=`<tr class="brk"><td class="time ${cur&&today!==undefined?'cur':''}">${tm}</td><td colspan="${days.length}">🧃 ម៉ោងសម្រាក / ចេញលេង</td></tr>`;return}
+    h+=`<tr><td class="time ${cur?'cur':''}"><span>${tm}</span></td>`;
+    days.forEach(d=>{
+      if(skip.has(p.id))return;
+      const span=first[p.id]?first[p.id].length:1;
+      const nm=D.cells[p.id+'|'+d],sb_=nm&&subj(nm);
+      const isNow=d===today&&(first[p.id]?first[p.id].some(id=>{const q=D.periods.find(x=>x.id===id),a=toMin(q.start),b=toMin(q.end);return a!==null&&mins>=a&&mins<b}):cur);
+      h+=`<td class="cell ${d===today?'now':''} ${isNow?'cur':''}" ${span>1?`rowspan="${span}"`:''} onclick="openPop(event,'${p.id}',${d})">`+
+        (nm?`<span class="sub" style="background:${sb_?sb_.color:'#e2e8f0'}">${esc(nm)}</span>`:'<span class="add no-print">＋</span>')+'</td>';
+    });
+    h+='</tr>';
+  });
+  h+='</tbody>';
+  document.getElementById('tt').innerHTML=h;
+  // summary
+  const cnt={};Object.entries(D.cells).forEach(([k,v])=>{const [pid,d]=k.split('|');if(D.days.includes(+d)&&D.periods.some(p=>p.id===pid&&p.type==='class'))cnt[v]=(cnt[v]||0)+1});
+  const total=Object.values(cnt).reduce((a,b)=>a+b,0);
+  const slots=D.periods.filter(p=>p.type==='class').length*D.days.length;
+  document.getElementById('summary').innerHTML=Object.keys(cnt).length?
+    Object.entries(cnt).sort((a,b)=>b[1]-a[1]).map(([n,c])=>`<span class="sm-chip" style="background:${(subj(n)||{color:'#e2e8f0'}).color}">${esc(n)} <b>${kh(c)} ម៉ោង/សប្តាហ៍</b></span>`).join('')+`<span class="sm-chip" style="background:var(--elev);color:var(--muted)">បានដាក់ ${kh(total)}/${kh(slots)} ម៉ោង</span>`:'';
+  document.getElementById('printSub').textContent=`ថ្នាក់ទី ${curClass}${USER&&(USER.teacher_name||USER.username)?' · គ្រូបន្ទុក ៖ '+(USER.teacher_name||USER.username):''}`;
+}
+function toggleDay(i){
+  const k=D.days.indexOf(i);
+  if(k>=0){if(D.days.length===1){toast('ត្រូវមានថ្ងៃសិក្សាយ៉ាងតិច ១');return}D.days.splice(k,1)}else D.days.push(i);
+  setDirty(true);render();
+}
+
+/* ───────── CELL POPUP ───────── */
+function openPop(e,pid,d){
+  e.stopPropagation();popCell={pid,d};
+  const cur=D.cells[pid+'|'+d];
+  const pop=document.getElementById('pop');
+  pop.innerHTML=`<h4>${DAYS[d]} · ជ្រើសមុខវិជ្ជា${idsOf(pid).length>1?' ('+kh(idsOf(pid).length)+' ម៉ោងជាប់គ្នា)':''}</h4><div class="pchips">${D.subjects.map((s,i)=>`<button class="pchip" style="background:${s.color};${cur===s.name?'outline:3px solid var(--primary)':''}" onclick="pickSubject(${i})">${esc(s.name)}</button>`).join('')||'<span style="color:var(--muted)">មិនទាន់មានមុខវិជ្ជា</span>'}</div>
+  <div class="pfoot"><button class="tb-btn sm" onclick="fillRow()"><i class="fa-solid fa-arrows-left-right"></i> ដូចគ្នាទាំងសប្តាហ៍</button><button class="tb-btn sm danger" onclick="clearCell()"><i class="fa-solid fa-eraser"></i> លុប</button><button class="tb-btn sm" onclick="closePop()">បិទ</button></div>`;
+  pop.classList.add('show');
+  const r=e.currentTarget.getBoundingClientRect(),pw=pop.offsetWidth,ph=pop.offsetHeight,m=8;
+  let left=Math.max(m,Math.min(r.left+r.width/2-pw/2,innerWidth-pw-m));
+  let top=r.bottom+6;if(top+ph>innerHeight-m)top=Math.max(m,r.top-ph-6);
+  pop.style.left=left+'px';pop.style.top=top+'px';
+}
+function closePop(){document.getElementById('pop').classList.remove('show');popCell=null}
+function idsOf(pid){const b=(D.blocks||[]).find(ids=>ids.includes(pid));return b?b:[pid]}
+function pickSubject(i){if(!popCell)return;idsOf(popCell.pid).forEach(id=>{D.cells[id+'|'+popCell.d]=D.subjects[i].name});setDirty(true);closePop();render()}
+function clearCell(){if(!popCell)return;idsOf(popCell.pid).forEach(id=>{delete D.cells[id+'|'+popCell.d]});setDirty(true);closePop();render()}
+function fillRow(){
+  if(!popCell)return;const nm=D.cells[popCell.pid+'|'+popCell.d];
+  if(!nm){toast('ជ្រើសមុខវិជ្ជាសិន រួចចុច "ដូចគ្នាទាំងសប្តាហ៍"');return}
+  const ids=idsOf(popCell.pid);D.days.forEach(d=>ids.forEach(id=>{D.cells[id+'|'+d]=nm}));setDirty(true);closePop();render();
+}
+document.addEventListener('click',e=>{if(!e.target.closest('#pop'))closePop()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closePop()}});
+
+/* ───────── SETTINGS ───────── */
+function openSettings(){renderSettings();document.getElementById('setModal').classList.add('show')}
+function closeSettings(){document.getElementById('setModal').classList.remove('show')}
+function renderSettings(){
+  wizRefreshAfter();
+  document.getElementById('pRows').innerHTML=D.periods.map((p,i)=>`<div class="prow">
+    <span class="no">${i+1}</span>
+    <select onchange="D.periods[${i}].session=this.value"><option value="morning" ${p.session==='morning'?'selected':''}>ពេលព្រឹក</option><option value="afternoon" ${p.session==='afternoon'?'selected':''}>ពេលរសៀល</option></select>
+    <input type="time" value="${esc(p.start)}" onchange="D.periods[${i}].start=this.value">
+    <input type="time" value="${esc(p.end)}" onchange="D.periods[${i}].end=this.value">
+    <div class="acts"><select style="width:auto" onchange="D.periods[${i}].type=this.value"><option value="class" ${p.type==='class'?'selected':''}>សិក្សា</option><option value="break" ${p.type==='break'?'selected':''}>សម្រាក</option></select>
+    <button class="ib" onclick="movePeriod(${i},-1)" title="លើ"><i class="fa-solid fa-arrow-up"></i></button><button class="ib" onclick="movePeriod(${i},1)" title="ក្រោម"><i class="fa-solid fa-arrow-down"></i></button><button class="ib d" onclick="delPeriod(${i})" title="លុប"><i class="fa-solid fa-trash"></i></button></div></div>`).join('');
+  document.getElementById('sRows').innerHTML=D.subjects.map((s,i)=>`<div class="srow"><input type="color" value="${esc(s.color)}" onchange="D.subjects[${i}].color=this.value"><input type="text" value="${esc(s.name)}" maxlength="40" onchange="renameSubject(${i},this.value)"><button class="ib d" onclick="delSubject(${i})" title="លុប"><i class="fa-solid fa-trash"></i></button></div>`).join('');
+}
+function wizPattern(){
+  const v=document.getElementById('wPat').value;
+  if(v!=='custom')return PATTERNS[v].slice();
+  const arr=document.getElementById('wCust').value.split('+').map(s=>parseInt(s.trim(),10));
+  return arr.length&&arr.every(n=>n>=1&&n<=8)?arr:null;
+}
+function wizRefreshAfter(){
+  const pat=wizPattern(),sel=document.getElementById('wAfter'),old=sel.value;
+  let o='<option value="auto">ស្វ័យប្រវត្តិ (ពាក់កណ្តាល)</option>';
+  if(pat)for(let i=1;i<pat.length;i++)o+=`<option value="${i}">ក្រោយមុខវិជ្ជាទី ${kh(i)}</option>`;
+  o+='<option value="0">មិនមានចេញលេង</option>';
+  sel.innerHTML=o;if([...sel.options].some(x=>x.value===old))sel.value=old;
+}
+function wizPat(){document.getElementById('wCustWrap').style.display=document.getElementById('wPat').value==='custom'?'flex':'none';
+  if(document.getElementById('wPat').value!=='custom'){const n=PATTERNS[document.getElementById('wPat').value].reduce((a,b)=>a+b,0);document.getElementById('wCount').value=n}
+  wizRefreshAfter()}
+function wizCount(){ /* បើចំនួនម៉ោងប្តូរ ហើយគំរូមិនត្រូវ → ប្តូរទៅគំរូផ្ទាល់ខ្លួន */
+  const n=+document.getElementById('wCount').value,v=document.getElementById('wPat').value;
+  if(v!=='custom'&&PATTERNS[v].reduce((a,b)=>a+b,0)!==n){document.getElementById('wPat').value='custom';document.getElementById('wCust').value=n>1?('1+'.repeat(n-1)+'1'):'1';wizPat()}}
+function wizSess(){const s=document.getElementById('wSess').value,st=document.getElementById('wStart');if(s==='afternoon'&&st.value==='07:00')st.value='13:00';if(s==='morning'&&st.value==='13:00')st.value='07:00'}
+async function applyWizard(){
+  const pat=wizPattern(),count=+document.getElementById('wCount').value,mins=+document.getElementById('wMins').value,rec=Math.max(0,+document.getElementById('wRec').value||0);
+  if(!pat){toast('⚠️ គំរូមិនត្រឹមត្រូវ (ឧ. 2+1+2)');return}
+  if(pat.reduce((a,b)=>a+b,0)!==count){toast('⚠️ ផលបូកគំរូ ('+pat.reduce((a,b)=>a+b,0)+') មិនស្មើចំនួនម៉ោងសិក្សា ('+count+')');return}
+  if(!(mins>=10)||t2m(document.getElementById('wStart').value)===null){toast('⚠️ សូមបញ្ចូលម៉ោងចាប់ផ្តើម និងនាទីឱ្យត្រឹមត្រូវ');return}
+  const session=document.getElementById('wSess').value;
+  const old=D.periods.filter(p=>p.session===session).map(p=>p.id);
+  const filled=Object.keys(D.cells).some(k=>old.includes(k.split('|')[0]));
+  if(filled&&!await uiConfirm('ការរៀបម៉ោងថ្មីនឹងលុបមុខវិជ្ជាដែលបានដាក់ក្នុង'+SESS[session]+'។ បន្ត?',{okText:'រៀបថ្មី',danger:true,title:'រៀបម៉ោងថ្មី'}))return;
+  const aft=document.getElementById('wAfter').value;
+  const g=genSession(session,{start:document.getElementById('wStart').value,mins,recess:rec,pattern:pat,recessAfter:aft==='auto'?autoRecessAfter(pat):(+aft||0)});
+  Object.keys(D.cells).forEach(k=>{if(old.includes(k.split('|')[0]))delete D.cells[k]});
+  D.blocks=(D.blocks||[]).filter(ids=>!ids.some(id=>old.includes(id)));
+  const keep=D.periods.filter(p=>p.session!==session);
+  D.periods=(session==='morning'?g.periods.concat(keep):keep.concat(g.periods));
+  D.blocks=D.blocks.concat(g.blocks);
+  setDirty(true);renderSettings();render();toast('✅ បានរៀបម៉ោង'+SESS[session]+'រួចរាល់');
+}
+function addPeriod(type){
+  const last=D.periods[D.periods.length-1];
+  D.periods.push({id:'p'+(++pidSeq)+Date.now().toString(36),session:last?last.session:'morning',type,start:last?last.end:'07:00',end:last?addMin(last.end,type==='break'?15:40):'07:45'});
+  renderSettings();
+}
+function addMin(t,m){const v=toMin(t);return v===null?t:m2t(v+m)}
+function movePeriod(i,d){const j=i+d;if(j<0||j>=D.periods.length)return;[D.periods[i],D.periods[j]]=[D.periods[j],D.periods[i]];renderSettings()}
+async function delPeriod(i){
+  const p=D.periods[i];
+  const used=Object.keys(D.cells).some(k=>k.startsWith(p.id+'|'));
+  if(used&&!await uiConfirm('ម៉ោងនេះមានមុខវិជ្ជាដាក់រួចហើយ។ លុបម៉ោងនេះ?',{okText:'លុប',danger:true,title:'លុបម៉ោង'}))return;
+  Object.keys(D.cells).forEach(k=>{if(k.startsWith(p.id+'|'))delete D.cells[k]});
+  D.blocks=(D.blocks||[]).map(ids=>ids.filter(x=>x!==p.id)).filter(ids=>ids.length>1);
+  D.periods.splice(i,1);renderSettings();
+}
+function addSubject(){D.subjects.push({name:'មុខវិជ្ជាថ្មី',color:PALETTE[D.subjects.length%PALETTE.length]});renderSettings()}
+function renameSubject(i,v){
+  v=String(v||'').trim();if(!v){renderSettings();return}
+  if(D.subjects.some((s,k)=>k!==i&&s.name===v)){toast('ឈ្មោះមុខវិជ្ជាស្ទួន');renderSettings();return}
+  const old=D.subjects[i].name;D.subjects[i].name=v;
+  Object.keys(D.cells).forEach(k=>{if(D.cells[k]===old)D.cells[k]=v});
+}
+async function delSubject(i){
+  const n=D.subjects[i].name,used=Object.values(D.cells).includes(n);
+  if(used&&!await uiConfirm(`មុខវិជ្ជា "${n}" ត្រូវបានដាក់ក្នុងកាលវិភាគ។ លុប ហើយដកចេញពីកាលវិភាគផង?`,{okText:'លុប',danger:true,title:'លុបមុខវិជ្ជា'}))return;
+  Object.keys(D.cells).forEach(k=>{if(D.cells[k]===n)delete D.cells[k]});
+  D.subjects.splice(i,1);renderSettings();
+}
+async function resetDefault(){
+  if(!await uiConfirm('ត្រឡប់ម៉ោង និងមុខវិជ្ជាទៅលំនាំដើម? កាលវិភាគដែលបានដាក់នឹងត្រូវលុប។',{okText:'ត្រឡប់',danger:true,title:'លំនាំដើម'}))return;
+  D=defData();renderSettings();
+}
+function applySettings(){
+  // validate times
+  for(const p of D.periods){const s=toMin(p.start),e=toMin(p.end);if(s===null||e===null||e<=s){toast('⚠️ ម៉ោងចាប់ផ្តើម/បញ្ចប់មិនត្រឹមត្រូវ (ម៉ោងចុងត្រូវក្រោយម៉ោងដើម)');return}}
+  setDirty(true);closeSettings();render();
+}
+
+/* ───────── LOAD / SAVE / COPY ───────── */
+const LKEY=c=>'krou_schedule_v1:'+c;
+function norm(o){
+  const d=defData();if(!o||typeof o!=='object')return d;
+  if(!Array.isArray(o.periods))o={...o,periods:d.periods,blocks:d.blocks};
+  if(Array.isArray(o.days)&&o.days.length)d.days=[...new Set(o.days.map(Number).filter(n=>n>=0&&n<=5))];
+  if(!d.days.length)d.days=[0,1,2,3,4];
+  if(Array.isArray(o.periods)&&o.periods.length)d.periods=o.periods.map((p,i)=>({id:String(p.id||'p'+i),session:p.session==='afternoon'?'afternoon':'morning',type:p.type==='break'?'break':'class',start:p.start||'07:00',end:p.end||'07:45'}));
+  if(Array.isArray(o.subjects))d.subjects=o.subjects.filter(s=>s&&s.name).map((s,i)=>({name:String(s.name),color:s.color||PALETTE[i%PALETTE.length]}));
+  d.cells=(o.cells&&typeof o.cells==='object')?o.cells:{};
+  d.blocks=[];
+  if(Array.isArray(o.blocks))o.blocks.forEach(ids=>{
+    if(!Array.isArray(ids)||ids.length<2)return;
+    const idx=ids.map(id=>d.periods.findIndex(p=>p.id===id));
+    if(idx.some(i=>i<0))return;
+    const ok=idx.every((v,k)=>(k===0||v===idx[k-1]+1)&&d.periods[v].type==='class'&&d.periods[v].session===d.periods[idx[0]].session);
+    if(ok)d.blocks.push(ids);
+  });
+  return d;
+}
+async function fetchSchedule(cls){
+  let data=null;
+  try{const r=await sb.from('class_schedules').select('data').eq('assigned_class',cls).maybeSingle();if(!r.error&&r.data&&r.data.data)data=r.data.data}catch(e){}
+  if(!data){try{data=JSON.parse(localStorage.getItem(LKEY(cls))||'null')}catch(e){}}
+  return data;
+}
+let classList=[];
+async function initClasses(){
+  const sel=document.getElementById('clsSel'),badge=document.getElementById('clsBadge'),mine=cleanGrade(USER_CLASS);
+  try{const{data}=await sb.from('students').select('grade');classList=[...new Set((data||[]).map(d=>cleanGrade(d.grade)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'km'))}catch(e){}
+  if(!IS_ADMIN){
+    if(!mine){document.getElementById('tt').innerHTML='<tbody><tr><td style="padding:30px;color:#d97706;font-weight:700">⚠️ គណនីរបស់អ្នកមិនទាន់មានថ្នាក់ទទួលបន្ទុកឡើយ។ សូមទាក់ទង Admin។</td></tr></tbody>';return}
+    badge.style.display='inline-block';badge.textContent='ថ្នាក់ទី '+mine;curClass=mine;await loadClass();return;
+  }
+  sel.style.display='inline-block';
+  sel.innerHTML=classList.map(c=>`<option value="${esc(c)}">ថ្នាក់ទី ${esc(c)}</option>`).join('')||'<option value="">គ្មានថ្នាក់</option>';
+  if(mine&&classList.includes(mine))sel.value=mine;
+  curClass=sel.value;await loadClass();
+}
+async function onClassChange(){
+  if(dirty&&!await uiConfirm('កាលវិភាគថ្នាក់នេះមិនទាន់បានរក្សាទុកទេ។ ប្តូរថ្នាក់ហើយបោះបង់ការកែ?',{okText:'ប្តូរថ្នាក់',title:'មិនទាន់រក្សាទុក'})){document.getElementById('clsSel').value=curClass;return}
+  curClass=document.getElementById('clsSel').value;await loadClass();
+}
+async function loadClass(){
+  const my=++loadSeq;setDirty(false);D=defData();render();
+  if(!curClass)return;
+  const data=await fetchSchedule(curClass);
+  if(my!==loadSeq)return;
+  D=norm(data);render();
+}
+async function saveSchedule(){
+  if(!curClass)return;
+  try{localStorage.setItem(LKEY(curClass),JSON.stringify(D))}catch(e){}
+  const btn=document.getElementById('saveBtn');btn.disabled=true;
+  try{
+    const{error}=await sb.from('class_schedules').upsert({assigned_class:curClass,data:D,updated_by:(USER&&USER.username)||'',updated_at:new Date().toISOString()},{onConflict:'assigned_class'});
+    if(error)throw error;setDirty(false);toast('✅ បានរក្សាទុកកាលវិភាគរួចរាល់');
+  }catch(e){setDirty(false);toast('⚠️ រក្សាទុកក្នុងម៉ាស៊ីននេះបាន តែមិនទាន់ចូល Supabase (ត្រូវរត់ SQL schedule_setup.sql)');console.warn(e)}
+  btn.disabled=false;
+}
+function openCopy(){
+  const others=classList.filter(c=>c!==curClass);
+  document.getElementById('copySel').innerHTML=others.map(c=>`<option value="${esc(c)}">ថ្នាក់ទី ${esc(c)}</option>`).join('')||'<option value="">គ្មានថ្នាក់ផ្សេង</option>';
+  document.getElementById('copyModal').classList.add('show');
+}
+function closeCopy(){document.getElementById('copyModal').classList.remove('show')}
+async function doCopy(){
+  const src=document.getElementById('copySel').value;if(!src)return;
+  const data=await fetchSchedule(src);
+  if(!data){toast('ថ្នាក់ទី '+src+' មិនទាន់មានកាលវិភាគ');return}
+  if(Object.keys(D.cells).length&&!await uiConfirm('ជំនួសកាលវិភាគបច្ចុប្បន្នដោយកាលវិភាគរបស់ថ្នាក់ទី '+src+'?',{okText:'ជំនួស',danger:true,title:'ចម្លងកាលវិភាគ'}))return;
+  D=norm(JSON.parse(JSON.stringify(data)));setDirty(true);closeCopy();render();toast('✅ បានចម្លង — ចុច "រក្សាទុក" ដើម្បីបញ្ចប់');
+}
+window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+window.addEventListener('DOMContentLoaded',()=>{
+  if(!USER||!USER.username){document.getElementById('authWrap').style.display='flex';return}
+  document.getElementById('app').style.display='block';
+  render();initClasses();
+  setInterval(()=>{if(!document.hidden&&!document.getElementById('setModal').classList.contains('show'))render()},60000);
+});
+</script>
+</body>
+</html>
