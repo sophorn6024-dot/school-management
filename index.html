@@ -1041,6 +1041,7 @@ function qrStampLogo(box){
       <div class="nav-link-btn" data-page="card" onclick="navigate('card', this)"><span class="nav-icon-box">🪪</span><span class="nav-text">កាតសិស្ស (ID Card)</span></div>
       <div class="nav-link-btn" data-page="group" onclick="navigate('group', this)"><span class="nav-icon-box">👥</span><span class="nav-text">បែងចែកជាក្រុម</span></div>
       <div class="nav-link-btn" data-page="seating" onclick="navigate('seating', this)"><span class="nav-icon-box">🪑</span><span class="nav-text">ប្លង់តុសិស្ស</span></div>
+      <div class="nav-link-btn" data-page="schedule" onclick="navigate('schedule', this)"><span class="nav-icon-box">🗓️</span><span class="nav-text">កាលវិភាគសិក្សា</span></div>
       <div class="nav-link-btn" data-page="book" onclick="navigate('book', this)"><span class="nav-icon-box">📖</span><span class="nav-text">ការខ្ចី-សងសៀវភៅ</span></div>
       <div class="nav-link-btn" data-page="chat" onclick="navigate('chat', this)"><span class="nav-icon-box">💬</span><span class="nav-text">សារសន្ទនា</span><span class="nav-badge" data-chat-badge></span></div>
       <div class="nav-link-btn" data-page="reportsHub" onclick="navigate('reportsHub', this)"><span class="nav-icon-box">📄</span><span class="nav-text">របាយការណ៍</span></div>
@@ -3136,7 +3137,8 @@ const MORE_ITEMS = [
   { page: 'chat', t: 'សារសន្ទនា', d: 'អាណាព្យាបាល · គ្រូក្នុងសាលា · គ្រូទាំងអស់', i: 'chat', badge: true },
   { page: 'card', t: 'កាតសិស្ស (ID Card)', d: 'បង្កើត និងបោះពុម្ពកាតសិស្ស', i: 'idcard' },
   { page: 'group', t: 'បែងចែកជាក្រុម', d: 'ចែកសិស្សជាក្រុមសិក្សា', i: 'group' },
-  { page: 'seating', t: 'ប្លង់តុសិស្ស', d: 'រៀបចំកៅអីសិស្ស · ស្រង់វត្តមានតាមប្លង់តុ', i: 'group' },
+  { page: 'seating', t: 'ប្លង់តុសិស្ស', d: 'រៀបចំកៅអីសិស្ស · ស្រង់វត្តមានតាមប្លង់តុ', i: 'seating' },
+  { page: 'schedule', t: 'កាលវិភាគសិក្សា', d: 'តារាងម៉ោងសិក្សាប្រចាំសប្តាហ៍របស់ថ្នាក់', i: 'schedule' },
   { page: 'book', t: 'ការខ្ចី-សងសៀវភៅ', d: 'តាមដានការខ្ចី និងសងសៀវភៅ', i: 'book' },
   { page: 'reportsHub', t: 'របាយការណ៍', d: 'បញ្ជីឈ្មោះ · តារាងចំណាត់ថ្នាក់ · ព្រឹត្តិបត្រ · ឯកសារ', i: 'report' },
   { page: 'student_accounts', t: 'គណនីសិស្ស និងបណ្ណាល័យ', d: 'បង្កើតគណនីសិស្ស · ឯកសារ · សារថ្នាក់', i: 'student' },
@@ -4109,7 +4111,7 @@ const ICONS = {
 /* ===== 🧊 3D GLOSSY ICONS (SVG gradient tiles) ===== */
 let _g3 = 0;
 const TILE3D = {
-  dashboard:['#dbeafe','#93c5fd','#1d4ed8'], student:['#ffedd5','#fdba74','#c2410c'], idcard:['#ccfbf1','#5eead4','#0f766e'], group:['#ede9fe','#c4b5fd','#6d28d9'],
+  dashboard:['#dbeafe','#93c5fd','#1d4ed8'], student:['#ffedd5','#fdba74','#c2410c'], idcard:['#ccfbf1','#5eead4','#0f766e'], group:['#ede9fe','#c4b5fd','#6d28d9'], seating:['#ecfccb','#bef264','#4d7c0f'], schedule:['#cffafe','#67e8f9','#0e7490'],
   book:['#dcfce7','#86efac','#15803d'], attendance:['#ffe4e6','#fda4af','#be123c'], score:['#fef3c7','#fcd34d','#b45309'], chat:['#e0f2fe','#7dd3fc','#0369a1'],
   report:['#e0e7ff','#a5b4fc','#4338ca'], teacher:['#fce7f3','#f9a8d4','#be185d'], history:['#cffafe','#67e8f9','#0e7490'], rank:['#fef9c3','#fde047','#a16207'],
   logout:['#fee2e2','#fca5a5','#b91c1c'], users:['#d1fae5','#6ee7b7','#047857'], menu:['#f1f5f9','#cbd5e1','#475569']
@@ -4222,6 +4224,21 @@ const ART = (() => {
 <rect x="21" y="30" width="6" height="7" fill="url(#${p}h)"/><rect x="13" y="37" width="22" height="7" rx="3" fill="url(#${p}b)"/><rect x="17" y="39.500" width="14" height="2" rx="1" fill="#fff" opacity=".6"/>`,
         lg(p + 'a', '#fde047', '#f59e0b') + lg(p + 'h', '#facc15', '#d97706') + lg(p + 'b', '#fb923c', '#ea580c'));
     },
+    schedule(p) {
+      return wrap(`<rect x="4" y="4" width="40" height="40" rx="12" fill="url(#${p}a)"/><rect x="4" y="4" width="40" height="19" rx="12" fill="#fff" opacity=".28"/>
+<rect x="9" y="12" width="30" height="27" rx="5" fill="#fff" opacity=".95"/><rect x="9" y="12" width="30" height="7" rx="5" fill="url(#${p}b)"/>
+<path d="M9 25h30M9 32h30M19 19v20M29 19v20" stroke="#0e7490" stroke-width="1.600" opacity=".55"/>
+<rect x="21" y="26.500" width="6" height="4" rx="1.200" fill="#f59e0b"/><rect x="11" y="33.500" width="6" height="4" rx="1.200" fill="#34d399"/><rect x="31" y="20.500" width="6" height="4" rx="1.200" fill="#fb7185"/>`,
+        lg(p + 'a', '#67e8f9', '#0891b2') + lg(p + 'b', '#0e7490', '#155e75'));
+    },
+    seating(p) {
+      return wrap(`<rect x="4" y="4" width="40" height="40" rx="12" fill="url(#${p}a)"/><rect x="4" y="4" width="40" height="19" rx="12" fill="#fff" opacity=".28"/>
+<rect x="11" y="9" width="26" height="8" rx="2.500" fill="#14532d" stroke="#92400e" stroke-width="2"/><path d="M15 13h9" stroke="#fff" stroke-width="1.600" stroke-linecap="round" opacity=".8"/>
+<rect x="9" y="21" width="13" height="8" rx="2.500" fill="url(#${p}b)"/><rect x="26" y="21" width="13" height="8" rx="2.500" fill="url(#${p}b)"/>
+<rect x="9" y="33" width="13" height="8" rx="2.500" fill="url(#${p}b)"/><rect x="26" y="33" width="13" height="8" rx="2.500" fill="url(#${p}b)"/>
+<circle cx="15.500" cy="25" r="2" fill="#fff" opacity=".9"/><circle cx="32.500" cy="25" r="2" fill="#fff" opacity=".9"/><circle cx="15.500" cy="37" r="2" fill="#fff" opacity=".9"/><circle cx="32.500" cy="37" r="2" fill="#fff" opacity=".9"/>`,
+        lg(p + 'a', '#bef264', '#65a30d') + lg(p + 'b', '#fde68a', '#f59e0b'));
+    },
     logout(p) {
       return wrap(`<path d="M10 7a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4v34a4 4 0 0 1-4 4H14a4 4 0 0 1-4-4z" fill="url(#${p}a)"/><path d="M10 7a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4v5H10z" fill="#fff" opacity=".35"/>
 <circle cx="24" cy="24" r="1.800" fill="#fff"/>
@@ -4256,7 +4273,7 @@ function applyIcons() {
   const set = (sel, key) => document.querySelectorAll(sel).forEach(el => { el.innerHTML = ICONS[key]; });
   document.querySelectorAll('.hero-building-icon').forEach(el => { el.innerHTML = SCHOOL3D; });
   set('.chip.g', 'users'); set('.chip.a', 'clock'); set('.dc-ico', 'calendar');
-  const navMap = { dashboard: 'dashboard', addStudent: 'student', card: 'idcard', group: 'group', seating: 'group', book: 'book', attendance: 'attendance', score: 'score', chat: 'chat', reportsHub: 'report', teacher: 'teacher' };
+  const navMap = { dashboard: 'dashboard', addStudent: 'student', card: 'idcard', group: 'group', seating: 'seating', schedule: 'schedule', book: 'book', attendance: 'attendance', score: 'score', chat: 'chat', reportsHub: 'report', teacher: 'teacher' };
   document.querySelectorAll('.nav-link-btn[data-page]').forEach(b => { const k = navMap[b.dataset.page]; const box = b.querySelector('.nav-icon-box'); if (k && box) { box.innerHTML = ico3d(k); setAccent(b, k); } });
   const sc = { "navigate('score', null)": 'score', "navigate('attendance', null)": 'attendance', "navigate('rank', null)": 'rank', "navigate('addStudent', null)": 'student', 'openStudentProfileViewer()': 'history' };
   document.querySelectorAll('.shortcut-pill-btn').forEach(b => { const k = sc[b.getAttribute('onclick')]; const sp = b.querySelector('span'); if (k && sp) { sp.innerHTML = ico3d(k); setAccent(b, k); } });
