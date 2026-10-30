@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="km" data-theme="dark">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>ប្លង់តុសិស្ស - សាលាបឋមសិក្សាកំពង់ល្ពៅ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Moul&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root,[data-theme="light"]{
+  --bg:#e8f6fb;--bg2:#f4fbf7;--surface:#ffffff;--card:rgba(255,255,255,.78);--elev:#eef4f8;--border:#cfe3ee;
+  --text:#0f172a;--muted:#5b6b80;--primary:#0369a1;--primary-soft:rgba(3,105,161,.12);
+  --desk:#fff4cf;--desk-bd:#f0c971;--desk-sh:#e0a93f;--seat:#fffaf0;--seat-bd:#f3d48a;
+  --boy-bg:#e8f6ff;--boy-bd:#7cc4f0;--girl-bg:#ffe9ee;--girl-bd:#f5a3b8;--av:#c2410c;
+  --board:#0b3d2e;--board-bd:#7b3f12;--teacher:#fcd34d;--floor:#e7e5e4;--danger:#dc2626;--ok:#059669;
+  --shadow:0 8px 28px rgba(15,23,42,.08);
+}
+[data-theme="dark"]{
+  --bg:#0a1220;--bg2:#0c1626;--surface:#131e33;--card:rgba(19,30,51,.82);--elev:#1a2840;--border:#23324d;
+  --text:#f1f5f9;--muted:#9aa8bd;--primary:#38bdf8;--primary-soft:rgba(56,189,248,.14);
+  --desk:#4a3b1a;--desk-bd:#8a6a25;--desk-sh:#2e2410;--seat:#3a2f16;--seat-bd:#6b5420;
+  --boy-bg:#12324a;--boy-bd:#2f7fb5;--girl-bg:#4a1d2c;--girl-bd:#b24a67;--av:#c2410c;
+  --board:#0b3d2e;--board-bd:#7b3f12;--teacher:#d9a514;--floor:#1b2536;--danger:#f87171;--ok:#34d399;
+  --shadow:0 8px 28px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{overflow-x:hidden}
+body{font-family:'Khmer OS Battambang','Battambang',sans-serif;background:linear-gradient(135deg,var(--bg),var(--bg2));color:var(--text);font-size:13.5px;line-height:1.5;min-height:100vh;padding:12px 14px 60px;transition:background .25s,color .25s}
+button,input,select{font-family:inherit}
+.moul{font-family:'Khmer OS Muol Light','Moul',cursive!important;font-weight:400}
+i.fa-solid,i.fa-regular,.fa-solid,.fa-regular{font-family:'Font Awesome 6 Free'!important}
+.auth-wrap{display:none;min-height:80vh;align-items:center;justify-content:center;text-align:center;padding:20px}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:34px 26px;max-width:420px;box-shadow:var(--shadow)}
+.auth-card h2{color:var(--danger);font-size:17px;margin:10px 0}.auth-card p{color:var(--muted);margin-bottom:18px}
+.btn-go{background:linear-gradient(135deg,#0284c7,#7c3aed);color:#fff;padding:10px 24px;border:none;border-radius:12px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+
+/* top bar */
+.topbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:10px 16px;box-shadow:var(--shadow);backdrop-filter:blur(8px)}
+.topbar .ttl{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--text);margin-right:auto}
+.topbar .ttl i{color:var(--primary);font-size:20px}
+.pill-sel{height:40px;border-radius:16px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);padding:0 14px;font-size:13px;font-weight:700;outline:none;cursor:pointer;max-width:100%}
+.class-badge{background:linear-gradient(135deg,#0284c7,#2563eb);color:#fff;padding:8px 16px;border-radius:16px;font-weight:700;font-size:13px;display:none}
+.tb-btn{height:40px;padding:0 16px;border-radius:14px;border:1px solid var(--border);background:var(--elev);color:var(--text);font-weight:700;font-size:13.5px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.tb-btn:hover{border-color:var(--primary)}
+.tb-btn.pri{background:linear-gradient(135deg,#0369a1,#0284c7);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(3,105,161,.3)}
+.tb-btn:disabled{opacity:.55;cursor:not-allowed}
+.tb-btn.dirty{animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(2,132,199,.5)}50%{box-shadow:0 0 0 7px rgba(2,132,199,0)}}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;margin-top:14px;align-items:start}
+.main-card,.side-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:16px;box-shadow:var(--shadow);backdrop-filter:blur(8px)}
+
+/* steppers */
+.steppers{display:flex;justify-content:center;margin-bottom:14px}
+.stepbox{display:inline-flex;background:var(--surface);border:1px solid var(--border);border-radius:20px;overflow:hidden;max-width:100%}
+.step{display:flex;align-items:center;padding:4px 6px;border-right:1px solid var(--border)}.step:last-child{border-right:none}
+.step button{width:40px;height:44px;border:none;background:transparent;color:var(--text);font-size:20px;cursor:pointer;border-radius:12px}
+.step button:hover{background:var(--primary-soft)}
+.step .mid{min-width:62px;text-align:center}.step .mid small{display:block;color:var(--muted);font-size:11px}.step .mid b{font-size:22px;line-height:1.1}
+.infoline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.infoline b{color:var(--text)}
+.warn-note{color:#d97706;font-size:12px;font-weight:700}
+
+/* front */
+.front{display:grid;grid-template-columns:150px minmax(0,1fr) 150px;gap:14px;margin-bottom:12px}
+.tdesk{height:68px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;cursor:default}
+.tdesk.on{background:linear-gradient(#fde68a,var(--teacher));color:#5b3a00;box-shadow:0 5px 0 #b7791f,0 9px 16px rgba(0,0,0,.18)}
+.tdesk.off{border:2px dashed var(--border);color:var(--muted);opacity:.75;cursor:pointer;background:transparent}
+.tdesk.off:hover{border-color:var(--primary);color:var(--primary)}
+.board{height:68px;border-radius:12px;background:var(--board);border:5px solid var(--board-bd);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;box-shadow:0 5px 0 #4a2508,inset 0 0 18px rgba(0,0,0,.45)}
+
+/* grid */
+.floor{background:var(--floor);border-radius:20px;padding:14px 12px;overflow-x:auto}
+.room{display:flex;flex-direction:column;gap:10px;min-width:max-content;width:100%}
+.rowline{display:flex;align-items:stretch;gap:12px}
+.rno{width:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.rno span{width:28px;height:28px;border-radius:50%;background:var(--surface);color:var(--muted);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.desk{flex:1 1 0;min-width:150px;display:flex;gap:6px;background:linear-gradient(var(--desk),var(--desk));border:2px solid var(--desk-bd);border-radius:18px;padding:6px;box-shadow:0 5px 0 var(--desk-sh),0 9px 14px rgba(0,0,0,.15)}
+.seat{flex:1 1 0;min-width:0;min-height:52px;border-radius:13px;border:1.5px dashed var(--seat-bd);background:var(--seat);display:flex;align-items:center;justify-content:center;position:relative;transition:all .12s}
+.seat .dash{width:24px;height:5px;border-radius:5px;background:rgba(120,100,60,.28)}
+.seat.over{background:var(--primary-soft);border-color:var(--primary);transform:scale(1.03)}
+.seat.pick{border-color:var(--primary);background:var(--primary-soft)}
+.seat.pick .dash{background:var(--primary)}
+.chip{width:100%;height:100%;min-height:46px;border-radius:11px;border:1.5px solid;display:flex;align-items:center;gap:6px;padding:0 8px 0 5px;cursor:grab;position:relative;user-select:none;-webkit-user-select:none;touch-action:manipulation;box-shadow:0 3px 0 rgba(0,0,0,.12)}
+.chip.boy{background:var(--boy-bg);border-color:var(--boy-bd)}.chip.girl{background:var(--girl-bg);border-color:var(--girl-bd)}
+.chip.sel{outline:3px solid var(--primary);outline-offset:1px}
+.chip.dragging{opacity:.35}
+.av{width:30px;height:30px;border-radius:50%;background:var(--av);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chip .nm{font-size:12.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.chip .x{position:absolute;top:-8px;right:-6px;width:20px;height:20px;border-radius:50%;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.chip .x:hover{color:var(--danger)}
+
+/* side */
+.side-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.side-head h3{font-size:14.5px}
+.cnt{background:#fef3c7;color:#b45309;font-weight:700;padding:3px 12px;border-radius:20px;font-size:12.5px}.cnt.zero{background:rgba(5,150,105,.15);color:var(--ok)}
+.ulist{display:flex;flex-direction:column;gap:8px;max-height:560px;overflow-y:auto;padding-right:2px}
+.ulist .chip{min-height:44px;cursor:grab}
+.ulist .done{text-align:center;color:var(--muted);padding:26px 8px}
+.hint{margin-top:10px;font-size:11.5px;color:var(--muted);background:var(--elev);border-radius:12px;padding:9px 11px;line-height:1.55}
+.legend{display:flex;gap:12px;margin-top:10px;font-size:11.5px;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:4px;vertical-align:-1px;margin-right:4px;border:1.5px solid}
+.legend .b{background:var(--boy-bg);border-color:var(--boy-bd)}.legend .g{background:var(--girl-bg);border-color:var(--girl-bd)}
+
+/* modal */
+.mbg{position:fixed;inset:0;background:rgba(10,18,32,.6);backdrop-filter:blur(5px);z-index:9000;display:none;align-items:center;justify-content:center;padding:16px}
+.mbg.show{display:flex}
+.modal{background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:22px;width:min(460px,100%);max-height:86vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.modal header{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--border);font-weight:700}
+.modal header button{background:none;border:none;color:var(--muted);font-size:17px;cursor:pointer}
+.modal .bd{padding:10px 18px;overflow-y:auto;flex:1}
+.modal .ft{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+.hrow{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border)}
+.hrow .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hrow input{width:90px;height:36px;border:1.5px solid var(--border);border-radius:10px;background:var(--elev);color:var(--text);text-align:center;font-weight:700;outline:none}
+.hrow input:focus{border-color:var(--primary)}
+.hrow span.u{color:var(--muted);font-size:12px;width:24px}
+
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#0f172a;color:#fff;padding:11px 20px;border-radius:14px;font-weight:700;font-size:13px;box-shadow:0 10px 28px rgba(0,0,0,.35);z-index:99999;opacity:0;pointer-events:none;transition:all .25s;max-width:calc(100vw - 30px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.dlg-bg{position:fixed;inset:0;z-index:100000;background:rgba(10,18,32,.55);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px}
+.dlg{width:min(400px,100%);background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.4);padding:26px 22px 18px;text-align:center}
+.dlg .ic{width:60px;height:60px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(217,119,6,.16)}
+.dlg h3{font-size:17px;margin-bottom:6px}.dlg p{color:var(--muted);line-height:1.7;white-space:pre-line}
+.dlg .acts{display:flex;gap:10px;margin-top:20px}.dlg .acts button{flex:1;border:1px solid var(--border);background:var(--elev);color:var(--text);padding:11px;border-radius:14px;cursor:pointer;font-weight:700;font-size:14.5px}
+.dlg .acts button.pri{background:#0284c7;border-color:#0284c7;color:#fff}.dlg.danger .acts button.pri{background:var(--danger);border-color:var(--danger)}
+
+.print-only{display:none}
+@media(max-width:900px){
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .ulist{max-height:300px}
+  .front{grid-template-columns:96px minmax(0,1fr) 96px;gap:8px}
+  .tdesk,.board{height:56px;font-size:13px}
+}
+@media(max-width:560px){body{padding:8px 8px 50px}.topbar{padding:10px}.tb-btn span.t{display:none}.tb-btn{padding:0 13px}.pill-sel{flex:1}}
+
+@page{size:A4 landscape;margin:10mm}
+@media print{
+  body{background:#fff!important;color:#000!important;padding:0}
+  .no-print,.side-card,.steppers,.infoline,.chip .x,.toast,.mbg{display:none!important}
+  .print-only{display:block!important;text-align:center;margin-bottom:8px}
+  .print-only .k{font-size:13px;line-height:1.8}.print-only .t{font-size:16px;margin-top:6px}.print-only .s{font-size:12px;color:#334155;margin-top:2px}
+  .layout{display:block;margin:0}
+  .main-card{background:#fff!important;border:none;box-shadow:none;padding:0;backdrop-filter:none}
+  .floor{background:#fff!important;border:1.5px solid #94a3b8;overflow:visible}
+  .desk{box-shadow:none;background:#fff!important;border:1.5px solid #000;min-width:0}
+  .seat{border:1px solid #94a3b8;background:#fff!important;min-height:44px}
+  .chip{box-shadow:none;background:#fff!important;border:1px solid #000;color:#000;cursor:default}
+  .chip.girl{background:#fde8ee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .av{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .board{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none}
+  .tdesk.on{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-shadow:none}
+  .tdesk.off{display:none}
+  .room{min-width:0}
+}
+</style>
+</head>
+<body>
+
+<div class="auth-wrap" id="authWrap">
+  <div class="auth-card"><div style="font-size:38px">🔒</div><h2>សូមចូលប្រើប្រាស់ជាមុនសិន!</h2><p>លោកអ្នកមិនទាន់បាន Login ចូលក្នុងប្រព័ន្ធនៅឡើយទេ។</p>
+  <a href="index.html" class="btn-go" onclick="goToIndex(event)">🔑 ទៅកាន់ទំព័រដើម (Login)</a></div>
+</div>
+
+<div id="app" style="display:none">
+  <div class="topbar no-print">
+    <div class="ttl moul"><i class="fa-solid fa-table-cells-large"></i> ប្លង់តុសិស្ស</div>
+    <span class="class-badge" id="clsBadge"></span>
+    <select class="pill-sel" id="clsSel" style="display:none" onchange="onClassChange()"></select>
+    <select class="pill-sel" id="arrMode" title="របៀបរៀបស្វ័យប្រវត្តិ">
+      <option value="height">ទាបនៅមុខ (តាមកម្ពស់)</option>
+      <option value="alpha">តាមអក្ខរក្រម</option>
+      <option value="gender">ប្រុស-ស្រី ឆ្លាស់គ្នា</option>
+      <option value="random">ចៃដន្យ</option>
+    </select>
+    <button class="tb-btn" id="heightBtn" onclick="openHeights()" title="បញ្ចូលកម្ពស់សិស្ស"><i class="fa-solid fa-ruler-vertical"></i><span class="t">កម្ពស់</span></button>
+    <button class="tb-btn" onclick="autoArrange()"><i class="fa-solid fa-wand-magic-sparkles"></i><span class="t">រៀបស្វ័យប្រវត្តិ</span></button>
+    <button class="tb-btn pri" id="saveBtn" onclick="saveLayout()"><i class="fa-regular fa-floppy-disk"></i><span class="t">រក្សាទុក</span></button>
+    <button class="tb-btn" onclick="window.print()"><i class="fa-solid fa-print"></i><span class="t">បោះពុម្ព</span></button>
+  </div>
+
+  <div class="layout">
+    <div class="main-card">
+      <div class="print-only">
+        <div class="k moul">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
+        <div class="t moul">ប្លង់តុសិស្ស</div>
+        <div class="s" id="printSub"></div>
+      </div>
+      <div class="steppers no-print"><div class="stepbox">
+        <div class="step"><button onclick="step('rows',-1)">−</button><div class="mid"><small>ជួរដេក</small><b id="vRows">4</b></div><button onclick="step('rows',1)">+</button></div>
+        <div class="step"><button onclick="step('cols',-1)">−</button><div class="mid"><small>ជួរឈរ</small><b id="vCols">4</b></div><button onclick="step('cols',1)">+</button></div>
+        <div class="step"><button onclick="step('per',-1)">−</button><div class="mid"><small>ចំនួន x នាក់/តុ</small><b id="vPer">2</b></div><button onclick="step('per',1)">+</button></div>
+      </div></div>
+      <div class="infoline no-print">
+        <div id="seatInfo">កៅអី 0 · អង្គុយ 0 / 0 នាក់ <span class="warn-note" id="warnNote"></span></div>
+        <button class="tb-btn" onclick="clearAll()"><i class="fa-solid fa-eraser"></i><span>លុបចេញទាំងអស់</span></button>
+      </div>
+      <div class="front">
+        <div class="tdesk" id="tdL"></div>
+        <div class="board moul">ក្តារខៀន</div>
+        <div class="tdesk" id="tdR"></div>
+      </div>
+      <div class="floor"><div class="room" id="room"></div></div>
+    </div>
+
+    <aside class="side-card no-print">
+      <div class="side-head"><h3 class="moul" style="font-size:13px">មិនទាន់មានកន្លែង</h3><span class="cnt" id="uCnt">0 នាក់</span></div>
+      <div class="ulist" id="uList" ondragover="event.preventDefault()" ondrop="dropToList(event)"></div>
+      <div class="legend"><span><i class="b"></i>ប្រុស</span><span><i class="g"></i>ស្រី</span></div>
+      <div class="hint">💡 អូសឈ្មោះទៅកៅអី ឬលើទូរស័ព្ទ៖ ចុចឈ្មោះសិស្សមួយ រួចចុចកៅអី។ ចុចសិស្សម្នាក់លើកៅអី រួចចុចកៅអីផ្សេងដើម្បីប្តូរ។ ចុច ✕ ដើម្បីដកចេញ។ ចុចតុគ្រូពណ៌ចំហៀងដើម្បីប្តូរផ្នែក។</div>
+    </aside>
+  </div>
+</div>
+
+<div class="mbg" id="hModal" onclick="if(event.target===this)closeHeights()">
+  <div class="modal">
+    <header><span><i class="fa-solid fa-ruler-vertical"></i> កម្ពស់សិស្ស (សង់ទីម៉ែត្រ)</span><button onclick="closeHeights()">✕</button></header>
+    <div class="bd" id="hBody"></div>
+    <div class="ft"><button class="tb-btn" onclick="closeHeights()">បិទ</button><button class="tb-btn pri" onclick="applyHeights()">យល់ព្រម</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ───────── SUPABASE + AUTH ───────── */
+const SUPABASE_URL="https://nggnuobnrxiqjtcwlvwk.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+function readSession(){try{return JSON.parse(localStorage.getItem('krou_supabase_user')||'null')}catch(e){return null}}
+const USER=readSession();
+const IS_ADMIN=String((USER&&USER.role)||'').toLowerCase().trim()==='admin';
+const USER_CLASS=(USER&&(USER.assigned_classes||USER.assigned_class))||'';
+function cleanGrade(g){return String(g||'').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/,'').trim()}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark')}
+applyTheme(new URLSearchParams(location.search).get('theme')||localStorage.getItem('krou_theme_manual')||'dark');
+window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme))applyTheme(e.data.theme||e.data)});
+function goToIndex(e){if(e)e.preventDefault();try{if(window.parent!==window){window.parent.postMessage({type:'OPEN_LOGIN',action:'LOGIN'},'*');window.parent.location.href='index.html';return}}catch(x){}location.href='index.html'}
+
+/* ───────── UI HELPERS ───────── */
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2600)}
+function uiConfirm(msg,{okText='យល់ព្រម',danger=false,title='សូមបញ្ជាក់'}={}){
+  return new Promise(res=>{
+    const bg=document.createElement('div');bg.className='dlg-bg';
+    bg.innerHTML=`<div class="dlg ${danger?'danger':''}" role="dialog"><div class="ic">${danger?'🗑️':'❓'}</div><h3>${esc(title)}</h3><p>${esc(msg)}</p><div class="acts"><button data-v="0">បដិសេធ</button><button class="pri" data-v="1">${esc(okText)}</button></div></div>`;
+    const done=v=>{bg.remove();document.removeEventListener('keydown',kd);res(v)};
+    const kd=e=>{if(e.key==='Escape')done(false);if(e.key==='Enter')done(true)};
+    bg.addEventListener('click',e=>{const b=e.target.closest('button');if(b)done(b.dataset.v==='1');else if(e.target===bg)done(false)});
+    document.addEventListener('keydown',kd);document.body.appendChild(bg);bg.querySelector('.pri').focus();
+  });
+}
+
+/* ───────── STATE ───────── */
+let curClass='';
+let students=[];                       // {id,name,sex}
+let L=defLayout();                     // layout
+let dirty=false, picked=null, loadSeq=0;
+function defLayout(){return{rows:4,cols:4,per:2,teacher:'left',seats:{},heights:{}}}
+const MAXR=10,MAXC=8,MAXP=4;
+const sk=(r,c,k)=>r+'_'+c+'_'+k;
+const isF=s=>String(s.sex||'').includes('ស្រី');
+const byId=id=>students.find(s=>s.id===id);
+function setDirty(v){dirty=v;document.getElementById('saveBtn').classList.toggle('dirty',v)}
+
+/* seat validity: ids placed in-bounds only */
+function placedMap(){
+  const m={};
+  for(let r=0;r<L.rows;r++)for(let c=0;c<L.cols;c++)for(let k=0;k<L.per;k++){
+    const id=L.seats[sk(r,c,k)];if(id&&byId(id)&&!(id in m))m[id]=sk(r,c,k);
+  }
+  return m;
+}
+
+/* ───────── RENDER ───────── */
+function render(){
+  document.getElementById('vRows').textContent=L.rows;
+  document.getElementById('vCols').textContent=L.cols;
+  document.getElementById('vPer').textContent=L.per;
+  document.getElementById('tdL').className='tdesk '+(L.teacher==='left'?'on moul':'off');
+  document.getElementById('tdR').className='tdesk '+(L.teacher==='right'?'on moul':'off');
+  document.getElementById('tdL').textContent='តុគ្រូ';document.getElementById('tdR').textContent='តុគ្រូ';
+  document.getElementById('tdL').onclick=()=>{if(L.teacher!=='left'){L.teacher='left';setDirty(true);render()}};
+  document.getElementById('tdR').onclick=()=>{if(L.teacher!=='right'){L.teacher='right';setDirty(true);render()}};
+
+  const pm=placedMap(), total=L.rows*L.cols*L.per;
+  let html='';
+  for(let r=0;r<L.rows;r++){
+    html+=`<div class="rowline"><div class="rno"><span>${r+1}</span></div>`;
+    for(let c=0;c<L.cols;c++){
+      html+='<div class="desk">';
+      for(let k=0;k<L.per;k++){
+        const key=sk(r,c,k),id=L.seats[key],s=id&&byId(id);
+        html+=`<div class="seat ${picked&&picked.seat===key?'pick':''}" data-seat="${key}" ondragover="seatOver(event)" ondragleave="this.classList.remove('over')" ondrop="seatDrop(event,'${key}')" onclick="seatClick('${key}')">`+
+          (s?chip(s,key):'<span class="dash"></span>')+'</div>';
+      }
+      html+='</div>';
+    }
+    html+='</div>';
+  }
+  document.getElementById('room').innerHTML=html;
+
+  const un=students.filter(s=>!(s.id in pm));
+  document.getElementById('uCnt').textContent=un.length+' នាក់';
+  document.getElementById('uCnt').classList.toggle('zero',un.length===0);
+  document.getElementById('uList').innerHTML=un.length?un.map(s=>chip(s,null)).join(''):'<div class="done">✅ សិស្សទាំងអស់មានកន្លែងហើយ</div>';
+  document.getElementById('seatInfo').firstChild.textContent=`កៅអី ${total} · អង្គុយ ${Object.keys(pm).length} / ${students.length} នាក់ `;
+  const lack=students.length-total;
+  document.getElementById('warnNote').textContent=lack>0?`⚠️ កៅអីខ្វះ ${lack}`:'';
+  document.getElementById('printSub').textContent=`ថ្នាក់ទី ${curClass}${USER&&(USER.teacher_name||USER.username)?' · គ្រូ '+(USER.teacher_name||USER.username):''}`;
+}
+function chip(s,seat){
+  const sel=picked&&((seat&&picked.seat===seat)||(!seat&&picked.id===s.id&&!picked.seat));
+  return `<div class="chip ${isF(s)?'girl':'boy'} ${sel?'sel':''}" draggable="true" data-id="${esc(s.id)}" ondragstart="dragStart(event,'${esc(s.id)}','${seat||''}')" ondragend="this.classList.remove('dragging')" onclick="chipClick(event,'${esc(s.id)}','${seat||''}')">
+    <span class="av">${esc(Array.from(s.name||'?')[0])}</span><span class="nm">${esc(s.name)}</span>${seat?`<button class="x" onclick="removeSeat(event,'${seat}')" title="ដកចេញ">✕</button>`:''}</div>`;
+}
+
+/* ───────── INTERACTION ───────── */
+function step(what,d){
+  const lim={rows:[1,MAXR],cols:[1,MAXC],per:[1,MAXP]}[what];
+  const v=Math.min(lim[1],Math.max(lim[0],L[what]+d));if(v===L[what])return;
+  L[what]=v;setDirty(true);render();
+}
+let drag=null;
+function dragStart(e,id,seat){drag={id,seat};try{e.dataTransfer.setData('text/plain',id);e.dataTransfer.effectAllowed='move'}catch(x){}e.currentTarget.classList.add('dragging')}
+function seatOver(e){e.preventDefault();e.currentTarget.classList.add('over')}
+function seatDrop(e,key){e.preventDefault();e.currentTarget.classList.remove('over');if(!drag)return;moveTo(drag.id,drag.seat,key);drag=null}
+function dropToList(e){e.preventDefault();if(drag&&drag.seat){L.seats[drag.seat]=null;delete L.seats[drag.seat];setDirty(true);render()}drag=null}
+function moveTo(id,fromSeat,toSeat){
+  if(fromSeat===toSeat)return;
+  const other=L.seats[toSeat];
+  if(fromSeat){ if(other)L.seats[fromSeat]=other; else delete L.seats[fromSeat]; }
+  else if(other){ /* the displaced student returns to the list */ }
+  L.seats[toSeat]=id;
+  // ensure a student appears in one seat only
+  for(const k in L.seats){ if(k!==toSeat&&L.seats[k]===id&&k!==fromSeat)delete L.seats[k]; }
+  picked=null;setDirty(true);render();
+}
+function chipClick(e,id,seat){
+  e.stopPropagation();
+  if(picked&&picked.id===id&&picked.seat===(seat||null)){picked=null;render();return}
+  if(picked&&seat){ /* swap/move picked onto this occupied seat */ moveTo(picked.id,picked.seat,seat);return }
+  picked={id,seat:seat||null};render();
+}
+function seatClick(key){
+  if(!picked)return;
+  moveTo(picked.id,picked.seat,key);
+}
+function removeSeat(e,key){e.stopPropagation();delete L.seats[key];picked=null;setDirty(true);render()}
+async function clearAll(){
+  if(!Object.keys(placedMap()).length)return;
+  if(!await uiConfirm('លុបសិស្សចេញពីកៅអីទាំងអស់?',{okText:'លុបទាំងអស់',danger:true,title:'លុបចេញទាំងអស់'}))return;
+  L.seats={};picked=null;setDirty(true);render();
+}
+document.addEventListener('click',e=>{if(picked&&!e.target.closest('.chip,.seat')){picked=null;render()}});
+
+/* ───────── AUTO ARRANGE ───────── */
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+async function autoArrange(){
+  const total=L.rows*L.cols*L.per;
+  if(!students.length)return;
+  if(Object.keys(placedMap()).length&&!await uiConfirm('រៀបឡើងវិញដោយស្វ័យប្រវត្តិ ជំនួសប្លង់បច្ចុប្បន្ន?',{okText:'រៀបឡើងវិញ',title:'រៀបស្វ័យប្រវត្តិ'}))return;
+  const mode=document.getElementById('arrMode').value;
+  let list=students.slice();
+  if(mode==='alpha')list.sort((a,b)=>a.name.localeCompare(b.name,'km'));
+  else if(mode==='random')list=shuffle(list);
+  else if(mode==='gender'){
+    const f=shuffle(list.filter(isF)),m=shuffle(list.filter(s=>!isF(s))),o=[];
+    while(f.length||m.length){if(m.length)o.push(m.shift());if(f.length)o.push(f.shift())}
+    list=o;
+  }else{ // height: low in front (row 1)
+    const h=s=>{const v=parseFloat(L.heights[s.id]);return isFinite(v)&&v>0?v:null};
+    const withH=list.filter(s=>h(s)!==null).sort((a,b)=>h(a)-h(b)||a.name.localeCompare(b.name,'km'));
+    const noH=list.filter(s=>h(s)===null).sort((a,b)=>a.name.localeCompare(b.name,'km'));
+    if(!withH.length)toast('ℹ️ មិនទាន់មានកម្ពស់ — រៀបតាមអក្ខរក្រមជំនួស (ចុចប៊ូតុង "កម្ពស់")');
+    list=withH.concat(noH);
+  }
+  L.seats={};
+  let i=0;
+  outer:for(let r=0;r<L.rows;r++)for(let c=0;c<L.cols;c++)for(let k=0;k<L.per;k++){
+    if(i>=list.length)break outer;L.seats[sk(r,c,k)]=list[i++].id;
+  }
+  picked=null;setDirty(true);render();
+  if(list.length>total)toast('⚠️ កៅអីមិនគ្រប់ — បន្ថែមជួរ ឬតុ');
+}
+
+/* ───────── HEIGHTS ───────── */
+function openHeights(){
+  if(!students.length)return;
+  document.getElementById('hBody').innerHTML=students.slice().sort((a,b)=>a.name.localeCompare(b.name,'km')).map(s=>`<div class="hrow"><span class="n">${esc(s.name)} <small style="color:var(--muted)">(${esc(s.sex)})</small></span><input type="number" inputmode="decimal" min="50" max="200" step="1" data-id="${esc(s.id)}" value="${esc(L.heights[s.id]||'')}" placeholder="—"><span class="u">cm</span></div>`).join('');
+  document.getElementById('hModal').classList.add('show');
+}
+function closeHeights(){document.getElementById('hModal').classList.remove('show')}
+function applyHeights(){
+  document.querySelectorAll('#hBody input').forEach(i=>{const v=parseFloat(i.value);if(isFinite(v)&&v>0)L.heights[i.dataset.id]=v;else delete L.heights[i.dataset.id]});
+  setDirty(true);closeHeights();toast('✅ បានកត់ត្រាកម្ពស់ — ចុច "រៀបស្វ័យប្រវត្តិ"');
+}
+
+/* ───────── LOAD / SAVE ───────── */
+const LKEY=c=>'krou_seating_v1:'+c;
+function normLayout(o){
+  const d=defLayout();if(!o||typeof o!=='object')return d;
+  d.rows=Math.min(MAXR,Math.max(1,parseInt(o.rows)||4));d.cols=Math.min(MAXC,Math.max(1,parseInt(o.cols)||4));d.per=Math.min(MAXP,Math.max(1,parseInt(o.per)||2));
+  d.teacher=o.teacher==='right'?'right':'left';d.seats=(o.seats&&typeof o.seats==='object')?o.seats:{};d.heights=(o.heights&&typeof o.heights==='object')?o.heights:{};
+  return d;
+}
+async function initClasses(){
+  const sel=document.getElementById('clsSel'),badge=document.getElementById('clsBadge');
+  const mine=cleanGrade(USER_CLASS);
+  if(!IS_ADMIN){
+    if(!mine){document.getElementById('room').innerHTML='<div style="padding:30px;color:#d97706;font-weight:700;text-align:center">⚠️ គណនីរបស់អ្នកមិនទាន់មានថ្នាក់ទទួលបន្ទុកឡើយ។ សូមទាក់ទង Admin។</div>';return}
+    badge.style.display='inline-block';badge.textContent='ថ្នាក់ទី '+mine;curClass=mine;await loadClass();return;
+  }
+  sel.style.display='inline-block';
+  try{
+    const{data}=await sb.from('students').select('grade');
+    const cls=[...new Set((data||[]).map(d=>cleanGrade(d.grade)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'km'));
+    sel.innerHTML=cls.map(c=>`<option value="${esc(c)}">ថ្នាក់ទី ${esc(c)}</option>`).join('')||'<option value="">គ្មានថ្នាក់</option>';
+    if(mine&&cls.includes(mine))sel.value=mine;
+    curClass=sel.value;await loadClass();
+  }catch(e){sel.innerHTML='<option value="">កំហុសទាញថ្នាក់</option>'}
+}
+async function onClassChange(){
+  if(dirty&&!await uiConfirm('ប្លង់ថ្នាក់នេះមិនទាន់បានរក្សាទុកទេ។ ប្តូរថ្នាក់ហើយបោះបង់ការកែ?',{okText:'ប្តូរថ្នាក់',title:'មិនទាន់រក្សាទុក'})){document.getElementById('clsSel').value=curClass;return}
+  curClass=document.getElementById('clsSel').value;await loadClass();
+}
+async function loadClass(){
+  const my=++loadSeq;picked=null;setDirty(false);students=[];L=defLayout();render();
+  if(!curClass)return;
+  try{
+    const{data,error}=await sb.from('students').select('id,student_id,student_name,gender,grade,dropout_semester').order('id',{ascending:true});
+    if(error)throw error;
+    if(my!==loadSeq)return;
+    students=(data||[]).filter(s=>cleanGrade(s.grade)===curClass).filter(s=>{const d=String(s.dropout_semester||'').trim();return!(d.includes('ឆមាស១')||d.includes('ឆមាសទី១')||d==='១')})
+      .map(s=>({id:String((s.student_id&&String(s.student_id).trim())||s.id),name:s.student_name||'គ្មានឈ្មោះ',sex:s.gender||'ប្រុស'}))
+      .sort((a,b)=>a.name.localeCompare(b.name,'km'));
+  }catch(e){toast('❌ ទាញសិស្សមិនបាន៖ '+e.message);return}
+  let lay=null;
+  try{
+    const{data,error}=await sb.from('seating_charts').select('layout').eq('assigned_class',curClass).maybeSingle();
+    if(!error&&data&&data.layout)lay=data.layout;
+  }catch(e){}
+  if(!lay){try{lay=JSON.parse(localStorage.getItem(LKEY(curClass))||'null')}catch(e){}}
+  if(my!==loadSeq)return;
+  L=normLayout(lay);
+  if(!lay&&students.length){ // បង្កើតទំហំស័ក្តិសមស្វ័យប្រវត្តិ
+    L.per=2;L.cols=4;L.rows=Math.min(MAXR,Math.max(1,Math.ceil(students.length/(L.cols*L.per))));
+  }
+  render();
+}
+async function saveLayout(){
+  if(!curClass)return;
+  const clean=Object.assign({},L);
+  // រក្សាតែកៅអីក្នុងព្រំដែន និងសិស្សដែលមានពិត
+  const seats={};for(let r=0;r<L.rows;r++)for(let c=0;c<L.cols;c++)for(let k=0;k<L.per;k++){const id=L.seats[sk(r,c,k)];if(id&&byId(id))seats[sk(r,c,k)]=id}
+  clean.seats=seats;L.seats=seats;
+  try{localStorage.setItem(LKEY(curClass),JSON.stringify(clean))}catch(e){}
+  const btn=document.getElementById('saveBtn');btn.disabled=true;
+  try{
+    const{error}=await sb.from('seating_charts').upsert({assigned_class:curClass,layout:clean,updated_by:(USER&&USER.username)||'',updated_at:new Date().toISOString()},{onConflict:'assigned_class'});
+    if(error)throw error;
+    setDirty(false);toast('✅ បានរក្សាទុកប្លង់តុរួចរាល់');
+  }catch(e){
+    setDirty(false);
+    toast('⚠️ រក្សាទុកក្នុងម៉ាស៊ីននេះបាន តែមិនទាន់ចូល Supabase (ត្រូវរត់ SQL seating_setup.sql)');
+    console.warn(e);
+  }
+  btn.disabled=false;render();
+}
+window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+window.addEventListener('DOMContentLoaded',()=>{
+  if(!USER||!USER.username){document.getElementById('authWrap').style.display='flex';return}
+  document.getElementById('app').style.display='block';
+  render();initClasses();
+});
+</script>
+</body>
+</html>
