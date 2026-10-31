@@ -215,19 +215,19 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
 
 .btn-save-main{background:var(--primary);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
 
-.barnav{position:sticky;top:0;z-index:100;background:rgba(15,23,42,.96);border:1.5px solid #334155;padding:8px 14px;display:none;align-items:center;gap:8px;flex-wrap:wrap;color:#fff;border-radius:14px;margin-bottom:12px}
+.barnav{position:sticky;top:0;z-index:100;background:var(--surface);border:1.5px solid var(--border);border-top:4px solid var(--primary);padding:8px 14px;display:none;align-items:center;gap:8px;flex-wrap:wrap;color:var(--text);border-radius:14px;margin-bottom:12px;box-shadow:var(--shadow)}
 .barnav.show{display:flex}
-.bar-pill{background:#1e293b;color:#f8fafc;border:1px solid #475569;padding:6px 12px;border-radius:10px;font-weight:600;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-family:inherit}
-.bar-pill:hover{background:#334155}.bar-pill b{color:#38bdf8}.bar-pill.green{background:#059669;border-color:#059669;color:#fff}
+.bar-pill{background:var(--elev);color:var(--text);border:1px solid var(--border);padding:6px 12px;border-radius:10px;font-weight:600;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-family:inherit}
+.bar-pill:hover{border-color:var(--primary)}.bar-pill b{color:var(--primary)}.bar-pill.green{background:#059669;border-color:#059669;color:#fff}
 .signature-box{height:48px;display:flex;align-items:center;justify-content:center;margin:2px 0}.signature-box img{max-height:46px;max-width:140px;object-fit:contain}
 
 
 
-#ppv{position:fixed;inset:0;z-index:8500;background:#0b1220;overflow:auto;padding:12px;display:none}
+#ppv{position:fixed;inset:0;z-index:8500;background:linear-gradient(135deg,var(--bg),var(--bg2));overflow:auto;padding:12px;display:none}
 #ppv #sheet{max-width:none}
 #ppv.show{display:block}
 #ppv .barnav{display:flex!important;justify-content:space-between;margin-bottom:14px}
-#ppv .bar-pill.on{background:#059669;border-color:#059669;color:#fff}
+#ppv .bar-pill.on{background:var(--primary);border-color:var(--primary);color:#fff}
 #sheet{background:#fff;color:#000;margin:0 auto;box-sizing:border-box;box-shadow:0 15px 40px rgba(0,0,0,.5);font-family:'Khmer OS Battambang','Battambang',sans-serif}
 #sheet .ph{text-align:center;margin-bottom:8px}#sheet .ph .k{font-size:14px;line-height:1.6}#sheet .ph .t{font-size:16px;margin-top:6px}#sheet .ph .s{font-size:12px;margin-top:2px}
 #sheet .tt{width:100%;min-width:0;table-layout:fixed;border-collapse:collapse;margin-bottom:6px;background:#fff;font-size:12px}
@@ -239,7 +239,15 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
 #sheet.pf-s .tt{font-size:10px}#sheet.pf-l .tt{font-size:14px}#sheet.pa-both .tt{font-size:9.5px}#sheet.pa-both .tt td,#sheet.pa-both .tt th{line-height:1.15}
 #sheet .pf{display:flex;justify-content:space-between;margin-top:14px;font-size:12.5px;align-items:flex-start;page-break-inside:avoid}.pf>div{text-align:center;width:40%}.pf .sp{height:34px}
 #sheet.pa-both .pf{margin-top:6px}#sheet.pa-both .pf .sp{height:26px}
-@media print{#ppv .barnav{display:none!important}}
+@media print{
+  #ppv .barnav{display:none!important}
+  :root,html,body{background:#fff!important;color:#000!important;color-scheme:light only;overflow:visible!important;height:auto!important}
+  #ppv,#sheet{background:#fff!important;color:#000!important}
+  #sheet,#sheet *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;forced-color-adjust:none}
+  #sheet .tt td{background-color:#fff}
+  #sheet .tt td.time,#sheet .tt tr.brk td{background-color:#f1f5f9!important}
+  #sheet img{filter:none!important;opacity:1!important}
+}
 </style>
 </head>
 <body>
@@ -360,7 +368,7 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
       <button type="button" class="bar-pill" onclick="openKhmerCalForTeacher(event)"><span>ថ្ងៃគ្រូ</span> <b id="txtTeacherSignDate">ជ្រើសថ្ងៃ</b></button>
       <button type="button" class="bar-pill" onclick="openKhmerCalForDirector(event)"><span>ថ្ងៃនាយក</span> <b id="txtDirectorSignDate">មិនដាក់</b></button>
-      <button type="button" class="bar-pill" onclick="openSignatureModal()" style="border-color:#38bdf8;color:#38bdf8"><i class="fa-solid fa-signature"></i> ហត្ថលេខា</button>
+      <button type="button" class="bar-pill" onclick="openSignatureModal()" style="border-color:var(--primary);color:var(--primary)"><i class="fa-solid fa-signature"></i> ហត្ថលេខា</button>
       <button type="button" class="bar-pill" onclick="openPrint()"><i class="fa-solid fa-sliders"></i> កំណត់ទំព័រ</button>
       <button type="button" class="bar-pill" onclick="downloadPDF()"><i class="fa-solid fa-file-pdf" style="color:#ef4444"></i> ទាញយក PDF</button>
       <button type="button" class="bar-pill green" onclick="printNow()"><i class="fa-solid fa-print"></i> បោះពុម្ព</button>
