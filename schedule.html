@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Moul&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 :root,[data-theme="light"]{
   --bg:#eef6fb;--bg2:#f6fbf8;--surface:#fff;--card:rgba(255,255,255,.82);--elev:#eef3f8;--border:#cfe0ec;
@@ -185,6 +186,74 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
 @media print{.khmer-cal-popup{display:none!important}}
 .dtbtn{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:1.5px solid var(--border);background:var(--elev);color:var(--text);border-radius:12px;padding:9px 12px;font-size:12.5px;cursor:pointer;font-family:inherit}
 .dtbtn b{color:var(--primary)}
+    .sig-modal-backdrop {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(6px);
+      z-index: 10000; align-items: center; justify-content: center; padding: 14px;
+    }
+    .sig-modal-card {
+      background: var(--surface); color: var(--text); border-radius: 22px;
+      border: 1.5px solid var(--border); box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+      width: 480px; max-width: 100%; overflow: hidden; display: flex; flex-direction: column;
+    }
+    .sig-modal-header {
+      padding: 14px 18px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--elev);
+    }
+    .sig-modal-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+    
+    .sig-tabs-bar {
+      display: flex; gap: 8px; background: var(--elev); padding: 4px; border-radius: 12px;
+    }
+    .sig-tab-btn {
+      flex: 1; padding: 7px; border: none; border-radius: 8px; font-weight: 700; font-size: 12.5px;
+      background: transparent; color: var(--muted); cursor: pointer;
+    }
+    .sig-tab-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+
+    .canvas-wrap {
+      border: 2px dashed #93c5fd; border-radius: 14px; background: #ffffff;
+      height: 180px; width: 100%; position: relative; touch-action: none;
+    }
+    #signatureCanvas { width: 100%; height: 100%; border-radius: 12px; cursor: crosshair; }
+    .canvas-clear-btn {
+      position: absolute; right: 10px; top: 10px; background: rgba(239, 68, 68, 0.15);
+      color: #ef4444; border: 1px solid rgba(239,68,68,0.3); border-radius: 8px;
+      padding: 3px 8px; font-size: 11px; font-weight: bold; cursor: pointer;
+    }
+
+    .upload-zone {
+      border: 2px dashed var(--border); border-radius: 14px; padding: 24px 16px;
+      text-align: center; cursor: pointer; background: var(--elev);
+    }
+    .upload-zone:hover { border-color: var(--primary); background: var(--elev); }
+
+    .sig-modal-footer {
+      padding: 12px 18px; border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; background: var(--elev);
+    }
+
+
+.btn-save-main{background:var(--primary);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
+
+.barnav{position:sticky;top:0;z-index:100;background:rgba(15,23,42,.96);border:1.5px solid #334155;padding:8px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:#fff;border-radius:14px;margin-bottom:12px}
+.bar-pill{background:#1e293b;color:#f8fafc;border:1px solid #475569;padding:6px 12px;border-radius:10px;font-weight:600;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-family:inherit}
+.bar-pill:hover{background:#334155}.bar-pill b{color:#38bdf8}.bar-pill.green{background:#059669;border-color:#059669;color:#fff}
+.signature-box{height:48px;display:flex;align-items:center;justify-content:center;margin:2px 0}.signature-box img{max-height:46px;max-width:140px;object-fit:contain}
+
+
+.pdfpaper .tt{width:100%;table-layout:fixed;border-collapse:collapse;margin-bottom:4px;font-size:12px;min-width:0;background:#fff}
+.pdfpaper h4{font-size:12.5px;margin:4px 0;font-family:'Khmer OS Muol Light','Moul',serif;font-weight:400}
+.pdfpaper .tt th{background:#0b3b6b;color:#fff;border:1px solid #000;padding:2px 3px;text-align:center}
+.pdfpaper .tt td{border:1px solid #000;padding:1px 3px;text-align:center;vertical-align:middle;height:var(--rh);color:#000;overflow:hidden}
+.pdfpaper .tt td.time,.pdfpaper .tt tr.brk td{background:#f1f5f9;color:#000}
+.pdfpaper .sub{padding:1px 6px;display:inline-block;border-radius:6px;font-size:inherit}
+.pdfpaper.pf-s .tt{font-size:10px}.pdfpaper.pf-l .tt{font-size:14px}.pdfpaper.pa-both .tt{font-size:9.5px}
+.pdfpaper .ph .k{font-size:13px;line-height:1.5}.pdfpaper .ph .t{font-size:16px;margin-top:6px}
+.pdfpaper .pf{justify-content:space-between;margin-top:14px;font-size:12.5px;align-items:flex-start}.pdfpaper .pf>div{text-align:center;width:40%}.pdfpaper .pf .sp{height:34px}
+.pdfpaper.pa-nosign .pf{display:none!important}
+.pdfpaper .print-only{display:block}
 </style>
 </head>
 <body>
@@ -202,7 +271,14 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
     <button class="tb-btn" onclick="openSettings()"><i class="fa-solid fa-sliders"></i><span class="t">កំណត់ម៉ោង/មុខវិជ្ជា</span></button>
     <button class="tb-btn" id="copyBtn" onclick="openCopy()"><i class="fa-regular fa-copy"></i><span class="t">ចម្លងពីថ្នាក់ផ្សេង</span></button>
     <button class="tb-btn pri" id="saveBtn" onclick="saveSchedule()"><i class="fa-regular fa-floppy-disk"></i><span class="t">រក្សាទុក</span></button>
-    <button class="tb-btn" onclick="openPrint()"><i class="fa-solid fa-print"></i><span class="t">បោះពុម្ព</span></button>
+  </div>
+  <div class="barnav no-print">
+    <button type="button" class="bar-pill" onclick="openKhmerCalForTeacher(event)"><span>ថ្ងៃគ្រូ</span> <b id="txtTeacherSignDate">ជ្រើសថ្ងៃ</b></button>
+    <button type="button" class="bar-pill" onclick="openKhmerCalForDirector(event)"><span>ថ្ងៃនាយក</span> <b id="txtDirectorSignDate">មិនដាក់</b></button>
+    <button type="button" class="bar-pill" onclick="openSignatureModal()" style="border-color:#38bdf8;color:#38bdf8"><i class="fa-solid fa-signature"></i> ហត្ថលេខា</button>
+    <button type="button" class="bar-pill" onclick="openPrint()"><i class="fa-solid fa-sliders"></i> កំណត់ទំព័រ</button>
+    <button type="button" class="bar-pill" onclick="downloadPDF()"><i class="fa-solid fa-file-pdf" style="color:#ef4444"></i> ទាញយក PDF</button>
+    <button type="button" class="bar-pill green" onclick="printNow()"><i class="fa-solid fa-print"></i> បោះពុម្ព</button>
   </div>
 
   <div class="card">
@@ -222,7 +298,7 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
     <div id="pa" class="print-only"></div>
     <div class="pf print-only" id="pfoot" style="display:none">
       <div style="margin-top:34px"><div id="directorDateLine" style="font-size:11.5px;margin-bottom:3px;display:none"></div><b class="moul" style="font-size:12px">បានឃើញ និងឯកភាព</b><br><b class="moul" style="font-size:12px">នាយកសាលា</b><div class="sp"></div></div>
-      <div><div style="font-size:11.5px" id="rptLunarDate"></div><div style="font-size:11.5px;margin-top:2px" id="rptSolarDate"></div><b class="moul" style="font-size:12px;display:block;margin-top:3px">គ្រូបន្ទុកថ្នាក់</b><div class="sp"></div><div id="rptTeacherName" style="font-size:12.5px;font-weight:700"></div></div>
+      <div><div style="font-size:11.5px" id="rptLunarDate"></div><div style="font-size:11.5px;margin-top:2px" id="rptSolarDate"></div><b class="moul" style="font-size:12px;display:block;margin-top:3px">គ្រូបន្ទុកថ្នាក់</b><div class="signature-box" onclick="openSignatureModal()"><img id="teacherSigImg" alt="" style="display:none"></div><div id="rptTeacherName" style="font-size:12.5px;font-weight:700"></div></div>
     </div>
   </div>
 </div>
@@ -245,6 +321,64 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
       <button type="button" class="cal-btn-action" onclick="selectCalToday()">ថ្ងៃនេះ</button>
       <button type="button" class="cal-btn-action" id="calBtnSame" onclick="calSame()">ដូចថ្ងៃគ្រូ</button>
       <button type="button" class="cal-btn-action" id="calBtnBlank" onclick="calBlank()">ទុកទទេ</button>
+    </div>
+  </div>
+
+<div class="sig-modal-backdrop" id="signatureModal" onclick="if(event.target===this) closeSignatureModal()">
+    <div class="sig-modal-card">
+      <div class="sig-modal-header">
+        <div style="font-size:14.5px; font-weight:700;"><i class="fa-solid fa-signature" style="color:var(--primary);"></i> ហត្ថលេខាគ្រូទទួលបន្ទុកថ្នាក់</div>
+        <button type="button" onclick="closeSignatureModal()" style="background:none; border:none; color:var(--text-muted); font-size:16px; cursor:pointer;">✕</button>
+      </div>
+
+      <div class="sig-modal-body">
+        <div class="sig-tabs-bar">
+          <button type="button" class="sig-tab-btn active" id="tabDrawBtn" onclick="switchSigTab('draw')">
+            <i class="fa-solid fa-pen"></i> គូរហត្ថលេខា
+          </button>
+          <button type="button" class="sig-tab-btn" id="tabUploadBtn" onclick="switchSigTab('upload')">
+            <i class="fa-solid fa-upload"></i> Upload រូបភាព
+          </button>
+        </div>
+
+        <!-- Tab 1: Draw Pad -->
+        <div id="sigDrawTab">
+          <div class="canvas-wrap">
+            <canvas id="signatureCanvas" width="440" height="180"></canvas>
+            <button type="button" class="canvas-clear-btn" onclick="clearSignatureCanvas()">
+              <i class="fa-solid fa-trash-can"></i> លុបគូរឡើងវិញ
+            </button>
+          </div>
+          <p style="font-size:11.5px; color:var(--text-muted); margin-top:6px; text-align:center;">
+            👆 ប្រើម្រាមដៃ (លើទូរស័ព្ទ/Tablet) ឬ Mouse ដើម្បីគូរហត្ថលេខាពណ៌ទឹកប៊ិកខៀវ
+          </p>
+        </div>
+
+        <!-- Tab 2: Upload Image -->
+        <div id="sigUploadTab" style="display:none;">
+          <div class="upload-zone" onclick="document.getElementById('sigFileInput').click()">
+            <i class="fa-solid fa-cloud-arrow-up" style="font-size:32px; color:var(--primary); margin-bottom:6px;"></i>
+            <div style="font-size:13px; font-weight:700;">ចុចទីនេះ ដើម្បីជ្រើសរើសរូបហត្ថលេខា</div>
+            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">PNG (គ្មាន background) ឬ JPG</div>
+          </div>
+          <input type="file" id="sigFileInput" accept="image/*" style="display:none;" onchange="onSigFileSelected(this)">
+          <div id="sigUploadPreviewWrap" style="text-align:center; display:none; margin-top:10px;">
+            <img id="sigUploadPreviewImg" style="max-height:70px; border:1px dashed #cbd5e1; border-radius:8px; padding:4px;">
+          </div>
+        </div>
+      </div>
+
+      <div class="sig-modal-footer">
+        <button type="button" class="bar-pill" style="color:#ef4444;" onclick="removeSavedSignature()">
+          <i class="fa-solid fa-trash"></i> លុបហត្ថលេខា
+        </button>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="bar-pill" onclick="closeSignatureModal()">បិទ</button>
+          <button type="button" class="btn-save-main" onclick="applyAndSaveSignature()">
+            <i class="fa-solid fa-check"></i> យល់ព្រម & រក្សាទុក
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -286,17 +420,17 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
 
 <div class="mbg" id="prModal" onclick="if(event.target===this)closePrint()">
   <div class="modal" style="width:min(460px,100%)">
-    <header><span>🖨️ កំណត់ការបោះពុម្ព</span><button onclick="closePrint()">✕</button></header>
+    <header><span>⚙️ កំណត់ទំព័រ</span><button onclick="closePrint()">✕</button></header>
     <div class="bd"><div class="wiz" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <label style="grid-column:1/3">ពេលដែលត្រូវបោះពុម្ព<select id="prSess"><option value="cur">ពេលដែលកំពុងមើល</option><option value="morning">ពេលព្រឹក</option><option value="afternoon">ពេលរសៀល</option><option value="both">ព្រឹក + រសៀល (លើសន្លឹកតែមួយ)</option></select></label>
       <label>ទំហំក្រដាស<select id="prPaper"><option value="A4">A4</option><option value="A5">A5</option><option value="Letter">Letter</option></select></label>
       <label>ទិសដៅ<select id="prOri"><option value="landscape">ផ្ដេក</option><option value="portrait">ឈរ</option></select></label>
       <label>គែមក្រដាស (មម)<input type="number" id="prMar" min="3" max="30" value="10"></label>
       <label>ទំហំអក្សរ<select id="prFont"><option value="s">តូច</option><option value="m">មធ្យម</option><option value="l">ធំ</option></select></label>
-      <div style="grid-column:1/3;display:grid;gap:8px"><button type="button" class="dtbtn" onclick="openCal(event,'teacher')">📅 <span>ថ្ងៃខែគ្រូបន្ទុកថ្នាក់៖ <b id="txtTeacherSignDate"></b></span></button><button type="button" class="dtbtn" onclick="openCal(event,'director')">📅 <span>ថ្ងៃខែនាយកសាលា៖ <b id="txtDirectorSignDate"></b></span></button></div>
+      
       <label style="grid-column:1/3;flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="prSign" style="width:auto;height:auto"> បង្ហាញកន្លែងចុះហត្ថលេខា</label>
-    </div><div class="hint" style="margin-top:10px">💡 ការជ្រើស «ព្រឹក + រសៀល» នឹងបង្រួមឱ្យចេញក្នុងក្រដាសតែមួយសន្លឹក។ ការកំណត់ត្រូវបានចងចាំ។</div></div>
-    <div class="ft"><button class="tb-btn" onclick="closePrint()">បោះបង់</button><button class="tb-btn pri" onclick="doPrint()"><i class="fa-solid fa-print"></i> បោះពុម្ព</button></div>
+    </div><div class="hint" style="margin-top:10px">💡 ការជ្រើស «ព្រឹក + រសៀល» នឹងបង្រួមឱ្យចេញក្នុងក្រដាសតែមួយសន្លឹក។ ចុច «រក្សាទុក» រួចប្រើប៊ូតុង «បោះពុម្ព» ឬ «ទាញយក PDF» លើរបារ។</div></div>
+    <div class="ft"><button class="tb-btn" onclick="closePrint()">បិទ</button><button class="tb-btn pri" onclick="prSave(true)"><i class="fa-solid fa-check"></i> រក្សាទុក</button></div>
   </div>
 </div>
 
@@ -1684,9 +1818,141 @@ const KHMER_DIGITS=['០','១','២','៣','៤','៥','៦','៧','៨','៩']
 function toKhmerNum(n){return String(n).replace(/\d/g,d=>KHMER_DIGITS[d])}
 
 loadSignDates();document.addEventListener('click',()=>closeKhmerCalendar());
+const SIG_KEY='krou_teacher_signature_v2:'+String((USER&&USER.username)||'').trim().toLowerCase();
+let savedSignatureDataUrl='';try{savedSignatureDataUrl=localStorage.getItem(SIG_KEY)||''}catch(e){}
+let activeSigTab='draw',uploadedSigBase64=null;
+    let canvas, ctx, isDrawing = false;
+
+    function initSignatureCanvas() {
+      canvas = document.getElementById('signatureCanvas');
+      if (!canvas) return;
+      ctx = canvas.getContext('2d');
+      ctx.lineWidth = 2.4;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.strokeStyle = '#1d4ed8';
+
+      function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+          x: (clientX - rect.left) * (canvas.width / rect.width),
+          y: (clientY - rect.top) * (canvas.height / rect.height)
+        };
+      }
+
+      function start(e) {
+        isDrawing = true;
+        const p = getPos(e);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        e.preventDefault();
+      }
+      function move(e) {
+        if (!isDrawing) return;
+        const p = getPos(e);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+        e.preventDefault();
+      }
+      function stop() { isDrawing = false; }
+
+      canvas.addEventListener('mousedown', start);
+      canvas.addEventListener('mousemove', move);
+      window.addEventListener('mouseup', stop);
+
+      canvas.addEventListener('touchstart', start, { passive: false });
+      canvas.addEventListener('touchmove', move, { passive: false });
+      window.addEventListener('touchend', stop);
+    }
+
+    function clearSignatureCanvas() {
+      if (ctx && canvas) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function isCanvasBlank() {
+      const pixelBuffer = new Uint32Array(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
+      return !pixelBuffer.some(color => color !== 0);
+    }
+
+    function openSignatureModal() {
+      document.getElementById('signatureModal').style.display = 'flex';
+      switchSigTab('draw');
+      clearSignatureCanvas();
+    }
+    function closeSignatureModal() {
+      document.getElementById('signatureModal').style.display = 'none';
+    }
+
+    function switchSigTab(tab) {
+      activeSigTab = tab;
+      document.getElementById('tabDrawBtn').classList.toggle('active', tab === 'draw');
+      document.getElementById('tabUploadBtn').classList.toggle('active', tab === 'upload');
+      document.getElementById('sigDrawTab').style.display = (tab === 'draw') ? 'block' : 'none';
+      document.getElementById('sigUploadTab').style.display = (tab === 'upload') ? 'block' : 'none';
+    }
+
+    function onSigFileSelected(input) {
+      const file = input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        uploadedSigBase64 = e.target.result;
+        document.getElementById('sigUploadPreviewImg').src = uploadedSigBase64;
+        document.getElementById('sigUploadPreviewWrap').style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function applyAndSaveSignature() {
+      if (activeSigTab === 'draw') {
+        if (isCanvasBlank()) {
+          toast('សូមគូរហត្ថលេខាលើផ្ទាំងសិន!');
+          return;
+        }
+        savedSignatureDataUrl = canvas.toDataURL('image/png');
+      } else {
+        if (!uploadedSigBase64) {
+          toast('សូមជ្រើសរើសរូបភាពហត្ថលេខាសិន!');
+          return;
+        }
+        savedSignatureDataUrl = uploadedSigBase64;
+      }
+
+      try { localStorage.setItem(SIG_KEY, savedSignatureDataUrl); }
+      catch (e) { toast('❌ រក្សាទុកមិនបាន (រូបធំពេក ឬ browser ពេញ)'); return; }
+      loadDisplaySignature();
+      closeSignatureModal();
+      toast('🖋️ បានរក្សាទុកហត្ថលេខាជោគជ័យ!');
+    }
+
+    async function removeSavedSignature() {
+      if (!await uiConfirm('តើអ្នកពិតជាចង់លុបហត្ថលេខានេះមែនទេ?', { danger: true, okText: 'លុប', title: 'លុបហត្ថលេខា' })) return;
+      savedSignatureDataUrl = '';
+      try { localStorage.removeItem(SIG_KEY); } catch (e) {}
+      loadDisplaySignature();
+      closeSignatureModal();
+      toast('🗑️ បានលុបហត្ថលេខារួចរាល់');
+    }
+
+    function loadDisplaySignature() {
+      const img = document.getElementById('teacherSigImg');
+      if (savedSignatureDataUrl && savedSignatureDataUrl.trim() !== '') {
+        img.src = savedSignatureDataUrl;
+        img.style.display = 'inline-block';
+      } else {
+        img.src = '';
+        img.style.display = 'none';
+      }
+    }
+
+
+function uiAlert2(m){toast(m)}
+try{initSignatureCanvas();loadDisplaySignature();renderSignDates()}catch(e){console.error(e)}
 const PRK='krou_sched_print_v1';
 function prGet(){let o={};try{o=JSON.parse(localStorage.getItem(PRK)||'{}')}catch(e){}return Object.assign({sess:'cur',paper:'A4',ori:'landscape',mar:10,font:'m',sign:true},o)}
-function openPrint(){const o=prGet();try{renderSignDates()}catch(e){}prSess.value=o.sess;prPaper.value=o.paper;prOri.value=o.ori;prMar.value=o.mar;prFont.value=o.font;prSign.checked=!!o.sign;document.getElementById('prModal').classList.add('show')}
+function openPrint(){const o=prGet();prSess.value=o.sess;prPaper.value=o.paper;prOri.value=o.ori;prMar.value=o.mar;prFont.value=o.font;prSign.checked=!!o.sign;document.getElementById('prModal').classList.add('show')}
 function closePrint(){document.getElementById('prModal').classList.remove('show')}
 function printTable(sess,days){
   const PVs=D.periods.filter(p=>p.session===sess);if(!PVs.length)return'';
@@ -1699,28 +1965,47 @@ function printTable(sess,days){
   });
   return t+'</tbody></table>';
 }
-function doPrint(){
-  const o={sess:prSess.value,paper:prPaper.value,ori:prOri.value,mar:Math.min(30,Math.max(3,+prMar.value||10)),font:prFont.value,sign:prSign.checked};
-  try{localStorage.setItem(PRK,JSON.stringify(o))}catch(e){}
-  closePrint();closeKhmerCalendar();try{renderSignDates();document.getElementById('rptTeacherName').textContent=(USER&&(USER.teacher_name||USER.username))||''}catch(e){}
-  const days=D.days.slice().sort((a,b)=>a-b);
+function prRead(){return{sess:prSess.value,paper:prPaper.value,ori:prOri.value,mar:Math.min(30,Math.max(3,+prMar.value||10)),font:prFont.value,sign:prSign.checked}}
+function prSave(close){const o=prRead();try{localStorage.setItem(PRK,JSON.stringify(o))}catch(e){}if(close){closePrint();toast('✅ បានរក្សាទុកការកំណត់ទំព័រ')}return o}
+const PGS={A4:[210,297],A5:[148,210],Letter:[216,279]};
+function paperInfo(o){
+  const days=D.periods&&D.days.slice().sort((a,b)=>a-b);
   const list=o.sess==='both'?['morning','afternoon']:[o.sess==='cur'?view:o.sess];
-  const html=list.map(s=>printTable(s,days)).join('');
-  if(!html){toast('⚠️ មិនទាន់មានម៉ោងសម្រាប់បោះពុម្ព');return}
-  document.getElementById('pa').innerHTML=html;
-  document.getElementById('printSub').textContent=`ថ្នាក់ទី ${curClass}${o.sess==='both'?'':' · '+SESS[list[0]]}${USER&&(USER.teacher_name||USER.username)?' · គ្រូបន្ទុក ៖ '+(USER.teacher_name||USER.username):''}`;
-  let st=document.getElementById('pgStyle');if(!st){st=document.createElement('style');st.id='pgStyle';document.head.appendChild(st)}
-  st.textContent=`@page{size:${o.paper} ${o.ori};margin:${o.mar}mm}`;
-  const PG={A4:[210,297],A5:[148,210],Letter:[216,279]}[o.paper]||[210,297];
-  const pageH=(o.ori==='landscape'?PG[0]:PG[1])-2*o.mar;
+  const PG=PGS[o.paper]||PGS.A4,pageW=o.ori==='landscape'?PG[1]:PG[0],pageH=(o.ori==='landscape'?PG[0]:PG[1])-2*o.mar;
   const rows=list.reduce((n,s)=>n+D.periods.filter(p=>p.session===s).length+1,0);
   const avail=pageH-(list.length>1?44:46)-(o.sign?(list.length>1?44:46):0)-list.length*7;
-  document.getElementById('pa').style.setProperty('--rh',Math.max(4.2,Math.min(11,avail/rows)).toFixed(2)+'mm');
-  document.body.style.setProperty('--rh',Math.max(4.2,Math.min(11,avail/rows)).toFixed(2)+'mm');
-  const b=document.body;b.classList.add('pa-on',list.length>1?'pa-both':'pa-one','pf-'+o.font);b.classList.toggle('pa-nosign',!o.sign);
+  const rh=Math.max(4.2,Math.min(11,avail/rows)).toFixed(2)+'mm';
+  return{days,list,rh,pageW,html:list.map(s=>printTable(s,days)).join('')};
+}
+function sigSync(){try{renderSignDates();document.getElementById('rptTeacherName').textContent=(USER&&(USER.teacher_name||USER.username))||'';loadDisplaySignature()}catch(e){}
+  document.getElementById('printSub').textContent=`ថ្នាក់ទី ${curClass}${(prGet().sess==='both')?'':' · '+SESS[prGet().sess==='cur'?view:prGet().sess]}${USER&&(USER.teacher_name||USER.username)?' · គ្រូបន្ទុក ៖ '+(USER.teacher_name||USER.username):''}`}
+function printNow(){
+  const o=prGet();closeKhmerCalendar();sigSync();
+  const P=paperInfo(o);if(!P.html){toast('⚠️ មិនទាន់មានម៉ោងសម្រាប់បោះពុម្ព');return}
+  document.getElementById('pa').innerHTML=P.html;
+  let st=document.getElementById('pgStyle');if(!st){st=document.createElement('style');st.id='pgStyle';document.head.appendChild(st)}
+  st.textContent=`@page{size:${o.paper} ${o.ori};margin:${o.mar}mm}`;
+  document.body.style.setProperty('--rh',P.rh);
+  const b=document.body;b.classList.add('pa-on',P.list.length>1?'pa-both':'pa-one','pf-'+o.font);b.classList.toggle('pa-nosign',!o.sign);
   const done=()=>{b.classList.remove('pa-on','pa-both','pa-one','pf-s','pf-m','pf-l','pa-nosign');document.getElementById('pa').innerHTML='';render();window.removeEventListener('afterprint',done)};
   window.addEventListener('afterprint',done);
   setTimeout(()=>window.print(),60);
+}
+async function downloadPDF(){
+  if(typeof html2pdf==='undefined'){toast('⚠️ មិនទាន់ទាញ library PDF បាន (ពិនិត្យអ៊ីនធឺណិត) — សូមប្រើ «បោះពុម្ព» រួចជ្រើស Save as PDF');return}
+  const o=prGet();closeKhmerCalendar();sigSync();
+  const P=paperInfo(o);if(!P.html){toast('⚠️ មិនទាន់មានម៉ោងសម្រាប់ទាញយក');return}
+  const PG=PGS[o.paper]||PGS.A4,W=(o.ori==='landscape'?PG[1]:PG[0])-2*o.mar;
+  const host=document.createElement('div');host.id='pdfPaper';host.className='pdfpaper pf-'+o.font+(P.list.length>1?' pa-both':' pa-one')+(o.sign?'':' pa-nosign');
+  host.style.cssText=`position:fixed;left:-20000px;top:0;width:${W}mm;background:#fff;color:#000;--rh:${P.rh}`;
+  host.innerHTML='<div class="ph" style="text-align:center">'+document.querySelector('.ph.print-only').innerHTML+'</div><div id="pa2">'+P.html+'</div><div class="pf" style="display:flex">'+document.getElementById('pfoot').innerHTML+'</div>';
+  document.body.appendChild(host);
+  toast('⏳ កំពុងបង្កើត PDF...');
+  try{
+    await html2pdf().from(host).set({margin:o.mar,filename:`Schedule_${curClass}.pdf`,image:{type:'jpeg',quality:1},html2canvas:{scale:3,useCORS:true},jsPDF:{unit:'mm',format:o.paper.toLowerCase(),orientation:o.ori}}).save();
+    toast('✅ បានទាញយក PDF');
+  }catch(e){toast('❌ បង្កើត PDF មិនបាន')}
+  host.remove();
 }
 function toggleDay(i){
   const k=D.days.indexOf(i);
