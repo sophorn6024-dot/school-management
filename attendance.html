@@ -698,6 +698,23 @@
     .sv-desk { flex:1 0 auto; min-width:0; }
     .sv-floor { overflow-x:auto; -webkit-overflow-scrolling:touch; overscroll-behavior-x:contain; }
     .sv-room { min-width:max-content; width:max-content; }
+    /* 📱 ទូរស័ព្ទ៖ បង្ហាញម្តង ២ ជួរឈរតុ មានប៊ូតុង ‹ › ប្តូរ */
+    .sv-pager { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .sv-pager button { width:44px; height:38px; border-radius:12px; border:1.5px solid var(--border); background:var(--surface); color:var(--text); font-size:15px; cursor:pointer; }
+    .sv-pager button:disabled { opacity:.35; cursor:default; }
+    .sv-pager .sv-pg { flex:1; text-align:center; font-weight:700; font-size:13px; color:var(--text); }
+    .sv-pager .sv-pg small { display:block; font-weight:400; font-size:11px; color:var(--text-muted); }
+    .sv-m .sv-floor { overflow-x:hidden; padding:8px 6px; }
+    .sv-m .sv-room { min-width:0; width:100%; gap:9px; }
+    .sv-m .sv-row { gap:5px; } .sv-m .sv-rno { width:18px; } .sv-m .sv-rno span { width:18px; height:18px; font-size:9.5px; }
+    .sv-m .sv-desk { flex:1 1 0; min-width:0; gap:3px; padding:3px; border-radius:12px; border-width:1.5px; }
+    .sv-m .sv-seat { flex:1 1 0; min-width:0; min-height:56px; border-radius:8px; align-items:stretch; }
+    .sv-m .sv-chip { flex-direction:column; justify-content:center; align-items:center; gap:2px; padding:5px 2px 4px; min-height:52px; text-align:center; border-radius:8px; width:100%; min-width:0; height:auto; }
+    .sv-m .sv-av { display:none; }
+    .sv-m .sv-nm { font-size:11px; line-height:1.25; white-space:normal; overflow-wrap:anywhere; text-align:center; flex:none; max-width:100%; }
+    .sv-m .sv-chev { top:-6px; right:-4px; width:20px; height:20px; font-size:9px; }
+    .sv-m .sv-seat .dash { align-self:center; margin:auto; }
+    .sv-m .sv-tdesk { width:64px; height:40px; font-size:10.5px; } .sv-m .sv-board { height:40px; font-size:12px; border-width:4px; }
     @media (max-width:700px) {
       .daily-list-card, #studentListContainer, .sv-wrap { min-width:0; max-width:100%; }
       .sv-tdesk { width:78px; font-size:11px; }
@@ -2452,7 +2469,7 @@ exports.default = {
       container.innerHTML = `
         <div style="text-align:center; padding:35px; color:var(--text-muted);">
           <i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--primary);"></i>
-          <p style="margin-top:10px; font-weight:600;">កំពុងទាញយកទិន្នន័យសិស្ស</p>
+          <p style="margin-top:10px; font-weight:600;">កំពុងទាញយកទិន្នន័យសិស្សពី Supabase...</p>
         </div>`;
 
       try {
@@ -2706,6 +2723,10 @@ exports.default = {
     var dailyViewMode = (function () { try { return localStorage.getItem('krou_att_view') === 'seat' ? 'seat' : 'list'; } catch (e) { return 'list'; } })();
     var seatLayouts = {};      // { ថ្នាក់: layout | null }
     var seatLoading = {};
+    var svColStart = 0;
+    function svIsMobile() { return window.innerWidth <= 700; }
+    function svPage(d) { svColStart = Math.max(0, svColStart + d * 2); renderDailyList(); }
+    window.addEventListener('resize', function () { var m = svIsMobile(); if (dailyViewMode === 'seat' && m !== svPage._m) { svPage._m = m; renderDailyList(); } else svPage._m = m; });
 
     function setDailyView(mode) {
       dailyViewMode = mode === 'seat' ? 'seat' : 'list';
@@ -2757,17 +2778,23 @@ exports.default = {
         return;
       }
       var rows = Math.max(1, +lay.rows || 1), cols = Math.max(1, +lay.cols || 1), per = Math.max(1, +lay.per || 1);
+      var mob = svIsMobile(), c0 = 0, c1 = cols;
+      if (mob) { if (svColStart >= cols) svColStart = Math.max(0, cols - 2); svColStart -= svColStart % 2; c0 = svColStart; c1 = Math.min(cols, c0 + 2); }
       var q = (document.getElementById('searchBox').value || '').trim().toLowerCase();
       var byId = {}; rawStudentsData.forEach(function (s) { byId[s.id] = s; });
       var placed = {}, html = '';
       var tdesk = '<div class="sv-tdesk">តុគ្រូ</div>';
-      html += '<div class="sv-wrap"><div class="sv-front">' + (lay.teacher === 'right' ? '' : tdesk) + '<div class="sv-board">ក្តារខៀន</div>' + (lay.teacher === 'right' ? tdesk : '') + '</div>';
+      html += '<div class="sv-wrap' + (mob ? ' sv-m' : '') + '"><div class="sv-front">' + (lay.teacher === 'right' ? '' : tdesk) + '<div class="sv-board">ក្តារខៀន</div>' + (lay.teacher === 'right' ? tdesk : '') + '</div>';
       var maxLen = 4; rawStudentsData.forEach(function (s) { maxLen = Math.max(maxLen, Array.from(s.name || '').length); });
       var sw = Math.max(110, Math.min(300, maxLen * 7 + 72));
+      if (mob && cols > 2) {
+        var tp = Math.ceil(cols / 2), cp = c0 / 2 + 1, fa = function (n) { return String(n).replace(/\d/g, function (d) { return '០១២៣៤៥៦៧៨៩'[d]; }); };
+        html += '<div class="sv-pager"><button type="button" onclick="svPage(-1)"' + (c0 <= 0 ? ' disabled' : '') + '><i class="fa-solid fa-chevron-left"></i></button><div class="sv-pg">ជួរឈរទី ' + fa(c0 + 1) + (c1 - c0 > 1 ? '–' + fa(c1) : '') + '<small>' + fa(cp) + ' / ' + fa(tp) + ' · ចុច ‹ › ដើម្បីប្តូរ</small></div><button type="button" onclick="svPage(1)"' + (c1 >= cols ? ' disabled' : '') + '><i class="fa-solid fa-chevron-right"></i></button></div>';
+      }
       html += '<div class="sv-floor"><div class="sv-room" style="--sw:' + sw + 'px">';
       for (var r = 0; r < rows; r++) {
         html += '<div class="sv-row"><div class="sv-rno"><span>' + (r + 1) + '</span></div>';
-        for (var c = 0; c < cols; c++) {
+        for (var c = c0; c < c1; c++) {
           html += '<div class="sv-desk">';
           for (var k = 0; k < per; k++) {
             var id = lay.seats[r + '_' + c + '_' + k], s = id && byId[String(id)];
@@ -2779,7 +2806,8 @@ exports.default = {
         html += '</div>';
       }
       html += '</div></div>';
-      var un = rawStudentsData.filter(function (s) { return !placed[s.id]; });
+      var seatedAll = {}; Object.keys(lay.seats).forEach(function (k) { var pr = k.split('_'); if (+pr[0] < rows && +pr[1] < cols && +pr[2] < per && byId[String(lay.seats[k])]) seatedAll[String(lay.seats[k])] = 1; });
+      var un = rawStudentsData.filter(function (s) { return !placed[s.id] && !seatedAll[String(s.id)]; });
       if (un.length) html += '<div class="sv-un"><h4>👤 សិស្សមិនទាន់មានកន្លែងក្នុងប្លង់ (' + un.length + ' នាក់)</h4><div class="sv-un-list">' + un.map(function (s) { return '<div style="position:relative">' + seatChipHtml(s, q) + '</div>'; }).join('') + '</div></div>';
       html += '<div style="text-align:center"><button type="button" class="sv-edit" onclick="openSeatEditor()"><i class="fa-solid fa-pen-ruler"></i> កែប្លង់តុ</button></div></div>';
       container.innerHTML = html;
