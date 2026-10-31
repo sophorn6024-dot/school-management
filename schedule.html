@@ -196,9 +196,10 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
       <h5>⚡ រៀបម៉ោងស្វ័យប្រវត្តិ (តាមគំរូ)</h5>
       <div class="wiz" id="wiz">
         <label>ពេល<select id="wSess" onchange="wizSess()"><option value="morning">ពេលព្រឹក</option><option value="afternoon">ពេលរសៀល</option></select></label>
-        <label>ចាប់ផ្តើម<input type="time" id="wStart" value="07:00"></label>
+        <label>ម៉ោងសិក្សាចាប់ផ្តើម<input type="time" id="wStart" value="07:10"></label>
         <label>ចំនួនម៉ោងសិក្សា<input type="number" id="wCount" min="1" max="8" value="5" onchange="wizCount()"></label>
         <label>នាទី/ម៉ោង<input type="number" id="wMins" min="10" max="120" value="40"></label>
+        <label>គោរពទង់ជាតិ<select id="wFlag"><option value="1">មាន (ព្រឹក ១៥នាទី មុនម៉ោងសិក្សា · រសៀល ១០នាទី ក្រោយម៉ោងសិក្សា)</option><option value="0">មិនមាន</option></select></label>
         <label>ចេញលេង (នាទី)<input type="number" id="wRec" min="0" max="60" value="15"></label>
         <label>គំរូ (ក្រុមម៉ោង)<select id="wPat" onchange="wizPat()"><option value="2+1+2">2 + 1 + 2</option><option value="1+2+2">1 + 2 + 2</option><option value="2+2+1">2 + 2 + 1</option><option value="custom">កំណត់ខ្លួនឯង...</option></select></label>
         <label id="wCustWrap" style="display:none">គំរូផ្ទាល់ខ្លួន<input type="text" id="wCust" placeholder="ឧ. 3+2 ឬ 1+2+2"></label>
@@ -210,6 +211,7 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
       <div id="pRows"></div>
       <div style="display:flex;gap:8px;margin:10px 0 16px;flex-wrap:wrap">
         <button class="tb-btn sm" onclick="addPeriod('class')"><i class="fa-solid fa-plus"></i> បន្ថែមម៉ោងសិក្សា</button>
+        <button class="tb-btn sm" onclick="addPeriod('flag')"><i class="fa-solid fa-plus"></i> បន្ថែមគោរពទង់ជាតិ</button>
         <button class="tb-btn sm" onclick="addPeriod('break')"><i class="fa-solid fa-plus"></i> បន្ថែមម៉ោងសម្រាក</button>
         <button class="tb-btn sm danger" onclick="resetDefault()"><i class="fa-solid fa-rotate-left"></i> ត្រឡប់ទៅលំនាំដើម</button>
       </div>
@@ -285,13 +287,15 @@ let _pid=0;const newPid=()=>'p'+Date.now().toString(36)+(++_pid);
 function m2t(x){x=((x%1440)+1440)%1440;return String(Math.floor(x/60)).padStart(2,'0')+':'+String(x%60).padStart(2,'0')}
 function t2m(t){const m=/^(\d{1,2}):(\d{2})$/.exec(t||'');return m?(+m[1])*60+(+m[2]):null}
 /* បង្កើតម៉ោងសិក្សា ១ ពេល (ព្រឹក/រសៀល) តាមគំរូប្លុក ឧ. 2+1+2 = មុខវិជ្ជា ២ ម៉ោង + ១ ម៉ោង + ២ ម៉ោង */
-function genSession(session,{start='07:00',mins=40,recess=15,pattern=[2,1,2],recessMode='between'}){
+function genSession(session,{start='07:00',mins=40,recess=15,pattern=[2,1,2],recessMode='between',flag=false}){
   const periods=[];let t=t2m(start);if(t===null)t=420;
+  if(flag&&session==='morning'){periods.push({id:newPid(),session,type:'flag',start:m2t(t-15),end:m2t(t)})}
   pattern.forEach((size,bi)=>{
     for(let k=0;k<size;k++){periods.push({id:newPid(),session,type:'class',start:m2t(t),end:m2t(t+mins)});t+=mins}
     const last=bi===pattern.length-1;
     if(!last&&recess>0&&(recessMode==='between'||+recessMode===bi+1)){periods.push({id:newPid(),session,type:'break',start:m2t(t),end:m2t(t+recess)});t+=recess}
   });
+  if(flag&&session==='afternoon'){periods.push({id:newPid(),session,type:'flag',start:m2t(t),end:m2t(t+10)})}
   return{periods,blocks:[]};
 }
 function autoRecessAfter(pattern){
@@ -301,8 +305,8 @@ function autoRecessAfter(pattern){
 }
 function defData(){
   const pat=PATTERNS['2+1+2'];
-  const g=genSession('morning',{start:'07:00',mins:40,recess:15,pattern:pat,recessMode:'between'});
-  const g2=genSession('afternoon',{start:'13:00',mins:40,recess:15,pattern:pat,recessMode:'between'});
+  const g=genSession('morning',{start:'07:10',mins:40,recess:15,pattern:pat,recessMode:'between',flag:true});
+  const g2=genSession('afternoon',{start:'13:00',mins:40,recess:15,pattern:pat,recessMode:'between',flag:true});
   return{days:[0,1,2,3,4],periods:g.periods.concat(g2.periods),blocks:g.blocks.concat(g2.blocks),subjects:DEF_SUBJECTS.map((n,i)=>({name:n,color:PALETTE[i%PALETTE.length]})),cells:{}};
 }
 let view=(function(){try{return localStorage.getItem('krou_sched_view')==='afternoon'?'afternoon':'morning'}catch(e){return'morning'}})();
@@ -334,6 +338,7 @@ function render(){
   PV.forEach((p,pi)=>{
     const s=toMin(p.start),e=toMin(p.end),cur=s!==null&&e!==null&&mins>=s&&mins<e;
     const tm=`${tfmt(p.start)} – ${tfmt(p.end)}`;
+    if(p.type==='flag'){h+=`<tr class="brk flag"><td class="time ${cur?'cur':''}">${tm}</td><td colspan="${days.length}">🇰🇭 គោរពទង់ជាតិ</td></tr>`;return}
     if(p.type==='break'){h+=`<tr class="brk"><td class="time ${cur&&today!==undefined?'cur':''}">${tm}</td><td colspan="${days.length}">🧃 ម៉ោងសម្រាក / ចេញលេង</td></tr>`;return}
     h+=`<tr><td class="time ${cur?'cur':''}"><span>${tm}</span></td>`;
     days.forEach(d=>{
@@ -364,6 +369,7 @@ function printTable(sess,days){
   let t='<h4>'+(sess==='morning'?'🌅 ':'🌤️ ')+SESS[sess]+'</h4><table class="tt"><thead><tr><th style="width:17%">ម៉ោង</th>'+days.map(d=>`<th>${DAYS[d]}</th>`).join('')+'</tr></thead><tbody>';
   PVs.forEach(p=>{
     const tm=tfmt(p.start)+' – '+tfmt(p.end);
+    if(p.type==='flag'){t+=`<tr class="brk"><td class="time">${tm}</td><td colspan="${days.length}">🇰🇭 គោរពទង់ជាតិ</td></tr>`;return}
     if(p.type==='break'){t+=`<tr class="brk"><td class="time">${tm}</td><td colspan="${days.length}">🧃 ម៉ោងសម្រាក / ចេញលេង</td></tr>`;return}
     t+=`<tr><td class="time">${tm}</td>`+days.map(d=>{const nm=D.cells[p.id+'|'+d],sb_=nm&&subj(nm);return `<td>${nm?`<span class="sub" style="background:${sb_?sb_.color:'#e2e8f0'}">${esc(nm)}</span>`:''}</td>`}).join('')+'</tr>';
   });
@@ -427,7 +433,7 @@ function renderSettings(){
     <select onchange="D.periods[${i}].session=this.value"><option value="morning" ${p.session==='morning'?'selected':''}>ពេលព្រឹក</option><option value="afternoon" ${p.session==='afternoon'?'selected':''}>ពេលរសៀល</option></select>
     <input type="time" value="${esc(p.start)}" onchange="D.periods[${i}].start=this.value">
     <input type="time" value="${esc(p.end)}" onchange="D.periods[${i}].end=this.value">
-    <div class="acts"><select style="width:auto" onchange="D.periods[${i}].type=this.value"><option value="class" ${p.type==='class'?'selected':''}>សិក្សា</option><option value="break" ${p.type==='break'?'selected':''}>សម្រាក</option></select>
+    <div class="acts"><select style="width:auto" onchange="D.periods[${i}].type=this.value"><option value="class" ${p.type==='class'?'selected':''}>សិក្សា</option><option value="break" ${p.type==='break'?'selected':''}>សម្រាក</option><option value="flag" ${p.type==='flag'?'selected':''}>គោរពទង់ជាតិ</option></select>
     <button class="ib" onclick="movePeriod(${i},-1)" title="លើ"><i class="fa-solid fa-arrow-up"></i></button><button class="ib" onclick="movePeriod(${i},1)" title="ក្រោម"><i class="fa-solid fa-arrow-down"></i></button><button class="ib d" onclick="delPeriod(${i})" title="លុប"><i class="fa-solid fa-trash"></i></button></div></div>`).join('');
   document.getElementById('sRows').innerHTML=D.subjects.map((s,i)=>`<div class="srow"><input type="color" value="${esc(s.color)}" onchange="D.subjects[${i}].color=this.value"><input type="text" value="${esc(s.name)}" maxlength="40" onchange="renameSubject(${i},this.value)"><button class="ib d" onclick="delSubject(${i})" title="លុប"><i class="fa-solid fa-trash"></i></button></div>`).join('');
 }
@@ -450,7 +456,7 @@ function wizPat(){document.getElementById('wCustWrap').style.display=document.ge
 function wizCount(){ /* បើចំនួនម៉ោងប្តូរ ហើយគំរូមិនត្រូវ → ប្តូរទៅគំរូផ្ទាល់ខ្លួន */
   const n=+document.getElementById('wCount').value,v=document.getElementById('wPat').value;
   if(v!=='custom'&&PATTERNS[v].reduce((a,b)=>a+b,0)!==n){document.getElementById('wPat').value='custom';document.getElementById('wCust').value=n>1?('1+'.repeat(n-1)+'1'):'1';wizPat()}}
-function wizSess(){const s=document.getElementById('wSess').value,st=document.getElementById('wStart');if(s==='afternoon'&&st.value==='07:00')st.value='13:00';if(s==='morning'&&st.value==='13:00')st.value='07:00'}
+function wizSess(){const s=document.getElementById('wSess').value,st=document.getElementById('wStart');if(s==='afternoon'&&(st.value==='07:00'||st.value==='07:10'))st.value='13:00';if(s==='morning'&&st.value==='13:00')st.value='07:10'}
 async function applyWizard(){
   const pat=wizPattern(),count=+document.getElementById('wCount').value,mins=+document.getElementById('wMins').value,rec=Math.max(0,+document.getElementById('wRec').value||0);
   if(!pat){toast('⚠️ គំរូមិនត្រឹមត្រូវ (ឧ. 2+1+2)');return}
@@ -461,7 +467,7 @@ async function applyWizard(){
   const filled=Object.keys(D.cells).some(k=>old.includes(k.split('|')[0]));
   if(filled&&!await uiConfirm('ការរៀបម៉ោងថ្មីនឹងលុបមុខវិជ្ជាដែលបានដាក់ក្នុង'+SESS[session]+'។ បន្ត?',{okText:'រៀបថ្មី',danger:true,title:'រៀបម៉ោងថ្មី'}))return;
   const aft=document.getElementById('wAfter').value;
-  const g=genSession(session,{start:document.getElementById('wStart').value,mins,recess:rec,pattern:pat,recessMode:aft==='between'?'between':(+aft||0)});
+  const g=genSession(session,{start:document.getElementById('wStart').value,mins,recess:rec,pattern:pat,recessMode:aft==='between'?'between':(+aft||0),flag:document.getElementById('wFlag').value==='1'});
   Object.keys(D.cells).forEach(k=>{if(old.includes(k.split('|')[0]))delete D.cells[k]});
   D.blocks=(D.blocks||[]).filter(ids=>!ids.some(id=>old.includes(id)));
   const keep=D.periods.filter(p=>p.session!==session);
@@ -471,7 +477,7 @@ async function applyWizard(){
 }
 function addPeriod(type){
   const last=D.periods[D.periods.length-1];
-  D.periods.push({id:'p'+(++pidSeq)+Date.now().toString(36),session:last?last.session:'morning',type,start:last?last.end:'07:00',end:last?addMin(last.end,type==='break'?15:40):'07:45'});
+  D.periods.push({id:'p'+(++pidSeq)+Date.now().toString(36),session:last?last.session:'morning',type,start:last?last.end:'07:00',end:last?addMin(last.end,type==='break'?15:type==='flag'?10:40):'07:45'});
   renderSettings();
 }
 function addMin(t,m){const v=toMin(t);return v===null?t:m2t(v+m)}
@@ -514,7 +520,7 @@ function norm(o){
   if(!Array.isArray(o.periods))o={...o,periods:d.periods,blocks:d.blocks};
   if(Array.isArray(o.days)&&o.days.length)d.days=[...new Set(o.days.map(Number).filter(n=>n>=0&&n<=5))];
   if(!d.days.length)d.days=[0,1,2,3,4];
-  if(Array.isArray(o.periods)&&o.periods.length)d.periods=o.periods.map((p,i)=>({id:String(p.id||'p'+i),session:p.session==='afternoon'?'afternoon':'morning',type:p.type==='break'?'break':'class',start:p.start||'07:00',end:p.end||'07:45'}));
+  if(Array.isArray(o.periods)&&o.periods.length)d.periods=o.periods.map((p,i)=>({id:String(p.id||'p'+i),session:p.session==='afternoon'?'afternoon':'morning',type:p.type==='break'?'break':p.type==='flag'?'flag':'class',start:p.start||'07:00',end:p.end||'07:45'}));
   if(Array.isArray(o.subjects))d.subjects=o.subjects.filter(s=>s&&s.name).map((s,i)=>({name:String(s.name),color:s.color||PALETTE[i%PALETTE.length]}));
   d.cells=(o.cells&&typeof o.cells==='object')?o.cells:{};
   d.blocks=[]; // ម៉ោងនីមួយៗជ្រើសដោយឡែក មិនរួមបញ្ចូលគ្នា
