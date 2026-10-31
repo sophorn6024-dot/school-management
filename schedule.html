@@ -224,6 +224,7 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
 
 
 #ppv{position:fixed;inset:0;z-index:8500;background:#0b1220;overflow:auto;padding:12px;display:none}
+#ppv #sheet{max-width:none}
 #ppv.show{display:block}
 #ppv .barnav{display:flex!important;justify-content:space-between;margin-bottom:14px}
 #ppv .bar-pill.on{background:#059669;border-color:#059669;color:#fff}
@@ -1962,7 +1963,7 @@ function prSave(close){
 function setPrSess(s){const o=prGet();o.sess=s;try{localStorage.setItem(PRK,JSON.stringify(o))}catch(e){}buildSheet()}
 function fitSheet(){
   const sh=document.getElementById('sheet'),pv=document.getElementById('ppv');if(!sh||!pv.classList.contains('show'))return;
-  sh.style.zoom=1;const w=sh.offsetWidth,avail=pv.clientWidth-24;sh.style.zoom=w>avail?(avail/w).toFixed(3):1;
+  sh.style.zoom=1;const w=sh.offsetWidth,avail=pv.clientWidth-24;sh.style.zoom=Math.min(2.2,Math.max(0.3,avail/w)).toFixed(3);
 }
 window.addEventListener('resize',fitSheet);
 function buildSheet(){
