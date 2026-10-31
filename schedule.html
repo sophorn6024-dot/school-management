@@ -237,7 +237,8 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
 
 .btn-save-main{background:var(--primary);color:#fff;border:none;border-radius:10px;padding:8px 16px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit}
 
-.barnav{position:sticky;top:0;z-index:100;background:rgba(15,23,42,.96);border:1.5px solid #334155;padding:8px 14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:#fff;border-radius:14px;margin-bottom:12px}
+.barnav{position:sticky;top:0;z-index:100;background:rgba(15,23,42,.96);border:1.5px solid #334155;padding:8px 14px;display:none;align-items:center;gap:8px;flex-wrap:wrap;color:#fff;border-radius:14px;margin-bottom:12px}
+.barnav.show{display:flex}
 .bar-pill{background:#1e293b;color:#f8fafc;border:1px solid #475569;padding:6px 12px;border-radius:10px;font-weight:600;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-family:inherit}
 .bar-pill:hover{background:#334155}.bar-pill b{color:#38bdf8}.bar-pill.green{background:#059669;border-color:#059669;color:#fff}
 .signature-box{height:48px;display:flex;align-items:center;justify-content:center;margin:2px 0}.signature-box img{max-height:46px;max-width:140px;object-fit:contain}
@@ -271,14 +272,16 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
     <button class="tb-btn" onclick="openSettings()"><i class="fa-solid fa-sliders"></i><span class="t">កំណត់ម៉ោង/មុខវិជ្ជា</span></button>
     <button class="tb-btn" id="copyBtn" onclick="openCopy()"><i class="fa-regular fa-copy"></i><span class="t">ចម្លងពីថ្នាក់ផ្សេង</span></button>
     <button class="tb-btn pri" id="saveBtn" onclick="saveSchedule()"><i class="fa-regular fa-floppy-disk"></i><span class="t">រក្សាទុក</span></button>
+    <button class="tb-btn" id="prBtn" onclick="togglePrintBar()"><i class="fa-solid fa-print"></i><span class="t">បោះពុម្ព</span></button>
   </div>
-  <div class="barnav no-print">
+  <div class="barnav no-print" id="barnav">
     <button type="button" class="bar-pill" onclick="openKhmerCalForTeacher(event)"><span>ថ្ងៃគ្រូ</span> <b id="txtTeacherSignDate">ជ្រើសថ្ងៃ</b></button>
     <button type="button" class="bar-pill" onclick="openKhmerCalForDirector(event)"><span>ថ្ងៃនាយក</span> <b id="txtDirectorSignDate">មិនដាក់</b></button>
     <button type="button" class="bar-pill" onclick="openSignatureModal()" style="border-color:#38bdf8;color:#38bdf8"><i class="fa-solid fa-signature"></i> ហត្ថលេខា</button>
     <button type="button" class="bar-pill" onclick="openPrint()"><i class="fa-solid fa-sliders"></i> កំណត់ទំព័រ</button>
     <button type="button" class="bar-pill" onclick="downloadPDF()"><i class="fa-solid fa-file-pdf" style="color:#ef4444"></i> ទាញយក PDF</button>
     <button type="button" class="bar-pill green" onclick="printNow()"><i class="fa-solid fa-print"></i> បោះពុម្ព</button>
+    <button type="button" class="bar-pill" onclick="togglePrintBar(false)" title="បិទ">✕</button>
   </div>
 
   <div class="card">
@@ -1952,6 +1955,7 @@ function uiAlert2(m){toast(m)}
 try{initSignatureCanvas();loadDisplaySignature();renderSignDates()}catch(e){console.error(e)}
 const PRK='krou_sched_print_v1';
 function prGet(){let o={};try{o=JSON.parse(localStorage.getItem(PRK)||'{}')}catch(e){}return Object.assign({sess:'cur',paper:'A4',ori:'landscape',mar:10,font:'m',sign:true},o)}
+function togglePrintBar(on){const b=document.getElementById('barnav');const s=on===undefined?!b.classList.contains('show'):on;b.classList.toggle('show',s);document.getElementById('prBtn').classList.toggle('pri',s);if(!s)closeKhmerCalendar()}
 function openPrint(){const o=prGet();prSess.value=o.sess;prPaper.value=o.paper;prOri.value=o.ori;prMar.value=o.mar;prFont.value=o.font;prSign.checked=!!o.sign;document.getElementById('prModal').classList.add('show')}
 function closePrint(){document.getElementById('prModal').classList.remove('show')}
 function printTable(sess,days){
