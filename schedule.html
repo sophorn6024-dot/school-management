@@ -1979,7 +1979,7 @@ function buildSheet(){
   const days=D.days.slice().sort((a,b)=>a-b),list=o.sess==='both'?['morning','afternoon']:[o.sess];
   const PG=PGS[o.paper]||PGS.A4,pw=o.ori==='landscape'?PG[1]:PG[0],ph=o.ori==='landscape'?PG[0]:PG[1];
   const rows=list.reduce((n,s)=>n+D.periods.filter(p=>p.session===s).length+1,0);
-  const avail=ph-2*o.mar-(list.length>1?44:46)-(o.sign?(list.length>1?44:46):0)-list.length*7;
+  const avail=ph-2*o.mar-(list.length>1?50:52)-(o.sign?(list.length>1?44:46):0)-list.length*7;
   const rh=Math.max(4.2,Math.min(11,avail/rows)).toFixed(2)+'mm';
   const tables=list.map(s=>printTable(s,days)).join('');
   const who=USER&&(USER.teacher_name||USER.username)?(USER.teacher_name||USER.username):'';
@@ -1990,7 +1990,7 @@ function buildSheet(){
       <div class="k moul" style="font-size:15px">ព្រះរាជាណាចក្រកម្ពុជា</div>
       <div class="k moul" style="font-size:13.5px">ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
       <div style="font-size:12px;letter-spacing:4px;margin:2px 0 6px">─────── ❖ ───────</div>
-      <div class="s" style="text-align:left;font-size:12px;font-weight:700;line-height:1.6;margin-bottom:6px">ការិយាល័យអប់រំ យុវជន និងកីឡា<br>សាលាបឋមសិក្សាកំពង់ល្ពៅ</div>
+      <div class="s" style="text-align:left;font-size:12px;font-weight:700;line-height:1.6;margin-bottom:6px">រដ្ឋបាលស្រុកសំឡូត<br>ការិយាល័យអប់រំ យុវជន និងកីឡា<br>សាលាបឋមសិក្សាកំពង់ល្ពៅ</div>
       <div class="t moul">កាលវិភាគសិក្សាប្រចាំសប្តាហ៍</div>
       <div class="s">ថ្នាក់ទី ${esc(String(curClass))}${list.length>1?'':' · '+SESS[list[0]]}${who?' · គ្រូបន្ទុក ៖ '+esc(who):''}</div></div>`
     +(tables||'<div style="text-align:center;padding:30px">មិនទាន់មានម៉ោងសម្រាប់បោះពុម្ព</div>')
