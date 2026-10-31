@@ -128,7 +128,7 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
   #pa h4{font-size:12.5px;margin:4px 0;font-family:'Khmer OS Muol Light','Moul',serif;font-weight:400}
   #pa .tt td,#pa .tt th{padding:1px 3px;text-align:center;vertical-align:middle;overflow:hidden}
   body.pf-s #pa .tt{font-size:10px}body.pf-m #pa .tt{font-size:12px}body.pf-l #pa .tt{font-size:14px}
-  body.pa-both #pa .tt td{height:6.4mm!important}body.pa-one #pa .tt td{height:11mm!important}
+  body.pa-both #pa .tt td{height:5.2mm!important;line-height:1.15}body.pa-both .ph .k{line-height:1.35!important}body.pa-both .ph .t{margin-top:2px!important}body.pa-both .pf{margin-top:6px!important}body.pa-both .pf .sp{height:34px!important}body.pa-both #pa h4{margin:2px 0!important}body.pa-both #pa .tt{margin-bottom:3px!important}body.pa-one #pa .tt td{height:11mm!important}
   body.pa-nosign #pfoot{display:none!important}
   #pa .sub{padding:1px 6px;font-size:inherit;display:inline-block}
   .card{background:#fff!important;border:none;box-shadow:none;padding:0;margin:0;backdrop-filter:none}
@@ -145,7 +145,7 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
   .summary{margin-top:8px}.sm-chip{-webkit-print-color-adjust:exact;print-color-adjust:exact;border:1px solid #94a3b8}
   .ph{text-align:center;margin-bottom:8px}.ph .k{font-size:13px;line-height:1.8}.ph .t{font-size:16px;margin-top:6px}.ph .s{font-size:12px;margin-top:2px}
   .pf{display:flex!important;justify-content:space-between;margin-top:18px;font-size:12.5px;page-break-inside:avoid}
-  .pf>div{text-align:center;width:40%}.pf .sp{height:60px}
+  .pf{align-items:flex-start}.pf>div{text-align:center;width:40%}.pf .sp{height:60px}
 }
 </style>
 </head>
@@ -169,8 +169,10 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
 
   <div class="card">
     <div class="ph print-only">
-      <div class="k moul">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
-      <div class="s moul" style="margin-top:8px;font-size:12.5px;text-align:left">សាលាបឋមសិក្សាកំពង់ល្ពៅ</div>
+      <div class="k moul" style="font-size:15px">ព្រះរាជាណាចក្រកម្ពុជា</div>
+      <div class="k moul" style="font-size:13.5px">ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
+      <div style="font-size:12px;letter-spacing:4px;margin:2px 0 6px">─────── ❖ ───────</div>
+      <div class="s" style="text-align:left;font-size:12px;font-weight:700;line-height:1.6;margin-bottom:6px">ការិយាល័យអប់រំ យុវជន និងកីឡា<br>សាលាបឋមសិក្សាកំពង់ល្ពៅ</div>
       <div class="t moul">កាលវិភាគសិក្សាប្រចាំសប្តាហ៍</div>
       <div class="s" id="printSub"></div>
     </div>
@@ -181,7 +183,7 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
     <div class="summary" id="summary"></div>
     <div id="pa" class="print-only"></div>
     <div class="pf print-only" id="pfoot" style="display:none">
-      <div><b class="moul" style="font-size:12px">បានឃើញ និងឯកភាព</b><br><b class="moul" style="font-size:12px">នាយកសាលា</b><div class="sp"></div></div>
+      <div style="margin-top:20px"><b class="moul" style="font-size:12px">បានឃើញ និងឯកភាព</b><br><b class="moul" style="font-size:12px">នាយកសាលា</b><div class="sp"></div></div>
       <div>ថ្ងៃ..........ខែ..........ឆ្នាំ............<br><b class="moul" style="font-size:12px">គ្រូបន្ទុកថ្នាក់</b><div class="sp"></div></div>
     </div>
   </div>
