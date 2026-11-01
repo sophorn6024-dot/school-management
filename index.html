@@ -678,7 +678,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 @media (max-width:768px){.upd-toast{left:12px;right:12px;bottom:calc(var(--mnav-reserve) + 6px);max-width:none}}
 
 /* ===== CONFIRM DIALOG ===== */
-#askDlg{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(15,23,42,.38);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+#askDlg{position:fixed;inset:0;z-index:10100;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(15,23,42,.38);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
 #askDlg.show{opacity:1;visibility:visible}
 .ask-box{width:min(100%,340px);background:var(--surface-card,#fff);color:var(--text,#0f172a);border:1px solid var(--border,#e2e8f0);border-radius:24px;padding:28px 22px 18px;text-align:center;box-shadow:0 24px 60px rgba(15,23,42,.28);transform:translateY(14px) scale(.94);transition:transform .3s cubic-bezier(.3,1.4,.5,1)}
 #askDlg.show .ask-box{transform:none}
