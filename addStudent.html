@@ -1343,6 +1343,28 @@ body{background:var(--bg)}
     }
     const CURRENT_USER = readSession();
 
+    // 🔒 ការសរសេរតារាងសិស្ស ទៅតាមមុខងារដែលផ្ទៀងផ្ទាត់គ្រូ (មិនសរសេរដោយផ្ទាល់ជាមួយ anon key ទៀតទេ)
+    async function stWrite(op, o) {
+      o = o || {};
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      if (!CURRENT_USER || !CURRENT_USER.username || !pw) {
+        return { data: null, error: { message: 'សូមចាកចេញ រួចចូលប្រព័ន្ធឡើងវិញ ដើម្បីបន្តរក្សាទុក' } };
+      }
+      const { data, error } = await sb.rpc('staff_student_write', {
+        p_u: CURRENT_USER.username, p_p: pw, p_op: op,
+        p_id: o.id == null ? null : o.id, p_sid: o.sid == null ? null : String(o.sid),
+        p_data: o.data == null ? null : o.data
+      });
+      if (error) return { data: null, error };
+      if (data && data.error) {
+        const m = { auth: 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ សូមចូលប្រព័ន្ធឡើងវិញ', forbidden: 'គ្មានសិទ្ធិធ្វើសកម្មភាពនេះលើថ្នាក់នេះ',
+                    not_found: 'រកមិនឃើញសិស្ស', no_data: 'គ្មានទិន្នន័យ', no_columns: 'គ្មានជួរដែលត្រឹមត្រូវ', bad_op: 'សកម្មភាពមិនត្រឹមត្រូវ' };
+        if (data.error === 'auth') { try { localStorage.removeItem('krou_pw'); } catch (e) {} }
+        return { data: null, error: { message: m[data.error] || data.error } };
+      }
+      return { data: data && data.row ? data.row : data, error: null };
+    }
+
     function checkAuthentication() {
       if (!CURRENT_USER || !CURRENT_USER.username) {
         document.getElementById('mainPageContent').style.display = 'none';
@@ -1780,10 +1802,10 @@ body{background:var(--bg)}
       const payload = buildSupabasePayload(s);
       try {
         if (s.db_id) {
-          const { error } = await sb.from(STUDENTS_TABLE).update(payload).eq('id', s.db_id);
+          const { error } = await stWrite('update',{id:s.db_id,data:payload});
           if (error) throw error;
         } else {
-          const { data, error } = await sb.from(STUDENTS_TABLE).insert([payload]).select().single();
+          const { data, error } = await stWrite('insert',{data:payload});
           if (error) throw error;
           s.db_id = data.id;
         }
@@ -1825,7 +1847,7 @@ body{background:var(--bg)}
 
       const payload = buildSupabasePayload(s);
       try {
-        const { data, error } = await sb.from(STUDENTS_TABLE).insert([payload]).select().single();
+        const { data, error } = await stWrite('insert',{data:payload});
         if (error) throw error;
         s.db_id = data.id;
         s.isDraft = false;
@@ -1876,7 +1898,7 @@ body{background:var(--bg)}
       }
 
       try {
-        const { error } = await sb.from(STUDENTS_TABLE).insert(payloads);
+        const { error } = await stWrite('bulk_insert',{data:payloads});
         if (error) throw error;
         showToast(`🎉 បានរក្សាទុកសិស្ស ${drafts.length} នាក់ជោគជ័យ!`);
         loadStudentsFromSupabase();
@@ -1894,7 +1916,7 @@ body{background:var(--bg)}
       if (!confirm(`តើអ្នកពិតជាចង់លុបសិស្ស «${s.name || s.id}» ចេញពីប្រព័ន្ធមែនទេ?`)) return;
 
       if (s.db_id) {
-        const { error } = await sb.from(STUDENTS_TABLE).delete().eq('id', s.db_id);
+        const { error } = await stWrite('delete',{id:s.db_id});
         if (error) { alert("❌ លុបមិនបាន៖ " + error.message); return; }
       }
 
@@ -2484,10 +2506,10 @@ body{background:var(--bg)}
       const payload = buildSupabasePayload(s);
       try {
         if (s.db_id) {
-          const { error } = await sb.from(STUDENTS_TABLE).update(payload).eq('id', s.db_id);
+          const { error } = await stWrite('update',{id:s.db_id,data:payload});
           if (error) throw error;
         } else {
-          const { data, error } = await sb.from(STUDENTS_TABLE).insert([payload]).select().single();
+          const { data, error } = await stWrite('insert',{data:payload});
           if (error) throw error;
           s.db_id = data.id;
         }
@@ -2585,7 +2607,7 @@ body{background:var(--bg)}
       }
 
       try {
-        const { error } = await sb.from(STUDENTS_TABLE).insert(pendingImportStudents.map(withAddrCols));
+        const { error } = await stWrite('bulk_insert',{data:pendingImportStudents.map(withAddrCols)});
         if (error) throw error;
         showToast(`🎉 បាននាំចូលសិស្ស ${pendingImportStudents.length} នាក់ជោគជ័យ!`);
         closeImportModal();
@@ -2666,7 +2688,7 @@ body{background:var(--bg)}
             }
           }
 
-          const { error } = await sb.from(STUDENTS_TABLE).insert(rows.map(withAddrCols));
+          const { error } = await stWrite('bulk_insert',{data:rows.map(withAddrCols)});
           if (error) throw error;
           showToast(`🎉 នាំចូលបាន ${rows.length} នាក់ជោគជ័យ!`);
           closeImportModal();
@@ -2841,7 +2863,7 @@ body{background:var(--bg)}
       try {
         for (const s of todo) {
           const body = { ...addrCols('pob', parseAddressParts(s.pob)), ...addrCols('addr', parseAddressParts(s.address)) };
-          const { error } = await sb.from(STUDENTS_TABLE).update(body).eq('id', s.db_id);
+          const { error } = await stWrite('update',{id:s.db_id,data:body});
           if (error) break;
           s._needAddrCols = false;
         }
