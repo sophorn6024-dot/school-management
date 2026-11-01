@@ -2822,15 +2822,25 @@ async function authSignIn(username, pw) {
 }
 async function authSignOut() { try { await sb.auth.signOut(); } catch (e) {} }
 /* អ្នកដែលចូលប្រព័ន្ធរួចពីមុន (មិនទាន់មាន session Auth) ចូល Auth ស្ងាត់ៗ */
-(async function authRestore() {
+const AUTH_READY = (async function authRestore() {
   try {
-    if (!CURRENT_USER) return;
+    if (!CURRENT_USER) return true;
     const { data } = await sb.auth.getSession();
-    if (data && data.session) return;
+    if (data && data.session) return true;
     let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
-    if (pw) await authSignIn(CURRENT_USER.username, pw);
-  } catch (e) {}
+    if (pw) return await authSignIn(CURRENT_USER.username, pw);
+    return false;
+  } catch (e) { return false; }
 })();
+/* 🔎 ពិនិត្យស្ថានភាពគណនី (ដោយមុខងារ មិនពឹងលើការអានតារាង users) */
+async function sessionCheck() {
+  try {
+    let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+    const { data, error } = await sb.rpc('app_session_check', { p_id: CURRENT_USER && CURRENT_USER.id || null, p_u: CURRENT_USER && CURRENT_USER.username || '', p_p: pw });
+    if (error) return null;
+    return data || null;
+  } catch (e) { return null; }
+}
 
 async function handleLoginSubmit(e) {
   e.preventDefault();
@@ -2935,17 +2945,16 @@ function forceLogoutDeleted(reasonMsg) {
 async function verifySession() {
   if (!CURRENT_USER) { showAuthScreen(); return false; }
   try {
-    let query = sb.from(TEACHERS_TABLE).select(USER_COLS);
-    if (CURRENT_USER.id) query = query.eq('id', CURRENT_USER.id);
-    else if (CURRENT_USER.username) query = query.eq('username', CURRENT_USER.username);
-    else { forceLogoutDeleted(); return false; }
-    const { data, error } = await query.maybeSingle();
-    if (error) { console.warn('Verify session network issue:', error.message); return true; }
-    if (!data) {
+    if (!CURRENT_USER.id && !CURRENT_USER.username) { forceLogoutDeleted(); return false; }
+    const chk = await sessionCheck();
+    if (!chk) { console.warn('Verify session network issue'); return true; }
+    if (chk.status === 'deleted') {
       forceLogoutDeleted('⚠️ គណនីរបស់អ្នកត្រូវបានលុបចេញពីប្រព័ន្ធរួចហើយ! សូមចូលប្រើប្រាស់ដោយគណនីថ្មី។');
       return false;
     }
-    try { const ac = await sb.from(TEACHERS_TABLE).select('is_active').eq('id', data.id).maybeSingle(); if (ac && ac.data && ac.data.is_active === false) { forceLogoutDeleted('⚠️ គណនីរបស់អ្នកត្រូវបានបិទដោយអ្នកគ្រប់គ្រង។'); return false; } } catch(e) {}
+    if (chk.status === 'inactive') { forceLogoutDeleted('⚠️ គណនីរបស់អ្នកត្រូវបានបិទដោយអ្នកគ្រប់គ្រង។'); return false; }
+    if (chk.status !== 'ok' || !chk.row) return true;   // ពាក្យសម្ងាត់ផ្លាស់ប្តូរ ឬបញ្ហាបណ្តាញ: នៅតែប្រើទិន្នន័យដែលមាន
+    const data = chk.row;
     CURRENT_USER = data;
     localStorage.setItem('krou_supabase_user', JSON.stringify(CURRENT_USER));
     TEACHER_NAME = data.teacher_name || '';
@@ -3393,8 +3402,8 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) reco
 async function refreshStats() {
   if (!CURRENT_USER) return;
   if (CURRENT_USER.id) {
-    const { data: activeCheck } = await sb.from(TEACHERS_TABLE).select('id').eq('id', CURRENT_USER.id).maybeSingle();
-    if (!activeCheck) {
+    const chk2 = await sessionCheck();
+    if (chk2 && (chk2.status === 'deleted' || chk2.status === 'inactive')) {
       forceLogoutDeleted('⚠️ គណនីរបស់អ្នកត្រូវបានលុបចេញពីប្រព័ន្ធ! សូមចូលប្រើប្រាស់ដោយគណនីថ្មី។');
       return;
     }
@@ -3933,6 +3942,11 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (inner && window.ResizeObserver) new ResizeObserver(updateMobileNavIndicator).observe(inner);
   } catch(e) {}
   if (CURRENT_USER && (CURRENT_USER.id || CURRENT_USER.username)) {
+    const authOk = await AUTH_READY;
+    if (!authOk && navigator.onLine !== false) {
+      forceLogoutDeleted('សូមចូលប្រព័ន្ធឡើងវិញ ដើម្បីបន្តប្រើប្រាស់');
+      return;
+    }
     const isValid = await verifySession();
     if (!isValid) return;
     const savedPage = window.location.hash.replace('#', '') || localStorage.getItem('krou_active_page') || 'dashboard';
