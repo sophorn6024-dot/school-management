@@ -2150,6 +2150,24 @@ exports.default = {
     }
     const CURRENT_USER = readSession();
 
+    // 🔒 ហៅមុខងារសរសេរដែលផ្ទៀងផ្ទាត់គ្រូ (មិនសរសេរដោយផ្ទាល់ជាមួយ anon key ទៀតទេ)
+    async function stRpc(fn, args) {
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      let u = null; try { u = (typeof CURRENT_USER !== 'undefined' && CURRENT_USER) || (typeof USER !== 'undefined' && USER) || null; } catch (e) {}
+      if (!u || !u.username || !pw) {
+        return { data: null, error: { message: 'សូមចាកចេញ រួចចូលប្រព័ន្ធឡើងវិញ ដើម្បីបន្តរក្សាទុក' } };
+      }
+      const { data, error } = await sb.rpc(fn, Object.assign({ p_u: u.username, p_p: pw }, args || {}));
+      if (error) return { data: null, error };
+      if (data && data.error) {
+        const m = { auth: 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ សូមចូលប្រព័ន្ធឡើងវិញ', forbidden: 'គ្មានសិទ្ធិធ្វើសកម្មភាពនេះលើថ្នាក់នេះ', bad_op: 'សកម្មភាពមិនត្រឹមត្រូវ' };
+        if (data.error === 'auth') { try { localStorage.removeItem('krou_pw'); } catch (e) {} }
+        return { data: null, error: { message: m[data.error] || data.error } };
+      }
+      return { data, error: null };
+    }
+
+
     function checkAuthentication() {
       if (!CURRENT_USER || !CURRENT_USER.username) {
         document.getElementById('manageView').style.display = 'none';
@@ -2990,7 +3008,7 @@ exports.default = {
       });
 
       try {
-        const { error } = await sb.from('book_loans').upsert(records, { onConflict: 'student_id,assigned_class' });
+        const { error } = await stRpc('staff_class_row_save', { p_table: 'book_loans', p_records: records });
         if (error) throw error;
         showToast('✅ បានរក្សាទុកទិន្នន័យជោគជ័យ!');
       } catch (err) {
