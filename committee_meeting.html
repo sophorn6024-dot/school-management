@@ -987,7 +987,9 @@ function dbPush(cls,year,payload){
   if(!sb)return;const k=year+'|'+cls;clearTimeout(_dbT[k]);setDb('busy','កំពុងរក្សាទុក...');
   _dbT[k]=setTimeout(async()=>{
     _dbBusy++;
-    try{const {error}=await sb.from(TBL).upsert({school_year:year,class:cls,data:payload,updated_by:USER.username||'',updated_at:new Date().toISOString()},{onConflict:'school_year,class'});
+    try{let _pw='';try{_pw=localStorage.getItem('krou_pw')||''}catch(e){}
+      let {data:_r,error}=await sb.rpc('staff_committee_save',{p_u:USER.username||'',p_p:_pw,p_year:String(year),p_class:String(cls),p_data:payload});
+      if(!error&&_r&&_r.error)error={message:_r.error==='forbidden'?'គ្មានសិទ្ធិរក្សាទុកក្នុងថ្នាក់នេះ':'សូមចូលប្រព័ន្ធឡើងវិញ'};
       if(error)throw error;setDb('ok','បានរក្សាទុកក្នុង Database')}
     catch(err){setDb('err','រក្សាទុកមិនបាន');const m=String(err.message||err);toast(/relation|does not exist|schema cache/i.test(m)?'⚠️ មិនទាន់មានតារាង class_committees — សូម Run ឯកសារ SQL':'❌ '+m)}
     _dbBusy--;
