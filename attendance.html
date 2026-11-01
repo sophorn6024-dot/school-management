@@ -2318,6 +2318,23 @@ exports.default = {
     }
     const CURRENT_USER = readSession();
 
+    // 🔒 ហៅមុខងារសរសេរដែលផ្ទៀងផ្ទាត់គ្រូ (មិនសរសេរដោយផ្ទាល់ជាមួយ anon key ទៀតទេ)
+    async function stRpc(fn, args) {
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      if (!CURRENT_USER || !CURRENT_USER.username || !pw) {
+        return { data: null, error: { message: 'សូមចាកចេញ រួចចូលប្រព័ន្ធឡើងវិញ ដើម្បីបន្តរក្សាទុក' } };
+      }
+      const { data, error } = await sb.rpc(fn, Object.assign({ p_u: CURRENT_USER.username, p_p: pw }, args || {}));
+      if (error) return { data: null, error };
+      if (data && data.error) {
+        const m = { auth: 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ សូមចូលប្រព័ន្ធឡើងវិញ', forbidden: 'គ្មានសិទ្ធិធ្វើសកម្មភាពនេះលើថ្នាក់នេះ', bad_op: 'សកម្មភាពមិនត្រឹមត្រូវ' };
+        if (data.error === 'auth') { try { localStorage.removeItem('krou_pw'); } catch (e) {} }
+        return { data: null, error: { message: m[data.error] || data.error } };
+      }
+      return { data, error: null };
+    }
+
+
     function goToIndex(e) {
       if (e) e.preventDefault();
       if (window.parent && window.parent !== window) {
@@ -2469,7 +2486,7 @@ exports.default = {
       container.innerHTML = `
         <div style="text-align:center; padding:35px; color:var(--text-muted);">
           <i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--primary);"></i>
-          <p style="margin-top:10px; font-weight:600;">កំពុងទាញយកទិន្នន័យសិស្ស</p>
+          <p style="margin-top:10px; font-weight:600;">កំពុងទាញយកទិន្នន័យសិស្សពី Supabase...</p>
         </div>`;
 
       try {
@@ -2908,7 +2925,7 @@ exports.default = {
       });
 
       try {
-        const { error } = await sb.from('attendance').upsert(records, { onConflict: 'student_id,attendance_date' });
+        const { error } = await stRpc('staff_attendance_save', { p_records: records });
         if (error) console.error('Save attendance error:', error);
         else { setDayNoRecord(false); loadAttendanceSummary(); }   // 🌟 ធ្វើបច្ចុប្បន្នភាពព្រមាន + តារាងសង្ខេប
       } catch (err) {
@@ -3113,10 +3130,10 @@ exports.default = {
       var yr = selectedDate.getFullYear();
 
       try {
-        const { error } = await sb.from('school_holidays').upsert({
+        const { error } = await stRpc('staff_holiday_write', { p_op: 'set', p_data: {
           year: yr, month: mName, day: selectedHolidayDay, reason: reason,
           assigned_class: cls                                   // 🌟
-        }, { onConflict: 'year,month,day,assigned_class' });    // 🌟
+        } });
 
         if (error) throw error;
 
@@ -3140,9 +3157,8 @@ exports.default = {
       if (!cls) return;
       var yr = selectedDate.getFullYear();
       try {
-        const { error } = await sb.from('school_holidays').delete()
-          .eq('year', yr).eq('month', mName).eq('day', dayNum)
-          .eq('assigned_class', cls);                           // 🌟 លុបតែថ្នាក់ខ្លួន
+        const { error } = await stRpc('staff_holiday_write', { p_op: 'delete', p_data: {
+          year: yr, month: mName, day: dayNum, assigned_class: cls } });                           // 🌟 លុបតែថ្នាក់ខ្លួន
         if (error) throw error;
 
         monthlyHolidaysMap[mName] = (monthlyHolidaysMap[mName] || []).filter(h => h.day !== dayNum);
