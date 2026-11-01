@@ -3292,20 +3292,14 @@ async function pushSaveSub() {
       try {
         const cur = sub.options && sub.options.applicationServerKey ? new Uint8Array(sub.options.applicationServerKey) : null;
         if (cur && (cur.length !== appKey.length || cur.some((v, i) => v !== appKey[i]))) {
-          try { await sb.from('push_subscriptions').delete().eq('endpoint', sub.endpoint); } catch (e) {}
+          try { await pushRpc('staff_push_remove', { p_endpoint: sub.endpoint }); } catch (e) {}
           await sub.unsubscribe(); sub = null;
         }
       } catch (e) {}
     }
     if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: appKey });
     const j = sub.toJSON();
-    await sb.from('push_subscriptions').upsert({
-      user_code: String(CURRENT_USER.username || CURRENT_USER.teacher_id || '').toLowerCase(),
-      role: CURRENT_USER.role || 'teacher',
-      classes: String(CURRENT_USER.assigned_classes || CURRENT_USER.assigned_class || ''),
-      endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth,
-      user_agent: (navigator.userAgent || '').slice(0, 200)
-    }, { onConflict: 'endpoint' });
+    await pushRpc('staff_push_save', { p_endpoint: j.endpoint, p_p256dh: j.keys.p256dh, p_auth: j.keys.auth, p_ua: (navigator.userAgent || '').slice(0, 200) });
   } catch (e) { console.warn('push subscribe failed', e); }
 }
 function setupPush() {
@@ -3326,12 +3320,20 @@ function pushLater() {
   document.getElementById('pushAsk')?.classList.remove('show');
   try { localStorage.setItem('krou_push_later', String(Date.now())); } catch (e) {}
 }
+async function pushRpc(fn, args) {
+  try {
+    let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+    if (!CURRENT_USER || !CURRENT_USER.username || !pw) return null;
+    const { data } = await sb.rpc(fn, Object.assign({ p_u: CURRENT_USER.username, p_p: pw }, args));
+    return data;
+  } catch (e) { return null; }
+}
 async function pushRemove() {
   try {
     if (!('serviceWorker' in navigator)) return;
     const reg = await navigator.serviceWorker.getRegistration(); if (!reg) return;
     const sub = await reg.pushManager.getSubscription(); if (!sub) return;
-    await sb.from('push_subscriptions').delete().eq('endpoint', sub.endpoint);
+    await pushRpc('staff_push_remove', { p_endpoint: sub.endpoint });
     await sub.unsubscribe();
   } catch (e) {}
 }
