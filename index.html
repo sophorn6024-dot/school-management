@@ -3832,8 +3832,13 @@ async function saveMyProfile(ev) {
       if (pwErr) throw pwErr;
       if (!okPw) throw new Error('ពាក្យសម្ងាត់បច្ចុប្បន្នមិនត្រឹមត្រូវ');
     }
-    const { data, error } = await sb.from(TEACHERS_TABLE).update(updates).eq('id', CURRENT_USER.id).select(USER_COLS).single();
-    if (error) throw error;
+    // 🔒 កែព័ត៌មានផ្ទាល់ខ្លួនតាមមុខងារដែលផ្ទៀងផ្ទាត់ (មិនកែតារាង users ដោយផ្ទាល់ទៀតទេ)
+    if (newPass) { try { localStorage.setItem('krou_pw', newPass); } catch(e) {} }
+    let curPw = ''; try { curPw = localStorage.getItem('krou_pw') || ''; } catch(e) {}
+    const rr = await sb.rpc('staff_update_my_profile', { p_u: CURRENT_USER.username, p_p: curPw, p_data: updates });
+    if (rr.error) throw rr.error;
+    if (!rr.data || rr.data.error) throw new Error(rr.data && rr.data.error === 'auth' ? 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ សូមចូលប្រព័ន្ធឡើងវិញ' : 'រក្សាទុកមិនបាន');
+    const data = rr.data.row;
     CURRENT_USER = data;
     localStorage.setItem('krou_supabase_user', JSON.stringify(CURRENT_USER));
     TEACHER_NAME = data.teacher_name;
