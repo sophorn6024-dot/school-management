@@ -2605,10 +2605,11 @@ async function tchQrLogin(code) {
     finishTeacherLogin(data, code);
   } catch (err) { showLoginError('កំហុស៖ ' + (err.message || 'មិនអាចភ្ជាប់បាន')); }
 }
-function finishTeacherLogin(data, pw) {
+async function finishTeacherLogin(data, pw) {
   CURRENT_USER = data;
   localStorage.setItem('krou_supabase_user', JSON.stringify(CURRENT_USER));
   try { localStorage.setItem('krou_pw', pw); } catch(e) {}
+  await authSignIn(data.username, pw);
   TEACHER_NAME = data.teacher_name || '';
   TEACHER_PHOTO_URL = data.photo_url || '';
   USER_ROLE = data.role || 'teacher';
@@ -2809,6 +2810,28 @@ function toggleLoginPassword() { const p = document.getElementById('loginPasswor
 function showLoginError(msg) { const b = document.getElementById('loginErrorBox'); b.innerText = msg; b.classList.add('show'); }
 function hideLoginError() { const b = document.getElementById('loginErrorBox'); b.innerText = ''; b.classList.remove('show'); }
 
+/* 🔐 ចូល Supabase Auth ផង (ដំណាក់កាលទី ២)។ បើបរាជ័យ ប្រព័ន្ធនៅដំណើរការដូចមុន មិនបិទការចូលទេ */
+async function authSignIn(username, pw) {
+  try {
+    if (!username || !pw) return false;
+    const { data, error } = await sb.rpc('app_auth_secret', { p_u: username, p_p: pw });
+    if (error || !data || !data.email) return false;
+    const r = await sb.auth.signInWithPassword({ email: data.email, password: data.secret });
+    return !r.error;
+  } catch (e) { return false; }
+}
+async function authSignOut() { try { await sb.auth.signOut(); } catch (e) {} }
+/* អ្នកដែលចូលប្រព័ន្ធរួចពីមុន (មិនទាន់មាន session Auth) ចូល Auth ស្ងាត់ៗ */
+(async function authRestore() {
+  try {
+    if (!CURRENT_USER) return;
+    const { data } = await sb.auth.getSession();
+    if (data && data.session) return;
+    let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+    if (pw) await authSignIn(CURRENT_USER.username, pw);
+  } catch (e) {}
+})();
+
 async function handleLoginSubmit(e) {
   e.preventDefault();
   hideLoginError();
@@ -2831,6 +2854,7 @@ async function handleLoginSubmit(e) {
     CURRENT_USER = data;
     localStorage.setItem('krou_supabase_user', JSON.stringify(CURRENT_USER));
     try { localStorage.setItem('krou_pw', p); } catch(e) {}
+    await authSignIn(data.username || u, p);
     TEACHER_NAME = data.teacher_name || '';
     TEACHER_PHOTO_URL = data.photo_url || '';
     USER_ROLE = data.role || 'teacher';
@@ -2885,6 +2909,7 @@ async function doLogout() {
   if (!(await askConfirm('តើអ្នកពិតជាចង់ចាកចេញពីប្រព័ន្ធមែនទេ?'))) return;
   await pushRemove();
   stopChatNotifier();
+  await authSignOut();
   localStorage.removeItem('krou_supabase_user');localStorage.removeItem('krou_pw');
   localStorage.removeItem('krou_active_page');
   try { history.replaceState(null, '', ' '); } catch(e) {}
@@ -2897,6 +2922,7 @@ async function doLogout() {
 }
 function forceLogoutDeleted(reasonMsg) {
   stopChatNotifier();
+  authSignOut();
   localStorage.removeItem('krou_supabase_user');localStorage.removeItem('krou_pw');
   localStorage.removeItem('krou_active_page');
   try { history.replaceState(null, '', ' '); } catch(e) {}
