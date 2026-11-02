@@ -454,7 +454,7 @@ async function initClasses(){
   const mine=cleanGrade(USER_CLASS);
   if(!IS_ADMIN){
     if(!mine){document.getElementById('room').innerHTML='<div style="padding:30px;color:#d97706;font-weight:700;text-align:center">⚠️ គណនីរបស់អ្នកមិនទាន់មានថ្នាក់ទទួលបន្ទុកឡើយ។ សូមទាក់ទង Admin។</div>';return}
-    badge.style.display='inline-block';badge.textContent='ថ្នាក់ទី '+mine;curClass=mine;await loadClass();return;
+    badge.style.display='none';curClass=mine;await loadClass();return;
   }
   sel.style.display='inline-block';
   try{
