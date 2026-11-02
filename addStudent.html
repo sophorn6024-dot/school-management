@@ -861,6 +861,33 @@
     .dlg .acts button{flex:1;border:1px solid var(--border);background:var(--surface-elevated);color:var(--text);padding:11px;border-radius:14px;cursor:pointer;font-weight:700;font-size:14.5px;font-family:inherit}
     .dlg .acts button.pri{background:#0284c7;border-color:#0284c7;color:#fff}
     .dlg.danger .acts button.pri{background:#dc2626;border-color:#dc2626}
+
+    /* 🔁 ផ្ទាំងផ្ទេរសិស្ស (Admin) */
+    .tr-bg{position:fixed;inset:0;z-index:9000;background:rgba(10,18,32,.6);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:14px;font-family:'Khmer OS Battambang','Battambang',sans-serif}
+    .tr-box{width:min(560px,100%);max-height:92vh;display:flex;flex-direction:column;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.4);overflow:hidden}
+    .tr-head{padding:18px 20px 12px;border-bottom:1px solid var(--border-subtle)}
+    .tr-head h3{margin:0;font-size:17px;font-family:'Khmer OS Muol Light','Moul',serif;font-weight:400}
+    .tr-head p{margin:4px 0 0;color:var(--text-muted);font-size:13px;line-height:1.6}
+    .tr-body{padding:14px 20px;overflow:auto;display:flex;flex-direction:column;gap:12px}
+    .tr-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:520px){.tr-row{grid-template-columns:1fr}}
+    .tr-body label.tr-l{font-size:12.5px;color:var(--text-muted);display:block;margin-bottom:4px}
+    .tr-body select{width:100%;height:44px;border-radius:12px;border:1.5px solid var(--border-subtle);background:var(--surface);color:var(--text);padding:0 12px;font-family:inherit;font-size:14px}
+    .tr-list{border:1px solid var(--border-subtle);border-radius:14px;max-height:260px;overflow:auto;background:var(--surface-elevated)}
+    .tr-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border-subtle);cursor:pointer;font-size:14px}
+    .tr-item:last-child{border-bottom:0}
+    .tr-item input{width:18px;height:18px;flex:none}
+    .tr-item .nm{flex:1;min-width:0;word-break:break-word}
+    .tr-item .sx{color:var(--text-muted);font-size:12px}
+    .tr-empty{padding:22px;text-align:center;color:var(--text-muted);font-size:13.5px}
+    .tr-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;color:var(--text-muted)}
+    .tr-bar button{border:1px solid var(--border);background:var(--surface-elevated);color:var(--text);border-radius:10px;padding:6px 12px;font-family:inherit;cursor:pointer}
+    .tr-opt{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.6;color:var(--text-muted)}
+    .tr-opt input{margin-top:4px;flex:none}
+    .tr-foot{display:flex;gap:10px;padding:12px 20px 18px;border-top:1px solid var(--border-subtle)}
+    .tr-foot button{flex:1;border:1px solid var(--border);background:var(--surface-elevated);color:var(--text);padding:12px;border-radius:14px;cursor:pointer;font-weight:700;font-size:14.5px;font-family:inherit}
+    .tr-foot button.pri{background:#0284c7;border-color:#0284c7;color:#fff}
+    .tr-foot button:disabled{opacity:.5;cursor:not-allowed}
 </style>
 <script>
 (function(){let t='dark';try{const u=new URLSearchParams(location.search).get('theme');let p=null;try{if(window.parent&&window.parent!==window)p=window.parent.document.documentElement.getAttribute('data-theme')}catch(e){}
@@ -1007,6 +1034,11 @@ body{background:var(--bg)}
         <button type="button" class="ctl btn-excel-export" id="exportExcelBtn" onclick="exportStudentsToExcel()" title="ទាញយកបញ្ជីឈ្មោះសិស្សជា File Excel">
           <svg class="ic" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h8"/></svg>
           <span class="btn-label">ទាញយក</span>
+        </button>
+
+        <button type="button" class="ctl" id="transferBtn" style="display:none" onclick="openTransferModal()" title="ផ្ទេរសិស្សពីគ្រូមួយទៅគ្រូមួយទៀត (Admin)">
+          <svg class="ic" viewBox="0 0 24 24"><path d="M7 7h11m0 0-3-3m3 3-3 3"/><path d="M17 17H6m0 0 3-3m-3 3 3 3"/></svg>
+          <span class="btn-label">ផ្ទេរសិស្ស</span>
         </button>
 
         <button type="button" class="ctl btn-warning" id="missingInfoBtn" onclick="handleMissingInfoClick()" title="សិស្សខ្វះព័ត៌មាន">
@@ -2956,5 +2988,109 @@ body{background:var(--bg)}
       loadStudentsFromSupabase();
     });
   </script>
+
+  <!-- 🔁 ផ្ទេរសិស្ស (Admin) -->
+  <div class="tr-bg" id="trBg" onclick="if(event.target===this)closeTransferModal()">
+    <div class="tr-box" role="dialog" aria-modal="true">
+      <div class="tr-head">
+        <h3>ផ្ទេរសិស្សទៅគ្រូផ្សេង</h3>
+        <p>ជ្រើសគ្រូ/ថ្នាក់ប្រភព សិស្សដែលត្រូវផ្ទេរ និងគ្រូ/ថ្នាក់ទិសដៅ។</p>
+      </div>
+      <div class="tr-body">
+        <div class="tr-row">
+          <div><label class="tr-l">ពីគ្រូ / ថ្នាក់</label><select id="trFrom" onchange="trLoadStudents()"></select></div>
+          <div><label class="tr-l">ទៅគ្រូ / ថ្នាក់</label><select id="trTo" onchange="trUpdateState()"></select></div>
+        </div>
+        <div class="tr-bar"><span id="trCount">—</span><button type="button" onclick="trToggleAll()">ជ្រើស/ដកទាំងអស់</button></div>
+        <div class="tr-list" id="trList"><div class="tr-empty">សូមជ្រើសគ្រូ/ថ្នាក់ប្រភព</div></div>
+        <label class="tr-opt"><input type="checkbox" id="trMoveRecords" checked><span>ផ្ទេរទិន្នន័យវត្តមាន ពិន្ទុ និងសៀវភៅខ្ចី-សង របស់សិស្សទាំងនោះទៅថ្នាក់ថ្មីផង (បើមិនធីក ទិន្នន័យចាស់នៅក្នុងថ្នាក់ចាស់)</span></label>
+      </div>
+      <div class="tr-foot">
+        <button type="button" onclick="closeTransferModal()">បិទ</button>
+        <button type="button" class="pri" id="trGo" onclick="trSubmit()" disabled>ផ្ទេរសិស្ស</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* 🔁 ផ្ទេរសិស្សពីគ្រូមួយទៅគ្រូមួយទៀត (Admin) */
+let TR_STUDENTS = [], TR_OPTS = [];
+function trCls(t) { return String(t || '').trim(); }
+async function trLoadOptions() {
+  const { data } = await sb.from('users').select('teacher_name, assigned_classes, role');
+  const used = new Set(), opts = [];
+  (data || []).forEach(u => {
+    String(u.assigned_classes || '').split(/[,;،]+/).map(trCls).filter(Boolean).forEach(c => {
+      const k = normGrade(c); used.add(k);
+      opts.push({ cls: k, label: (u.teacher_name || 'គ្មានឈ្មោះ') + ' — ថ្នាក់ទី ' + k });
+    });
+  });
+  ALL_CLASSES.forEach(c => { if (!used.has(c)) opts.push({ cls: c, label: '(មិនទាន់មានគ្រូ) — ថ្នាក់ទី ' + c }); });
+  opts.sort((a, b) => classSortKey(a.cls) - classSortKey(b.cls) || a.label.localeCompare(b.label));
+  TR_OPTS = opts;
+}
+function trFillSelects() {
+  const mk = (ph) => '<option value="">' + ph + '</option>' + TR_OPTS.map(o => '<option value="' + esc(o.cls) + '">' + esc(o.label) + '</option>').join('');
+  document.getElementById('trFrom').innerHTML = mk('— ជ្រើសគ្រូ/ថ្នាក់ប្រភព —');
+  document.getElementById('trTo').innerHTML = mk('— ជ្រើសគ្រូ/ថ្នាក់ទិសដៅ —');
+}
+async function openTransferModal() {
+  if (!IS_ADMIN) return;
+  document.getElementById('trBg').style.display = 'flex';
+  document.getElementById('trList').innerHTML = '<div class="tr-empty">កំពុងផ្ទុក...</div>';
+  try { await trLoadOptions(); } catch (e) { showToast('❌ ផ្ទុកបញ្ជីគ្រូមិនបាន', true); }
+  trFillSelects();
+  document.getElementById('trList').innerHTML = '<div class="tr-empty">សូមជ្រើសគ្រូ/ថ្នាក់ប្រភព</div>';
+  TR_STUDENTS = []; trUpdateState();
+}
+function closeTransferModal() { document.getElementById('trBg').style.display = 'none'; }
+async function trLoadStudents() {
+  const cls = document.getElementById('trFrom').value, box = document.getElementById('trList');
+  TR_STUDENTS = [];
+  if (!cls) { box.innerHTML = '<div class="tr-empty">សូមជ្រើសគ្រូ/ថ្នាក់ប្រភព</div>'; trUpdateState(); return; }
+  box.innerHTML = '<div class="tr-empty">កំពុងផ្ទុក...</div>';
+  try {
+    const grades = ['ថ្នាក់ទី' + cls, 'ថ្នាក់ទី ' + cls, cls];
+    const { data, error } = await sb.from('students').select('id, student_id, student_name, gender, grade').in('grade', grades).order('id', { ascending: true });
+    if (error) throw error;
+    TR_STUDENTS = (data || []).map(s => ({ id: s.id, sid: s.student_id, name: s.student_name || 'គ្មានឈ្មោះ', sex: s.gender || '', on: false }));
+  } catch (e) { box.innerHTML = '<div class="tr-empty">❌ ផ្ទុកមិនបាន៖ ' + esc(e.message || e) + '</div>'; trUpdateState(); return; }
+  trRender();
+}
+function trRender() {
+  const box = document.getElementById('trList');
+  if (!TR_STUDENTS.length) { box.innerHTML = '<div class="tr-empty">គ្មានសិស្សក្នុងថ្នាក់នេះ</div>'; trUpdateState(); return; }
+  box.innerHTML = TR_STUDENTS.map((s, i) => '<label class="tr-item"><input type="checkbox" ' + (s.on ? 'checked' : '') + ' onchange="TR_STUDENTS[' + i + '].on=this.checked;trUpdateState()"><span class="nm">' + esc(s.name) + '</span><span class="sx">' + esc(s.sex) + (s.sid ? ' · ' + esc(s.sid) : '') + '</span></label>').join('');
+  trUpdateState();
+}
+function trToggleAll() { const all = TR_STUDENTS.length && TR_STUDENTS.every(s => s.on); TR_STUDENTS.forEach(s => s.on = !all); trRender(); }
+function trUpdateState() {
+  const n = TR_STUDENTS.filter(s => s.on).length, from = document.getElementById('trFrom').value, to = document.getElementById('trTo').value;
+  document.getElementById('trCount').innerText = TR_STUDENTS.length ? 'បានជ្រើស ' + n + ' / ' + TR_STUDENTS.length + ' នាក់' : '—';
+  document.getElementById('trGo').disabled = !(n > 0 && to && to !== from);
+}
+async function trSubmit() {
+  const ids = TR_STUDENTS.filter(s => s.on).map(s => s.id), from = document.getElementById('trFrom').value, to = document.getElementById('trTo').value;
+  if (!ids.length || !to || to === from) return;
+  const fromL = (TR_OPTS.find(o => o.cls === from) || {}).label || from, toL = (TR_OPTS.find(o => o.cls === to) || {}).label || to;
+  const move = document.getElementById('trMoveRecords').checked;
+  const ok = await uiConfirm('ផ្ទេរសិស្ស ' + ids.length + ' នាក់\nពី៖ ' + fromL + '\nទៅ៖ ' + toL + (move ? '\n(រួមទាំងវត្តមាន ពិន្ទុ និងសៀវភៅខ្ចី-សង)' : '\n(ទិន្នន័យវត្តមាន/ពិន្ទុចាស់ទុកក្នុងថ្នាក់ចាស់)'), { okText: 'ផ្ទេរសិស្ស', title: 'បញ្ជាក់ការផ្ទេរសិស្ស' });
+  if (!ok) return;
+  const btn = document.getElementById('trGo'); btn.disabled = true; btn.innerText = '⏳ កំពុងផ្ទេរ...';
+  try {
+    let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+    if (!pw) throw new Error('សូមចាកចេញ រួចចូលប្រព័ន្ធឡើងវិញ');
+    const { data, error } = await sb.rpc('staff_students_transfer', { p_u: CURRENT_USER.username, p_p: pw, p_ids: ids, p_to: to, p_move_records: move });
+    if (error) throw error;
+    if (!data || data.error) throw new Error(data && data.error === 'forbidden' ? 'មានតែ Admin ទេដែលអាចផ្ទេរសិស្ស' : (data && data.error === 'auth' ? 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ សូមចូលប្រព័ន្ធឡើងវិញ' : 'ផ្ទេរមិនបាន'));
+    showToast('✅ បានផ្ទេរសិស្ស ' + data.ok + ' នាក់ទៅ ' + toL);
+    closeTransferModal();
+    try { await loadStudentsFromSupabase(); } catch (e) {}
+    try { await loadClassesWithData(); } catch (e) {}
+  } catch (e) { uiAlert('❌ ' + (e.message || e)); }
+  btn.innerText = 'ផ្ទេរសិស្ស'; trUpdateState();
+}
+if (IS_ADMIN) { const b = document.getElementById('transferBtn'); if (b) b.style.display = ''; }
+</script>
 </body>
 </html>
