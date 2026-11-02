@@ -590,6 +590,18 @@
       display: flex; align-items: center; justify-content: space-between; background: var(--surface-card);
     }
 
+
+    .rpt-intro { font-size: 12.5px; line-height: 2; text-indent: 2.2em; text-align: justify; margin: 6px 0 4px; }
+    .rpt-h { font-family: inherit; font-weight: bold; font-size: 13px; margin: 8px 0 6px; }
+    .act-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+    .act-item { position: relative; border: 1px solid #94a3b8; border-radius: 4px; overflow: hidden; background: #f8fafc; break-inside: avoid; page-break-inside: avoid; }
+    .act-item img { width: 100%; height: 200px; object-fit: cover; display: block; }
+    .act-item .act-del { position: absolute; top: 4px; right: 4px; width: 26px; height: 26px; border: none; border-radius: 50%; background: rgba(220,38,38,.92); color: #fff; cursor: pointer; font-size: 13px; }
+    .act-add { margin-top: 8px; display: inline-flex; gap: 6px; align-items: center; border: 1.5px dashed #2563eb; color: #2563eb; background: #eff6ff; padding: 8px 14px; border-radius: 10px; cursor: pointer; font-family: inherit; font-size: 13px; }
+    .act-section { break-inside: avoid; page-break-inside: avoid; margin-top: 10px; }
+    .pdf-capturing .act-ui { display: none !important; }
+    @media print { .act-ui { display: none !important; } .rpt-intro, .rpt-h { color: #000; } }
+
     @media print {
       body { background: #fff !important; color: #000 !important; padding: 0 !important; }
       #authDeniedWrap, #manageView, .preview-nav-bar, .sig-modal-backdrop, .page-setup-modal-backdrop, .khmer-cal-popup { display: none !important; }
@@ -783,6 +795,9 @@
         ឆ្នាំសិក្សា ២០២៦-២០២៧ • សិស្សសរុប <span id="rptTotalStudents">0</span>នាក់ • <span style="color:#0284c7;">✓ = បានសង</span> • <span style="color:#d97706;">✓ ខូច = សងខូច</span> • <span style="color:#dc2626;">✗ បាត់ = មិនបានសង</span>
       </div>
 
+      <div class="rpt-intro" id="rptIntro"></div>
+      <div class="rpt-h" id="rptHeading1">១.បញ្ជីរាយនាមសិស្សខ្ចីសៀវភៅសិក្សាគោល</div>
+
       <table class="print-report-table">
         <thead>
           <tr id="printTableHeadRow">
@@ -801,6 +816,16 @@
         </thead>
         <tbody id="printTableBody"></tbody>
       </table>
+
+      <div class="act-section" id="actSection">
+        <div class="rpt-h" id="rptHeading2">២.សកម្មភាពនៃការខ្ចីសៀវភៅសិក្សាគោល</div>
+        <div class="act-grid" id="actGrid"></div>
+        <div class="act-ui">
+          <button type="button" class="act-add" onclick="document.getElementById('actFile').click()"><i class="fa-solid fa-image"></i> + បន្ថែមរូបភាពសកម្មភាព</button>
+          <span id="actHint" style="font-size:11px;color:#64748b;margin-left:8px;"></span>
+          <input type="file" id="actFile" accept="image/*" multiple style="display:none" onchange="actAddFiles(this.files); this.value='';">
+        </div>
+      </div>
 
       <!-- Signatures Footer -->
       <div class="print-signatures-row">
@@ -3024,6 +3049,84 @@ exports.default = {
       openPrintPreview();
     }
 
+
+    /* =========================================================
+       📸 កថាខណ្ឌផ្ដើម + សកម្មភាពខ្ចីសៀវភៅ (រូបភាព)
+    ========================================================= */
+    const ACT_MAX = 6;
+    let actPhotos = [];
+    function actKey() {
+      const u = (CURRENT_USER && (CURRENT_USER.id || CURRENT_USER.user_id || CURRENT_USER.username)) || 'u';
+      return 'krou_loan_act_v1_' + u + '_' + cleanGrade(currentClassName) + '_' + activeTab;
+    }
+    function actLoad() { try { actPhotos = JSON.parse(localStorage.getItem(actKey()) || '[]') || []; } catch (e) { actPhotos = []; } }
+    function actSave() {
+      try { localStorage.setItem(actKey(), JSON.stringify(actPhotos)); return true; }
+      catch (e) { uiAlert('ទំហំអង្គចងចាំពេញ មិនអាចរក្សាទុករូបភាពបានទេ។ សូមលុបរូបខ្លះ។'); return false; }
+    }
+    function actRender() {
+      const g = document.getElementById('actGrid');
+      g.innerHTML = actPhotos.map((src, i) => '<div class="act-item"><img src="' + src + '" alt=""><button type="button" class="act-del act-ui" onclick="actDel(' + i + ')" title="លុប">✕</button></div>').join('');
+      document.getElementById('actHint').innerText = actPhotos.length + '/' + ACT_MAX + ' រូប';
+      document.getElementById('actSection').style.display = '';
+      updateEstimatedPageCount();
+    }
+    async function actDel(i) {
+      if (!await uiConfirm('តើអ្នកចង់លុបរូបភាពនេះមែនទេ?', { danger: true, okText: 'លុប', title: 'លុបរូបភាព' })) return;
+      actPhotos.splice(i, 1); actSave(); actRender();
+    }
+    function actCompress(file) {
+      return new Promise((res, rej) => {
+        const fr = new FileReader();
+        fr.onerror = rej;
+        fr.onload = () => {
+          const im = new Image();
+          im.onerror = rej;
+          im.onload = () => {
+            const M = 1000, r = Math.min(1, M / Math.max(im.width, im.height));
+            const c = document.createElement('canvas');
+            c.width = Math.round(im.width * r); c.height = Math.round(im.height * r);
+            c.getContext('2d').drawImage(im, 0, 0, c.width, c.height);
+            res(c.toDataURL('image/jpeg', 0.72));
+          };
+          im.src = fr.result;
+        };
+        fr.readAsDataURL(file);
+      });
+    }
+    async function actAddFiles(files) {
+      for (const f of Array.from(files || [])) {
+        if (actPhotos.length >= ACT_MAX) { uiAlert('អាចដាក់បានអតិបរមា ' + ACT_MAX + ' រូប។'); break; }
+        if (!/^image\//.test(f.type)) continue;
+        try { actPhotos.push(await actCompress(f)); } catch (e) { uiAlert('មិនអាចអានរូបភាពនេះបានទេ។'); }
+      }
+      actSave(); actRender();
+    }
+    function buildIntro() {
+      const counts = {}; SUBJECT_KEYS.forEach(k => counts[k] = 0);
+      rawStudentsList.forEach(s => {
+        const rec = bookRecordsMap[String(s.student_id || s.id)] || { borrow: {}, returnStatus: {} };
+        SUBJECT_KEYS.forEach(k => {
+          if (activeTab === 'borrow') { if (rec.borrow[k]) counts[k]++; }
+          else { const st = rec.returnStatus[k]; if (st === 'returned' || st === 'damaged') counts[k]++; }
+        });
+      });
+      const active = SUBJECT_KEYS.filter(k => document.getElementById('chk_' + k).checked);
+      const total = active.reduce((a, k) => a + counts[k], 0);
+      const parts = active.map(k => SUBJECT_NAMES[k] + ' ' + toKhmerNum(counts[k]) + ' ក្បាល');
+      const list = parts.length > 1 ? parts.slice(0, -1).join(' ') + ' និង' + parts[parts.length - 1] : (parts[0] || '');
+      const pt = partsOf('teacher');
+      const when = signDates.teacher.blank ? '' : ' នៅ' + safeLunar(pt) + ' ត្រូវនឹង' + solarLine(pt, false);
+      const verb = activeTab === 'borrow' ? 'បានឱ្យសិស្សខ្ចី' : 'បានប្រមូលសៀវភៅសិក្សាគោលវិញ';
+      const obj = activeTab === 'borrow' ? 'សៀវភៅសិក្សាគោល' : '';
+      const t = 'សាលាបឋមសិក្សាកំពង់ល្ពៅ' + when + ' ក្នុងថ្នាក់ទី' + toKhmerNum(cleanGrade(currentClassName)) +
+        ' លោកគ្រូ/អ្នកគ្រូ <b>' + (TEACHER_NAME || '') + '</b> ' + verb + obj + ' សរុបចំនួន <b>' + toKhmerNum(total) + '</b> ក្បាល' +
+        (list ? ' ក្នុងនោះមានសៀវភៅ ' + list : '') + ' ។';
+      document.getElementById('rptIntro').innerHTML = t;
+      document.getElementById('rptHeading1').innerText = activeTab === 'borrow' ? '១.បញ្ជីរាយនាមសិស្សខ្ចីសៀវភៅសិក្សាគោល' : '១.បញ្ជីរាយនាមសិស្សប្រគល់សៀវភៅសិក្សាគោលវិញ';
+      document.getElementById('rptHeading2').innerText = activeTab === 'borrow' ? '២.សកម្មភាពនៃការខ្ចីសៀវភៅសិក្សាគោល' : '២.សកម្មភាពនៃការប្រមូលសៀវភៅសិក្សាគោលវិញ';
+    }
+
     function openPrintPreview() {
       document.getElementById('printPreviewModal').style.display = 'block';
 
@@ -3086,6 +3189,8 @@ exports.default = {
       loadDisplaySignature();
       applyPageSetupStyles();
       renderSignDates();
+      buildIntro();
+      actLoad(); actRender();
     }
 
     function closePrintPreview() {
@@ -3103,7 +3208,8 @@ exports.default = {
         html2canvas: { scale: 3, useCORS: true },
         jsPDF: { unit: 'mm', format: pageSetup.size.toLowerCase(), orientation: isLandscape ? 'landscape' : 'portrait' }
       };
-      html2pdf().from(element).set(opt).save();
+      element.classList.add('pdf-capturing');
+      html2pdf().from(element).set(opt).save().then(() => element.classList.remove('pdf-capturing'), () => element.classList.remove('pdf-capturing'));
     }
 
     function exportToExcel() {
