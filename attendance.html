@@ -63,7 +63,7 @@
     html { height: 100%; overflow-x: hidden; overflow-y: auto !important; -webkit-overflow-scrolling: touch; }
     body {
       background: var(--bg); color: var(--text); font-size: 13px; line-height: 1.45;
-      min-height: 100%; height: auto !important; overflow-x: hidden; overflow-y: visible !important;
+      min-height: 100%; height: auto !important; overflow-x: clip !important; overflow-y: visible !important;
       -webkit-overflow-scrolling: touch; padding: 14px 16px 140px;
       transition: background .25s, color .25s;
     }
@@ -182,7 +182,8 @@
        (មិនមែនតែ 720px ទេ ព្រោះពេលបើកក្នុងគេហទំព័រមេ មាន Sidebar ស៊ីទទឹងអេក្រង់) */
     @media(min-width: 560px) {
       .daily-layout-grid { grid-template-columns: minmax(200px, 270px) minmax(0, 1fr); gap: 12px; }
-      .daily-sidebar-card { position: sticky; top: 14px; z-index: 10; padding: 14px; }
+      .daily-sidebar-card { position: sticky; top: 10px; z-index: 10; padding: 14px; max-height: calc(100vh - 20px); overflow-y: auto; align-self: start; }
+      .daily-sidebar-card .tip-box { display: none; }
     }
     @media(min-width: 900px) {
       .daily-layout-grid { grid-template-columns: minmax(250px, 310px) minmax(0, 1fr); gap: 16px; }
@@ -902,12 +903,13 @@
             <h3>សង្ខេបវត្តមានសិស្ស</h3>
             <span class="sub" id="summarySubTitle">...</span>
           </div>
-          <div class="seg-group">
+          <button type="button" class="seg-btn sum-toggle" id="sumToggle" onclick="toggleSummary()" style="border:1px solid var(--border); background:var(--surface-elevated); margin-left:auto;">👁️ បង្ហាញ</button>
+          <div class="seg-group" id="segGroupWrap" style="display:none;">
             <button type="button" class="seg-btn" id="segMonth" onclick="setSummaryMode('month')">ខែនេះ</button>
             <button type="button" class="seg-btn active" id="segYear" onclick="setSummaryMode('year')">ឆ្នាំសិក្សា</button>
           </div>
         </div>
-        <div class="sum-scroll">
+        <div class="sum-scroll" id="sumScroll" style="display:none;">
           <table class="sum-table">
             <thead>
               <tr>
@@ -3048,6 +3050,13 @@ exports.default = {
     }
 
     /* 📊 តារាងសង្ខេប៖ ឈ្មោះ | មានវត្តមាន | អវត្តមាន | យឺត | មានច្បាប់ | % */
+    function toggleSummary() {
+      var box = document.getElementById('sumScroll'), open = box.style.display === 'none';
+      box.style.display = open ? '' : 'none';
+      document.getElementById('segGroupWrap').style.display = open ? '' : 'none';
+      document.getElementById('sumToggle').textContent = open ? '🙈 លាក់' : '👁️ បង្ហាញ';
+      if (open) { try { box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {} }
+    }
     function renderSummaryTable() {
       var tb = document.getElementById('summaryTbody');
       if (!tb) return;
