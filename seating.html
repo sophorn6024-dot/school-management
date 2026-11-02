@@ -98,6 +98,9 @@ i.fa-solid,i.fa-regular,.fa-solid,.fa-regular{font-family:'Font Awesome 6 Free'!
 .side-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .side-head h3{font-size:14.5px}
 .cnt{background:#fef3c7;color:#b45309;font-weight:700;padding:3px 12px;border-radius:20px;font-size:12.5px}.cnt.zero{background:rgba(5,150,105,.15);color:var(--ok)}
+.holdbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;padding:8px 12px;border-radius:12px;background:#fef3c7;border:1.5px solid #f59e0b;color:#92400e;font-size:12.5px}
+.holdbar .hl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.holdbar button{border:none;background:#b45309;color:#fff;font-weight:700;border-radius:9px;padding:5px 12px;cursor:pointer;font-family:inherit;font-size:12.5px;flex-shrink:0}
 .ulist{display:flex;flex-direction:column;gap:8px;max-height:560px;overflow-y:auto;padding-right:2px}
 .ulist .chip{min-height:44px;cursor:grab}
 .ulist .done{text-align:center;color:var(--muted);padding:26px 8px}
@@ -161,7 +164,7 @@ i.fa-solid,i.fa-regular,.fa-solid,.fa-regular{font-family:'Font Awesome 6 Free'!
 /* 🔽 បង្ហាញតូចជាងមុន (តែលើអេក្រង់ — មិនប៉ះពាល់ការបោះពុម្ព) */
 @media screen{
   .main-card,.side-card{padding:12px;border-radius:20px}
-  .layout{grid-template-columns:minmax(0,1fr) 250px;gap:10px}
+  .layout{grid-template-columns:minmax(0,1fr) 210px;gap:8px}
   .step button{width:32px;height:34px;font-size:17px}
   .step .mid{min-width:52px}.step .mid b{font-size:18px}.step .mid small{font-size:10px}
   .front{grid-template-columns:110px minmax(0,1fr) 110px;gap:10px;margin-bottom:8px}
@@ -170,14 +173,17 @@ i.fa-solid,i.fa-regular,.fa-solid,.fa-regular{font-family:'Font Awesome 6 Free'!
   .floor{padding:10px 8px;border-radius:16px}
   .room{gap:8px}.rowline{gap:8px}
   .rno{width:24px}.rno span{width:22px;height:22px;font-size:11px}
-  .desk{min-width:150px;padding:4px;gap:4px;border-radius:14px;box-shadow:0 4px 0 var(--desk-sh),0 6px 10px rgba(0,0,0,.12)}
+  .desk{min-width:170px;padding:4px;gap:4px;border-radius:14px;box-shadow:0 4px 0 var(--desk-sh),0 6px 10px rgba(0,0,0,.12)}
   .seat{min-height:40px;border-radius:10px}
   .seat .dash{width:18px;height:4px}
   .chip{min-height:36px;border-radius:9px;gap:4px;padding:0 5px 0 4px;box-shadow:0 2px 0 rgba(0,0,0,.12)}
   .av{width:24px;height:24px;font-size:11px}
   .chip .nm{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
-  .seat .chip{padding:0 5px 0 4px;gap:5px;justify-content:flex-start}
-  .seat .chip .av{display:flex;width:24px;height:24px;font-size:11px}
+  .seat .chip{padding:0 3px 0 3px;gap:3px;justify-content:flex-start}
+  .seat .chip .av{display:flex;width:20px;height:20px;font-size:10px}
+  .desk{gap:3px;padding:3px}
+  .floor{padding:10px 4px}
+  .rowline{gap:4px}.rno{width:20px}.rno span{width:20px;height:20px;font-size:10px}
   .seat>.dash{width:auto;height:auto;background:none;border-radius:0;font-size:0}
   .seat>.dash::after{content:'+';font-size:20px;line-height:1;font-weight:400;color:#b45309}
   .front{grid-template-columns:90px minmax(0,1fr) 90px}
@@ -239,6 +245,7 @@ i.fa-solid,i.fa-regular,.fa-solid,.fa-regular{font-family:'Font Awesome 6 Free'!
 
     <aside class="side-card no-print">
       <div class="side-head"><h3 class="moul" style="font-size:13px">មិនទាន់មានកន្លែង</h3><span class="cnt" id="uCnt">0 នាក់</span></div>
+      <div class="holdbar" id="holdBar" style="display:none"><span class="hl">កាន់ : <b id="holdName"></b></span><button type="button" onclick="releasePick(event)">លែង</button></div>
       <div class="ulist" id="uList" ondragover="event.preventDefault()" ondrop="dropToList(event)"></div>
       <div class="legend"><span><i class="b"></i>ប្រុស</span><span><i class="g"></i>ស្រី</span></div>
       <div class="hint">💡 អូសឈ្មោះទៅកៅអី ឬលើទូរស័ព្ទ៖ ចុចឈ្មោះសិស្សមួយ រួចចុចកៅអី។ ចុចសិស្សម្នាក់លើកៅអី រួចចុចកៅអីផ្សេងដើម្បីប្តូរ។ ចុច ✕ ដើម្បីដកចេញ។ ចុចតុគ្រូពណ៌ចំហៀងដើម្បីប្តូរផ្នែក។</div>
@@ -352,6 +359,8 @@ function render(){
   document.getElementById('room').innerHTML=html;
 
   const un=students.filter(s=>!(s.id in pm));
+  { const hb=document.getElementById('holdBar'),ps=picked&&students.find(x=>x.id===picked.id);
+    hb.style.display=ps?'flex':'none'; if(ps)document.getElementById('holdName').textContent=ps.name; }
   document.getElementById('uCnt').textContent=un.length+' នាក់';
   document.getElementById('uCnt').classList.toggle('zero',un.length===0);
   document.getElementById('uList').innerHTML=un.length?un.map(s=>chip(s,null)).join(''):'<div class="done">✅ សិស្សទាំងអស់មានកន្លែងហើយ</div>';
@@ -397,6 +406,7 @@ function seatClick(key){
   if(!picked)return;
   moveTo(picked.id,picked.seat,key);
 }
+function releasePick(e){e.stopPropagation();picked=null;render()}
 function removeSeat(e,key){e.stopPropagation();delete L.seats[key];picked=null;setDirty(true);render()}
 async function clearAll(){
   if(!Object.keys(placedMap()).length)return;
@@ -531,10 +541,8 @@ function fitNames(){
     const n=c.querySelector('.nm'),av=c.querySelector('.av');if(!n)return;
     if(av)av.style.display='';n.style.fontSize='';n.style.whiteSpace='';n.style.textOverflow='';n.style.lineHeight='';
     let f=12;
-    while(n.scrollWidth>n.clientWidth+1&&f>8.5){f-=.5;n.style.fontSize=f+'px'}
-    if(n.scrollWidth>n.clientWidth+1&&av){av.style.display='none';f=12;n.style.fontSize='';
-      while(n.scrollWidth>n.clientWidth+1&&f>8){f-=.5;n.style.fontSize=f+'px'}
-    if(n.scrollWidth>n.clientWidth+1){n.style.whiteSpace='normal';n.style.textOverflow='clip';n.style.fontSize='9px';n.style.lineHeight='1.15'}}
+    while(n.scrollWidth>n.clientWidth+1&&f>8){f-=.5;n.style.fontSize=f+'px'}
+    if(n.scrollWidth>n.clientWidth+1){n.style.whiteSpace='normal';n.style.textOverflow='clip';n.style.fontSize='9px';n.style.lineHeight='1.15'}
   });
 }
 (function(){let t;const r=document.getElementById('room');if(!r)return;
