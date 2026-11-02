@@ -99,7 +99,9 @@ i.fa-solid,i.fa-regular,.fa-solid,.fa-regular{font-family:'Font Awesome 6 Free'!
 .side-head h3{font-size:14.5px}
 .cnt{background:#fef3c7;color:#b45309;font-weight:700;padding:3px 12px;border-radius:20px;font-size:12.5px}.cnt.zero{background:rgba(5,150,105,.15);color:var(--ok)}
 .holdbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;padding:8px 12px;border-radius:12px;background:#fef3c7;border:1.5px solid #f59e0b;color:#92400e;font-size:12.5px}
-.holdbar .hl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.holdbar{flex-wrap:wrap}
+.holdbar .hl{flex:1 1 100%;min-width:0;white-space:normal;word-break:break-word;line-height:1.5}
+.holdbar button{margin-left:auto;padding:5px 18px}
 .holdbar button{border:none;background:#b45309;color:#fff;font-weight:700;border-radius:9px;padding:5px 12px;cursor:pointer;font-family:inherit;font-size:12.5px;flex-shrink:0}
 .ulist{display:flex;flex-direction:column;gap:8px;max-height:560px;overflow-y:auto;padding-right:2px}
 .ulist .chip{min-height:44px;cursor:grab}
