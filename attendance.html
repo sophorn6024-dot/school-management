@@ -879,7 +879,7 @@
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px 10px; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border);">
             <div style="margin-right:auto;">
               <h3 style="font-size:15px; font-weight:700; color:var(--text); white-space:nowrap;">បញ្ជីឈ្មោះសិស្ស</h3>
-              <span style="font-size:11.5px; color:var(--text-muted);">ប្រព័ន្ធរក្សាទុកស្វ័យប្រវត្តិ</span>
+              <span id="subHint" style="display:block; min-height:17px; font-size:11.5px; color:var(--text-muted); white-space:nowrap; transition:color .2s;"></span>
             </div>
             <div class="view-toggle" role="tablist" aria-label="របៀបបង្ហាញ">
               <button type="button" id="vtList" class="active" onclick="setDailyView('list')"><i class="fa-solid fa-list"></i> បញ្ជី</button>
@@ -887,8 +887,6 @@
             </div>
             <span style="font-size:11.5px; font-weight:600; color:#059669; background:var(--p-bg); padding:4px 10px; border-radius:20px;">✓ សកម្ម</span>
           </div>
-
-          <div id="dayNoRecord" style="display:none; align-items:center; gap:8px; margin:-4px 0 14px; padding:8px 12px; background:rgba(217,119,6,.10); border:1px solid rgba(217,119,6,.35); border-radius:12px; color:#b45309; font-size:12.5px; font-weight:600; line-height:1.5;"><span style="font-size:15px;">⚠️</span><span><b>មិនទាន់កត់ត្រាថ្ងៃនេះ</b> — ស្ថានភាពខាងក្រោមជាលំនាំដើម</span></div>
 
           <div id="studentListContainer">
             <div style="text-align:center; padding:40px; color:var(--text-muted);">កំពុងទាញយកទិន្នន័យ...</div>
@@ -2573,10 +2571,18 @@ exports.default = {
     }
 
     /* 6. ទាញយកវត្តមានប្រចាំថ្ងៃ (ត្រងសិស្សបោះបង់តាមឆមាសនៃកាលបរិច្ឆេទ) */
-    function setDayNoRecord(show) {
-      var el = document.getElementById('dayNoRecord');
-      if (el) el.style.display = show ? 'flex' : 'none';
+    var noRecFlag = false, hintFlashTxt = '', hintFlashTimer = null;
+    function updateHint() {
+      var el = document.getElementById('subHint'); if (!el) return;
+      if (hintFlashTxt) { el.textContent = hintFlashTxt; el.style.color = '#059669'; el.style.fontWeight = '600'; }
+      else if (noRecFlag) { el.textContent = '⚠️ មិនទាន់កត់ត្រាថ្ងៃនេះ (លំនាំដើម)'; el.style.color = '#d97706'; el.style.fontWeight = '600'; }
+      else { el.textContent = ''; el.style.fontWeight = ''; }
     }
+    function hintFlash(txt, ms) {
+      clearTimeout(hintFlashTimer); hintFlashTxt = txt; updateHint();
+      if (ms) hintFlashTimer = setTimeout(function () { hintFlashTxt = ''; updateHint(); }, ms);
+    }
+    function setDayNoRecord(show) { noRecFlag = !!show; updateHint(); }
 
     async function loadDailyAttendanceData() {
       if (!currentClassName) return;
@@ -2900,6 +2906,7 @@ exports.default = {
 
     function triggerDebouncedSave() {
       showSaveToast();
+      hintFlash('💾 ប្រព័ន្ធរក្សាទុកស្វ័យប្រវត្តិ...', 0);
       clearTimeout(saveDebounceTimer);
       saveDebounceTimer = setTimeout(saveDailyAttendance, 400);
     }
@@ -2927,10 +2934,10 @@ exports.default = {
 
       try {
         const { error } = await stRpc('staff_attendance_save', { p_records: records });
-        if (error) console.error('Save attendance error:', error);
-        else { setDayNoRecord(false); loadAttendanceSummary(); }   // 🌟 ធ្វើបច្ចុប្បន្នភាពព្រមាន + តារាងសង្ខេប
+        if (error) { console.error('Save attendance error:', error); hintFlash('', 0); }
+        else { setDayNoRecord(false); hintFlash('✓ ប្រព័ន្ធរក្សាទុកស្វ័យប្រវត្តិ', 1800); loadAttendanceSummary(); }   // 🌟 ធ្វើបច្ចុប្បន្នភាពព្រមាន + តារាងសង្ខេប
       } catch (err) {
-        console.warn('Save attendance exception:', err);
+        console.warn('Save attendance exception:', err); hintFlash('', 0);
       }
     }
 
