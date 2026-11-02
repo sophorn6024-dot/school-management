@@ -99,9 +99,10 @@ i.fa-solid,i.fa-regular,.fa-solid,.fa-regular{font-family:'Font Awesome 6 Free'!
 .side-head h3{font-size:14.5px}
 .cnt{background:#fef3c7;color:#b45309;font-weight:700;padding:3px 12px;border-radius:20px;font-size:12.5px}.cnt.zero{background:rgba(5,150,105,.15);color:var(--ok)}
 .holdbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;padding:8px 12px;border-radius:12px;background:#fef3c7;border:1.5px solid #f59e0b;color:#92400e;font-size:12.5px}
-.holdbar{flex-wrap:wrap}
-.holdbar .hl{flex:1 1 100%;min-width:0;white-space:normal;word-break:break-word;line-height:1.5}
-.holdbar button{margin-left:auto;padding:5px 18px}
+.holdbar{flex-wrap:nowrap;padding:6px 8px}
+.holdbar .hl{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden}
+.holdbar button{margin-left:auto;padding:4px 10px;font-size:12px}
+.side-head h3{white-space:nowrap}.side-head{gap:6px}.side-head .cnt{white-space:nowrap}
 .holdbar button{border:none;background:#b45309;color:#fff;font-weight:700;border-radius:9px;padding:5px 12px;cursor:pointer;font-family:inherit;font-size:12.5px;flex-shrink:0}
 .ulist{display:flex;flex-direction:column;gap:8px;max-height:560px;overflow-y:auto;padding-right:2px}
 .ulist .chip{min-height:44px;cursor:grab}
@@ -363,7 +364,7 @@ function render(){
 
   const un=students.filter(s=>!(s.id in pm));
   { const hb=document.getElementById('holdBar'),ps=picked&&students.find(x=>x.id===picked.id);
-    hb.style.display=ps?'flex':'none'; if(ps)document.getElementById('holdName').textContent=ps.name; }
+    hb.style.display=ps?'flex':'none'; if(ps){document.getElementById('holdName').textContent=ps.name;setTimeout(fitHold,0)} }
   document.getElementById('uCnt').textContent=un.length+' នាក់';
   document.getElementById('uCnt').classList.toggle('zero',un.length===0);
   document.getElementById('uList').innerHTML=un.length?un.map(s=>chip(s,null)).join(''):'<div class="done">✅ សិស្សទាំងអស់មានកន្លែងហើយ</div>';
@@ -539,7 +540,13 @@ window.addEventListener('DOMContentLoaded',()=>{
 });
 
 /* 🔠 ធ្វើឱ្យឈ្មោះបង្ហាញពេញ៖ បន្ថយទំហំអក្សរស្វ័យប្រវត្តិ បើនៅតែវែងពេក លាក់រូបអក្សរដំបូង */
+function fitHold(){
+  const h=document.querySelector('#holdBar .hl');if(!h||h.offsetParent===null)return;
+  h.style.fontSize='';let f=12.5;
+  while(h.scrollWidth>h.clientWidth+1&&f>7.5){f-=.5;h.style.fontSize=f+'px'}
+}
 function fitNames(){
+  fitHold();
   document.querySelectorAll('.seat .chip').forEach(c=>{
     const n=c.querySelector('.nm'),av=c.querySelector('.av');if(!n)return;
     if(av)av.style.display='';n.style.fontSize='';n.style.whiteSpace='';n.style.textOverflow='';n.style.lineHeight='';
