@@ -524,6 +524,23 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('app').style.display='block';
   render();initClasses();
 });
+
+/* 🔠 ធ្វើឱ្យឈ្មោះបង្ហាញពេញ៖ បន្ថយទំហំអក្សរស្វ័យប្រវត្តិ បើនៅតែវែងពេក លាក់រូបអក្សរដំបូង */
+function fitNames(){
+  document.querySelectorAll('.seat .chip').forEach(c=>{
+    const n=c.querySelector('.nm'),av=c.querySelector('.av');if(!n)return;
+    if(av)av.style.display='';n.style.fontSize='';n.style.whiteSpace='';n.style.textOverflow='';n.style.lineHeight='';
+    let f=12;
+    while(n.scrollWidth>n.clientWidth+1&&f>8.5){f-=.5;n.style.fontSize=f+'px'}
+    if(n.scrollWidth>n.clientWidth+1&&av){av.style.display='none';f=12;n.style.fontSize='';
+      while(n.scrollWidth>n.clientWidth+1&&f>8){f-=.5;n.style.fontSize=f+'px'}
+    if(n.scrollWidth>n.clientWidth+1){n.style.whiteSpace='normal';n.style.textOverflow='clip';n.style.fontSize='9px';n.style.lineHeight='1.15'}}
+  });
+}
+(function(){let t;const r=document.getElementById('room');if(!r)return;
+  new MutationObserver(()=>{clearTimeout(t);t=setTimeout(fitNames,30)}).observe(r,{childList:true,subtree:true});
+  addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(fitNames,60)});
+})();
 </script>
 </body>
 </html>
