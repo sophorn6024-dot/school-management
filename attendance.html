@@ -880,7 +880,7 @@
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px 10px; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border);">
             <div style="margin-right:auto;">
               <h3 style="font-size:15px; font-weight:700; color:var(--text); white-space:nowrap;">បញ្ជីឈ្មោះសិស្ស</h3>
-              <span id="subHint" style="display:block; min-height:17px; font-size:11.5px; color:var(--text-muted); white-space:nowrap; transition:color .2s;"></span>
+              <span id="subHint" style="display:block; min-height:17px; font-size:11.5px; color:var(--text-muted); white-space:nowrap; transition:color .2s;">ប្រព័ន្ធរក្សាទុកស្វ័យប្រវត្តិ</span>
             </div>
             <div class="view-toggle" role="tablist" aria-label="របៀបបង្ហាញ">
               <button type="button" id="vtList" class="active" onclick="setDailyView('list')"><i class="fa-solid fa-list"></i> បញ្ជី</button>
@@ -978,7 +978,7 @@
               </div>
             </div>
 
-            <input type="text" id="holidayReasonInput" placeholder="មូលហេតុ (ឧ. បុណ្យភ្ជុំបិណ្ឌ)" style="flex:1; min-width:180px; padding:8px 12px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); outline:none; font-size:12.5px;">
+            <input type="text" id="holidayReasonInput" placeholder="មូលហេតុ (ឧ. គ្រូសុំច្បាប់)" style="flex:1; min-width:180px; padding:8px 12px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); outline:none; font-size:12.5px;">
             <button onclick="addHolidayForCurrentMonth()" class="btn-open-report" style="background:#059669;"><i class="fa-solid fa-plus"></i> បន្ថែម</button>
           </div>
           <div id="holidayTagsContainer" style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;"></div>
@@ -2487,7 +2487,7 @@ exports.default = {
       container.innerHTML = `
         <div style="text-align:center; padding:35px; color:var(--text-muted);">
           <i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--primary);"></i>
-          <p style="margin-top:10px; font-weight:600;">កំពុងទាញយកទិន្នន័យសិស្សពី Supabase...</p>
+          <p style="margin-top:10px; font-weight:600;">កំពុងទាញយកទិន្នន័យសិស្ស</p>
         </div>`;
 
       try {
@@ -2578,13 +2578,13 @@ exports.default = {
       var el = document.getElementById('subHint'); if (!el) return;
       if (hintFlashTxt) { el.textContent = hintFlashTxt; el.style.color = '#059669'; el.style.fontWeight = '600'; }
       else if (noRecFlag) { el.textContent = '⚠️ មិនទាន់កត់ត្រាថ្ងៃនេះ (លំនាំដើម)'; el.style.color = '#d97706'; el.style.fontWeight = '600'; }
-      else { el.textContent = ''; el.style.fontWeight = ''; }
+      else { el.textContent = 'ប្រព័ន្ធរក្សាទុកស្វ័យប្រវត្តិ'; el.style.color = ''; el.style.fontWeight = ''; }
     }
     function hintFlash(txt, ms) {
       clearTimeout(hintFlashTimer); hintFlashTxt = txt; updateHint();
       if (ms) hintFlashTimer = setTimeout(function () { hintFlashTxt = ''; updateHint(); }, ms);
     }
-    function setDayNoRecord(show) { noRecFlag = !!show; updateHint(); }
+    function setDayNoRecord(show, keep) { noRecFlag = !!show; if (!keep) { clearTimeout(hintFlashTimer); hintFlashTxt = ''; } updateHint(); }
 
     async function loadDailyAttendanceData() {
       if (!currentClassName) return;
@@ -2937,7 +2937,7 @@ exports.default = {
       try {
         const { error } = await stRpc('staff_attendance_save', { p_records: records });
         if (error) { console.error('Save attendance error:', error); hintFlash('', 0); }
-        else { setDayNoRecord(false); hintFlash('✓ ប្រព័ន្ធរក្សាទុកស្វ័យប្រវត្តិ', 1800); loadAttendanceSummary(); }   // 🌟 ធ្វើបច្ចុប្បន្នភាពព្រមាន + តារាងសង្ខេប
+        else { setDayNoRecord(false, true); hintFlash('✓ ប្រព័ន្ធរក្សាទុកស្វ័យប្រវត្តិ', 0); loadAttendanceSummary(); }   // 🌟 ធ្វើបច្ចុប្បន្នភាពព្រមាន + តារាងសង្ខេប
       } catch (err) {
         console.warn('Save attendance exception:', err); hintFlash('', 0);
       }
