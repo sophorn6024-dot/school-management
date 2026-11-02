@@ -123,6 +123,11 @@
     }
     .btn-login-redirect:hover { transform: translateY(-2px); }
 
+    #saveTick { position: fixed; left: 50%; top: 50%; z-index: 999999; width: 96px; height: 96px; margin: -48px 0 0 -48px; border-radius: 50%;
+      background: #059669; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 46px; pointer-events: none;
+      box-shadow: 0 14px 40px rgba(5,150,105,.45); opacity: 0; transform: scale(.4); }
+    #saveTick.pop { animation: tickPop 1s ease forwards; }
+    @keyframes tickPop { 0% { opacity: 0; transform: scale(.4); } 22% { opacity: 1; transform: scale(1.12); } 38% { transform: scale(1); } 75% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(.9); } }
     #saveToast {
       visibility: hidden; min-width: 220px; background: #059669; color: #fff; text-align: center;
       border-radius: 12px; padding: 10px 18px; position: fixed; z-index: 999999; left: 50%; bottom: 24px;
@@ -740,6 +745,7 @@
   <!-- ══════════════ 🌟 MAIN ATTENDANCE PAGE CONTENT ══════════════ -->
   <div id="mainPageContent" style="display:none;">
 
+    <div id="saveTick" aria-hidden="true">✓</div>
     <div id="saveToast"><i class="fa-solid fa-circle-check"></i> បានរក្សាទុកដោយជោគជ័យ</div>
 
     <div class="top-nav-bar">
@@ -2423,6 +2429,10 @@ exports.default = {
       return sem1Months.includes(mName) ? 'ឆមាសទី១' : 'ឆមាសទី២';
     }
 
+    function showSaveTick() {
+      var t = document.getElementById('saveTick'); if (!t) return;
+      t.classList.remove('pop'); void t.offsetWidth; t.classList.add('pop');
+    }
     function showSaveToast() {
       var toast = document.getElementById("saveToast");
       toast.className = "show";
@@ -2906,7 +2916,6 @@ exports.default = {
     }
 
     function triggerDebouncedSave() {
-      showSaveToast();
       hintFlash('ប្រព័ន្ធរក្សាទុកស្វ័យប្រវត្តិ', 0);
       clearTimeout(saveDebounceTimer);
       saveDebounceTimer = setTimeout(saveDailyAttendance, 400);
@@ -2936,7 +2945,7 @@ exports.default = {
       try {
         const { error } = await stRpc('staff_attendance_save', { p_records: records });
         if (error) { console.error('Save attendance error:', error); hintFlash('', 0); }
-        else { setDayNoRecord(false, true); hintFlash('ប្រព័ន្ធរក្សាទុកស្វ័យប្រវត្តិ', 0); loadAttendanceSummary(); }   // 🌟 ធ្វើបច្ចុប្បន្នភាពព្រមាន + តារាងសង្ខេប
+        else { setDayNoRecord(false, true); hintFlash('ប្រព័ន្ធរក្សាទុកស្វ័យប្រវត្តិ', 0); showSaveTick(); loadAttendanceSummary(); }   // 🌟 ធ្វើបច្ចុប្បន្នភាពព្រមាន + តារាងសង្ខេប
       } catch (err) {
         console.warn('Save attendance exception:', err); hintFlash('', 0);
       }
