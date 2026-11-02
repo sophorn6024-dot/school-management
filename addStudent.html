@@ -3025,7 +3025,17 @@ async function trLoadOptions() {
       opts.push({ cls: k, label: (u.teacher_name || 'គ្មានឈ្មោះ') + ' — ថ្នាក់ទី ' + k });
     });
   });
-  ALL_CLASSES.forEach(c => { if (!used.has(c)) opts.push({ cls: c, label: '(មិនទាន់មានគ្រូ) — ថ្នាក់ទី ' + c }); });
+  /* ថ្នាក់ពិតប្រាកដដែលមានសិស្ស ប៉ុន្តែគ្មានគ្រូទទួលបន្ទុក */
+  try {
+    let from = 0; const step = 1000;
+    while (true) {
+      const { data: g, error: ge } = await sb.from('students').select('grade').range(from, from + step - 1);
+      if (ge || !g || !g.length) break;
+      g.forEach(r => { const k = normGrade(r.grade); if (k && !used.has(k)) { used.add(k); opts.push({ cls: k, label: '(មិនទាន់មានគ្រូ) — ថ្នាក់ទី ' + k }); } });
+      if (g.length < step) break;
+      from += step;
+    }
+  } catch (e) {}
   opts.sort((a, b) => classSortKey(a.cls) - classSortKey(b.cls) || a.label.localeCompare(b.label));
   TR_OPTS = opts;
 }
