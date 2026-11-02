@@ -123,11 +123,10 @@
     }
     .btn-login-redirect:hover { transform: translateY(-2px); }
 
-    #saveTick { position: fixed; left: 50%; top: 50%; z-index: 999999; width: 96px; height: 96px; margin: -48px 0 0 -48px; border-radius: 50%;
-      background: #059669; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 46px; pointer-events: none;
-      box-shadow: 0 14px 40px rgba(5,150,105,.45); opacity: 0; transform: scale(.4); }
-    #saveTick.pop { animation: tickPop 1s ease forwards; }
-    @keyframes tickPop { 0% { opacity: 0; transform: scale(.4); } 22% { opacity: 1; transform: scale(1.12); } 38% { transform: scale(1); } 75% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(.9); } }
+    #saveTick { display: none; width: 30px; height: 30px; border-radius: 50%; background: #059669; color: #fff; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; flex-shrink: 0; box-shadow: 0 4px 12px rgba(5,150,105,.4); }
+    #saveTick.on { display: inline-flex; }
+    #saveTick.pop { animation: tickPop .5s ease; }
+    @keyframes tickPop { 0% { transform: scale(.3); opacity: 0; } 60% { transform: scale(1.25); opacity: 1; } 100% { transform: scale(1); } }
     #saveToast {
       visibility: hidden; min-width: 220px; background: #059669; color: #fff; text-align: center;
       border-radius: 12px; padding: 10px 18px; position: fixed; z-index: 999999; left: 50%; bottom: 24px;
@@ -745,7 +744,6 @@
   <!-- ══════════════ 🌟 MAIN ATTENDANCE PAGE CONTENT ══════════════ -->
   <div id="mainPageContent" style="display:none;">
 
-    <div id="saveTick" aria-hidden="true">✓</div>
     <div id="saveToast"><i class="fa-solid fa-circle-check"></i> បានរក្សាទុកដោយជោគជ័យ</div>
 
     <div class="top-nav-bar">
@@ -892,6 +890,7 @@
               <button type="button" id="vtList" class="active" onclick="setDailyView('list')"><i class="fa-solid fa-list"></i> បញ្ជី</button>
               <button type="button" id="vtSeat" onclick="setDailyView('seat')"><i class="fa-solid fa-table-cells-large"></i> ប្លង់តុ</button>
             </div>
+            <span id="saveTick" title="បានរក្សាទុក" aria-hidden="true">✓</span>
           </div>
 
           <div id="studentListContainer">
@@ -983,7 +982,7 @@
               </div>
             </div>
 
-            <input type="text" id="holidayReasonInput" placeholder="មូលហេតុ (ឧ. បុណ្យភ្ជុំបិណ្ឌ)" style="flex:1; min-width:180px; padding:8px 12px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); outline:none; font-size:12.5px;">
+            <input type="text" id="holidayReasonInput" placeholder="មូលហេតុ (ឧ. គ្រូសុំច្បាប់)" style="flex:1; min-width:180px; padding:8px 12px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); outline:none; font-size:12.5px;">
             <button onclick="addHolidayForCurrentMonth()" class="btn-open-report" style="background:#059669;"><i class="fa-solid fa-plus"></i> បន្ថែម</button>
           </div>
           <div id="holidayTagsContainer" style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;"></div>
@@ -2431,7 +2430,7 @@ exports.default = {
 
     function showSaveTick() {
       var t = document.getElementById('saveTick'); if (!t) return;
-      t.classList.remove('pop'); void t.offsetWidth; t.classList.add('pop');
+      t.classList.add('on'); t.classList.remove('pop'); void t.offsetWidth; t.classList.add('pop');
     }
     function showSaveToast() {
       var toast = document.getElementById("saveToast");
@@ -2496,7 +2495,7 @@ exports.default = {
       container.innerHTML = `
         <div style="text-align:center; padding:35px; color:var(--text-muted);">
           <i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--primary);"></i>
-          <p style="margin-top:10px; font-weight:600;">កំពុងទាញយកទិន្នន័យសិស្សពី Supabase...</p>
+          <p style="margin-top:10px; font-weight:600;">កំពុងទាញយកទិន្នន័យសិស្ស</p>
         </div>`;
 
       try {
@@ -2593,7 +2592,7 @@ exports.default = {
       clearTimeout(hintFlashTimer); hintFlashTxt = txt; updateHint();
       if (ms) hintFlashTimer = setTimeout(function () { hintFlashTxt = ''; updateHint(); }, ms);
     }
-    function setDayNoRecord(show, keep) { noRecFlag = !!show; if (!keep) { clearTimeout(hintFlashTimer); hintFlashTxt = ''; } updateHint(); }
+    function setDayNoRecord(show, keep) { noRecFlag = !!show; if (!keep) { var tk = document.getElementById('saveTick'); if (tk) tk.classList.remove('on', 'pop'); clearTimeout(hintFlashTimer); hintFlashTxt = ''; } updateHint(); }
 
     async function loadDailyAttendanceData() {
       if (!currentClassName) return;
