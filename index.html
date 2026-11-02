@@ -1296,7 +1296,7 @@ function qrStampLogo(box){
           </div>
         </div>
         <div class="form-group-field" id="pfClassGroup" style="display:none;">
-          <label>ថ្នាក់ទទួលបន្ទុក <span style="font-size:11px; color:var(--primary); font-weight:normal;">(សម្រាប់ Admin)</span></label>
+          <label>ថ្នាក់ទទួលបន្ទុក</label>
           <input type="text" id="pfClass" placeholder="ឧ. ១, ២, ៤(ក)...">
         </div>
         <div class="form-group-field"><label>ទីកន្លែងបច្ចុប្បន្ន</label><input type="text" id="pfAddress" required></div>
@@ -3736,7 +3736,7 @@ function openProfileModal() {
   }
   const classGroup = document.getElementById('pfClassGroup');
   const classInput = document.getElementById('pfClass');
-  if (classGroup) classGroup.style.display = IS_ADMIN ? 'block' : 'none';
+  if (classGroup) classGroup.style.display = 'block';
   if (classInput) classInput.value = CURRENT_USER.assigned_classes || CURRENT_USER.assigned_class || '';
   setProfilePhotoPreview(CURRENT_USER.photo_url || '');
   const note = document.getElementById('profilePhotoSizeNote');
@@ -3827,7 +3827,7 @@ async function saveMyProfile(ev) {
     address: document.getElementById('pfAddress').value.trim(),
     updated_at: new Date().toISOString()
   };
-  if (IS_ADMIN) updates.assigned_classes = document.getElementById('pfClass').value.trim();
+  updates.assigned_classes = document.getElementById('pfClass').value.trim();
   const newPass = document.getElementById('pfPassword').value.trim();
   const oldPass = (document.getElementById('pfOldPassword') || {}).value ? document.getElementById('pfOldPassword').value.trim() : '';
   if (newPass && !oldPass) {
