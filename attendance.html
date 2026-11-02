@@ -876,18 +876,19 @@
         </div>
 
         <div class="daily-list-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border);">
-            <div>
-              <h3 style="font-size:15px; font-weight:700; color:var(--text);">បញ្ជីឈ្មោះសិស្ស</h3>
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px 10px; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid var(--border);">
+            <div style="margin-right:auto;">
+              <h3 style="font-size:15px; font-weight:700; color:var(--text); white-space:nowrap;">បញ្ជីឈ្មោះសិស្ស</h3>
               <span style="font-size:11.5px; color:var(--text-muted);">ប្រព័ន្ធរក្សាទុកស្វ័យប្រវត្តិ</span>
             </div>
-            <span id="dayNoRecord" style="display:none; align-items:center; gap:5px; flex:1; margin:0 10px; padding:0; background:none; border:none; color:#d97706; font-size:12px; font-weight:600; line-height:1.4;">⚠️ មិនទាន់កត់ត្រាថ្ងៃនេះ ៖ ស្ថានភាពខាងក្រោមជាលំនាំដើម</span>
             <div class="view-toggle" role="tablist" aria-label="របៀបបង្ហាញ">
               <button type="button" id="vtList" class="active" onclick="setDailyView('list')"><i class="fa-solid fa-list"></i> បញ្ជី</button>
               <button type="button" id="vtSeat" onclick="setDailyView('seat')"><i class="fa-solid fa-table-cells-large"></i> ប្លង់តុ</button>
             </div>
             <span style="font-size:11.5px; font-weight:600; color:#059669; background:var(--p-bg); padding:4px 10px; border-radius:20px;">✓ សកម្ម</span>
           </div>
+
+          <div id="dayNoRecord" style="display:none; align-items:center; gap:8px; margin:-4px 0 14px; padding:8px 12px; background:rgba(217,119,6,.10); border:1px solid rgba(217,119,6,.35); border-radius:12px; color:#b45309; font-size:12.5px; font-weight:600; line-height:1.5;"><span style="font-size:15px;">⚠️</span><span><b>មិនទាន់កត់ត្រាថ្ងៃនេះ</b> — ស្ថានភាពខាងក្រោមជាលំនាំដើម</span></div>
 
           <div id="studentListContainer">
             <div style="text-align:center; padding:40px; color:var(--text-muted);">កំពុងទាញយកទិន្នន័យ...</div>
