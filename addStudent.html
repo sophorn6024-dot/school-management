@@ -300,16 +300,16 @@
     }
 
     .sticky-col-1 {
-      position: sticky; left: 0px; z-index: 28; background: var(--bg-sticky); width: 48px; min-width: 48px;
+      position: sticky; left: 0px; z-index: 28; background: var(--bg-sticky); width: 68px; min-width: 68px;
     }
     .col-photo { width: 55px; min-width: 55px; max-width: 55px; }
     .col-id { width: 62px; min-width: 62px; max-width: 62px; z-index: 10; padding-left: 3px !important; padding-right: 3px !important; }
     .sticky-col-2 {
-      position: sticky; left: 48px; z-index: 24; background: var(--bg-sticky); width: 85px; min-width: 85px;
+      position: sticky; left: 68px; z-index: 24; background: var(--bg-sticky); width: 85px; min-width: 85px;
       text-align: left; padding-left: 6px;
     }
     .sticky-col-3 {
-      position: sticky; left: 133px; z-index: 24; background: var(--bg-sticky); width: 85px; min-width: 85px;
+      position: sticky; left: 153px; z-index: 24; background: var(--bg-sticky); width: 85px; min-width: 85px;
       text-align: left; padding-left: 6px;
       border-right: 2px solid var(--border) !important;
       box-shadow: 4px 0 10px -2px rgba(0, 0, 0, 0.22);
@@ -455,6 +455,27 @@
     .action-item.delete { color: #ef4444; border-top: 1px solid var(--border); }
     .action-item.delete:hover { background: rgba(239, 68, 68, 0.1); }
 
+
+    /* ☑️ ជ្រើសរើសសិស្ស + របារសកម្មភាព + តម្រៀបអត្តលេខ + ទំព័រទទេ */
+    .rowchk { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+    .rowchk input { width: 17px; height: 17px; accent-color: #7c3aed; cursor: pointer; margin: 0; }
+    tr.row-selected td { background: rgba(124,58,237,.10) !important; }
+    .bulk-bar { display: none; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 0 10px; padding: 10px 14px; border-radius: 14px; background: rgba(2,132,199,.10); border: 1px solid rgba(2,132,199,.35); }
+    .bulk-bar.show { display: flex; }
+    .bulk-bar .bb-count { font-weight: 800; color: #0369a1; margin-right: auto; }
+    .bulk-bar button { height: 36px; padding: 0 14px; border-radius: 11px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-family: inherit; font-weight: 700; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    .bulk-bar button.bb-warn { color: #b45309; border-color: rgba(217,119,6,.5); }
+    .bulk-bar button.bb-info { color: #0369a1; border-color: rgba(2,132,199,.5); }
+    .bulk-bar button.bb-danger { color: #dc2626; border-color: rgba(220,38,38,.5); }
+    .id-sort-btn { border: none; background: transparent; color: var(--text-muted); cursor: pointer; font-size: 13px; padding: 0 0 0 4px; line-height: 1; }
+    .id-sort-btn.active { color: #7c3aed; }
+    .empty-state { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 10px; padding: 70px 20px; border: 1.5px dashed var(--border); border-radius: 18px; background: var(--surface); }
+    .empty-state .es-ic { font-size: 54px; opacity: .55; }
+    .empty-state h3 { font-size: 17px; font-weight: 800; color: var(--text); }
+    .empty-state p { max-width: 520px; color: var(--text-muted); line-height: 1.8; font-size: 13.5px; }
+    .empty-state .es-acts { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+    .empty-state .es-acts button { height: 42px; padding: 0 20px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-elevated, var(--surface)); color: var(--text); font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; }
+    .empty-state .es-acts button.pri { background: #6d28d9; border-color: #6d28d9; color: #fff; }
     .status-row { text-align: center; padding: 36px 14px; color: var(--text-muted); font-size: 13.5px; font-weight: 700; }
     .spinner-dark {
       width: 16px; height: 16px; border: 2px solid rgba(2,132,199,0.2);
@@ -1053,13 +1074,32 @@ body{background:var(--bg)}
     </div>
 
     <!-- 📊 MULTI-LEVEL SPREADSHEET TABLE -->
+    <div class="bulk-bar" id="bulkBar">
+      <span class="bb-count" id="bbCount">✓ បានជ្រើស 0 នាក់</span>
+      <button type="button" class="bb-warn" onclick="bulkDropout()">🚪 បោះបង់</button>
+      <button type="button" class="bb-info" id="bbTransfer" onclick="bulkTransfer()" style="display:none">🔁 ផ្ទេរ</button>
+      <button type="button" class="bb-danger" onclick="bulkDelete()">🗑️ លុប</button>
+      <button type="button" onclick="clearSelection()" title="ដកការជ្រើស">✕</button>
+    </div>
+
+    <div class="empty-state" id="emptyState">
+      <div class="es-ic">🎓</div>
+      <h3>គ្មានទិន្នន័យសិស្សទេ</h3>
+      <p>បិទភ្ជាប់បញ្ជីឈ្មោះ មួយឈ្មោះក្នុងមួយបន្ទាត់ គឺជាផ្លូវលឿនបំផុត ។ ឬបន្ថែមម្តងមួយនាក់ ឬនាំចូលពីឯកសារ Excel ក៏បាន ។</p>
+      <div class="es-acts">
+        <button type="button" class="pri" onclick="addNewRow()">➕ បន្ថែមសិស្ស</button>
+        <button type="button" onclick="openImportModal('paste')">📋 បិទភ្ជាប់បញ្ជីឈ្មោះ</button>
+        <button type="button" onclick="openImportModal('excel')">📄 នាំចូល Excel</button>
+      </div>
+    </div>
+
     <div class="table-container" id="tableContainer">
       <table id="studentsTable">
         <thead>
           <tr>
-            <th rowspan="2" class="sticky-col-1"><div class="th-vertical">ល.រ</div></th>
+            <th rowspan="2" class="sticky-col-1"><div class="th-vertical"><label class="rowchk"><input type="checkbox" id="chkAll" onchange="toggleSelectAll(this.checked)" title="ជ្រើសទាំងអស់"><span>ល.រ</span></label></div></th>
             <th rowspan="2" class="col-photo"><div class="th-vertical">រូបថត</div></th>
-            <th rowspan="2" class="col-id"><div class="th-vertical">អត្តលេខ *</div></th>
+            <th rowspan="2" class="col-id"><div class="th-vertical">អត្តលេខ *<button type="button" class="id-sort-btn" id="idSortBtn" onclick="sortStudentsById()" title="តម្រៀបតាមអត្តលេខ">⇅</button></div></th>
             <th rowspan="2" class="sticky-col-2"><div class="th-vertical">គោត្តនាម *</div></th>
             <th rowspan="2" class="sticky-col-3"><div class="th-vertical">នាម</div></th>
             <th rowspan="2" class="col-gender" style="width: 54px;"><div class="th-vertical">ភេទ *</div></th>
@@ -1503,6 +1543,9 @@ body{background:var(--bg)}
     let pendingImportStudents = [];
     let activeImportTab = 'paste';
     let uidSeq = 0;
+    let dataLoading = true;
+    const selectedUids = new Set();
+    let idSortAsc = null;
 
     function applyTheme(th, d) {
       document.documentElement.setAttribute('data-theme', th === 'light' ? 'light' : 'dark');
@@ -1755,6 +1798,7 @@ body{background:var(--bg)}
 
     /* 2. READ DATA FROM SUPABASE */
     async function loadStudentsFromSupabase() {
+      dataLoading = true;
       const tbody = document.getElementById('tableBody');
       tbody.innerHTML = `<tr><td colspan="22" class="status-row"><span class="spinner-dark"></span> កំពុងទាញទិន្នន័យពី Supabase...</td></tr>`;
 
@@ -1808,6 +1852,7 @@ body{background:var(--bg)}
           isDraft: false
         }));
 
+        dataLoading = false;
         applyFilterAndRender();
         migrateAddrCols();
         setSyncState('idle', "ស្វ័យប្រវត្តិ");
@@ -2200,9 +2245,16 @@ body{background:var(--bg)}
 
     function renderTable(list) {
       const tbody = document.getElementById('tableBody');
+      /* 🎓 ទំព័រទទេ៖ គ្មានសិស្សសោះ (មិនមែនដោយសារតម្រង) */
+      const noData = studentsList.length === 0 && !dataLoading;
+      const es = document.getElementById('emptyState'), tc = document.getElementById('tableContainer');
+      if (es && tc) { es.style.display = noData ? 'flex' : 'none'; tc.style.display = noData ? 'none' : ''; }
+      /* សម្អាតការជ្រើសរើសដែលលែងមាន */
+      selectedUids.forEach(u => { if (!studentsList.some(x => x._uid === u && !x.isDraft)) selectedUids.delete(u); });
       if (!list.length) {
         tbody.innerHTML = `<tr><td colspan="22" class="status-row">គ្មានទិន្នន័យសិស្សឡើយ! ចុច «➕ បន្ថែមជួរ» ឬ «📥 បញ្ចូលបញ្ជីសិស្ស» ដើម្បីបញ្ចូលថ្មី។</td></tr>`;
         updateCounters(0, 0);
+        updateBulkBar();
         return;
       }
 
@@ -2233,9 +2285,10 @@ body{background:var(--bg)}
           <option value="ប្រុស" ${gv === 'ប្រុស' ? 'selected' : ''}>ប្រុស</option>`;
         const genderClass = gv === 'ស្រី' ? 'gender-f' : (gv === 'ប្រុស' ? 'gender-m' : 'gender-dash');
 
+        const chk = s.isDraft ? '' : `<input type="checkbox" class="row-chk" data-uid="${s._uid}" ${selectedUids.has(s._uid) ? 'checked' : ''} onchange="toggleSelect(${s._uid}, this.checked)">`;
         let col1Content = s.isDraft
           ? `<span style="font-weight:700;">${i + 1}</span><button class="btn-cancel-draft" onclick="cancelDraftRow(${realIdx})">✕</button>`
-          : `<span style="font-weight:700;">${i + 1}</span>`;
+          : `<label class="rowchk">${chk}<span style="font-weight:700;">${i + 1}</span></label>`;
 
         let actionContent = s.isDraft
           ? `<button class="btn-save-row-now" onclick="saveDraftRow(${realIdx})">💾 រក្សាទុក</button>`
@@ -2245,7 +2298,7 @@ body{background:var(--bg)}
              </div>`;
 
         return `
-          <tr data-index="${realIdx}">
+          <tr data-index="${realIdx}" class="${selectedUids.has(s._uid) ? 'row-selected' : ''}">
             <td class="sticky-col-1">${col1Content}</td>
             <td class="col-photo">
               <div class="table-photo-box" onclick="openEditModal(${realIdx})" title="ចុចដើម្បីកែប្រែព័ត៌មានសិស្ស">
@@ -2290,6 +2343,7 @@ body{background:var(--bg)}
       tbody.innerHTML = rowsHtml;
       updateCounters(list.length, femaleCount);
       applyLockState();
+      updateBulkBar();
     }
 
     function updateCounters(total, female) {
@@ -2624,8 +2678,9 @@ body{background:var(--bg)}
     function onRowPhotoFileSelected(input) { input.value = ''; }
 
     /* 10. IMPORT (EXCEL + PASTE) */
-    function openImportModal() {
+    function openImportModal(tab) {
       if (guardLocked()) return;
+      if (tab === 'paste' || tab === 'excel') switchImportTab(tab);
       document.getElementById('importClassTag').innerText = currentSelectedClass ? `ថ្នាក់ទី ${currentSelectedClass}` : 'ថ្នាក់ទី១ (លំនាំដើម)';
       document.getElementById('importModalOverlay').style.display = 'flex';
     }
@@ -2716,6 +2771,99 @@ body{background:var(--bg)}
       XLSX.writeFile(wb, "គំរូបញ្ជីសិស្ស.xlsx");
     }
 
+    /* =========================================================
+       📄 នាំចូល Excel — ស្គាល់ទម្រង់បញ្ជីសិស្សរបស់សាលា (មានក្បាលរដ្ឋបាល) និងគំរូធម្មតា
+    ========================================================= */
+    const KH_DIGITS = '០១២៣៤៥៦៧៨៩';
+    function toWestDigits(t) { return String(t == null ? '' : t).replace(/[០-៩]/g, d => KH_DIGITS.indexOf(d)); }
+    function toKhDigits(t) { return String(t == null ? '' : t).replace(/[0-9]/g, d => KH_DIGITS[+d]); }
+    function clsKey(c) { return toWestDigits(String(c || '').replace(/^ថ្នាក់ទី\s*/, '')).replace(/[\s()\-_–—]/g, ''); }
+    function fileClassToKh(c) {
+      const t = toWestDigits(String(c || '').replace(/ថ្នាក់ទី|ថ្នាក់/g, '').trim());
+      const m = t.match(/^(\d+)\s*[-_–—\s]*\(?\s*([^\d\s()\-_]+)?\s*\)?$/);
+      if (!m) return normGrade(c);
+      return toKhDigits(m[1]) + (m[2] ? '(' + m[2] + ')' : '');
+    }
+    function parseDobAny(v) {
+      if (v == null || v === '') return null;
+      if (typeof v === 'number' && isFinite(v) && v > 1000) {
+        try { const o = XLSX.SSF.parse_date_code(v); if (o) return o.y + '-' + String(o.m).padStart(2, '0') + '-' + String(o.d).padStart(2, '0'); } catch (e) {}
+      }
+      const t = toWestDigits(v).trim();
+      let m = t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/);
+      if (m) {
+        let d = +m[1], mo = +m[2]; const y = m[3];
+        if (mo > 12 && d <= 12) { const x = d; d = mo; mo = x; }
+        return y + '-' + String(mo).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+      }
+      m = t.match(/^(\d{4})[\/\-.](\d{1,2})[\/\-.](\d{1,2})/);
+      if (m) return m[1] + '-' + String(m[2]).padStart(2, '0') + '-' + String(m[3]).padStart(2, '0');
+      return formatToInputDate(t) || null;
+    }
+    const cellTxt = v => String(v == null ? '' : v).replace(/\s+/g, ' ').trim();
+
+    /* ស្គាល់ជួរក្បាលតារាង → បញ្ជីសិស្ស + ថ្នាក់ក្នុងឯកសារ */
+    function parseRosterJson(json) {
+      let hi = -1;
+      for (let i = 0; i < Math.min(json.length, 40); i++) {
+        const cells = (json[i] || []).map(cellTxt);
+        if (cells.some(c => c === 'ភេទ') && cells.some(c => /ឈ្មោះ|នាម/.test(c))) { hi = i; break; }
+      }
+      let fileClass = '';
+      for (let i = 0; i < (hi < 0 ? 0 : hi); i++) {
+        for (const c of (json[i] || [])) {
+          const mm = cellTxt(c).match(/^ថ្នាក់(?:ទី)?\s*[:：]?\s*(\S+)/);
+          if (mm) { fileClass = mm[1]; break; }
+        }
+        if (fileClass) break;
+      }
+      const out = [];
+      if (hi < 0) {   /* ទម្រង់គំរូចាស់ (គ្មានក្បាលរដ្ឋបាល) */
+        for (let i = 1; i < json.length; i++) {
+          const r = json[i]; if (!r || !r[1]) continue;
+          out.push({
+            student_id: String(r[0] || '').trim(), student_name: `${r[1] || ''} ${r[2] || ''}`.trim(),
+            gender: normalizeGenderFront(r[3]) || 'ប្រុស', dob: parseDobAny(r[4]), phone: r[5] ? String(r[5]) : null,
+            pob: r[6] || null, address: r[7] || null, father_name: r[8] || null, mother_name: r[9] || null
+          });
+        }
+        return { rows: out, fileClass: '' };
+      }
+      const H = (json[hi] || []).map(cellTxt);
+      const find = (fn, from) => { for (let c = from || 0; c < H.length; c++) if (H[c] && fn(H[c])) return c; return -1; };
+      const col = {
+        id: find(h => /អត្តលេខ/.test(h)),
+        full: find(h => /នាមត្រកូល|ឈ្មោះសិស្ស/.test(h)),
+        last: find(h => /^គោត្តនាម/.test(h)),
+        first: find(h => h === 'នាម'),
+        sex: find(h => h === 'ភេទ'),
+        dob: find(h => /ថ្ងៃ.*កំណើត|កំណើត.*ថ្ងៃ|^ថ្ងៃកំណើត/.test(h)),
+        pob: find(h => /ទីកន្លែងកំណើត/.test(h)),
+        phone: find(h => /ទូរស័ព្ទ/.test(h)),
+        father: find(h => /ឈ្មោះឪពុក|^ឪពុក/.test(h)),
+        mother: find(h => /ឈ្មោះម្តាយ|ឈ្មោះម្ដាយ|^ម្តាយ|^ម្ដាយ/.test(h)),
+        addr: find(h => /លំនៅដ្ឋាន|អាសយដ្ឋាន/.test(h))
+      };
+      col.fatherJob = col.father >= 0 ? find(h => /^មុខរបរ/.test(h), col.father + 1) : -1;
+      col.motherJob = col.mother >= 0 ? find(h => /^មុខរបរ/.test(h), col.mother + 1) : -1;
+      if (col.mother >= 0 && col.fatherJob >= col.mother) col.fatherJob = -1;
+      const g = (r, c) => c >= 0 ? cellTxt(r[c]) : '';
+      for (let i = hi + 1; i < json.length; i++) {
+        const r = json[i]; if (!r) continue;
+        let name = col.full >= 0 ? g(r, col.full) : (g(r, col.last) + ' ' + g(r, col.first)).trim();
+        if (!name) continue;
+        out.push({
+          student_id: g(r, col.id), student_name: name,
+          gender: normalizeGenderFront(g(r, col.sex)) || 'ប្រុស',
+          dob: col.dob >= 0 ? parseDobAny(r[col.dob]) : null,
+          phone: g(r, col.phone) || null, pob: g(r, col.pob) || null, address: g(r, col.addr) || null,
+          father_name: g(r, col.father) || null, father_job: g(r, col.fatherJob) || null,
+          mother_name: g(r, col.mother) || null, mother_job: g(r, col.motherJob) || null
+        });
+      }
+      return { rows: out, fileClass };
+    }
+
     function onExcelFileSelected(input) {
       if (guardLocked()) { input.value = ''; return; }
       const file = input.files[0];
@@ -2724,62 +2872,50 @@ body{background:var(--bg)}
       reader.onload = async e => {
         try {
           const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
-          const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1 });
-          const rows = [];
-          const excelIds = [];
+          const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: true, defval: '' });
+          const parsed = parseRosterJson(json);
+          let rows = parsed.rows;
+          if (!rows.length) { showToast("⚠️ រកមិនឃើញទិន្នន័យក្នុង File ទេ", true); input.value = ''; return; }
 
-          for (let i = 1; i < json.length; i++) {
-            const r = json[i];
-            if (!r || !r[1]) continue;
-            const sId = String(r[0] || '').trim();
-            if (sId) excelIds.push(sId);
-            rows.push({
-              student_id: sId,
-              student_name: `${r[1] || ''} ${r[2] || ''}`.trim(),
-              gender: normalizeGenderFront(r[3]) || 'ប្រុស',
-              dob: r[4] ? formatToInputDate(r[4]) || null : null,
-              phone: r[5] ? String(r[5]) : null,
-              pob: r[6] || null,
-              address: r[7] || null,
-              father_name: r[8] || null,
-              mother_name: r[9] || null,
-              grade: getDefaultGrade()
-            });
-          }
+          /* 🏫 កំណត់ថ្នាក់ */
+          let gradeStr = '', note = '';
+          const fileCls = parsed.fileClass ? fileClassToKh(parsed.fileClass) : '';
+          if (currentSelectedClass) {
+            gradeStr = `ថ្នាក់ទី${currentSelectedClass}`;
+            if (fileCls && clsKey(fileCls) !== clsKey(currentSelectedClass)) note = `\n⚠️ ឯកសារនេះសរសេរថ្នាក់ «${parsed.fileClass}» ប៉ុន្តែអ្នកកំពុងជ្រើសថ្នាក់ «${currentSelectedClass}» — សិស្សនឹងចូលទៅថ្នាក់ «${currentSelectedClass}»។`;
+          } else if (fileCls) {
+            gradeStr = `ថ្នាក់ទី${fileCls}`;
+            note = `\n(ថ្នាក់ត្រូវបានយកតាមឯកសារ៖ ${fileCls})`;
+          } else { gradeStr = getDefaultGrade(); }
 
-          if (!rows.length) {
-            showToast("⚠️ រកមិនឃើញទិន្នន័យក្នុង File ទេ", true);
-            input.value = '';
-            return;
-          }
+          /* ត្រួតស្ទួន៖ ឈ្មោះ + ថ្ងៃកំណើតដូចគ្នាក្នុងថ្នាក់ដែលមានស្រាប់ */
+          const exist = new Set(studentsList.filter(x => !x.isDraft && normGrade(x.grade) === normGrade(gradeStr)).map(x => (x.name || '').replace(/\s+/g, ' ').trim() + '|' + formatToInputDate(x.dob)));
+          const fresh = rows.filter(r => !exist.has(r.student_name + '|' + (r.dob || '')));
+          const skipped = rows.length - fresh.length;
+          if (!fresh.length) { uiAlert('សិស្សទាំងអស់ក្នុងឯកសារនេះមានក្នុងថ្នាក់នេះរួចហើយ (ឈ្មោះ + ថ្ងៃកំណើតដូចគ្នា)។'); input.value = ''; return; }
 
-          const duplicateInExcel = excelIds.filter((item, index) => excelIds.indexOf(item) !== index);
-          if (duplicateInExcel.length > 0) {
-            uiAlert(`⚠️ ក្នុង File Excel មានអត្តលេខស្ទួនគ្នា៖\n${[...new Set(duplicateInExcel)].join(', ')}`);
-            input.value = '';
-            return;
-          }
-
-          if (excelIds.length > 0) {
-            const { data: existing, error: checkErr } = await sb
-              .from(STUDENTS_TABLE)
-              .select('student_id')
-              .in('student_id', excelIds);
-
-            if (!checkErr && existing && existing.length > 0) {
-              const dupList = existing.map(x => x.student_id).join(', ');
-              uiAlert(`⚠️ មិនអាចនាំចូលបានទេ ព្រោះអត្តលេខទាំងនេះមានក្នុងប្រព័ន្ធរួចហើយ៖\n${dupList}`);
-              input.value = '';
-              return;
+          const ids = fresh.map(r => r.student_id).filter(Boolean);
+          const dupInFile = ids.filter((x, i) => ids.indexOf(x) !== i);
+          if (dupInFile.length) { uiAlert(`⚠️ ក្នុង File Excel មានអត្តលេខស្ទួនគ្នា៖\n${[...new Set(dupInFile)].join(', ')}`); input.value = ''; return; }
+          if (ids.length) {
+            const { data: existing, error: checkErr } = await sb.from(STUDENTS_TABLE).select('student_id').in('student_id', ids);
+            if (!checkErr && existing && existing.length) {
+              uiAlert(`⚠️ មិនអាចនាំចូលបានទេ ព្រោះអត្តលេខទាំងនេះមានក្នុងប្រព័ន្ធរួចហើយ៖\n${existing.map(x => x.student_id).join(', ')}`);
+              input.value = ''; return;
             }
           }
 
-          const { error } = await stWrite('bulk_insert',{data:rows.map(withAddrCols)});
+          const girls = fresh.filter(r => r.gender === 'ស្រី').length;
+          const msg = `រកឃើញសិស្ស ${fresh.length} នាក់ (ស្រី ${girls} នាក់)។` + (skipped ? `\nរំលង ${skipped} នាក់ ដែលមានរួចហើយ។` : '') + note + `\nនាំចូលទៅ «${gradeStr}» ឬទេ?`;
+          if (!await uiConfirm(msg, { okText: 'នាំចូល', title: 'នាំចូលពី Excel' })) { input.value = ''; return; }
+
+          const payload = fresh.map(r => Object.assign({}, r, { grade: gradeStr }));
+          const { error } = await stWrite('bulk_insert', { data: payload.map(withAddrCols) });
           if (error) throw error;
-          showToast(`🎉 នាំចូលបាន ${rows.length} នាក់ជោគជ័យ!`);
+          showToast(`🎉 នាំចូលបាន ${payload.length} នាក់ជោគជ័យ!`);
           closeImportModal();
           loadStudentsFromSupabase();
-        } catch(err) { uiAlert("កំហុស Excel: " + err.message); }
+        } catch (err) { uiAlert("កំហុស Excel: " + (err.message || err)); }
         input.value = '';
       };
       reader.readAsArrayBuffer(file);
@@ -2838,12 +2974,97 @@ body{background:var(--bg)}
       showToast(`📊 បានទាញយកសិស្ស ${exportList.length} នាក់ (${label})`);
     }
 
+
+    /* =========================================================
+       ☑️ ជ្រើសរើសសិស្ស + សកម្មភាពច្រើននាក់ (បោះបង់ / ផ្ទេរ / លុប)
+    ========================================================= */
+    function selectableList() { return visibleList.filter(s => !s.isDraft); }
+    function toggleSelect(uid, on) {
+      if (on) selectedUids.add(uid); else selectedUids.delete(uid);
+      const tr = document.querySelector('.row-chk[data-uid="' + uid + '"]');
+      if (tr) tr.closest('tr').classList.toggle('row-selected', on);
+      updateBulkBar();
+    }
+    function toggleSelectAll(on) {
+      selectableList().forEach(s => { if (on) selectedUids.add(s._uid); else selectedUids.delete(s._uid); });
+      document.querySelectorAll('.row-chk').forEach(c => { c.checked = on; c.closest('tr').classList.toggle('row-selected', on); });
+      updateBulkBar();
+    }
+    function clearSelection() { selectedUids.clear(); document.querySelectorAll('.row-chk').forEach(c => { c.checked = false; c.closest('tr').classList.remove('row-selected'); }); updateBulkBar(); }
+    function selectedStudents() { return studentsList.filter(s => selectedUids.has(s._uid) && !s.isDraft && s.db_id); }
+    function updateBulkBar() {
+      const n = selectedStudents().length, bar = document.getElementById('bulkBar'); if (!bar) return;
+      bar.classList.toggle('show', n > 0);
+      document.getElementById('bbCount').textContent = '✓ បានជ្រើស ' + n + ' នាក់';
+      document.getElementById('bbTransfer').style.display = (typeof IS_ADMIN !== 'undefined' && IS_ADMIN) ? '' : 'none';
+      const all = document.getElementById('chkAll'), vis = selectableList();
+      if (all) { all.checked = vis.length > 0 && vis.every(s => selectedUids.has(s._uid)); all.indeterminate = !all.checked && n > 0; }
+    }
+    async function bulkDelete() {
+      if (guardLocked()) return;
+      const list = selectedStudents(); if (!list.length) return;
+      if (!await uiConfirm('តើអ្នកពិតជាចង់លុបសិស្ស ' + list.length + ' នាក់ ចេញពីប្រព័ន្ធមែនទេ?\nសកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។', { danger: true, okText: 'លុប', title: 'លុបសិស្ស' })) return;
+      let ok = 0, fail = 0;
+      for (const s of list) {
+        const { error } = await stWrite('delete', { id: s.db_id });
+        if (error) { fail++; continue; }
+        ok++; const i = studentsList.indexOf(s); if (i >= 0) studentsList.splice(i, 1); selectedUids.delete(s._uid);
+      }
+      applyFilterAndRender(); loadClassesWithData();
+      showToast(fail ? ('លុបបាន ' + ok + ' នាក់ · មិនបាន ' + fail + ' នាក់') : ('🗑️ បានលុប ' + ok + ' នាក់'), !!fail);
+    }
+    function askDropoutSemester(count) {
+      return new Promise(resolve => {
+        const bg = document.createElement('div');
+        bg.className = 'dlg-bg';
+        bg.innerHTML = '<div class="dlg warn"><div class="ic">🚪</div><h3>ដាក់ឱ្យបោះបង់ ' + count + ' នាក់</h3><p>ជ្រើសរើសឆមាសដែលសិស្សបោះបង់ការសិក្សា</p>' +
+          '<div class="acts" style="flex-wrap:wrap"><button data-v="ឆមាសទី១">ឆមាសទី១</button><button data-v="ឆមាសទី២">ឆមាសទី២</button></div>' +
+          '<div class="acts" style="margin-top:8px"><button data-v="">បោះបង់</button><button data-v="__restore" class="pri">ត្រឡប់មកសិក្សាវិញ</button></div></div>';
+        bg.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; document.body.removeChild(bg); resolve(b.dataset.v === undefined ? null : (b.dataset.v === '' ? null : b.dataset.v)); });
+        document.body.appendChild(bg);
+      });
+    }
+    async function bulkDropout() {
+      if (guardLocked()) return;
+      const list = selectedStudents(); if (!list.length) return;
+      const v = await askDropoutSemester(list.length); if (v === null) return;
+      const val = v === '__restore' ? '' : v;
+      let ok = 0, fail = 0;
+      for (const s of list) {
+        const { error } = await stWrite('update', { id: s.db_id, data: { dropout_semester: val || null } });
+        if (error) { fail++; continue; }
+        ok++; s.dropoutSemester = val;
+      }
+      applyFilterAndRender();
+      showToast(fail ? ('រក្សាទុកបាន ' + ok + ' នាក់ · មិនបាន ' + fail + ' នាក់') : (val ? ('🚪 បានដាក់ ' + ok + ' នាក់ ' + val) : ('✅ បានត្រឡប់ ' + ok + ' នាក់មកសិក្សាវិញ')), !!fail);
+    }
+    async function bulkTransfer() {
+      if (!IS_ADMIN) return;
+      const list = selectedStudents(); if (!list.length) return;
+      await openTransferModal(list.map(s => s.db_id), currentSelectedClass);
+    }
+    /* 🔢 តម្រៀបតាមអត្តលេខ (ឡើង/ចុះ) */
+    function sortStudentsById() {
+      idSortAsc = idSortAsc === null ? true : !idSortAsc;
+      const key = s => String(s.id || '').trim();
+      studentsList.sort((a, b) => {
+        const x = key(a), y = key(b);
+        if (!x && !y) return 0; if (!x) return 1; if (!y) return -1;
+        const c = x.localeCompare(y, undefined, { numeric: true });
+        return idSortAsc ? c : -c;
+      });
+      const b = document.getElementById('idSortBtn'); b.textContent = idSortAsc ? '↑' : '↓'; b.classList.add('active');
+      b.title = idSortAsc ? 'អត្តលេខ តូច → ធំ (ចុចដើម្បីប្តូរ)' : 'អត្តលេខ ធំ → តូច (ចុចដើម្បីប្តូរ)';
+      applyFilterAndRender();
+    }
+
     function sortStudentsAlphabetical() {
       sortDirectionAsc = !sortDirectionAsc;
       studentsList.sort((a, b) => {
         const cmp = (a.name || '').localeCompare(b.name || '', 'km');
         return sortDirectionAsc ? cmp : -cmp;
       });
+      { const ib = document.getElementById('idSortBtn'); if (ib) { ib.textContent = '⇅'; ib.classList.remove('active'); idSortAsc = null; } }
       document.getElementById('sortBtnText').innerText = sortDirectionAsc ? 'តម្រៀប ក-អ' : 'តម្រៀប អ-ក';
       document.getElementById('sortBtn').title = sortDirectionAsc ? 'តម្រៀបតាមត្រកូល (ក-អ)' : 'តម្រៀបតាមត្រកូល (អ-ក)';
       document.getElementById('sortBtn').classList.add('active');
@@ -3057,14 +3278,20 @@ function trFillSelects() {
   document.getElementById('trFrom').innerHTML = mk('— ជ្រើសគ្រូ/ថ្នាក់ប្រភព —');
   document.getElementById('trTo').innerHTML = mk('— ជ្រើសគ្រូ/ថ្នាក់ទិសដៅ —');
 }
-async function openTransferModal() {
+let TR_PRE = null;
+async function openTransferModal(preIds, fromCls) {
   if (!IS_ADMIN) return;
+  TR_PRE = Array.isArray(preIds) ? preIds : null;
   document.getElementById('trBg').style.display = 'flex';
   document.getElementById('trList').innerHTML = '<div class="tr-empty">កំពុងផ្ទុក...</div>';
   try { await trLoadOptions(); } catch (e) { showToast('❌ ផ្ទុកបញ្ជីគ្រូមិនបាន', true); }
   trFillSelects();
   document.getElementById('trList').innerHTML = '<div class="tr-empty">សូមជ្រើសគ្រូ/ថ្នាក់ប្រភព</div>';
   TR_STUDENTS = []; trUpdateState();
+  if (TR_PRE && fromCls) {
+    const f = document.getElementById('trFrom');
+    if ([...f.options].some(o => o.value === fromCls)) { f.value = fromCls; await trLoadStudents(); }
+  }
 }
 function closeTransferModal() { document.getElementById('trBg').style.display = 'none'; }
 async function trLoadStudents() {
@@ -3076,7 +3303,7 @@ async function trLoadStudents() {
     const grades = ['ថ្នាក់ទី' + cls, 'ថ្នាក់ទី ' + cls, cls];
     const { data, error } = await sb.from('students').select('id, student_id, student_name, gender, grade').in('grade', grades).order('id', { ascending: true });
     if (error) throw error;
-    TR_STUDENTS = (data || []).map(s => ({ id: s.id, sid: s.student_id, name: s.student_name || 'គ្មានឈ្មោះ', sex: s.gender || '', on: false }));
+    TR_STUDENTS = (data || []).map(s => ({ id: s.id, sid: s.student_id, name: s.student_name || 'គ្មានឈ្មោះ', sex: s.gender || '', on: !!(TR_PRE && TR_PRE.includes(s.id)) }));
   } catch (e) { box.innerHTML = '<div class="tr-empty">❌ ផ្ទុកមិនបាន៖ ' + esc(e.message || e) + '</div>'; trUpdateState(); return; }
   trRender();
 }
