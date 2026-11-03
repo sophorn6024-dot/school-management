@@ -606,7 +606,9 @@
       body { background: #fff !important; color: #000 !important; padding: 0 !important; }
       #authDeniedWrap, #manageView, .preview-nav-bar, .sig-modal-backdrop, .page-setup-modal-backdrop, .khmer-cal-popup { display: none !important; }
       #printPreviewModal { display: block !important; position: static !important; background: transparent !important; padding: 0 !important; }
-      .print-paper-sheet { width: 100% !important; max-width: none !important; zoom: 1 !important; box-shadow: none !important; border-radius: 0 !important; }
+      .print-paper-sheet { width: 100% !important; max-width: none !important; zoom: 1 !important; box-shadow: none !important; border-radius: 0 !important; padding: 0 !important; min-height: 0 !important; }
+      .print-report-table thead { display: table-header-group; }
+      .print-report-table tr, .act-section, .act-item, .print-signatures-row { break-inside: avoid; page-break-inside: avoid; }
       #selPop { display: none !important; }
       .signature-interactive-box { border: none !important; background: transparent !important; }
     }
@@ -2608,7 +2610,8 @@ exports.default = {
 
       let pst = document.getElementById('psPageStyle');
       if (!pst) { pst = document.createElement('style'); pst.id = 'psPageStyle'; document.head.appendChild(pst); }
-      pst.textContent = `@page { size: ${wMm}mm ${hMm}mm; margin: 0; }`;
+      const pgM = Math.max(10, pageSetup.marginMm * 2);
+      pst.textContent = `@page { size: ${wMm}mm ${hMm}mm; margin: ${pgM}mm; }`;
       window.PAPER_W_PX = wMm * 96 / 25.4;
       fitPreviewZoom();
       updateEstimatedPageCount();
