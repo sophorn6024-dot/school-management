@@ -2707,6 +2707,12 @@ window.addEventListener('scroll',function(e){
         return true;
       });
 
+      /* 🔤 តម្រៀបតាមអក្ខរក្រមខ្មែរ (តាមឈ្មោះ) */
+      displayStudents.sort(function (a, b) {
+        var r = String(a.student_name || '').trim().localeCompare(String(b.student_name || '').trim(), 'km');
+        return r !== 0 ? r : String(a.student_id || a.id).localeCompare(String(b.student_id || b.id));
+      });
+
       if (!displayStudents.length) {
         tbody.innerHTML = '<tr><td colspan="8" class="empty-note">គ្មានទិន្នន័យសិស្សសម្រាប់ថ្នាក់នេះទេ</td></tr>';
         return;
