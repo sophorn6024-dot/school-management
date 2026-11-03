@@ -829,6 +829,18 @@
     .em-age { float:right; font-size:11px; font-weight:700; color:var(--primary); background:rgba(2,132,199,.12); padding:1px 8px; border-radius:12px; }
     .em-footer { padding:14px 16px; gap:12px; }
     .em-footer .modal-btn { height:46px; border-radius:12px; font-size:14px; }
+    .em-info-grid { display:block; }
+    .em-info-grid .form-row-2 { margin-bottom:12px; }
+    @media (min-width: 900px) {
+      .em-box { max-width: 1060px; }
+      .em-info-grid { display:grid; grid-template-columns: 1.1fr 1fr .9fr 1.2fr .8fr 1.3fr; gap:10px; align-items:end; }
+      .em-info-grid .form-row-2 { display:contents; }
+      .em-info-grid .form-group { margin:0; min-width:0; }
+      .em-info-grid .form-group label { font-size:12px; white-space:nowrap; margin-bottom:5px; }
+      .em-info-grid .modal-input { font-size:13px; padding:0 10px; height:44px; }
+      .em-info-grid .em-age { font-size:11px; }
+      .em-info-grid .em-date { gap:4px; }
+    }
     .addr4 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .addr4 .form-group { margin: 0; }
     .save-pill { position: fixed; left: 50%; top: 12px; transform: translate(-50%, -16px); z-index: 99998; padding: 9px 18px; border-radius: 999px; font-size: 13.5px; font-weight: 700; color: #fff; background: #2563eb; box-shadow: 0 10px 26px rgba(0,0,0,.3); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; white-space: nowrap; }
@@ -1353,7 +1365,7 @@ body{background:var(--bg)}
       <div class="em-banner">
         <div class="em-banner-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
         <div class="em-banner-text">
-          <div class="em-banner-title">កែប្រែព័ត៌មានសិស្ស</div>
+          <div class="em-banner-title" id="emTitle">កែប្រែព័ត៌មានសិស្ស</div>
           <div class="em-banner-sub" id="modalHeaderSub">ឈ្មោះសិស្ស</div>
         </div>
         <button type="button" class="em-close" onclick="closeEditModal()" aria-label="បិទ"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
@@ -1374,6 +1386,7 @@ body{background:var(--bg)}
         <div class="em-section">
           <div class="em-section-head"><div class="em-section-icon">🎓</div><div class="em-section-title">ព័ត៌មានសិស្ស</div></div>
           <div class="em-section-body">
+            <div class="em-info-grid">
             <div class="form-row-2">
               <div class="form-group"><label>គោត្តនាម <b class="em-req">*</b></label><input type="text" class="modal-input" id="modalLastName"></div>
               <div class="form-group"><label>នាម</label><input type="text" class="modal-input" id="modalFirstName"></div>
@@ -1390,6 +1403,7 @@ body{background:var(--bg)}
                   <span class="em-date-icon">📅</span><span id="modalDobText">ជ្រើសថ្ងៃ</span>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </div>
@@ -2379,8 +2393,10 @@ body{background:var(--bg)}
       document.getElementById('badgeMale').innerHTML = `<span class="badge-ic">♂</span><span class="btn-label">ប្រុស</span> ${total - female}`;
     }
 
+    let _newModalUid = null;
     function addNewRow() {
       if (guardLocked()) return;
+      const onPhone = window.matchMedia('(max-width: 600px)').matches;
       studentsList.push({
         db_id: null,
         isDraft: true,
@@ -2394,6 +2410,12 @@ body{background:var(--bg)}
         photoUrl: '', dropoutSemester: '',
         _uid: ++uidSeq
       });
+      if (onPhone) {
+        const ni = studentsList.length - 1;
+        _newModalUid = studentsList[ni]._uid;
+        openEditModal(ni);
+        return;
+      }
       applyFilterAndRender();
       showBottomNavBar();
       setTimeout(() => {
@@ -2627,10 +2649,21 @@ body{background:var(--bg)}
       const pUrl = safeUrl(s.photoUrl);
       box.innerHTML = pUrl ? `<img src="${esc(pUrl)}">` : `<span>${esc((s.name || 'ក').charAt(0))}</span>`;
 
+      const isNew = _newModalUid !== null && s._uid === _newModalUid;
+      document.getElementById('emTitle').innerText = isNew ? 'បន្ថែមសិស្សថ្មី' : 'កែប្រែព័ត៌មានសិស្ស';
+      document.getElementById('modalSaveBtn').innerText = isNew ? '💾 បន្ថែមសិស្ស' : '💾 រក្សាទុកការកែប្រែ';
+      if (isNew) { document.getElementById('modalHeaderSub').innerText = 'សិស្សថ្មី'; document.getElementById('modalProfileNameText').innerText = 'សិស្សថ្មី'; }
       document.getElementById('editModalOverlay').style.display = 'flex';
     }
 
-    function closeEditModal() { document.getElementById('editModalOverlay').style.display = 'none'; }
+    function closeEditModal() {
+      document.getElementById('editModalOverlay').style.display = 'none';
+      if (_newModalUid !== null) {
+        const i = studentsList.findIndex(x => x._uid === _newModalUid && x.isDraft);
+        if (i >= 0) { studentsList.splice(i, 1); applyFilterAndRender(); }
+        _newModalUid = null;
+      }
+    }
     function openEditModalFromMenu() { if (activeRowIndex !== null) openEditModal(activeRowIndex); }
 
     async function saveModalChanges() {
@@ -2679,9 +2712,11 @@ body{background:var(--bg)}
           if (error) throw error;
           s.db_id = data.id;
         }
+        const wasNew = _newModalUid !== null && s._uid === _newModalUid;
+        if (wasNew) { s.isDraft = false; _newModalUid = null; }
         applyFilterAndRender();
         closeEditModal();
-        showToast("🎉 បានកែប្រែព័ត៌មានសិស្សជោគជ័យ!");
+        showToast(wasNew ? "🎉 បានបន្ថែមសិស្សជោគជ័យ!" : "🎉 បានកែប្រែព័ត៌មានសិស្សជោគជ័យ!");
         loadClassesWithData();
       } catch (err) {
         uiAlert("❌ កំហុស៖ " + err.message);
