@@ -2260,7 +2260,7 @@ body{background:var(--bg)}
             </td>
             <td class="col-info">
               <div class="date-picker-trigger ${showMissing && !formattedDob ? 'cell-missing' : ''}" onclick="openKhmerCalendarForTable(event, ${realIdx})">
-                <span class="dob-text">${esc(formattedDob) || 'ជ្រើសរើស...'}</span>
+                <span class="dob-text">${esc(fmtDMY(formattedDob)) || 'ជ្រើសរើស...'}</span>
                 <span class="cal-icon">📅</span>
               </div>
             </td>
@@ -2426,13 +2426,21 @@ body{background:var(--bg)}
     function openKhmerCalendarForModal(e) {
       e.stopPropagation();
       openKhmerCalendarAtElement(e.currentTarget, document.getElementById('modalDobText').dataset.rawDate, (selectedDate) => {
-        document.getElementById('modalDobText').innerText = selectedDate;
+        document.getElementById('modalDobText').innerText = fmtDMY(selectedDate);
         document.getElementById('modalDobText').dataset.rawDate = selectedDate;
         const age = calculateAge(selectedDate);
         document.getElementById('modalAgeDisplay').innerText = age !== '' ? `អាយុ: ${age} ឆ្នាំ` : 'អាយុ: -';
       });
     }
 
+    /* 📅 បង្ហាញជា ថ្ងៃ/ខែ/ឆ្នាំ (តម្លៃដែលរក្សាទុកនៅតែជា ឆ្នាំ-ខែ-ថ្ងៃ) */
+    function fmtDMY(v) {
+      if (!v) return '';
+      const m = String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (m) return m[3] + '/' + m[2] + '/' + m[1];
+      const d = new Date(v);
+      return !isNaN(d.getTime()) ? String(d.getDate()).padStart(2,'0') + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + d.getFullYear() : '';
+    }
     function formatToInputDate(v) {
       if (!v) return '';
       const d = new Date(v);
@@ -2482,7 +2490,7 @@ body{background:var(--bg)}
       const pUrl = safeUrl(s.photoUrl);
       box.innerHTML = pUrl ? `<img src="${esc(pUrl)}">` : `<span>${esc((s.name || 'ក').charAt(0))}</span>`;
 
-      document.getElementById('profileDobValue').innerText = s.dob || '-';
+      document.getElementById('profileDobValue').innerText = fmtDMY(s.dob) || '-';
       document.getElementById('profileAgeValue').innerText = calculateAge(s.dob) !== '' ? `${calculateAge(s.dob)} ឆ្នាំ` : '-';
       document.getElementById('profilePhoneValue').innerText = s.phone || '-';
       document.getElementById('profilePobValue').innerText = s.pob || '-';
@@ -2522,7 +2530,7 @@ body{background:var(--bg)}
       document.getElementById('modalGrade').value = s.grade || getDefaultGrade();
 
       document.getElementById('modalGender').value = s.sex || '';
-      document.getElementById('modalDobText').innerText = s.dob || 'ជ្រើសថ្ងៃ';
+      document.getElementById('modalDobText').innerText = fmtDMY(s.dob) || 'ជ្រើសថ្ងៃ';
       document.getElementById('modalDobText').dataset.rawDate = s.dob || '';
       const ageNow = calculateAge(s.dob);
       document.getElementById('modalAgeDisplay').innerText = `អាយុ: ${ageNow !== '' ? ageNow : '-'}`;
