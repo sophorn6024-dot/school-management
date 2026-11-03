@@ -476,6 +476,10 @@
     .empty-state .es-acts { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
     .empty-state .es-acts button { height: 42px; padding: 0 20px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-elevated, var(--surface)); color: var(--text); font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; }
     .empty-state .es-acts button.pri { background: #6d28d9; border-color: #6d28d9; color: #fff; }
+    .es-inline { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 28px 10px; position: sticky; left: 0; width: min(100%, 720px); margin: 0 auto; }
+    .es-inline .es-acts { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .es-inline .es-acts button { height: 40px; padding: 0 18px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-elevated, var(--surface)); color: var(--text); font-family: inherit; font-weight: 700; font-size: 13.5px; cursor: pointer; }
+    .es-inline .es-acts button.pri { background: #6d28d9; border-color: #6d28d9; color: #fff; }
     .status-row { text-align: center; padding: 36px 14px; color: var(--text-muted); font-size: 13.5px; font-weight: 700; }
     .spinner-dark {
       width: 16px; height: 16px; border: 2px solid rgba(2,132,199,0.2);
@@ -2252,7 +2256,18 @@ body{background:var(--bg)}
       /* សម្អាតការជ្រើសរើសដែលលែងមាន */
       selectedUids.forEach(u => { if (!studentsList.some(x => x._uid === u && !x.isDraft)) selectedUids.delete(u); });
       if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="22" class="status-row">គ្មានទិន្នន័យសិស្សឡើយ! ចុច «➕ បន្ថែមជួរ» ឬ «📥 បញ្ចូលបញ្ជីសិស្ស» ដើម្បីបញ្ចូលថ្មី។</td></tr>`;
+        const hidden = studentsList.filter(x => !x.isDraft).length;
+        const note = hidden
+          ? `មានសិស្ស ${hidden} នាក់ ត្រូវបានលាក់ដោយតម្រង (ស្ថានភាព «${esc(currentStatusFilter)}» ឬការស្វែងរក)។`
+          : 'គ្មានទិន្នន័យសិស្សឡើយ!';
+        tbody.innerHTML = `<tr><td colspan="22" class="status-row"><div class="es-inline">
+          <div>${note}</div>
+          <div class="es-acts">
+            ${hidden ? '<button type="button" class="pri" onclick="showAllStudents()">👁️ បង្ហាញទាំងអស់</button>' : ''}
+            <button type="button" class="${hidden ? '' : 'pri'}" onclick="addNewRow()">➕ បន្ថែមសិស្ស</button>
+            <button type="button" onclick="openImportModal('paste')">📋 បិទភ្ជាប់បញ្ជីឈ្មោះ</button>
+            <button type="button" onclick="openImportModal('excel')">📄 នាំចូល Excel</button>
+          </div></div></td></tr>`;
         updateCounters(0, 0);
         updateBulkBar();
         return;
@@ -3000,16 +3015,29 @@ body{background:var(--bg)}
       const all = document.getElementById('chkAll'), vis = selectableList();
       if (all) { all.checked = vis.length > 0 && vis.every(s => selectedUids.has(s._uid)); all.indeterminate = !all.checked && n > 0; }
     }
+    async function runPool(items, fn, size, onProgress) {
+      let i = 0, done = 0;
+      const worker = async () => { while (i < items.length) { const it = items[i++]; await fn(it); done++; if (onProgress) onProgress(done, items.length); } };
+      await Promise.all(Array.from({ length: Math.min(size, items.length) }, worker));
+    }
+    function setBulkBusy(on, txt) {
+      const bar = document.getElementById('bulkBar');
+      bar.querySelectorAll('button').forEach(b => b.disabled = on);
+      if (txt) document.getElementById('bbCount').textContent = txt;
+    }
     async function bulkDelete() {
       if (guardLocked()) return;
       const list = selectedStudents(); if (!list.length) return;
       if (!await uiConfirm('តើអ្នកពិតជាចង់លុបសិស្ស ' + list.length + ' នាក់ ចេញពីប្រព័ន្ធមែនទេ?\nសកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។', { danger: true, okText: 'លុប', title: 'លុបសិស្ស' })) return;
       let ok = 0, fail = 0;
-      for (const s of list) {
+      setBulkBusy(true, '⏳ កំពុងលុប 0/' + list.length);
+      await runPool(list, async s => {
         const { error } = await stWrite('delete', { id: s.db_id });
-        if (error) { fail++; continue; }
-        ok++; const i = studentsList.indexOf(s); if (i >= 0) studentsList.splice(i, 1); selectedUids.delete(s._uid);
-      }
+        if (error) { fail++; return; }
+        ok++; selectedUids.delete(s._uid);
+        const i = studentsList.indexOf(s); if (i >= 0) studentsList.splice(i, 1);
+      }, 8, (d, n) => setBulkBusy(true, '⏳ កំពុងលុប ' + d + '/' + n));
+      setBulkBusy(false);
       applyFilterAndRender(); loadClassesWithData();
       showToast(fail ? ('លុបបាន ' + ok + ' នាក់ · មិនបាន ' + fail + ' នាក់') : ('🗑️ បានលុប ' + ok + ' នាក់'), !!fail);
     }
@@ -3030,11 +3058,13 @@ body{background:var(--bg)}
       const v = await askDropoutSemester(list.length); if (v === null) return;
       const val = v === '__restore' ? '' : v;
       let ok = 0, fail = 0;
-      for (const s of list) {
+      setBulkBusy(true, '⏳ កំពុងរក្សាទុក 0/' + list.length);
+      await runPool(list, async s => {
         const { error } = await stWrite('update', { id: s.db_id, data: { dropout_semester: val || null } });
-        if (error) { fail++; continue; }
+        if (error) { fail++; return; }
         ok++; s.dropoutSemester = val;
-      }
+      }, 8, (d, n) => setBulkBusy(true, '⏳ កំពុងរក្សាទុក ' + d + '/' + n));
+      setBulkBusy(false);
       applyFilterAndRender();
       showToast(fail ? ('រក្សាទុកបាន ' + ok + ' នាក់ · មិនបាន ' + fail + ' នាក់') : (val ? ('🚪 បានដាក់ ' + ok + ' នាក់ ' + val) : ('✅ បានត្រឡប់ ' + ok + ' នាក់មកសិក្សាវិញ')), !!fail);
     }
@@ -3185,6 +3215,14 @@ body{background:var(--bg)}
     function toggleStatusDropdown(e) {
       e.stopPropagation();
       document.getElementById('statusDropdownMenu').classList.toggle('show');
+    }
+
+    function showAllStudents() {
+      const items = document.querySelectorAll('.status-item');
+      const el = [...items].find(i => i.textContent.includes('ស្ថានភាពទាំងអស់'));
+      document.getElementById('searchInput').value = '';
+      isMissingFilterActive = false;
+      if (el) selectStatusFilter('ស្ថានភាពទាំងអស់', el); else { currentStatusFilter = 'ស្ថានភាពទាំងអស់'; applyFilterAndRender(); }
     }
 
     function selectStatusFilter(st, el) {
