@@ -2996,7 +2996,7 @@ body{background:var(--bg)}
       const n = selectedStudents().length, bar = document.getElementById('bulkBar'); if (!bar) return;
       bar.classList.toggle('show', n > 0);
       document.getElementById('bbCount').textContent = '✓ បានជ្រើស ' + n + ' នាក់';
-      document.getElementById('bbTransfer').style.display = (typeof IS_ADMIN !== 'undefined' && IS_ADMIN) ? '' : 'none';
+      document.getElementById('bbTransfer').style.display = '';
       const all = document.getElementById('chkAll'), vis = selectableList();
       if (all) { all.checked = vis.length > 0 && vis.every(s => selectedUids.has(s._uid)); all.indeterminate = !all.checked && n > 0; }
     }
@@ -3039,7 +3039,7 @@ body{background:var(--bg)}
       showToast(fail ? ('រក្សាទុកបាន ' + ok + ' នាក់ · មិនបាន ' + fail + ' នាក់') : (val ? ('🚪 បានដាក់ ' + ok + ' នាក់ ' + val) : ('✅ បានត្រឡប់ ' + ok + ' នាក់មកសិក្សាវិញ')), !!fail);
     }
     async function bulkTransfer() {
-      if (!IS_ADMIN) return;
+      if (guardLocked()) return;
       const list = selectedStudents(); if (!list.length) return;
       await openTransferModal(list.map(s => s.db_id), currentSelectedClass);
     }
@@ -3280,7 +3280,7 @@ function trFillSelects() {
 }
 let TR_PRE = null;
 async function openTransferModal(preIds, fromCls) {
-  if (!IS_ADMIN) return;
+  if (!IS_ADMIN && !Array.isArray(preIds)) return;
   TR_PRE = Array.isArray(preIds) ? preIds : null;
   document.getElementById('trBg').style.display = 'flex';
   document.getElementById('trList').innerHTML = '<div class="tr-empty">កំពុងផ្ទុក...</div>';
@@ -3290,7 +3290,10 @@ async function openTransferModal(preIds, fromCls) {
   TR_STUDENTS = []; trUpdateState();
   if (TR_PRE && fromCls) {
     const f = document.getElementById('trFrom');
-    if ([...f.options].some(o => o.value === fromCls)) { f.value = fromCls; await trLoadStudents(); }
+    if (![...f.options].some(o => o.value === fromCls)) { const op = document.createElement('option'); op.value = fromCls; op.textContent = 'ថ្នាក់ទី ' + fromCls; f.appendChild(op); }
+    f.value = fromCls; await trLoadStudents();
+    f.disabled = !IS_ADMIN;   /* គ្រូ៖ ប្រភពជាថ្នាក់ខ្លួន មិនអាចប្តូរ */
+  } else { document.getElementById('trFrom').disabled = false;
   }
 }
 function closeTransferModal() { document.getElementById('trBg').style.display = 'none'; }
@@ -3303,7 +3306,7 @@ async function trLoadStudents() {
     const grades = ['ថ្នាក់ទី' + cls, 'ថ្នាក់ទី ' + cls, cls];
     const { data, error } = await sb.from('students').select('id, student_id, student_name, gender, grade').in('grade', grades).order('id', { ascending: true });
     if (error) throw error;
-    TR_STUDENTS = (data || []).map(s => ({ id: s.id, sid: s.student_id, name: s.student_name || 'គ្មានឈ្មោះ', sex: s.gender || '', on: !!(TR_PRE && TR_PRE.includes(s.id)) }));
+    TR_STUDENTS = (data || []).filter(s => IS_ADMIN || !TR_PRE || TR_PRE.includes(s.id)).map(s => ({ id: s.id, sid: s.student_id, name: s.student_name || 'គ្មានឈ្មោះ', sex: s.gender || '', on: !!(TR_PRE && TR_PRE.includes(s.id)) }));
   } catch (e) { box.innerHTML = '<div class="tr-empty">❌ ផ្ទុកមិនបាន៖ ' + esc(e.message || e) + '</div>'; trUpdateState(); return; }
   trRender();
 }
