@@ -3202,15 +3202,28 @@ exports.default = {
       const element = document.getElementById('printableReportPaper');
       const curPure = cleanGrade(currentClassName);
       const isLandscape = pageSetup.orientation === 'landscape';
+      let pw = (pageSetup.size === 'A4') ? 210 : 216, ph = (pageSetup.size === 'A4') ? 297 : 330;
+      if (isLandscape) { const t = pw; pw = ph; ph = t; }
+      /* 📏 គែមជុំវិញគ្រប់សន្លឹក (រួមទាំងសន្លឹកទី១ ទី២ …) មិនតិចជាង ១០មម */
+      const M = Math.max(10, pageSetup.marginMm * 2);
+      const saved = { w: element.style.width, mw: element.style.maxWidth, p: element.style.padding, mh: element.style.minHeight, z: element.style.zoom, t: element.style.transform };
+      element.style.width = (pw - 2 * M) + 'mm'; element.style.maxWidth = 'none'; element.style.padding = '0';
+      element.style.minHeight = '0'; element.style.zoom = '1'; element.style.transform = 'none';
+      const restore = () => {
+        element.classList.remove('pdf-capturing');
+        element.style.width = saved.w; element.style.maxWidth = saved.mw; element.style.padding = saved.p;
+        element.style.minHeight = saved.mh; element.style.zoom = saved.z; element.style.transform = saved.t;
+      };
       const opt = {
-        margin: [pageSetup.marginMm, pageSetup.marginMm, pageSetup.marginMm, pageSetup.marginMm],
+        margin: [M, M, M, M],
         filename: `Book_Report_${curPure}.pdf`,
         image: { type: 'jpeg', quality: 1.0 },
         html2canvas: { scale: 3, useCORS: true },
+        pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.act-section', '.act-item', '.print-signatures-row'] },
         jsPDF: { unit: 'mm', format: pageSetup.size.toLowerCase(), orientation: isLandscape ? 'landscape' : 'portrait' }
       };
       element.classList.add('pdf-capturing');
-      html2pdf().from(element).set(opt).save().then(() => element.classList.remove('pdf-capturing'), () => element.classList.remove('pdf-capturing'));
+      html2pdf().from(element).set(opt).save().then(restore, restore);
     }
 
     function exportToExcel() {
