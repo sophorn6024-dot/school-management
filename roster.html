@@ -464,6 +464,7 @@
     .footer-left { text-align: center; width: 44%; margin-top: 50px; font-weight: 700; }
     .footer-right { text-align: center; width: 54%; font-weight: 700; }
 
+    .from-input { width: 100%; min-width: 56px; box-sizing: border-box; background: transparent; color: inherit; }
     .inline-input {
       border: 1px dashed #94a3b8;
       border-radius: 3px;
@@ -523,7 +524,8 @@
         background: #ffffff !important; 
         background-color: #ffffff !important;
         padding: 0 !important; margin: 0 !important; 
-        width: 100% !important; height: 100% !important;
+        width: 100% !important; height: auto !important; min-height: 0 !important;
+        overflow: visible !important; overflow-x: visible !important; overflow-y: visible !important;
         color: #000000 !important;
       }
 
@@ -2738,7 +2740,7 @@ window.addEventListener('scroll',function(e){
           '<td class="name-cell">' + escapeHtml(s.student_name || 'គ្មានឈ្មោះ') + '</td>' +
           '<td>' + escapeHtml(s.gender || 'ប្រុស') + '</td>' +
           '<td class="dob-cell">' + escapeHtml(s.dob || '-') + '</td>' +
-          '<td>' + escapeHtml(s.from_class || '') + '</td>' +
+          '<td class="from-cell"><input type="text" class="inline-input from-input" value="' + escapeHtml(s.from_class || '') + '" data-sid="' + sId + '" data-old="' + escapeHtml(s.from_class || '') + '" placeholder="-" onchange="onFromClassChange(this)" onkeydown="if(event.key===\'Enter\'){this.blur();}"></td>' +
           '<td class="note-cell">' + escapeHtml(noteText) + '</td>' +
           '<td class="no-print-col">' +
             '<select class="dropout-select ' + (isMarkedDropped ? 'is-dropped' : '') + '" ' +
@@ -2751,6 +2753,26 @@ window.addEventListener('scroll',function(e){
       });
 
       tbody.innerHTML = html;
+    }
+
+    /* 6.1 ✏️ កែ «មកពីថ្នាក់ទី» ដោយផ្ទាល់ (រក្សាទុកស្វ័យប្រវត្តិ) */
+    async function onFromClassChange(inp) {
+      var sid = inp.dataset.sid, val = (inp.value || '').trim(), old = inp.dataset.old || '';
+      if (val === old) return;
+      inp.disabled = true;
+      try {
+        const { error } = await stWrite('update_by_sid', { sid: sid, data: { from_class: val || null } });
+        if (error) throw error;
+        var found = allStudentsCache.find(function (x) { return String(x.student_id || x.id) === String(sid); });
+        if (found) found.from_class = val || null;
+        inp.dataset.old = val;
+        inp.style.boxShadow = '0 0 0 2px #059669';
+        setTimeout(function () { inp.style.boxShadow = ''; }, 900);
+      } catch (err) {
+        inp.value = old;
+        if (typeof showToast === 'function') showToast('រក្សាទុកមិនបាន៖ ' + (err.message || err)); else alert('រក្សាទុកមិនបាន៖ ' + (err.message || err));
+      }
+      inp.disabled = false;
     }
 
     /* 7. UPDATE DROPOUT IN SUPABASE DIRECTLY */
