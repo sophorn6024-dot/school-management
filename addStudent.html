@@ -476,6 +476,16 @@
     .empty-state .es-acts { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
     .empty-state .es-acts button { height: 42px; padding: 0 20px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-elevated, var(--surface)); color: var(--text); font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer; }
     .empty-state .es-acts button.pri { background: #6d28d9; border-color: #6d28d9; color: #fff; }
+    .xl-detect { margin: 14px 0 10px; padding: 12px 14px; border-radius: 14px; background: rgba(5,150,105,.12); border: 1px solid rgba(5,150,105,.4); color: #059669; font-size: 13px; line-height: 1.7; }
+    .xl-detect b { font-weight: 800; }
+    .xl-detect.warn { background: rgba(217,119,6,.12); border-color: rgba(217,119,6,.45); color: #b45309; }
+    .xl-prev-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin: 6px 0 8px; font-weight: 700; color: var(--text-muted); }
+    .xl-prev-head button { height: 34px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(217,119,6,.5); background: rgba(217,119,6,.12); color: #b45309; font-family: inherit; font-weight: 700; font-size: 12.5px; cursor: pointer; }
+    .xl-prev-wrap { max-height: 300px; overflow: auto; border: 1px solid var(--border); border-radius: 12px; }
+    table.xl-prev { width: 100%; min-width: 860px; border-collapse: collapse; font-size: 12.5px; text-align: left; }
+    table.xl-prev th { position: sticky; top: 0; background: var(--surface-elevated, var(--surface)); padding: 8px 10px; font-weight: 700; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    table.xl-prev td { padding: 7px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    table.xl-prev td.dim { color: var(--text-muted); }
     .es-inline { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 28px 10px; position: sticky; left: 0; width: min(100%, 720px); margin: 0 auto; }
     .es-inline .es-acts { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
     .es-inline .es-acts button { height: 40px; padding: 0 18px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface-elevated, var(--surface)); color: var(--text); font-family: inherit; font-weight: 700; font-size: 13.5px; cursor: pointer; }
@@ -1065,11 +1075,6 @@ body{background:var(--bg)}
           <span class="btn-label">ទាញយក</span>
         </button>
 
-        <button type="button" class="ctl" id="transferBtn" style="display:none" onclick="openTransferModal()" title="ផ្ទេរសិស្សពីគ្រូមួយទៅគ្រូមួយទៀត (Admin)">
-          <svg class="ic" viewBox="0 0 24 24"><path d="M7 7h11m0 0-3-3m3 3-3 3"/><path d="M17 17H6m0 0 3-3m-3 3 3 3"/></svg>
-          <span class="btn-label">ផ្ទេរសិស្ស</span>
-        </button>
-
         <button type="button" class="ctl btn-warning" id="missingInfoBtn" onclick="handleMissingInfoClick()" title="សិស្សខ្វះព័ត៌មាន">
           <svg class="ic" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
           <span id="missingBtnText" class="btn-label">ខ្វះព័ត៌មាន</span>
@@ -1213,9 +1218,15 @@ body{background:var(--bg)}
 
             <div class="dropzone-box" onclick="document.getElementById('excelRosterFileInput').click()">
               <div class="dropzone-cloud">☁️</div>
-              <div class="dropzone-title">ចុចទីនេះ ដើម្បីជ្រើស file</div>
-              <div class="dropzone-types">.xlsx ឬ .xls</div>
+              <div class="dropzone-title" id="dzTitle">ចុចទីនេះ ដើម្បីជ្រើស file</div>
+              <div class="dropzone-types" id="dzTypes">.xlsx ឬ .xls</div>
             </div>
+          </div>
+
+          <div id="xlPreview" style="display:none;">
+            <div class="xl-detect" id="xlDetect"></div>
+            <div class="xl-prev-head"><span id="xlPrevCount">Preview</span><button type="button" onclick="xlSwapNames()">⇄ ប្តូរលំដាប់ គោត្តនាម/នាម ឪពុកម្តាយ</button></div>
+            <div class="xl-prev-wrap"><table class="xl-prev"><thead><tr><th>អត្តលេខ</th><th>គោត្តនាម</th><th>នាម</th><th>ភេទ</th><th>ថ្ងៃខែឆ្នាំកំណើត</th><th>ទីកន្លែងកំណើត</th><th>ឪពុក</th><th>ម្តាយ</th></tr></thead><tbody id="xlPrevBody"></tbody></table></div>
           </div>
         </div>
       </div>
@@ -2699,13 +2710,14 @@ body{background:var(--bg)}
       document.getElementById('importClassTag').innerText = currentSelectedClass ? `ថ្នាក់ទី ${currentSelectedClass}` : 'ថ្នាក់ទី១ (លំនាំដើម)';
       document.getElementById('importModalOverlay').style.display = 'flex';
     }
-    function closeImportModal() { document.getElementById('importModalOverlay').style.display = 'none'; }
+    function closeImportModal() { document.getElementById('importModalOverlay').style.display = 'none'; resetExcelPreview(); }
     function switchImportTab(t) {
       activeImportTab = t;
       document.getElementById('tabBtnExcel').classList.toggle('active', t === 'excel');
       document.getElementById('tabBtnPaste').classList.toggle('active', t === 'paste');
       document.getElementById('tabContentExcel').style.display = t === 'excel' ? 'block' : 'none';
       document.getElementById('tabContentPaste').style.display = t === 'paste' ? 'block' : 'none';
+      refreshImportButton();
     }
 
     function onPasteTextInput() {
@@ -2735,6 +2747,7 @@ body{background:var(--bg)}
 
     async function submitImportStudents() {
       if (guardLocked()) return;
+      if (activeImportTab === 'excel') return doExcelImport();
       if (!pendingImportStudents.length) return;
 
       const importIds = pendingImportStudents.map(p => String(p.student_id).trim()).filter(Boolean);
@@ -2832,6 +2845,8 @@ body{background:var(--bg)}
         }
         if (fileClass) break;
       }
+      let declared = 0;
+      for (let i = 0; i < (hi < 0 ? 0 : hi); i++) for (const c of (json[i] || [])) { const mm = toWestDigits(cellTxt(c)).match(/សិស្សសរុប\s*[:：]?\s*(\d+)/); if (mm) declared = +mm[1]; }
       const out = [];
       if (hi < 0) {   /* ទម្រង់គំរូចាស់ (គ្មានក្បាលរដ្ឋបាល) */
         for (let i = 1; i < json.length; i++) {
@@ -2842,7 +2857,7 @@ body{background:var(--bg)}
             pob: r[6] || null, address: r[7] || null, father_name: r[8] || null, mother_name: r[9] || null
           });
         }
-        return { rows: out, fileClass: '' };
+        return { rows: out, fileClass: '', declared: 0, legacy: true };
       }
       const H = (json[hi] || []).map(cellTxt);
       const find = (fn, from) => { for (let c = from || 0; c < H.length; c++) if (H[c] && fn(H[c])) return c; return -1; };
@@ -2876,7 +2891,55 @@ body{background:var(--bg)}
           mother_name: g(r, col.mother) || null, mother_job: g(r, col.motherJob) || null
         });
       }
-      return { rows: out, fileClass };
+      return { rows: out, fileClass, declared };
+    }
+
+    /* 👀 Preview មុននាំចូល */
+    let pendingExcel = null, xlSwapped = false;
+    function swapWords(n) {
+      const w = String(n || '').trim().split(/\s+/).filter(Boolean);
+      return w.length < 2 ? String(n || '').trim() : w.slice(1).concat(w[0]).join(' ');
+    }
+    function xlRows() {
+      if (!pendingExcel) return [];
+      return pendingExcel.rows.map(r => xlSwapped
+        ? Object.assign({}, r, { student_name: swapWords(r.student_name), father_name: r.father_name ? swapWords(r.father_name) : r.father_name, mother_name: r.mother_name ? swapWords(r.mother_name) : r.mother_name })
+        : r);
+    }
+    function xlSwapNames() { xlSwapped = !xlSwapped; renderXlPreview(); }
+    function resetExcelPreview() {
+      pendingExcel = null; xlSwapped = false;
+      const pv = document.getElementById('xlPreview'); if (pv) pv.style.display = 'none';
+      const dt = document.getElementById('dzTitle'); if (dt) dt.textContent = 'ចុចទីនេះ ដើម្បីជ្រើស file';
+      const dy = document.getElementById('dzTypes'); if (dy) dy.textContent = '.xlsx ឬ .xls';
+    }
+    function refreshImportButton() {
+      const btn = document.getElementById('btnSubmitImport'); if (!btn) return;
+      if (activeImportTab === 'excel') {
+        const n = pendingExcel ? pendingExcel.rows.length : 0;
+        btn.innerText = `នាំចូល ${n} នាក់`; btn.disabled = n === 0;
+      } else { onPasteTextInput(); }
+    }
+    function renderXlPreview() {
+      const pe = pendingExcel; if (!pe) return;
+      const rows = xlRows();
+      const girls = rows.filter(r => r.gender === 'ស្រី').length;
+      const has = f => rows.some(r => r[f]);
+      const got = [has('dob') && 'ថ្ងៃខែឆ្នាំកំណើត', has('pob') && 'ទីកន្លែងកំណើត', (has('father_name') || has('mother_name')) && 'ឪពុក/ម្តាយ', (has('father_job') || has('mother_job')) && 'មុខរបរ', has('address') && 'លំនៅដ្ឋាន', has('phone') && 'ទូរស័ព្ទ'].filter(Boolean);
+      const cls = pe.fileClass ? fileClassToKh(pe.fileClass) : '';
+      const mismatch = pe.declared && pe.declared !== rows.length;
+      const det = document.getElementById('xlDetect');
+      det.className = 'xl-detect' + (mismatch ? ' warn' : '');
+      det.innerHTML = (pe.legacy ? '✅ <b>ស្គាល់ទម្រង់គំរូ</b>' : '✅ <b>ស្គាល់ទម្រង់បញ្ជីសិស្ស</b>') + '<br>អាន <b>' + rows.length + ' នាក់</b> (ស្រី ' + girls + ')' +
+        (cls ? ' · ថ្នាក់ ' + esc(pe.fileClass) : '') + (pe.declared ? ' · ឯកសារសរសេរថា ' + pe.declared + ' នាក់' : '') +
+        (got.length ? '<br>យក ' + got.join(' · ') : '') + (mismatch ? '<br>⚠️ ចំនួនអានបាន មិនត្រូវនឹងចំនួនដែលឯកសារសរសេរ — សូមពិនិត្យ' : '');
+      document.getElementById('xlPrevCount').textContent = 'Preview: ' + rows.length + ' ជួរ';
+      document.getElementById('xlPrevBody').innerHTML = rows.map(r => {
+        const w = String(r.student_name || '').trim().split(/\s+/);
+        return '<tr><td class="dim">' + (esc(r.student_id) || '—') + '</td><td><b>' + esc(w[0] || '') + '</b></td><td>' + esc(w.slice(1).join(' ')) + '</td><td>' + esc(r.gender || '') + '</td><td>' + esc(fmtDMY(r.dob)) + '</td><td>' + esc(r.pob || '') + '</td><td>' + esc(r.father_name || '') + '</td><td>' + esc(r.mother_name || '') + '</td></tr>';
+      }).join('');
+      document.getElementById('xlPreview').style.display = 'block';
+      refreshImportButton();
     }
 
     function onExcelFileSelected(input) {
@@ -2884,56 +2947,59 @@ body{background:var(--bg)}
       const file = input.files[0];
       if (!file) return;
       const reader = new FileReader();
-      reader.onload = async e => {
+      reader.onload = e => {
         try {
           const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
           const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: true, defval: '' });
           const parsed = parseRosterJson(json);
-          let rows = parsed.rows;
-          if (!rows.length) { showToast("⚠️ រកមិនឃើញទិន្នន័យក្នុង File ទេ", true); input.value = ''; return; }
-
-          /* 🏫 កំណត់ថ្នាក់ */
-          let gradeStr = '', note = '';
-          const fileCls = parsed.fileClass ? fileClassToKh(parsed.fileClass) : '';
-          if (currentSelectedClass) {
-            gradeStr = `ថ្នាក់ទី${currentSelectedClass}`;
-            if (fileCls && clsKey(fileCls) !== clsKey(currentSelectedClass)) note = `\n⚠️ ឯកសារនេះសរសេរថ្នាក់ «${parsed.fileClass}» ប៉ុន្តែអ្នកកំពុងជ្រើសថ្នាក់ «${currentSelectedClass}» — សិស្សនឹងចូលទៅថ្នាក់ «${currentSelectedClass}»។`;
-          } else if (fileCls) {
-            gradeStr = `ថ្នាក់ទី${fileCls}`;
-            note = `\n(ថ្នាក់ត្រូវបានយកតាមឯកសារ៖ ${fileCls})`;
-          } else { gradeStr = getDefaultGrade(); }
-
-          /* ត្រួតស្ទួន៖ ឈ្មោះ + ថ្ងៃកំណើតដូចគ្នាក្នុងថ្នាក់ដែលមានស្រាប់ */
-          const exist = new Set(studentsList.filter(x => !x.isDraft && normGrade(x.grade) === normGrade(gradeStr)).map(x => (x.name || '').replace(/\s+/g, ' ').trim() + '|' + formatToInputDate(x.dob)));
-          const fresh = rows.filter(r => !exist.has(r.student_name + '|' + (r.dob || '')));
-          const skipped = rows.length - fresh.length;
-          if (!fresh.length) { uiAlert('សិស្សទាំងអស់ក្នុងឯកសារនេះមានក្នុងថ្នាក់នេះរួចហើយ (ឈ្មោះ + ថ្ងៃកំណើតដូចគ្នា)។'); input.value = ''; return; }
-
-          const ids = fresh.map(r => r.student_id).filter(Boolean);
-          const dupInFile = ids.filter((x, i) => ids.indexOf(x) !== i);
-          if (dupInFile.length) { uiAlert(`⚠️ ក្នុង File Excel មានអត្តលេខស្ទួនគ្នា៖\n${[...new Set(dupInFile)].join(', ')}`); input.value = ''; return; }
-          if (ids.length) {
-            const { data: existing, error: checkErr } = await sb.from(STUDENTS_TABLE).select('student_id').in('student_id', ids);
-            if (!checkErr && existing && existing.length) {
-              uiAlert(`⚠️ មិនអាចនាំចូលបានទេ ព្រោះអត្តលេខទាំងនេះមានក្នុងប្រព័ន្ធរួចហើយ៖\n${existing.map(x => x.student_id).join(', ')}`);
-              input.value = ''; return;
-            }
-          }
-
-          const girls = fresh.filter(r => r.gender === 'ស្រី').length;
-          const msg = `រកឃើញសិស្ស ${fresh.length} នាក់ (ស្រី ${girls} នាក់)។` + (skipped ? `\nរំលង ${skipped} នាក់ ដែលមានរួចហើយ។` : '') + note + `\nនាំចូលទៅ «${gradeStr}» ឬទេ?`;
-          if (!await uiConfirm(msg, { okText: 'នាំចូល', title: 'នាំចូលពី Excel' })) { input.value = ''; return; }
-
-          const payload = fresh.map(r => Object.assign({}, r, { grade: gradeStr }));
-          const { error } = await stWrite('bulk_insert', { data: payload.map(withAddrCols) });
-          if (error) throw error;
-          showToast(`🎉 នាំចូលបាន ${payload.length} នាក់ជោគជ័យ!`);
-          closeImportModal();
-          loadStudentsFromSupabase();
+          if (!parsed.rows.length) { resetExcelPreview(); showToast("⚠️ រកមិនឃើញទិន្នន័យក្នុង File ទេ", true); refreshImportButton(); input.value = ''; return; }
+          pendingExcel = { rows: parsed.rows, fileClass: parsed.fileClass, declared: parsed.declared, legacy: !!parsed.legacy };
+          xlSwapped = false;
+          document.getElementById('dzTitle').textContent = '📄 ' + file.name;
+          document.getElementById('dzTypes').textContent = Math.max(1, Math.round(file.size / 1024)) + ' KB · ចុចដើម្បីជ្រើសផ្សេង';
+          renderXlPreview();
         } catch (err) { uiAlert("កំហុស Excel: " + (err.message || err)); }
         input.value = '';
       };
       reader.readAsArrayBuffer(file);
+    }
+
+    async function doExcelImport() {
+      if (guardLocked() || !pendingExcel) return;
+      const rows = xlRows();
+      /* 🏫 កំណត់ថ្នាក់ */
+      let gradeStr = '', note = '';
+      const fileCls = pendingExcel.fileClass ? fileClassToKh(pendingExcel.fileClass) : '';
+      if (currentSelectedClass) {
+        gradeStr = `ថ្នាក់ទី${currentSelectedClass}`;
+        if (fileCls && clsKey(fileCls) !== clsKey(currentSelectedClass)) note = `\n⚠️ ឯកសារនេះសរសេរថ្នាក់ «${pendingExcel.fileClass}» ប៉ុន្តែអ្នកកំពុងជ្រើសថ្នាក់ «${currentSelectedClass}» — សិស្សនឹងចូលទៅថ្នាក់ «${currentSelectedClass}»។`;
+      } else if (fileCls) { gradeStr = `ថ្នាក់ទី${fileCls}`; note = `\n(ថ្នាក់ត្រូវបានយកតាមឯកសារ៖ ${fileCls})`; }
+      else gradeStr = getDefaultGrade();
+
+      const exist = new Set(studentsList.filter(x => !x.isDraft && normGrade(x.grade) === normGrade(gradeStr)).map(x => (x.name || '').replace(/\s+/g, ' ').trim() + '|' + formatToInputDate(x.dob)));
+      const fresh = rows.filter(r => !exist.has(r.student_name + '|' + (r.dob || '')));
+      const skipped = rows.length - fresh.length;
+      if (!fresh.length) { uiAlert('សិស្សទាំងអស់ក្នុងឯកសារនេះមានក្នុងថ្នាក់នេះរួចហើយ (ឈ្មោះ + ថ្ងៃកំណើតដូចគ្នា)។'); return; }
+
+      const ids = fresh.map(r => r.student_id).filter(Boolean);
+      const dupInFile = ids.filter((x, i) => ids.indexOf(x) !== i);
+      if (dupInFile.length) { uiAlert(`⚠️ ក្នុង File Excel មានអត្តលេខស្ទួនគ្នា៖\n${[...new Set(dupInFile)].join(', ')}`); return; }
+      try {
+        if (ids.length) {
+          const { data: existing, error: checkErr } = await sb.from(STUDENTS_TABLE).select('student_id').in('student_id', ids);
+          if (!checkErr && existing && existing.length) { uiAlert(`⚠️ មិនអាចនាំចូលបានទេ ព្រោះអត្តលេខទាំងនេះមានក្នុងប្រព័ន្ធរួចហើយ៖\n${existing.map(x => x.student_id).join(', ')}`); return; }
+        }
+        if (skipped || note) {
+          if (!await uiConfirm(`នាំចូលសិស្ស ${fresh.length} នាក់ ទៅ «${gradeStr}»។` + (skipped ? `\nរំលង ${skipped} នាក់ ដែលមានរួចហើយ។` : '') + note, { okText: 'នាំចូល', title: 'បញ្ជាក់ការនាំចូល' })) return;
+        }
+        const btn = document.getElementById('btnSubmitImport'); btn.disabled = true; btn.innerText = '⏳ កំពុងនាំចូល...';
+        const payload = fresh.map(r => Object.assign({}, r, { grade: gradeStr }));
+        const { error } = await stWrite('bulk_insert', { data: payload.map(withAddrCols) });
+        if (error) throw error;
+        showToast(`🎉 នាំចូលបាន ${payload.length} នាក់ជោគជ័យ!`);
+        closeImportModal();
+        loadStudentsFromSupabase();
+      } catch (err) { uiAlert("❌ បរាជ័យក្នុងការនាំចូល៖ " + (err.message || err)); refreshImportButton(); }
     }
 
     /* 11. MISSING INFO */
@@ -3387,7 +3453,6 @@ async function trSubmit() {
   } catch (e) { uiAlert('❌ ' + (e.message || e)); }
   btn.innerText = 'ផ្ទេរសិស្ស'; trUpdateState();
 }
-if (IS_ADMIN) { const b = document.getElementById('transferBtn'); if (b) b.style.display = ''; }
 </script>
 </body>
 </html>
