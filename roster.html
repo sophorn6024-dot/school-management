@@ -2740,7 +2740,7 @@ window.addEventListener('scroll',function(e){
           '<td class="name-cell">' + escapeHtml(s.student_name || 'គ្មានឈ្មោះ') + '</td>' +
           '<td>' + escapeHtml(s.gender || 'ប្រុស') + '</td>' +
           '<td class="dob-cell">' + escapeHtml(s.dob || '-') + '</td>' +
-          '<td class="from-cell"><input type="text" class="inline-input from-input" value="' + escapeHtml(s.from_class || '') + '" data-sid="' + sId + '" data-old="' + escapeHtml(s.from_class || '') + '" placeholder="-" onchange="onFromClassChange(this)" onkeydown="if(event.key===\'Enter\'){this.blur();}"></td>' +
+          '<td class="from-cell"><input type="text" class="inline-input from-input" value="' + escapeHtml(fromVal(s)) + '" data-sid="' + sId + '" data-old="' + escapeHtml(fromVal(s)) + '" placeholder="-" onchange="onFromClassChange(this)" onkeydown="if(event.key===\'Enter\'){this.blur();}"></td>' +
           '<td class="note-cell">' + escapeHtml(noteText) + '</td>' +
           '<td class="no-print-col">' +
             '<select class="dropout-select ' + (isMarkedDropped ? 'is-dropped' : '') + '" ' +
@@ -2755,24 +2755,14 @@ window.addEventListener('scroll',function(e){
       tbody.innerHTML = html;
     }
 
-    /* 6.1 ✏️ កែ «មកពីថ្នាក់ទី» ដោយផ្ទាល់ (រក្សាទុកស្វ័យប្រវត្តិ) */
-    async function onFromClassChange(inp) {
-      var sid = inp.dataset.sid, val = (inp.value || '').trim(), old = inp.dataset.old || '';
-      if (val === old) return;
-      inp.disabled = true;
-      try {
-        const { error } = await stWrite('update_by_sid', { sid: sid, data: { from_class: val || null } });
-        if (error) throw error;
-        var found = allStudentsCache.find(function (x) { return String(x.student_id || x.id) === String(sid); });
-        if (found) found.from_class = val || null;
-        inp.dataset.old = val;
-        inp.style.boxShadow = '0 0 0 2px #059669';
-        setTimeout(function () { inp.style.boxShadow = ''; }, 900);
-      } catch (err) {
-        inp.value = old;
-        if (typeof showToast === 'function') showToast('រក្សាទុកមិនបាន៖ ' + (err.message || err)); else alert('រក្សាទុកមិនបាន៖ ' + (err.message || err));
-      }
-      inp.disabled = false;
+    /* 6.1 ✏️ «មកពីថ្នាក់ទី» វាយបញ្ចូលសម្រាប់បោះពុម្ព (មិនរក្សាទុកក្នុង database — ចងចាំក្នុងឧបករណ៍នេះប៉ុណ្ណោះ) */
+    var FROM_KEY = 'krou_from_class_v1';
+    var fromMap = (function () { try { return JSON.parse(localStorage.getItem(FROM_KEY) || '{}') || {}; } catch (e) { return {}; } })();
+    function fromVal(s) { var k = String(s.student_id || s.id); return (k in fromMap) ? fromMap[k] : (s.from_class || ''); }
+    function onFromClassChange(inp) {
+      var k = String(inp.dataset.sid), v = (inp.value || '').trim();
+      fromMap[k] = v; inp.dataset.old = v;
+      try { localStorage.setItem(FROM_KEY, JSON.stringify(fromMap)); } catch (e) {}
     }
 
     /* 7. UPDATE DROPOUT IN SUPABASE DIRECTLY */
