@@ -613,9 +613,9 @@ function qrStampLogo(box){
                     </select></div>
                 </div>
                 <div class="field" id="assignedClassWrap">
-                  <label>ថ្នាក់ទទួលបន្ទុក <span class="required">*</span></label>
+                  <label>ថ្នាក់ទទួលបន្ទុក <span style="font-weight:600;color:var(--text-muted);font-size:11.5px;">(មិនបាច់ — គ្រូបង្កើតថ្នាក់ដោយខ្លួនឯង)</span></label>
                   <div class="input-wrap"><span class="input-icon"><i class="fa-solid fa-school"></i></span>
-                    <input type="text" id="fAssignedClass" placeholder="ឧ. ទី១, ៤(ក), ៥..." required></div>
+                    <input type="text" id="fAssignedClass" placeholder="ទុកទទេបាន"></div>
                 </div>
               </div>
             </div>
@@ -1062,7 +1062,7 @@ function qrStampLogo(box){
         input.required = false;
       } else {
         wrap.style.display = 'block';
-        input.required = true;
+        input.required = false;
       }
     }
 
