@@ -207,6 +207,7 @@ i.fa-solid,i.fa-regular,.fa-solid,.fa-regular{font-family:'Font Awesome 6 Free'!
 
 <div id="app" style="display:none">
   <div class="topbar no-print">
+    <button class="tb-btn" onclick="goHubBack()" title="ត្រឡប់" aria-label="ត្រឡប់" style="padding:0 13px"><i class="fa-solid fa-chevron-left"></i></button>
     <div class="ttl moul"><i class="fa-solid fa-table-cells-large"></i> ប្លង់តុសិស្ស</div>
     <span class="class-badge" id="clsBadge"></span>
     <select class="pill-sel" id="clsSel" style="display:none" onchange="onClassChange()"></select>
@@ -297,6 +298,7 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;',
 function applyTheme(t){document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark')}
 applyTheme(new URLSearchParams(location.search).get('theme')||localStorage.getItem('krou_theme_manual')||'dark');
 window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme))applyTheme(e.data.theme||e.data)});
+function goHubBack(){try{if(window.parent&&window.parent!==window){window.parent.postMessage({type:'NAVIGATE',page:'classes'},'*');return}}catch(e){}location.href='index.html#classes'}
 function goToIndex(e){if(e)e.preventDefault();try{if(window.parent!==window){window.parent.postMessage({type:'OPEN_LOGIN',action:'LOGIN'},'*');window.parent.location.href='index.html';return}}catch(x){}location.href='index.html'}
 
 /* ───────── UI HELPERS ───────── */
