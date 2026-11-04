@@ -914,7 +914,7 @@ function readSession(){try{return JSON.parse(localStorage.getItem('krou_supabase
 const USER=readSession();
 const IS_ADMIN=String((USER&&USER.role)||'').toLowerCase().trim()==='admin';
 function goIndex(){try{if(window.parent!==window){window.parent.location.href='index.html';return}}catch(e){}location.href='index.html'}
-function goBack(){try{if(window.parent&&window.parent!==window){window.parent.postMessage({type:'NAVIGATE',page:'reportsHub'},'*');return}}catch(e){}location.href='index.html#reportsHub'}
+function goBack(){try{if(window.parent&&window.parent!==window){window.parent.postMessage({type:'NAVIGATE',page:'classes'},'*');return}}catch(e){}location.href='index.html#classes'}
 function applyTheme(t){document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light')}
 applyTheme(localStorage.getItem('krou_theme_manual')||'light');
 window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme))applyTheme(e.data.theme||e.data)});
