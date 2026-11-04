@@ -423,6 +423,7 @@
       background: var(--surface); color: var(--text);
     }
 
+    .table-container.is-locked, .table-container.is-locked * { touch-action: pan-x pan-y; }
     .table-container.is-locked .table-input,
     .table-container.is-locked .gender-pill,
     .table-container.is-locked .date-picker-trigger { cursor: not-allowed; opacity: 0.8; }
@@ -1832,7 +1833,7 @@ body{background:var(--bg)}
       };
       tbody.addEventListener('mousedown', handler, true);
       tbody.addEventListener('click', handler, true);
-      tbody.addEventListener('touchstart', handler, { capture: true, passive: false });
+      /* touchstart មិនទប់ទេ — ទុកឱ្យអូស (scroll) បានធម្មតា; ការចុច (click) ទើបបង្ហាញសារចាក់សោ */
     }
 
     /* =========================================================
