@@ -607,9 +607,9 @@
     }
     function goBack() {
       try {
-        if (window.parent && window.parent !== window) { window.parent.postMessage({ type: 'NAVIGATE', page: 'dashboard' }, '*'); return; }
+        if (window.parent && window.parent !== window) { window.parent.postMessage({ type: 'NAVIGATE', page: 'classes' }, '*'); return; }
       } catch (e) {}
-      location.href = 'index.html';
+      location.href = 'index.html#classes';
     }
 
     const USER_ROLE  = CURRENT_USER?.role || "teacher";
