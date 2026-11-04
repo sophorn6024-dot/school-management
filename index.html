@@ -1035,6 +1035,7 @@ function qrStampLogo(box){
 
     <nav class="nav-scrollable">
       <div class="nav-link-btn active" data-page="dashboard" onclick="navigate('dashboard', this)"><span class="nav-icon-box">⊞</span><span class="nav-text">ផ្ទាំងរបស់គ្រូ</span></div>
+      <div class="nav-link-btn" data-page="classes" onclick="navigate('classes', this)"><span class="nav-icon-box">🏫</span><span class="nav-text">ថ្នាក់ និងសិស្ស</span></div>
       <div class="nav-link-btn" data-page="addStudent" onclick="navigate('addStudent', this)"><span class="nav-icon-box">✍️</span><span class="nav-text">ព័ត៌មានសិស្ស</span></div>
       <div class="nav-link-btn" data-page="attendance" onclick="navigate('attendance', this)"><span class="nav-icon-box">📅</span><span class="nav-text">វត្តមានសិស្ស</span></div>
       <div class="nav-link-btn" data-page="score" onclick="navigate('score', this)"><span class="nav-icon-box">📊</span><span class="nav-text">ស្រង់ពិន្ទុ</span></div>
@@ -3161,6 +3162,9 @@ window.addEventListener('message', (ev) => {
     if (targetPage) navigate(targetPage, null);
   }
   if (ev.data.type === 'OPEN_LOGIN') doLogout();
+  if (ev.data.type === 'CLASS_CHANGED' && ev.data.user) {
+    try { CURRENT_USER = ev.data.user; ASSIGNED_CLASS = ev.data.user.assigned_classes || ''; localStorage.setItem('krou_supabase_user', JSON.stringify(ev.data.user)); renderSidebarProfile(); } catch(e) {}
+  }
 });
 window.addEventListener('hashchange', () => {
   const h = window.location.hash.replace('#', '');
