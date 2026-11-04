@@ -1158,7 +1158,6 @@ function qrStampLogo(box){
             <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">📂 </div><div class="rci-name">ព្រឹត្តិបត្រពិន្ទុ</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="openInTab('report_card')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
             <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">📈</div><div class="rci-name">ស្ថិតិសិស្សតាមអាយុ នាដើមឆ្នាំ</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="openInTab('student_age_stats')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
             <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">📊</div><div class="rci-name">តារាងចំនួនសិស្សតាមអាយុ</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="openInTab('student_age_table')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
-            <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">👥</div><div class="rci-name">បញ្ជីប្រជុំ និងគណៈកម្មការថ្នាក់</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="openInTab('committee_meeting')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
             <div class="report-card-item rci-inline" data-admin-only="1"><div class="rci-left"><div class="rci-icon">💾</div><div class="rci-name">បម្រុងទុកទិន្នន័យ (Backup)</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="openInTab('backup')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
             <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">📚</div><div class="rci-name">បញ្ជីសារពើភ័ណ្ឌ</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="openInTab('class_inventory')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
             <div class="report-card-item rci-inline"><div class="rci-left"><div class="rci-icon">🗂️</div><div class="rci-name">តារាងនិទ្ទេស ខ្មែរ-គណិត ប្រចាំឆ្នាំ</div></div><div class="rf-row"><button type="button" class="rf-open rf-open-sm" onclick="openInTab('annual_subject_grade')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span></button></div></div>
@@ -3144,7 +3143,7 @@ function navigate(page, el) {
   try { history.replaceState(null, '', '#' + page); } catch(e) {}
 
   document.querySelectorAll('.nav-link-btn').forEach(n => n.classList.remove('active'));
-  const HUB_CHILDREN = ['addStudent', 'group', 'seating', 'bmi', 'curriculum', 'my_classes'];
+  const HUB_CHILDREN = ['addStudent', 'group', 'seating', 'bmi', 'curriculum', 'my_classes', 'committee_meeting'];
   const isReportChild = ['roster', 'roster2', 'rank', 'honor', 'certificate', 'report', 'remesterrecord'].includes(page);
   let target = el || document.querySelector(`[data-page="${page}"]`);
   if (!target && isReportChild) target = document.querySelector('[data-page="reportsHub"]');
@@ -3206,7 +3205,7 @@ document.getElementById('pageFrame').addEventListener('load', function() {
         document.querySelectorAll('.nav-link-btn').forEach(n => n.classList.remove('active'));
         let t = document.querySelector(`[data-page="${detectedPage}"]`);
         if (!t && detectedPage === 'subject') t = document.querySelector('[data-page="score"]');
-        if (!t && ['addStudent', 'group', 'seating', 'bmi', 'curriculum', 'my_classes'].includes(detectedPage)) t = document.querySelector('[data-page="classes"]');
+        if (!t && ['addStudent', 'group', 'seating', 'bmi', 'curriculum', 'my_classes', 'committee_meeting'].includes(detectedPage)) t = document.querySelector('[data-page="classes"]');
         if (t) t.classList.add('active');
       }
     }
