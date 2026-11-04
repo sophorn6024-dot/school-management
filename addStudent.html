@@ -1602,7 +1602,7 @@ body{background:var(--bg)}
     }
 
     function goBack() {
-      let bt = 'classes'; try { bt = sessionStorage.getItem('krou_back_to') || 'classes'; } catch(e) {}
+      const bt = 'my_classes';   /* ព័ត៌មានសិស្ស ត្រឡប់ទៅបញ្ជីថ្នាក់របស់ខ្ញុំជានិច្ច */
       if (window.parent && window.parent !== window) {
         try { window.parent.postMessage({ type: 'NAVIGATE', page: bt }, '*'); return; } catch(err) {}
       }
