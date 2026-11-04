@@ -103,6 +103,15 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .class-pill-left{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:#f8fafc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .class-pill-left .school-ico{font-size:15px;color:var(--hero-title-color)}
 .class-pill-chevron{font-size:11px;color:#94a3b8}
+.class-year-pill-box{position:relative}
+.cls-menu{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:5000;background:#0f1e33;border:1px solid var(--sidebar-border);border-radius:14px;box-shadow:0 14px 34px rgba(0,0,0,.45);padding:6px;max-height:300px;overflow:auto}
+.cls-menu button{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;border:0;background:transparent;color:#f8fafc;font:inherit;font-size:13px;font-weight:700;padding:9px 10px;border-radius:10px;cursor:pointer;text-align:left}
+.cls-menu button:hover{background:rgba(255,255,255,.09)}
+.cls-menu button.on{background:rgba(16,185,129,.18)}
+.cls-menu .sep{height:1px;background:var(--sidebar-border);margin:5px 4px}
+[data-theme="light"] .cls-menu{background:#fff}
+[data-theme="light"] .cls-menu button{color:#0f172a}
+[data-theme="light"] .cls-menu button:hover{background:rgba(15,23,42,.06)}
 .sidebar.collapsed .class-year-pill-box{display:none}
 .sidebar-divider{height:1px;background:var(--sidebar-border);margin:0 12px 8px;flex-shrink:0}
 .nav-scrollable{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:4px 10px 14px;-webkit-overflow-scrolling:touch}
@@ -1027,7 +1036,7 @@ function qrStampLogo(box){
       <button class="collapse-arrow-btn" id="collapseArrowBtn" onclick="toggleSidebarCollapse()" title="បង្រួម/ពង្រីករបាចំហៀង"><span id="collapseArrowChar">‹</span></button>
     </div>
 
-    <div class="class-year-pill-box" onclick="onClassYearPillClick()" title="ចុចដើម្បីពិនិត្យបញ្ជីសិស្សក្នុងថ្នាក់">
+    <div class="class-year-pill-box" id="classPill" onclick="onClassYearPillClick(event)" title="ចុចដើម្បីប្តូរថ្នាក់">
       <div class="class-pill-left"><span class="school-ico">🏫</span><span id="sidebarClassYearText">ថ្នាក់ទី... · 2026-2027</span></div>
       <span class="class-pill-chevron">⌵</span>
     </div>
@@ -1036,12 +1045,9 @@ function qrStampLogo(box){
     <nav class="nav-scrollable">
       <div class="nav-link-btn active" data-page="dashboard" onclick="navigate('dashboard', this)"><span class="nav-icon-box">⊞</span><span class="nav-text">ផ្ទាំងរបស់គ្រូ</span></div>
       <div class="nav-link-btn" data-page="classes" onclick="navigate('classes', this)"><span class="nav-icon-box">🏫</span><span class="nav-text">ថ្នាក់ និងសិស្ស</span></div>
-      <div class="nav-link-btn" data-page="addStudent" onclick="navigate('addStudent', this)"><span class="nav-icon-box">✍️</span><span class="nav-text">ព័ត៌មានសិស្ស</span></div>
       <div class="nav-link-btn" data-page="attendance" onclick="navigate('attendance', this)"><span class="nav-icon-box">📅</span><span class="nav-text">វត្តមានសិស្ស</span></div>
       <div class="nav-link-btn" data-page="score" onclick="navigate('score', this)"><span class="nav-icon-box">📊</span><span class="nav-text">ស្រង់ពិន្ទុ</span></div>
       <div class="nav-link-btn" data-page="card" onclick="navigate('card', this)"><span class="nav-icon-box">🪪</span><span class="nav-text">កាតសិស្ស (ID Card)</span></div>
-      <div class="nav-link-btn" data-page="group" onclick="navigate('group', this)"><span class="nav-icon-box">👥</span><span class="nav-text">បែងចែកជាក្រុម</span></div>
-      <div class="nav-link-btn" data-page="seating" onclick="navigate('seating', this)"><span class="nav-icon-box">🪑</span><span class="nav-text">ប្លង់តុសិស្ស</span></div>
       <div class="nav-link-btn" data-page="schedule" onclick="navigate('schedule', this)"><span class="nav-icon-box">🗓️</span><span class="nav-text">កាលវិភាគសិក្សា</span></div>
       <div class="nav-link-btn" data-page="book" onclick="navigate('book', this)"><span class="nav-icon-box">📖</span><span class="nav-text">ការខ្ចី-សងសៀវភៅ</span></div>
       <div class="nav-link-btn" data-page="chat" onclick="navigate('chat', this)"><span class="nav-icon-box">💬</span><span class="nav-text">សារសន្ទនា</span><span class="nav-badge" data-chat-badge></span></div>
@@ -2975,7 +2981,7 @@ function renderSidebarProfile() {
   if (nameEl) nameEl.innerText = TEACHER_NAME || (IS_ADMIN ? "អ្នកគ្រប់គ្រង" : "លោកគ្រូ/អ្នកគ្រូ");
   if (roleEl) roleEl.innerText = IS_ADMIN ? "អ្នកគ្រប់គ្រងប្រព័ន្ធ" : "គ្រូបង្រៀន";
   const currentYear = new Date().getFullYear();
-  const academicYear = `${currentYear}-${currentYear + 1}`;
+  const academicYear = CLASS_YEAR || `${currentYear}-${currentYear + 1}`;
   if (classYearEl) {
     if (IS_ADMIN) classYearEl.innerText = `គ្រប់ថ្នាក់ · ${academicYear}`;
     else { const cls = cleanGrade(ASSIGNED_CLASS); classYearEl.innerText = cls ? `ថ្នាក់ទី ${cls} · ${academicYear}` : `ទូទៅ · ${academicYear}`; }
@@ -2989,7 +2995,56 @@ function renderSidebarProfile() {
   const teacherNav = document.getElementById('teacherAdminNav');
   if (teacherNav) teacherNav.style.display = IS_ADMIN ? 'flex' : 'none';
 }
-function onClassYearPillClick() { if (IS_ADMIN) navigate('attendance', null); else navigate('addStudent', null); }
+let CLASS_YEAR = '';
+function closeClsMenu() { const m = document.getElementById('clsMenu'); if (m) m.remove(); }
+document.addEventListener('click', e => { if (!e.target.closest('#classPill')) closeClsMenu(); });
+async function onClassYearPillClick(ev) {
+  if (ev) ev.stopPropagation();
+  if (IS_ADMIN) { navigate('attendance', null); return; }
+  if (document.getElementById('clsMenu')) { closeClsMenu(); return; }
+  let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch(e) {}
+  let rows = null, active = '';
+  try {
+    const { data } = await sb.rpc('staff_class_list', { p_u: CURRENT_USER.username, p_p: pw });
+    if (data && !data.error) { rows = data.rows || []; active = String(data.active || '').toLowerCase(); }
+  } catch(e) {}
+  if (!rows) { navigate('addStudent', null); return; }       /* មិនទាន់ run classes_multi.sql */
+  const m = document.createElement('div'); m.className = 'cls-menu'; m.id = 'clsMenu';
+  m.onclick = e => e.stopPropagation();
+  rows.forEach(r => {
+    const b = document.createElement('button');
+    const on = String(r.name).replace(/^ថ្នាក់ទី\s*/, '').toLowerCase() === active;
+    if (on) { b.className = 'on'; CLASS_YEAR = r.school_year || CLASS_YEAR; }
+    b.innerHTML = '<span>ថ្នាក់ទី' + escapeHtmlSafe(r.name) + ' · ' + escapeHtmlSafe(r.school_year || '') + '</span><span>' + (on ? '✓' : (r.students || 0) + ' នាក់') + '</span>';
+    b.onclick = () => switchClass(r.id, on);
+    m.appendChild(b);
+  });
+  const sep = document.createElement('div'); sep.className = 'sep'; m.appendChild(sep);
+  const mg = document.createElement('button'); mg.innerHTML = '<span>⚙️ គ្រប់គ្រងថ្នាក់</span><span>›</span>';
+  mg.onclick = () => { closeClsMenu(); navigate('classes', null); };
+  m.appendChild(mg);
+  document.getElementById('classPill').appendChild(m);
+}
+function escapeHtmlSafe(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+async function switchClass(id, already) {
+  closeClsMenu();
+  if (already) return;
+  let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch(e) {}
+  try {
+    const { data, error } = await sb.rpc('staff_class_activate', { p_u: CURRENT_USER.username, p_p: pw, p_id: id });
+    if (error || !data || data.error) throw new Error((error && error.message) || (data && data.error) || 'error');
+    CURRENT_USER = data.row; ASSIGNED_CLASS = data.row.assigned_classes || '';
+    localStorage.setItem('krou_supabase_user', JSON.stringify(data.row));
+    CLASS_YEAR = '';
+    renderSidebarProfile();
+    refreshOnClassChange();
+  } catch(e) { alert('❌ ប្តូរថ្នាក់មិនបាន៖ ' + (e.message || e)); }
+}
+function refreshOnClassChange() {
+  if (currentPage === 'dashboard') { refreshStats(); return; }
+  if (currentPage === 'reportsHub') return;
+  navigate(currentPage, null);
+}
 
 /* THEME (light/dark) */
 function applyTheme(theme) {
@@ -3089,9 +3144,11 @@ function navigate(page, el) {
   try { history.replaceState(null, '', '#' + page); } catch(e) {}
 
   document.querySelectorAll('.nav-link-btn').forEach(n => n.classList.remove('active'));
+  const HUB_CHILDREN = ['addStudent', 'group', 'seating', 'bmi', 'curriculum', 'my_classes'];
   const isReportChild = ['roster', 'roster2', 'rank', 'honor', 'certificate', 'report', 'remesterrecord'].includes(page);
   let target = el || document.querySelector(`[data-page="${page}"]`);
   if (!target && isReportChild) target = document.querySelector('[data-page="reportsHub"]');
+  if (!target && HUB_CHILDREN.includes(page)) target = document.querySelector('[data-page="classes"]');
   if (!target && page === 'subject') target = document.querySelector('[data-page="score"]');
   if (target) target.classList.add('active');
 
@@ -3149,6 +3206,7 @@ document.getElementById('pageFrame').addEventListener('load', function() {
         document.querySelectorAll('.nav-link-btn').forEach(n => n.classList.remove('active'));
         let t = document.querySelector(`[data-page="${detectedPage}"]`);
         if (!t && detectedPage === 'subject') t = document.querySelector('[data-page="score"]');
+        if (!t && ['addStudent', 'group', 'seating', 'bmi', 'curriculum', 'my_classes'].includes(detectedPage)) t = document.querySelector('[data-page="classes"]');
         if (t) t.classList.add('active');
       }
     }
