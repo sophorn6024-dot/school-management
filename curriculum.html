@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="km" data-theme="dark">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>បំណែងចែកកម្មវិធីសិក្សា - សាលាបឋមសិក្សាកំពង់ល្ពៅ</title>
+<link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root,[data-theme="light"]{--bg:#e8f6fb;--bg2:#f4fbf7;--surface:#fff;--elev:#eef4f8;--border:#cfe3ee;--text:#0f172a;--muted:#5b6b80;--primary:#0369a1;--ok:#059669;--danger:#dc2626;--warn:#d97706;--shadow:0 8px 24px rgba(15,23,42,.07)}
+[data-theme="dark"]{--bg:#0a1220;--bg2:#0c1626;--surface:#131e33;--elev:#1a2840;--border:#23324d;--text:#f1f5f9;--muted:#9aa8bd;--primary:#38bdf8;--ok:#34d399;--danger:#f87171;--warn:#fbbf24;--shadow:0 8px 24px rgba(0,0,0,.45)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Khmer OS Battambang','Battambang',sans-serif;background:linear-gradient(135deg,var(--bg),var(--bg2));color:var(--text);min-height:100vh;padding:16px 16px 90px;font-size:13.5px;line-height:1.5}
+button,input,select,textarea{font-family:inherit;color:inherit}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.back{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);cursor:pointer;font-size:18px;flex-shrink:0}
+h1{font-size:19px;font-weight:800;flex:1;min-width:160px}
+.in,select.in{height:38px;border-radius:11px;border:1.5px solid var(--border);background:var(--surface);padding:0 10px;font-size:13.5px;min-width:0}
+.btn{height:38px;padding:0 15px;border-radius:11px;border:1.5px solid var(--border);background:var(--surface);font-weight:700;cursor:pointer;font-size:13.5px;white-space:nowrap}
+.btn.pri{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.dirty{box-shadow:0 0 0 3px rgba(245,158,11,.45)}
+.btn.dng{color:var(--danger)}
+.panel{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:12px;box-shadow:var(--shadow);margin-bottom:12px}
+.tw{overflow:auto;border:1px solid var(--border);border-radius:12px;max-height:70vh}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{position:sticky;top:0;background:var(--elev);padding:8px 8px;font-weight:800;border-bottom:1px solid var(--border);white-space:nowrap;text-align:center;z-index:1}
+td{padding:5px 6px;border-bottom:1px solid var(--border);text-align:center}
+td.l{text-align:left}
+td input,td select{width:100%;height:34px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);padding:0 8px;font-size:13px;text-align:center}
+td input.l{text-align:left}
+.note{color:var(--muted);font-size:12.5px;margin:6px 2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}.chip{background:var(--elev);border:1px solid var(--border);border-radius:10px;padding:4px 12px;font-weight:700}
+.auth{display:none;text-align:center;padding:80px 16px}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#111827;color:#fff;padding:11px 18px;border-radius:14px;font-weight:700;z-index:100001;display:none;max-width:92vw}
+.dlg-bg{position:fixed;inset:0;z-index:100000;background:rgba(10,18,32,.55);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px}
+.dlg{background:var(--surface);border-radius:22px;padding:22px;max-width:380px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.dlg h3{margin:6px 0}.dlg p{color:var(--muted);white-space:pre-line;margin-bottom:16px}
+.dlg .acts{display:flex;gap:10px}.dlg .acts button{flex:1;height:44px;border-radius:12px;border:0;font-weight:800;font-size:15px;cursor:pointer;background:rgba(127,127,127,.16)}
+.dlg .acts .pri{background:var(--ok);color:#fff}.dlg.danger .acts .pri{background:var(--danger)}
+.printhead{display:none}
+tr.done td{opacity:.55}tr.done td.l input{text-decoration:line-through}
+@media print{
+  @page{size:A4 landscape;margin:12mm}
+  body{background:#fff!important;color:#000!important;padding:0}
+  .bar,.noprint,.toast{display:none!important}
+  .panel,.tw{border:0!important;box-shadow:none!important;max-height:none!important;overflow:visible!important;padding:0!important}
+  th{position:static;background:#eee!important;color:#000!important}
+  td,th{border:1px solid #444!important;color:#000!important}
+  td input,td select{border:0!important;background:transparent!important;color:#000!important;appearance:none;-webkit-appearance:none}
+  .printhead{display:block;text-align:center;margin-bottom:8px}
+  .printhead b{font-size:16px}
+}
+</style>
+</head>
+<body>
+<div class="auth" id="auth"><h2>🔒 សូមចូលប្រព័ន្ធជាមុន</h2></div>
+<div id="main">
+<div class="bar">
+  <button class="back" onclick="goHub()" title="ត្រឡប់">‹</button>
+  <h1>📚 បំណែងចែកកម្មវិធីសិក្សា</h1>
+  <select class="in" id="clsSel" onchange="onClass()" style="display:none"></select>
+  <span class="chip" id="clsBadge" style="display:none"></span>
+  <select class="in" id="fSub" onchange="draw()"><option value="">គ្រប់មុខវិជ្ជា</option></select>
+  <button class="btn" onclick="addRow()">＋ បន្ថែមជួរ</button>
+  <button class="btn" onclick="document.getElementById('xf').click()">📥 នាំចូល Excel</button>
+  <input type="file" id="xf" accept=".xlsx,.xls,.csv" style="display:none" onchange="impXl(this)">
+  <button class="btn" onclick="expXl()">📤 ទាញយក Excel</button>
+  <button class="btn" onclick="window.print()">🖨️ បោះពុម្ព</button>
+  <button class="btn pri" id="saveBtn" onclick="save()">💾 រក្សាទុក</button>
+</div>
+<div class="printhead"><b>សាលាបឋមសិក្សាកំពង់ល្ពៅ</b><br><b id="phTitle">បំណែងចែកកម្មវិធីសិក្សា</b> · <span id="phSub"></span></div>
+<div class="panel"><div class="note noprint">ជួរ Excel ត្រូវមានក្បាលតាមលំដាប់៖ មុខវិជ្ជា · ជំពូក · មេរៀន · ខែ · សប្តាហ៍ · ទំព័រ · កំណត់ចំណាំ។ ចុចប្រអប់ដើម្បីកែ។</div>
+<div class="tw"><table><thead><tr><th>ល.រ</th><th>មុខវិជ្ជា</th><th>ជំពូក</th><th>មេរៀន</th><th>ខែ</th><th>សប្តាហ៍</th><th>ទំព័រ</th><th>កំណត់ចំណាំ</th><th class="noprint">✓ បង្រៀនហើយ</th><th class="noprint"></th></tr></thead><tbody id="tb"></tbody></table></div></div>
+<div id="body"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const sb=supabase.createClient("https://nggnuobnrxiqjtcwlvwk.supabase.co","sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML");
+let USER=null;try{USER=JSON.parse(localStorage.getItem('krou_supabase_user')||'null')}catch(e){}
+const IS_ADMIN=String(USER&&USER.role||'').toLowerCase().trim()==='admin';
+const USER_CLASS=(USER&&(USER.assigned_classes||USER.assigned_class))||'';
+const KIND='curriculum';
+function cleanGrade(g){return String(g||'').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/,'').trim()}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark')}
+applyTheme(new URLSearchParams(location.search).get('theme')||localStorage.getItem('krou_theme_manual')||'dark');
+window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme))applyTheme(e.data.theme||e.data)});
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>t.style.display='none',2600)}
+function uiConfirm(msg,o){o=o||{};return new Promise(res=>{const bg=document.createElement('div');bg.className='dlg-bg';
+  bg.innerHTML='<div class="dlg '+(o.danger?'danger':'')+'"><div style="font-size:30px">'+(o.danger?'🗑️':'❓')+'</div><h3>'+esc(o.title||'សូមបញ្ជាក់')+'</h3><p>'+esc(msg)+'</p><div class="acts"><button data-v="0">បដិសេធ</button><button class="pri" data-v="1">'+esc(o.okText||'យល់ព្រម')+'</button></div></div>';
+  bg.addEventListener('click',e=>{const b=e.target.closest('button');if(b){bg.remove();res(b.dataset.v==='1')}else if(e.target===bg){bg.remove();res(false)}});document.body.appendChild(bg)})}
+function goHub(){try{parent.postMessage({type:'NAVIGATE',page:'classes'},'*')}catch(e){}if(window.parent===window)location.href='classes.html'}
+let curClass='',students=[],D={},dirty=false,seq=0;
+function setDirty(v){dirty=v;document.getElementById('saveBtn').classList.toggle('dirty',v)}
+async function rpc(fn,args){
+  let pw='';try{pw=localStorage.getItem('krou_pw')||''}catch(e){}
+  if(!USER||!USER.username||!pw)throw new Error('សូមចាកចេញ រួចចូលប្រព័ន្ធឡើងវិញ');
+  const {data,error}=await sb.rpc(fn,Object.assign({p_u:USER.username,p_p:pw},args||{}));
+  if(error)throw error;
+  if(data&&data.error){if(data.error==='auth'){try{localStorage.removeItem('krou_pw')}catch(e){}}throw new Error(data.error==='forbidden'?'គ្មានសិទ្ធិលើថ្នាក់នេះ':data.error==='auth'?'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ សូមចូលប្រព័ន្ធឡើងវិញ':data.error)}
+  return data;
+}
+async function init(){
+  if(!USER||!USER.username){document.getElementById('main').style.display='none';document.getElementById('auth').style.display='block';return}
+  const sel=document.getElementById('clsSel'),badge=document.getElementById('clsBadge'),mine=cleanGrade(USER_CLASS);
+  if(!IS_ADMIN){
+    if(!mine){document.getElementById('body').innerHTML='<div class="panel" style="text-align:center;color:var(--warn);font-weight:700">⚠️ អ្នកមិនទាន់មានថ្នាក់ — សូមបង្កើតថ្នាក់ក្នុង «ថ្នាក់ និងសិស្ស» ជាមុន</div>';return}
+    badge.textContent='ថ្នាក់ទី '+mine;badge.style.display='inline-block';curClass=mine;await load();return;
+  }
+  sel.style.display='inline-block';
+  try{
+    const {data}=await sb.from('students').select('grade');
+    const cls=[...new Set((data||[]).map(d=>cleanGrade(d.grade)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'km'));
+    sel.innerHTML=cls.map(c=>'<option value="'+esc(c)+'">ថ្នាក់ទី '+esc(c)+'</option>').join('')||'<option value="">គ្មានថ្នាក់</option>';
+    if(mine&&cls.includes(mine))sel.value=mine;curClass=sel.value;await load();
+  }catch(e){sel.innerHTML='<option value="">កំហុសទាញថ្នាក់</option>'}
+}
+async function onClass(){
+  if(dirty&&!await uiConfirm('មានការកែមិនទាន់រក្សាទុក។ ប្តូរថ្នាក់ហើយបោះបង់?',{okText:'ប្តូរ'})){document.getElementById('clsSel').value=curClass;return}
+  curClass=document.getElementById('clsSel').value;await load();
+}
+async function load(){
+  const my=++seq;students=[];D={};setDirty(false);
+  document.getElementById('phSub').textContent='ថ្នាក់ទី'+curClass;
+  if(!curClass){draw();return}
+  try{
+    const {data,error}=await sb.from('students').select('id,student_id,student_name,gender,grade,dob,dropout_semester').order('id',{ascending:true});
+    if(error)throw error;if(my!==seq)return;
+    students=(data||[]).filter(s=>cleanGrade(s.grade)===curClass).filter(s=>{const d=String(s.dropout_semester||'').trim();return!(d.includes('ឆមាស១')||d.includes('ឆមាសទី១')||d==='១')})
+      .map(s=>({id:String((s.student_id&&String(s.student_id).trim())||s.id),name:s.student_name||'គ្មានឈ្មោះ',sex:s.gender||'',dob:s.dob||''}))
+      .sort((a,b)=>a.name.localeCompare(b.name,'km'));
+  }catch(e){toast('❌ ទាញសិស្សមិនបាន៖ '+e.message)}
+  try{const d=await rpc('staff_class_tool_get',{p_class:curClass,p_kind:KIND});D=(d&&d.data)||{}}
+  catch(e){D={};toast('⚠️ ទាញទិន្នន័យមិនបាន — ត្រូវ run class_tools.sql ឬ '+e.message)}
+  if(my!==seq)return;
+  if(typeof afterLoad==='function')afterLoad();
+  draw();
+}
+async function save(){
+  if(!curClass)return;
+  try{await rpc('staff_class_tool_save',{p_class:curClass,p_kind:KIND,p_data:D});setDirty(false);toast('✅ បានរក្សាទុក')}
+  catch(e){toast('❌ រក្សាទុកមិនបាន៖ '+(e.message||e))}
+}
+window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+const COLS=['sub','chap','les','mon','wk','pg','note'];
+function afterLoad(){D.rows=D.rows||[]}
+function subs(){return[...new Set((D.rows||[]).map(r=>(r.sub||'').trim()).filter(Boolean))]}
+function fillSub(){const s=document.getElementById('fSub'),v=s.value;s.innerHTML='<option value="">គ្រប់មុខវិជ្ជា</option>'+subs().map(x=>'<option>'+esc(x)+'</option>').join('');if(subs().includes(v))s.value=v}
+function setC(i,k,v){D.rows[i][k]=v;setDirty(true)}
+function setDone(i,v){D.rows[i].done=v;setDirty(true);draw()}
+function addRow(){D.rows=D.rows||[];const f=document.getElementById('fSub').value;D.rows.push({sub:f,chap:'',les:'',mon:'',wk:'',pg:'',note:'',done:false});setDirty(true);draw();setTimeout(()=>{const t=document.querySelector('#tb tr:last-child input');t&&t.focus()},30)}
+async function delRow(i){if(!await uiConfirm('លុបជួរនេះ?',{danger:true,okText:'លុប'}))return;D.rows.splice(i,1);setDirty(true);draw()}
+function draw(){
+  fillSub();const f=document.getElementById('fSub').value,rows=D.rows||[];let n=0;
+  document.getElementById('tb').innerHTML=rows.map((r,i)=>{if(f&&(r.sub||'')!==f)return'';n++;
+    return '<tr class="'+(r.done?'done':'')+'"><td>'+n+'</td>'+COLS.map(k=>'<td class="l"><input class="l" value="'+esc(r[k]||'')+'" oninput="setC('+i+',\''+k+'\',this.value)" onchange="'+(k==='sub'?'fillSub()':'')+'"></td>').join('')
+    +'<td class="noprint"><input type="checkbox" style="width:20px;height:20px" '+(r.done?'checked':'')+' onchange="setDone('+i+',this.checked)"></td><td class="noprint"><button class="btn dng" style="height:30px;padding:0 10px" onclick="delRow('+i+')">🗑️</button></td></tr>'}).join('')
+    ||'<tr><td colspan="10" style="padding:30px;color:var(--muted)">មិនទាន់មានទិន្នន័យ — ចុច «បន្ថែមជួរ» ឬ «នាំចូល Excel»</td></tr>';
+}
+function expXl(){if(typeof XLSX==='undefined'){toast('⚠️ បណ្ណាល័យ Excel មិនទាន់ទាញមកទេ');return}
+  const a=[['មុខវិជ្ជា','ជំពូក','មេរៀន','ខែ','សប្តាហ៍','ទំព័រ','កំណត់ចំណាំ']].concat((D.rows||[]).map(r=>COLS.map(k=>r[k]||'')));
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(a),'បំណែងចែក');XLSX.writeFile(wb,'បំណែងចែកកម្មវិធី_'+curClass+'.xlsx')}
+function impXl(inp){const f=inp.files[0];if(!f)return;if(typeof XLSX==='undefined'){toast('⚠️ បណ្ណាល័យ Excel មិនទាន់ទាញមកទេ');inp.value='';return}
+  const rd=new FileReader();rd.onload=async e=>{try{
+    const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});const j=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});
+    const body=j.slice(1).filter(r=>r.some(c=>String(c).trim()));if(!body.length){toast('⚠️ រកមិនឃើញទិន្នន័យ');return}
+    const add=body.map(r=>({sub:String(r[0]).trim(),chap:String(r[1]).trim(),les:String(r[2]).trim(),mon:String(r[3]).trim(),wk:String(r[4]).trim(),pg:String(r[5]).trim(),note:String(r[6]||'').trim(),done:false}));
+    const rep=(D.rows||[]).length&&await uiConfirm('មានទិន្នន័យរួចហើយ ('+D.rows.length+' ជួរ)។ ជំនួសទាំងអស់ ឬ?\n«យល់ព្រម» = ជំនួស',{okText:'ជំនួស'});
+    D.rows=rep?add:(D.rows||[]).concat(add);setDirty(true);draw();toast('✅ នាំចូល '+add.length+' ជួរ')}catch(err){toast('❌ អានឯកសារមិនបាន៖ '+err.message)}};
+  rd.readAsArrayBuffer(f);inp.value=''}
+init();
+</script>
+</body>
+</html>
