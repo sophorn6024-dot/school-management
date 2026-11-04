@@ -175,6 +175,30 @@
       font-weight: 700; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block;
     }
 
+
+    /* 🏫 ប្រអប់បង្កើតថ្នាក់ */
+    .cc-bg{position:fixed;inset:0;z-index:99990;background:rgba(10,18,32,.55);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:16px}
+    .cc-box{background:var(--surface);color:var(--text);width:100%;max-width:520px;max-height:92vh;overflow:auto;border-radius:26px;box-shadow:0 24px 60px rgba(0,0,0,.35);padding:20px}
+    .cc-head{display:flex;align-items:center;justify-content:space-between;font-size:19px;font-weight:800;margin-bottom:14px}
+    .cc-x{border:0;background:transparent;font-size:22px;cursor:pointer;color:var(--text-muted)}
+    .cc-sec{background:var(--surface-elevated,rgba(127,127,127,.08));border-radius:18px;padding:14px;margin-bottom:12px}
+    .cc-sec h5{margin:0 0 10px;font-size:14px;color:var(--text-muted);font-weight:800}
+    .cc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .cc-grid label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}
+    .cc-box select,.cc-box input[type=text]{width:100%;height:46px;border-radius:13px;border:1.5px solid var(--border-subtle,#d1d5db);background:var(--surface);color:var(--text);font-family:inherit;font-size:15px;padding:0 12px}
+    .cc-prev{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;border:1px solid rgba(5,122,85,.25);border-radius:14px;padding:10px 14px;background:var(--surface)}
+    .cc-prev small{display:block;color:var(--text-muted);font-size:12px}
+    .cc-prev b{font-size:20px;color:#057a55}
+    .cc-prev button{border:0;background:transparent;color:#057a55;font-family:inherit;font-weight:800;cursor:pointer}
+    .cc-acts{display:grid;grid-template-columns:1fr 1.3fr;gap:10px;margin-top:6px}
+    .cc-acts button{height:48px;border-radius:14px;border:0;font-family:inherit;font-size:15px;font-weight:800;cursor:pointer}
+    .cc-acts .c{background:rgba(127,127,127,.14);color:var(--text)}
+    .cc-acts .s{background:#057a55;color:#fff}
+    .cc-acts .s:disabled{opacity:.6}
+    .cc-note{font-size:12.5px;color:var(--text-muted);margin:0 0 10px;line-height:1.5}
+    .noclass-box{padding:26px 14px;text-align:center}
+    .noclass-box button{margin-top:10px;height:46px;padding:0 22px;border-radius:14px;border:0;background:#057a55;color:#fff;font-family:inherit;font-weight:800;font-size:15px;cursor:pointer}
+
     /* =========================================================
        🎛️ CONTROL CARD
     ========================================================= */
@@ -1372,6 +1396,32 @@ body{background:var(--bg)}
     </div>
   </div>
 
+
+  <!-- 🏫 CREATE CLASS MODAL -->
+  <div class="cc-bg" id="ccBg" onclick="if(event.target===this)closeCreateClass()">
+    <div class="cc-box" role="dialog">
+      <div class="cc-head"><span>➕ បង្កើតថ្នាក់ថ្មី</span><button type="button" class="cc-x" onclick="closeCreateClass()" aria-label="បិទ">✕</button></div>
+      <p class="cc-note" id="ccNote"></p>
+      <div class="cc-sec">
+        <h5>១ · កម្រិត និងឆ្នាំសិក្សា</h5>
+        <div class="cc-grid">
+          <div><label>កម្រិតថ្នាក់</label><select id="ccLevel" onchange="ccUpdate()"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+          <div><label>ឆ្នាំសិក្សា</label><select id="ccYear"></select></div>
+        </div>
+      </div>
+      <div class="cc-sec">
+        <h5>២ · ឈ្មោះថ្នាក់</h5>
+        <div class="cc-grid">
+          <div><label>ខ្មែរ ឬ ឡាតាំង</label><select id="ccScript" onchange="ccFillLetters();ccUpdate()"><option value="km">ខ្មែរ (ក ខ គ...)</option><option value="la">ឡាតាំង (A B C...)</option></select></div>
+          <div><label>អក្សរថ្នាក់</label><select id="ccLetter" onchange="ccUpdate()"></select></div>
+        </div>
+        <div class="cc-prev"><div><small>ឈ្មោះដែលនឹងបង្ហាញ</small><b id="ccPreview">ថ្នាក់ទី1ក</b></div><button type="button" onclick="ccToggleCustom()">ដាក់ឈ្មោះផ្សេង</button></div>
+        <div id="ccCustomWrap" style="display:none;margin-top:10px;"><input type="text" id="ccCustom" placeholder="ឧ. 4ក, 5-ខ" oninput="ccUpdate()"></div>
+      </div>
+      <div class="cc-acts"><button type="button" class="c" onclick="closeCreateClass()">បោះបង់</button><button type="button" class="s" id="ccSaveBtn" onclick="saveCreateClass()">បង្កើត</button></div>
+    </div>
+  </div>
+
   <!-- 🖼️ EDIT MODAL BOX -->
   <div class="edit-modal-overlay" id="editModalOverlay">
     <div class="edit-modal-box em-box">
@@ -1829,10 +1879,74 @@ body{background:var(--bg)}
         <select class="pill-select-class" id="classFilterSelect" onchange="onClassFilterChange(this.value)">
           <option value="">គ្រប់ថ្នាក់ទាំងអស់</option>
           ${classesWithData.map(c => `<option value="${esc(c.name)}" ${c.name === currentSelectedClass ? 'selected' : ''}>ថ្នាក់ទី ${esc(c.name)} (${c.count})</option>`).join('')}
+        <option value="__new__">➕ បង្កើតថ្នាក់ថ្មី...</option>
         </select>`;
     }
 
+
+    /* 🏫 បង្កើតថ្នាក់ (គ្រូបង្កើតថ្នាក់ខ្លួនឯង · Admin បង្កើតបន្ថែមបាន) */
+    let ccCustomOn = false;
+    const CC_KM = ['ក','ខ','គ','ឃ','ង','ច','ឆ','ជ'], CC_LA = ['A','B','C','D','E','F','G','H'];
+    function ccFillLetters() {
+      const arr = document.getElementById('ccScript').value === 'la' ? CC_LA : CC_KM;
+      document.getElementById('ccLetter').innerHTML = arr.map(x => `<option>${x}</option>`).join('');
+    }
+    function ccValue() {
+      if (ccCustomOn) return document.getElementById('ccCustom').value.trim().replace(/^ថ្នាក់ទី\s*/, '');
+      return document.getElementById('ccLevel').value + document.getElementById('ccLetter').value;
+    }
+    function ccUpdate() { document.getElementById('ccPreview').innerText = 'ថ្នាក់ទី' + (ccValue() || '—'); }
+    function ccToggleCustom() {
+      ccCustomOn = !ccCustomOn;
+      document.getElementById('ccCustomWrap').style.display = ccCustomOn ? 'block' : 'none';
+      if (ccCustomOn) document.getElementById('ccCustom').focus();
+      ccUpdate();
+    }
+    function openCreateClass() {
+      const y = new Date().getFullYear(), m = new Date().getMonth();
+      const y0 = m >= 9 ? y : y - 1;
+      document.getElementById('ccYear').innerHTML = [y0 - 1, y0, y0 + 1].map(a => `<option ${a === y0 ? 'selected' : ''}>${a}-${a + 1}</option>`).join('');
+      ccCustomOn = false; document.getElementById('ccCustomWrap').style.display = 'none'; document.getElementById('ccCustom').value = '';
+      ccFillLetters(); ccUpdate();
+      document.getElementById('ccNote').innerText = IS_ADMIN
+        ? 'ថ្នាក់ថ្មីនឹងបន្ថែមក្នុងបញ្ជីថ្នាក់ ហើយអាចបន្ថែមសិស្សចូលបានភ្លាម។'
+        : (USER_CLASS ? `បច្ចុប្បន្នអ្នកទទួលបន្ទុកថ្នាក់ទី${normGrade(USER_CLASS)} — ការបង្កើតថ្មីនឹងប្តូរថ្នាក់ទទួលបន្ទុករបស់អ្នក។` : 'អ្នកមិនទាន់មានថ្នាក់ទេ — សូមបង្កើតថ្នាក់ខ្លួនឯង ដើម្បីចាប់ផ្តើមបន្ថែមសិស្ស។');
+      document.getElementById('ccBg').style.display = 'flex';
+    }
+    function closeCreateClass() { document.getElementById('ccBg').style.display = 'none'; const sel = document.getElementById('classFilterSelect'); if (sel) sel.value = currentSelectedClass || ''; }
+    async function saveCreateClass() {
+      const cls = ccValue();
+      if (!cls) { showToast('⚠️ សូមបញ្ចូលឈ្មោះថ្នាក់', true); return; }
+      if (IS_ADMIN) {
+        if (!classesWithData.some(c => c.name === cls)) {
+          classesWithData.push({ name: cls, count: 0 });
+          classesWithData.sort((a, b) => classSortKey(a.name) - classSortKey(b.name) || a.name.localeCompare(b.name, 'km'));
+        }
+        document.getElementById('ccBg').style.display = 'none';
+        currentSelectedClass = cls; buildClassFilter(); loadStudentsFromSupabase();
+        showToast(`✅ បានបង្កើតថ្នាក់ទី${cls} — អាចបន្ថែមសិស្សបាន`);
+        return;
+      }
+      if (USER_CLASS && normGrade(USER_CLASS) !== cls) {
+        if (!await uiConfirm(`ប្តូរថ្នាក់ទទួលបន្ទុក ពី «ថ្នាក់ទី${normGrade(USER_CLASS)}» ទៅ «ថ្នាក់ទី${cls}»?`, { okText: 'ប្តូរ' })) return;
+      }
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      if (!pw) { uiAlert('សូមចាកចេញ រួចចូលប្រព័ន្ធឡើងវិញ ដើម្បីបន្ត'); return; }
+      const btn = document.getElementById('ccSaveBtn'); btn.disabled = true; btn.innerText = '⏳ កំពុងបង្កើត...';
+      try {
+        const { data, error } = await sb.rpc('staff_update_my_profile', { p_u: CURRENT_USER.username, p_p: pw, p_data: { assigned_classes: cls, updated_at: new Date().toISOString() } });
+        if (error) throw error;
+        if (!data || data.error) throw new Error(data && data.error === 'auth' ? 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ សូមចូលប្រព័ន្ធឡើងវិញ' : (data && data.error) || 'រក្សាទុកមិនបាន');
+        try { localStorage.setItem('krou_supabase_user', JSON.stringify(data.row)); } catch (e) {}
+        location.reload();
+      } catch (err) {
+        btn.disabled = false; btn.innerText = 'បង្កើត';
+        uiAlert('❌ បង្កើតថ្នាក់មិនបាន៖ ' + (err.message || err));
+      }
+    }
+
     function onClassFilterChange(val) {
+      if (val === '__new__') { openCreateClass(); return; }
       currentSelectedClass = val;
       loadStudentsFromSupabase();
     }
@@ -1844,7 +1958,7 @@ body{background:var(--bg)}
       tbody.innerHTML = `<tr><td colspan="22" class="status-row"><span class="spinner-dark"></span> កំពុងទាញទិន្នន័យពី Supabase...</td></tr>`;
 
       if (!IS_ADMIN && !currentSelectedClass) {
-        tbody.innerHTML = `<tr><td colspan="22" class="status-row" style="color:#f59e0b; font-weight:700;">⚠️ គណនីរបស់អ្នកមិនទាន់មានថ្នាក់ទទួលបន្ទុកនៅឡើយទេ។ សូមទាក់ទង Admin។</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="22" class="status-row" style="color:#f59e0b; font-weight:700;">⚠️ អ្នកមិនទាន់មានថ្នាក់ទទួលបន្ទុកនៅឡើយទេ។<div class="noclass-box"><button type="button" onclick="openCreateClass()">➕ បង្កើតថ្នាក់របស់ខ្ញុំ</button></div></td></tr>`;
         updateCounters(0, 0);
         return;
       }
@@ -2408,7 +2522,7 @@ body{background:var(--bg)}
     let _newModalUid = null;
     function addNewRow() {
       if (guardLocked()) return;
-      if (IS_ADMIN && !currentSelectedClass) { uiAlert('សូមជ្រើសថ្នាក់ជាមុនសិន មុននឹងបន្ថែមសិស្ស (ជ្រើសថ្នាក់នៅរបារខាងលើ)។'); return; }
+      if (!currentSelectedClass) { openCreateClass(); return; }
       const onPhone = window.matchMedia('(max-width: 600px)').matches;
       studentsList.push({
         db_id: null,
