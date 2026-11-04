@@ -1602,9 +1602,9 @@ body{background:var(--bg)}
 
     function goBack() {
       if (window.parent && window.parent !== window) {
-        try { window.parent.postMessage({ type: 'NAVIGATE', page: 'dashboard', target: 'dashboard.html' }, '*'); return; } catch(err) {}
+        try { window.parent.postMessage({ type: 'NAVIGATE', page: 'classes', target: 'classes.html' }, '*'); return; } catch(err) {}
       }
-      window.location.href = 'index.html';
+      window.location.href = 'index.html#classes';
     }
 
     const USER_ROLE  = CURRENT_USER?.role || "teacher";
