@@ -268,6 +268,13 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .pv-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .pv-section-block{background:var(--surface-elevated);border:1px solid var(--border);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px}
 .pv-block-title{font-size:13.5px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:4px}
+.pvh-card{border:1px solid var(--border);border-radius:14px;padding:10px 12px;margin-top:8px}
+.pvh-head{font-weight:800;font-size:13.5px;margin-bottom:6px}
+.pvh-sub{font-size:11.5px;color:var(--text-muted)}
+.pvh-t{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.pvh-t th,.pvh-t td{border:1px solid var(--border);padding:4px 7px;text-align:center}
+.pvh-t th{background:var(--surface-elevated)}
+.pvh-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.pvh-chips span{background:var(--surface-elevated);border:1px solid var(--border);border-radius:9px;padding:2px 9px;font-size:12px;font-weight:700}
 .pv-field-row{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;line-height:1.4}
 .pv-field-label{color:var(--text-muted);font-weight:600;flex-shrink:0}
 .pv-field-value{color:var(--text);font-weight:700;text-align:right}
@@ -1260,6 +1267,7 @@ function qrStampLogo(box){
           <div class="pv-field-row"><span class="pv-field-label">មុខរបរម្តាយ៖</span><span class="pv-field-value" id="pvMotherJob">-</span></div>
         </div>
       </div>
+      <div class="pv-section-block" id="pvHistory" style="margin-top:14px"></div>
     </div>
     <div class="pv-footer-actions">
       <button class="btn-pv-print" onclick="window.print()"><span>🖨️</span><span>បោះពុម្ពប្រវត្តិរូប</span></button>
@@ -3670,6 +3678,37 @@ function renderSelectedStudentProfile(idx) {
   document.getElementById('pvFatherJob').innerText = s.father_job || s.fatherJob || '-';
   document.getElementById('pvMother').innerText = s.mother_name || s.mother || '-';
   document.getElementById('pvMotherJob').innerText = s.mother_job || s.motherJob || '-';
+  loadStudentHistory(s);
+}
+let _pvHistSeq = 0;
+async function loadStudentHistory(s) {
+  const box = document.getElementById('pvHistory'); if (!box) return;
+  const seq = ++_pvHistSeq;
+  box.innerHTML = '<div class="pv-block-title"><span>📁</span><span>ប្រវត្តិឆ្នាំចាស់</span></div><div class="pvh-sub">⏳ កំពុងទាញ...</div>';
+  let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch(e) {}
+  let rows = null, err = '';
+  try {
+    const { data, error } = await sb.rpc('staff_student_history', { p_u: CURRENT_USER.username, p_p: pw, p_student_id: s.id });
+    if (error) throw error;
+    if (data && data.error) throw new Error(data.error);
+    rows = (data && data.rows) || [];
+  } catch (e) { err = String(e.message || e); }
+  if (seq !== _pvHistSeq) return;
+  const title = '<div class="pv-block-title"><span>📁</span><span>ប្រវត្តិឆ្នាំចាស់</span></div>';
+  if (rows === null) { box.innerHTML = title + '<div class="pvh-sub">មិនអាចទាញប្រវត្តិបានទេ' + (/function|does not exist|schema cache/i.test(err) ? ' (ត្រូវ run year_promotion.sql និង student_history.sql ក្នុង Supabase)' : '') + '</div>'; return; }
+  if (!rows.length) { box.innerHTML = title + '<div class="pvh-sub">មិនទាន់មានប្រវត្តិឆ្នាំចាស់ (មានតែពេលគ្រូបានដំឡើងថ្នាក់ចុងឆ្នាំ)</div>'; return; }
+  const esc2 = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const num = v => (v == null || v === '' || isNaN(+v)) ? '-' : (Math.round(+v * 100) / 100);
+  box.innerHTML = title + rows.map(r => {
+    const mon = (r.scores || []).filter(x => x.score_type === 'monthly'), sem = (r.scores || []).filter(x => x.score_type === 'semester');
+    const at = r.attendance || {};
+    const d = r.archived_at ? new Date(r.archived_at).toLocaleDateString('en-GB') : '';
+    return '<div class="pvh-card"><div class="pvh-head">ថ្នាក់ទី' + esc2(r.class) + ' · ឆ្នាំសិក្សា ' + esc2(r.school_year || '—') + '</div>'
+      + '<div class="pvh-sub">ដំឡើងថ្នាក់ ' + esc2(d) + (r.moved_to ? ' → ថ្នាក់ទី' + esc2(r.moved_to) : '') + '</div>'
+      + (mon.length || sem.length ? '<table class="pvh-t"><thead><tr><th>ខែ/ឆមាស</th><th>ពិន្ទុសរុប</th><th>មធ្យមភាគ</th><th>ចំណាត់ថ្នាក់</th><th>លទ្ធផល</th></tr></thead><tbody>'
+        + mon.concat(sem).map(x => '<tr><td>' + esc2(x.period) + '</td><td>' + num(x.total) + '</td><td>' + num(x.average) + '</td><td>' + (x.rank == null ? '-' : esc2(x.rank)) + '</td><td>' + esc2(x.grade_label || x.result || '-') + '</td></tr>').join('') + '</tbody></table>' : '<div class="pvh-sub" style="margin-top:6px">គ្មានពិន្ទុ</div>')
+      + '<div class="pvh-chips"><span>មក ' + (at.P || 0) + '</span><span>ច្បាប់ ' + (at.C || 0) + '</span><span>គ្មានច្បាប់ ' + (at.A || 0) + '</span><span>យឺត ' + (at.L || 0) + '</span></div></div>';
+  }).join('');
 }
 function renderEmptyStudentProfile() {
   document.getElementById('pvStudentName').innerText = 'គ្មានទិន្នន័យ';
@@ -3678,6 +3717,7 @@ function renderEmptyStudentProfile() {
   document.getElementById('pvTagGender').innerText = 'ភេទ: -';
   document.getElementById('pvAvatarBox').innerHTML = '<span>-</span>';
   ['pvDob','pvAge','pvPhone','pvPob','pvAddress','pvFather','pvFatherJob','pvMother','pvMotherJob'].forEach(id => { document.getElementById(id).innerText = '-'; });
+  const _h = document.getElementById('pvHistory'); if (_h) _h.innerHTML = '';
 }
 
 /* KHMER CALENDAR POPUP (DOB) */
