@@ -841,11 +841,13 @@
     .em-footer { padding:14px 16px; gap:12px; }
     .em-footer .modal-btn { height:46px; border-radius:12px; font-size:14px; }
     .em-info-grid { display:block; }
+    .em-info-grid.no-grade #modalGradeGroup { display:none; }
     .em-info-grid .form-row-2 { margin-bottom:12px; }
     @media (min-width: 900px) {
       .em-box { max-width: 1060px; }
       .em-info-grid { display:grid; grid-template-columns: 1.1fr 1fr .9fr 1.2fr .8fr 1.3fr; gap:10px; align-items:end; }
       .em-info-grid .form-row-2 { display:contents; }
+      .em-info-grid.no-grade { grid-template-columns: 1.2fr 1.1fr 1fr .9fr 1.4fr; }
       .em-info-grid .form-group { margin:0; min-width:0; }
       .em-info-grid .form-group label { font-size:12px; white-space:nowrap; margin-bottom:5px; }
       .em-info-grid .modal-input { font-size:13px; padding:0 10px; height:44px; }
@@ -1397,14 +1399,14 @@ body{background:var(--bg)}
         <div class="em-section">
           <div class="em-section-head"><div class="em-section-icon">🎓</div><div class="em-section-title">ព័ត៌មានសិស្ស</div></div>
           <div class="em-section-body">
-            <div class="em-info-grid">
+            <div class="em-info-grid" id="emInfoGrid">
             <div class="form-row-2">
               <div class="form-group"><label>គោត្តនាម <b class="em-req">*</b></label><input type="text" class="modal-input" id="modalLastName"></div>
               <div class="form-group"><label>នាម</label><input type="text" class="modal-input" id="modalFirstName"></div>
             </div>
             <div class="form-row-2">
               <div class="form-group"><label>អត្តលេខ</label><input type="text" class="modal-input" id="modalStudentId" placeholder="អត្តលេខ (បើមាន)"></div>
-              <div class="form-group"><label>ថ្នាក់ <b class="em-req">*</b></label><input type="text" class="modal-input" id="modalGrade" placeholder="ឧ. ថ្នាក់ទី ៤(ក)" autocomplete="off"></div>
+              <div class="form-group" id="modalGradeGroup"><label>ថ្នាក់ <b class="em-req">*</b></label><input type="text" class="modal-input" id="modalGrade" placeholder="ឧ. ថ្នាក់ទី ៤(ក)" autocomplete="off"></div>
             </div>
             <div class="form-row-2">
               <div class="form-group"><label>ភេទ <b class="em-req">*</b></label><select class="modal-input" id="modalGender"><option value="">— ជ្រើសភេទ —</option><option value="ស្រី">ស្រី</option><option value="ប្រុស">ប្រុស</option></select></div>
@@ -1570,7 +1572,7 @@ body{background:var(--bg)}
 
     // 🌟 មុខងារចាក់សោ៖ រក្សាទុកក្នុង localStorage ដាច់ដោយឡែកតាមគណនីនីមួយៗ (key មាន username)
     const LOCK_KEY = 'krou_addstudent_locked_' + String(CURRENT_USER?.username || 'guest').trim().toLowerCase();
-    let isTableLocked = localStorage.getItem(LOCK_KEY) === 'true';
+    let isTableLocked = true;   /* 🔒 ចាក់សោជានិច្ចរាល់ពេលបើក — នាំចូលសិស្សនៅតែបាន */
 
     let modalPhotoBase64 = null;
     let currentStatusFilter = 'កំពុងសិក្សា';
@@ -2406,6 +2408,7 @@ body{background:var(--bg)}
     let _newModalUid = null;
     function addNewRow() {
       if (guardLocked()) return;
+      if (IS_ADMIN && !currentSelectedClass) { uiAlert('សូមជ្រើសថ្នាក់ជាមុនសិន មុននឹងបន្ថែមសិស្ស (ជ្រើសថ្នាក់នៅរបារខាងលើ)។'); return; }
       const onPhone = window.matchMedia('(max-width: 600px)').matches;
       studentsList.push({
         db_id: null,
@@ -2640,6 +2643,7 @@ body{background:var(--bg)}
       document.getElementById('modalStudentId').value = s.id || '';
 
       document.getElementById('modalGrade').value = s.grade || getDefaultGrade();
+      document.getElementById('emInfoGrid').classList.toggle('no-grade', !IS_ADMIN);
 
       document.getElementById('modalGender').value = s.sex || '';
       document.getElementById('modalDobText').innerText = fmtDMY(s.dob) || 'ជ្រើសថ្ងៃ';
@@ -2695,7 +2699,10 @@ body{background:var(--bg)}
 
       s.name = `${document.getElementById('modalLastName').value.trim()} ${document.getElementById('modalFirstName').value.trim()}`.trim();
       s.id = newId;
-      s.grade = document.getElementById('modalGrade').value.trim();
+      if (IS_ADMIN) {
+        s.grade = document.getElementById('modalGrade').value.trim();
+        if (!s.grade) { showToast('⚠️ សូមបញ្ចូលថ្នាក់របស់សិស្ស', true); return; }
+      } else { s.grade = s.grade || getDefaultGrade(); }
       s.sex = document.getElementById('modalGender').value;
       s.dob = document.getElementById('modalDobText').dataset.rawDate || null;
       s.phone = document.getElementById('modalPhone').value.trim();
@@ -2750,7 +2757,6 @@ body{background:var(--bg)}
 
     /* 10. IMPORT (EXCEL + PASTE) */
     function openImportModal(tab) {
-      if (guardLocked()) return;
       if (tab === 'paste' || tab === 'excel') switchImportTab(tab);
       document.getElementById('importClassTag').innerText = currentSelectedClass ? `ថ្នាក់ទី ${currentSelectedClass}` : 'ថ្នាក់ទី១ (លំនាំដើម)';
       document.getElementById('importModalOverlay').style.display = 'flex';
@@ -2791,7 +2797,6 @@ body{background:var(--bg)}
     }
 
     async function submitImportStudents() {
-      if (guardLocked()) return;
       if (activeImportTab === 'excel') return doExcelImport();
       if (!pendingImportStudents.length) return;
 
@@ -3000,7 +3005,6 @@ body{background:var(--bg)}
     }
 
     function onExcelFileSelected(input) {
-      if (guardLocked()) { input.value = ''; return; }
       const file = input.files[0];
       if (!file) return;
       const reader = new FileReader();
@@ -3022,7 +3026,7 @@ body{background:var(--bg)}
     }
 
     async function doExcelImport() {
-      if (guardLocked() || !pendingExcel) return;
+      if (!pendingExcel) return;
       const rows = xlRows();
       /* 🏫 កំណត់ថ្នាក់ */
       let gradeStr = '', note = '';
