@@ -187,6 +187,14 @@
     .ctl-row-1 { grid-template-columns: repeat(4, 1fr); }
     .control-card.is-admin .ctl-row-1 { grid-template-columns: repeat(5, 1fr); }
     .ctl-row-2 { grid-template-columns: repeat(6, 1fr); }
+    @media (min-width: 1500px) {
+      .control-card { flex-direction: row; align-items: center; gap: 10px; }
+      .control-card .ctl-row { gap: 8px; }
+      .control-card .ctl-row-1 { flex: 1.15 1 0; min-width: 0; grid-template-columns: 1.15fr 1.25fr 1fr 1fr; }
+      .control-card.is-admin .ctl-row-1 { grid-template-columns: 1fr 1fr 1.2fr .9fr .9fr; }
+      .control-card .ctl-row-2 { flex: 1.5 1 0; min-width: 0; grid-template-columns: 1.4fr repeat(5, minmax(0,1fr)); }
+      .control-card .ctl { font-size: 12px; gap: 5px; padding: 0 8px; }
+    }
 
     .ctl {
       height: 42px; border-radius: 14px; border: 1.5px solid var(--ctl-border);
@@ -1120,7 +1128,7 @@ body{background:var(--bg)}
           <tr>
             <th rowspan="2" class="sticky-col-1"><div class="th-vertical"><label class="rowchk"><input type="checkbox" id="chkAll" onchange="toggleSelectAll(this.checked)" title="ជ្រើសទាំងអស់"><span>ល.រ</span></label></div></th>
             <th rowspan="2" class="col-photo"><div class="th-vertical">រូបថត</div></th>
-            <th rowspan="2" class="col-id"><div class="th-vertical">អត្តលេខ *<button type="button" class="id-sort-btn" id="idSortBtn" onclick="sortStudentsById()" title="តម្រៀបតាមអត្តលេខ">⇅</button></div></th>
+            <th rowspan="2" class="col-id"><div class="th-vertical">អត្តលេខ<button type="button" class="id-sort-btn" id="idSortBtn" onclick="sortStudentsById()" title="តម្រៀបតាមអត្តលេខ">⇅</button></div></th>
             <th rowspan="2" class="sticky-col-2"><div class="th-vertical">គោត្តនាម *</div></th>
             <th rowspan="2" class="sticky-col-3"><div class="th-vertical">នាម</div></th>
             <th rowspan="2" class="col-gender" style="width: 54px;"><div class="th-vertical">ភេទ *</div></th>
@@ -1190,7 +1198,7 @@ body{background:var(--bg)}
               <div class="guide-icon-box">📋</div>
               <div>
                 <div class="guide-title">វាយ ឬបិទភ្ជាប់ មួយនាក់ក្នុងមួយបន្ទាត់</div>
-                <div class="guide-sub">ដកឃ្លា = ក្រឡា ។ ចម្លងជួរពី Excel ក៏បាន ។ ត្រូវការ <b>គោត្តនាម នាម ភេទ និងអត្តលេខ</b> ។</div>
+                <div class="guide-sub">ដកឃ្លា = ក្រឡា ។ ចម្លងជួរពី Excel ក៏បាន ។ ត្រូវការ <b>គោត្តនាម នាម និងភេទ</b> ។ អត្តលេខអាចទុកទទេបាន ។</div>
               </div>
             </div>
 
@@ -1198,7 +1206,7 @@ body{background:var(--bg)}
               <div class="num-chip primary"><span class="chip-n">1</span> គោត្តនាម *</div>
               <div class="num-chip primary"><span class="chip-n">2</span> នាម *</div>
               <div class="num-chip primary"><span class="chip-n">3</span> ភេទ *</div>
-              <div class="num-chip primary"><span class="chip-n">4</span> អត្តលេខ *</div>
+              <div class="num-chip primary"><span class="chip-n">4</span> អត្តលេខ</div>
               <div class="num-chip"><span class="chip-n">5</span> ទូរស័ព្ទ</div>
               <div class="num-chip"><span class="chip-n">6</span> ឈ្មោះឪពុក</div>
               <div class="num-chip"><span class="chip-n">7</span> ឈ្មោះម្តាយ</div>
@@ -1213,7 +1221,7 @@ body{background:var(--bg)}
             <div class="step-number-circle">1</div>
             <div class="step-info">
               <div class="step-title">ទាញយកគំរូ រួចបំពេញឈ្មោះសិស្ស</div>
-              <div class="step-sub">ត្រូវបំពេញ អត្តលេខ, គោត្តនាម, នាម, ភេទ ។ ទីកន្លែងកំណើត/អាសយដ្ឋាន សូមវាយតាមលំដាប់៖ ភូមិ, ឃុំ, ស្រុក, ខេត្ត ។</div>
+              <div class="step-sub">ត្រូវបំពេញ គោត្តនាម, នាម, ភេទ (អត្តលេខអាចទុកទទេ) ។ ទីកន្លែងកំណើត/អាសយដ្ឋាន សូមវាយតាមលំដាប់៖ ភូមិ, ឃុំ, ស្រុក, ខេត្ត ។</div>
               <button class="btn-download-tmpl" onclick="downloadExcelTemplate()">
                 <span>📥</span> <span>ទាញយកគំរូ Excel</span>
               </button>
@@ -1392,7 +1400,7 @@ body{background:var(--bg)}
               <div class="form-group"><label>នាម</label><input type="text" class="modal-input" id="modalFirstName"></div>
             </div>
             <div class="form-row-2">
-              <div class="form-group"><label>អត្តលេខ <b class="em-req">*</b></label><input type="text" class="modal-input" id="modalStudentId" placeholder="វាយអត្តលេខសិស្ស"></div>
+              <div class="form-group"><label>អត្តលេខ</label><input type="text" class="modal-input" id="modalStudentId" placeholder="អត្តលេខ (បើមាន)"></div>
               <div class="form-group"><label>ថ្នាក់ <b class="em-req">*</b></label><input type="text" class="modal-input" id="modalGrade" placeholder="ឧ. ថ្នាក់ទី ៤(ក)" autocomplete="off"></div>
             </div>
             <div class="form-row-2">
@@ -1696,7 +1704,6 @@ body{background:var(--bg)}
 
     function validateStudent(s) {
       const err = {}, msgs = [];
-      if (!String(s.id ?? '').trim()) { err.id = true; msgs.push('អត្តលេខ'); }
       if (!String(s.name ?? '').trim()) { err.name = true; msgs.push('ឈ្មោះ'); }
       if (!normalizeGenderFront(s.sex)) { err.sex = true; msgs.push('ភេទ'); }
       return { ok: msgs.length === 0, err: err, msg: msgs.length ? ('សូមបំពេញ៖ ' + msgs.join(', ')) : '' };
@@ -2345,7 +2352,7 @@ body{background:var(--bg)}
                 ${photoUrl ? `<img src="${esc(photoUrl)}">` : esc(initialBadge)}
               </div>
             </td>
-            <td class="col-id"><input type="text" class="table-input ${(showMissing && !s.id) || errs.id ? 'cell-missing' : ''}" value="${esc(s.id)}" data-field="id" oninput="syncRowInput(this, ${realIdx})" placeholder="អត្តលេខ *"></td>
+            <td class="col-id"><input type="text" class="table-input ${(showMissing && !s.id) || errs.id ? 'cell-missing' : ''}" value="${esc(s.id)}" data-field="id" oninput="syncRowInput(this, ${realIdx})" placeholder="អត្តលេខ"></td>
             <td class="sticky-col-2"><input type="text" class="table-input input-left ${(showMissing && !lastName) || errs.name ? 'cell-missing' : ''}" value="${esc(lastName)}" data-field="lastName" style="font-weight:700;" oninput="syncRowInput(this, ${realIdx})" placeholder="គោត្តនាម *"></td>
             <td class="sticky-col-3"><input type="text" class="table-input input-left" value="${esc(firstName)}" data-field="firstName" style="font-weight:700;" oninput="syncRowInput(this, ${realIdx})" placeholder="នាម"></td>
             <td class="col-gender">
@@ -3040,7 +3047,6 @@ body{background:var(--bg)}
     /* 11. MISSING INFO */
     function getMissingFields(s) {
       const m = [];
-      if (!s.id) m.push('អត្តលេខ');
       if (!s.name) m.push('ឈ្មោះ');
       if (!s.sex) m.push('ភេទ');
       if (!s.dob) m.push('ថ្ងៃកំណើត');
