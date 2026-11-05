@@ -246,8 +246,6 @@
     /* ✍ ត្រានាយក (រង្វង់ 34 មម) + ហត្ថលេខាគ្រូ (45×15 មម) ពីទំព័រ «ប្រវត្តិរូបរបស់ខ្ញុំ» */
     .stamp-anchor { position: relative; height: 0; display: none; }
     .stamp-anchor.on { display: block; }
-    .honor-paper.raster #dirCol { margin-top: 0 !important; }
-    .honor-paper.raster .stamp-anchor .stamp-circle { top: -12mm; }
     .stamp-anchor .stamp-circle { position: absolute; left: 50%; top: -10mm; margin-left: -17mm; width: 34mm; height: 34mm; z-index: 6; pointer-events: none; }
     .stamp-circle img { position: absolute; max-width: none; max-height: none; height: auto; }
     .sign-space.has-sig { height: 15mm !important; display: flex; align-items: center; justify-content: center; }
@@ -572,7 +570,7 @@
               <div id="lblSolarDate" style="font-size:13px; margin-top:2px;"></div>
               <div class="font-moul sign-title" style="color:#2b3990; margin-top:4px;">គ្រូបន្ទុកថ្នាក់</div>
               <div class="sign-space" id="sigSpace"></div>
-              <div id="lblTeacherName" class="font-moul" style="font-size:13.5px;"></div>
+              <div id="lblTeacherName" class="font-moul" style="font-size:13.5px; text-align:right; padding-right:18px; margin-top:2px;"></div>
             </div>
           </div>
 
@@ -1374,7 +1372,7 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         const anyR = hasR.some(Boolean);
         let lastPx = R.last;
         if (anyR) lastPx = Math.max(...R.t.map((tr, i) => hasR[i] ? (tr[1] + tr[3]) * 1123 / 100 : 0));
-        paper.style.setProperty('--fy', Math.min(lastPx + 14, 925) + 'px');
+        paper.style.setProperty('--fy', Math.min(lastPx + 24, 925) + 'px');
         /* លាក់ប្រអប់ដែលគ្មានសិស្ស (បើមានសិស្សតិចជាង ៥) */
         const has = s.map(x => !!(x && x.name));
         const anyData = has.some(Boolean);
