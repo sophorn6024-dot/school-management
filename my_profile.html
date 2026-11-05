@@ -318,6 +318,15 @@ function analyzeStamp(src) {
         if (x1 < 0) return res(null);
         const cw = x1 - x0 + 1, ch = y1 - y0 + 1, o = document.createElement('canvas');
         o.width = cw; o.height = ch; o.getContext('2d').drawImage(c, x0, y0, cw, ch, 0, 0, cw, ch);
+        /* ផ្ទៃរូបមិនថ្លា (ស/ប្រផេះ) → ធ្វើឱ្យថ្លា ដើម្បីមិនបាំងអក្សរ */
+        if (bg[3] >= 30) {
+          const oc = o.getContext('2d', { willReadFrequently: true }), od = oc.getImageData(0, 0, cw, ch), q = od.data;
+          for (let i = 0; i < q.length; i += 4) {
+            const dist = Math.abs(q[i] - bg[0]) + Math.abs(q[i + 1] - bg[1]) + Math.abs(q[i + 2] - bg[2]);
+            if (dist < 40) q[i + 3] = 0; else if (dist < 110) q[i + 3] = Math.round(q[i + 3] * (dist - 40) / 70);
+          }
+          oc.putImageData(od, 0, 0);
+        }
         const url = o.toDataURL('image/png');
         let pts = red.length >= 200 ? red : all;
         const stride = Math.max(2, Math.floor(pts.length / 2 / 5000) * 2); const P = [];
