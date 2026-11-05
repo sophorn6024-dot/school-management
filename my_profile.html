@@ -448,7 +448,7 @@ function schHead(){
   $('wDept').style.display=t==='doc'?'':'none';$('wOffice').style.display=(t==='s')?'none':'';$('wCluster').style.display=(t==='oc'||t==='doc')?'':'none';
   const p=[];if(t==='doc'&&$('sDept').value.trim())p.push($('sDept').value.trim());
   if(t!=='s'&&$('sOffice').value.trim())p.push($('sOffice').value.trim());
-  if((t==='oc'||t==='doc')&&$('sCluster').value.trim())p.push('សាលាកម្រង '+$('sCluster').value.trim());
+  if((t==='oc'||t==='doc')&&$('sCluster').value.trim())p.push($('sCluster').value.trim());
   p.push($('sName').value.trim());
   $('sPrev').textContent='នឹងចេញជា ៖ '+p.filter(Boolean).join(' · ');
   schChg();
