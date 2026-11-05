@@ -1961,7 +1961,7 @@ exports.default = {
       const dept = (d.dept || '').trim(), office = (d.office || '').trim(), cl = (d.cluster || '').trim(), L = [];
       if (t === 'doc' && dept) L.push(dept);
       if (t !== 's' && office) L.push(office);
-      if ((t === 'oc' || t === 'doc') && cl) L.push('សាលាកម្រង ' + cl);
+      if ((t === 'oc' || t === 'doc') && cl) L.push(cl);
       L.push(school);
       return L;
     }
