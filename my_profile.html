@@ -61,8 +61,8 @@ label.l .rq{color:var(--danger)}
 .radios label{display:flex;gap:6px;align-items:center;cursor:pointer}
 .radios input{width:18px;height:18px}
 .qr-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.qr-box{display:none;margin-top:14px;text-align:center}
-.qr-box .qrc{display:inline-block;background:#fff;padding:12px;border-radius:14px}
+.qr-box{display:none;margin-top:14px;text-align:center}.qr-box .row{justify-content:flex-start}
+.qr-name{font-weight:800;font-size:17px;margin-bottom:10px}.qr-box .qrc{border:1px solid var(--border);border-radius:18px;padding:22px!important;display:inline-block;background:#fff;padding:12px;border-radius:14px}
 .hint{color:var(--muted);font-size:12.5px;margin-top:6px;line-height:1.6}
 .dlg-bg{position:fixed;inset:0;z-index:100000;background:rgba(10,18,32,.55);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px}
 .dlg{background:var(--surface);border-radius:22px;padding:22px;max-width:380px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.35)}
@@ -134,12 +134,12 @@ label.l .rq{color:var(--danger)}
   <div class="card">
     <div class="qr-head"><h3 class="sec" style="margin:0">▦ QR ចូលប្រើ</h3><div class="row"><button class="btn" id="qrBtn" onclick="toggleQr()">បង្ហាញ QR</button></div></div>
     <p class="hint" style="margin-top:12px">សម្រាប់ចូលគណនីគ្រូរបស់អ្នក។ កុំចែករំលែក QR នេះ ដូចលេខសម្ងាត់ដែរ។</p>
-    <div class="qr-box" id="qrBox"><div class="qrc" id="qrCanvas"></div><div style="margin-top:10px"><button class="btn del" onclick="qrReset()">បង្កើត QR ថ្មី</button></div></div>
+    <div class="qr-box" id="qrBox"><div class="qr-name" id="qrName"></div><div class="qrc" id="qrCanvas"></div><p class="hint" style="margin-top:12px">បើប្តូរលេខសម្ងាត់ ឬបង្កើត QR ថ្មី QR ចាស់លែងចូលប្រើបាន។</p><div class="row" style="justify-content:flex-start;margin-top:12px"><button class="btn pri" onclick="qrDownload()">⬇️ ទាញយក QR</button><button class="btn" onclick="qrReset()">🔄 បង្កើត QR ថ្មី</button></div></div>
   </div>
 
   <!-- ព័ត៌មានសាលា -->
   <div class="card">
-    <h3 class="sec">🏫 ព័ត៌មានសាលា <small id="schoolNote"></small></h3>
+    <h3 class="sec">🏫 ព័ត៌មានសាលា <small id="schoolNote">(ទុកតាមគណនីរបស់អ្នកប៉ុណ្ណោះ)</small></h3>
     <div class="fg">
       <div class="full"><label class="l">ឈ្មោះសាលា</label><input class="in" id="sName" oninput="schChg()"></div>
       <div><label class="l">ងារនាយក <small style="font-weight:400;color:var(--muted)">(លើហត្ថលេខា)</small></label><input class="in" id="sDirTitle" placeholder="នាយកសាលា" oninput="schChg()"></div>
@@ -287,7 +287,7 @@ async function saveForm(t){
 
 /* ===== រូបភាព ===== */
 let PICK=null;
-function pick(k){PICK=k;if((k==='logo'||k==='stamp')&&!SCH.admin){uiAlert('មានតែ Admin ទេដែលអាចប្តូររូបសាលា');return}$('filePick').click()}
+function pick(k){PICK=k;$('filePick').click()}
 function resize(file,maxW,maxH,png,q){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=()=>rej(new Error('អានឯកសារមិនបាន'));
   fr.onload=()=>{const im=new Image();im.onerror=()=>rej(new Error('រូបភាពមិនត្រឹមត្រូវ'));im.onload=()=>{
     let w=im.width,h=im.height,s=Math.min(1,maxW/w,maxH/h);w=Math.round(w*s);h=Math.round(h*s);
@@ -346,12 +346,24 @@ let qrOn=false;
 async function qrLoad(reset){
   const t=await rpc0('teacher_qr_get',{p_reset:!!reset});
   if(!t)throw new Error('មិនអាចយក QR បាន (ត្រូវ run teacher_qr.sql)');
-  const box=$('qrCanvas');box.innerHTML='';new QRCode(box,{text:t,width:220,height:220,correctLevel:QRCode.CorrectLevel.H});
+  $('qrName').textContent=(ROW&&(ROW.teacher_name||ROW.username))||'';const box=$('qrCanvas');box.innerHTML='';new QRCode(box,{text:t,width:220,height:220,correctLevel:QRCode.CorrectLevel.H});
 }
 async function rpc0(fn,args){const {data,error}=await sb.rpc(fn,Object.assign({p_u:USER.username,p_p:pw()},args||{}));if(error)throw new Error(error.message||error);return data}
 async function toggleQr(){
   if(qrOn){qrOn=false;$('qrBox').style.display='none';$('qrBtn').textContent='បង្ហាញ QR';return}
   try{await qrLoad(false);qrOn=true;$('qrBox').style.display='block';$('qrBtn').textContent='លាក់ QR'}catch(e){uiAlert('❌ '+(e.message||e))}
+}
+function qrDownload(){
+  const src=$('qrCanvas').querySelector('canvas'),im=$('qrCanvas').querySelector('img');
+  const draw=el=>{
+    const q=el.naturalWidth||el.width,pad=40,top=70,W=q+pad*2,H=q+pad+top+30,c=document.createElement('canvas');c.width=W;c.height=H;
+    const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,H);
+    x.fillStyle='#0f172a';x.textAlign='center';x.font='bold 30px "Battambang","Khmer OS Battambang",sans-serif';x.fillText($('qrName').textContent,W/2,48);
+    x.drawImage(el,pad,top,q,q);
+    const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='QR-'+(ROW&&ROW.username||'teacher')+'.png';document.body.appendChild(a);a.click();a.remove();
+  };
+  const el=(src&&src.width>10)?src:im;if(!el){toast('⚠️ មិនទាន់មាន QR');return}
+  if(el.tagName==='IMG'&&!el.complete){el.onload=()=>draw(el)}else draw(el);
 }
 async function qrReset(){
   if(!await uiConfirm('បង្កើត QR ថ្មី? QR ចាស់នឹងឈប់ប្រើបាន។',{okText:'បង្កើតថ្មី'}))return;
@@ -378,7 +390,7 @@ function schFill(){
   Object.keys(SK).forEach(i=>{$(i).value=d[SK[i]]||(i==='sHeadType'?'oc':'')});
   if(!$('sName').value)$('sName').value='សាលាបឋមសិក្សាកំពង់ល្ពៅ';
   Object.keys(SK).forEach(i=>{$(i).disabled=!SCH.admin});
-  $('schoolNote').textContent=SCH.admin?'':'(មានតែ Admin ទេដែលអាចកែ)';
+  
   document.querySelectorAll('.sc-media .btn').forEach(b=>{b.style.display=SCH.admin?'':'none'});
   schHead();SBASE=schSnap();schChg();setImg();
 }
@@ -395,7 +407,7 @@ async function init(){
   try{
     const d=await rpc('staff_my_profile_get');ROW=d.row;EXT=d.data||{};MEDIA={cover:d.cover_url||'',sign:d.signature_url||''};fill();
   }catch(e){uiAlert('❌ '+(e.message||e))}
-  try{const s=await rpc('staff_school_get');SCH={data:s.data||{},logo:s.logo_url||'',stamp:s.stamp_url||'',admin:!!s.admin}}catch(e){SCH.admin=false}
+  try{const s=await rpc('staff_school_get');SCH={data:s.data||{},logo:s.logo_url||'',stamp:s.stamp_url||'',admin:true}}catch(e){SCH.admin=true;uiAlert('❌ '+(e.message||e))}
   schFill();
 }
 if(!USER||!USER.username||!pw()){$('auth').style.display='block'}
