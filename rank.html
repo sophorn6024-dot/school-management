@@ -543,7 +543,7 @@ try{const pr=window.parent&&window.parent!==window&&window.parent.document.docum
   ========================================================= -->
   <div id="printPage" style="display:none;">
     <div class="document-header">
-      <div class="school-info">
+      <div class="school-info" id="schoolInfo">
         <span style="font-weight:700;">រដ្ឋបាល ស្រុកសំឡូត</span><br>
         <span style="font-weight:700;">សាលាបឋមសិក្សាកំពង់ល្ពៅ</span>
       </div>
@@ -644,7 +644,7 @@ try{const pr=window.parent&&window.parent!==window&&window.parent.document.docum
       <div class="footer-left">
         <div id="signDateD"></div>
         <div class="khmer-moul" style="margin-top:8px; font-size:12px;">បានឃើញ និងឯកភាព</div>
-        <div class="khmer-moul" style="font-size:12px; margin-top:5px;">នាយកសាលា</div>
+        <div class="khmer-moul" id="dirTitle" style="font-size:12px; margin-top:5px;">នាយកសាលា</div>
         <div class="stamp-space" id="stampSpace" style="display:none"><div class="stamp-circle" id="stampBox"><img id="stampImg" alt=""></div></div>
         <div class="dir-name" id="dirName"></div>
       </div>
@@ -1954,6 +1954,17 @@ exports.default = {
       document.getElementById('stampSpace').style.marginBottom = Math.max(0, (m.h - (m.y + m.d)) * K) + 'mm';
       return true;
     }
+
+    /* 🏫 ក្បាលឯកសារ + ងារនាយក ពីទំព័រ «ប្រវត្តិរូបរបស់ខ្ញុំ» → ព័ត៌មានសាលា */
+    function schoolHeadLines(d) {
+      const school = (d.school_name || '').trim() || 'សាលាបឋមសិក្សាកំពង់ល្ពៅ', t = d.head_type || 'oc';
+      const dept = (d.dept || '').trim(), office = (d.office || '').trim(), cl = (d.cluster || '').trim(), L = [];
+      if (t === 'doc' && dept) L.push(dept);
+      if (t !== 's' && office) L.push(office);
+      if ((t === 'oc' || t === 'doc') && cl) L.push('សាលាកម្រង ' + cl);
+      L.push(school);
+      return L;
+    }
     async function loadSignAssets() {
       try {
         const pw = localStorage.getItem('krou_pw') || '';
@@ -1967,6 +1978,10 @@ exports.default = {
           if (sd.stamp_url && await placeStamp(sd.stamp_url, d.stamp_circle)) { document.getElementById('stampSpace').style.display = 'flex'; stampOn = true; }
           const dn = document.getElementById('dirName'); if (dn) dn.textContent = stampOn ? '' : (d.director_name || '');   /* ត្រាមានឈ្មោះក្នុងរូបរួចហើយ */
           if (d.sign_place) { SCHOOL_PLACE = d.sign_place; renderSignDates(); }
+          if (d.school_name || d.office || d.cluster || d.dept || d.head_type) {
+            document.getElementById('schoolInfo').innerHTML = schoolHeadLines(d).map(x => '<span style="font-weight:700;">' + String(x).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])) + '</span>').join('<br>');
+          }
+          if (d.director_title) document.getElementById('dirTitle').textContent = d.director_title;
         }
       } catch (e) { console.warn('sign assets', e); }
     }
