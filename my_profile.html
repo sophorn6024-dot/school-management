@@ -166,9 +166,9 @@ label.l .rq{color:var(--danger)}
         <button class="btn" id="logoBtn" onclick="pick('logo')">⬆️ ផ្ទុករូប</button> <button class="btn del" id="logoDel" onclick="delMedia('logo')">🗑️</button>
         <div class="note" style="margin-top:6px">ទំហំពិតលើក្រដាស 24 × 24 មម<br>លើក្បាលរបាយការណ៍</div></div></div>
       <div class="sc-media"><label class="l">ត្រានាយក</label>
-        <div style="text-align:center"><div class="sign-prev" id="stampPrev" style="width:150px;height:150px;margin:0 auto 10px;border-radius:50%"></div>
+        <div style="text-align:center"><div class="sign-prev" id="stampPrev" style="width:190px;height:150px;margin:0 auto 10px;border-radius:14px"></div>
         <button class="btn" id="stampBtn" onclick="pick('stamp')">⬆️ ប្តូររូប</button> <button class="btn del" id="stampDel" onclick="delMedia('stamp')">🗑️ ដកចេញ</button>
-        <div class="note" style="margin-top:6px">ទំហំពិតលើក្រដាស 45 × 45 មម<br>លើប្លុកហត្ថលេខាខាងឆ្វេង · PNG ផ្ទៃថ្លាល្អបំផុត</div></div></div>
+        <div class="note" style="margin-top:6px">ប្រព័ន្ធស្កេនយករង្វង់ត្រា ដាក់ឱ្យមានទំហំ 34 × 34 មម (ហត្ថលេខា/ឈ្មោះដែលលើសរង្វង់ មិនគិតទំហំ)<br>លើប្លុកហត្ថលេខាខាងឆ្វេង · PNG ផ្ទៃថ្លាល្អបំផុត</div></div></div>
     </div>
     <div class="note" style="text-align:left;margin-top:14px">កម្រិតសាលា៖ <b>បឋមសិក្សា</b> · កំណត់ពេលចុះឈ្មោះ មិនអាចប្តូរ (វាជាមូលដ្ឋានពិន្ទុ ១០/៥០)។</div>
     <div class="foot"><button class="btn pri" id="saveS" onclick="saveSchool()" disabled>💾 រក្សាទុកព័ត៌មានសាលា</button></div>
@@ -287,6 +287,61 @@ async function saveForm(t){
 
 /* ===== រូបភាព ===== */
 let PICK=null;
+
+/* 🔍 ស្កេនរូបត្រា៖ កាត់គែមទទេ រួចរកខ្សែបន្ទាត់រង្វង់ត្រា (ក្រហម) → {url,x,y,d,w,h}  (ហត្ថលេខា/ឈ្មោះដែលលើសរង្វង់ មិនគិតក្នុងទំហំត្រា) */
+function analyzeStamp(src) {
+  return new Promise(res => {
+    const im = new Image();
+    im.onerror = () => res(null);
+    im.onload = () => {
+      try {
+        const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement('canvas');
+        c.width = w; c.height = h; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0);
+        const d = x.getImageData(0, 0, w, h).data;
+        const cr = (cx, cy) => { const i = (cy * w + cx) * 4; return [d[i], d[i + 1], d[i + 2], d[i + 3]]; };
+        const cs = [cr(0, 0), cr(w - 1, 0), cr(0, h - 1), cr(w - 1, h - 1)];
+        const bg = [0, 1, 2, 3].map(k => Math.round(cs.reduce((t, q) => t + q[k], 0) / 4));
+        const ink = i => {
+          const a = d[i + 3];
+          if (bg[3] < 30) return a > 40;
+          if (Math.abs(a - bg[3]) > 60) return true;
+          return Math.abs(d[i] - bg[0]) + Math.abs(d[i + 1] - bg[1]) + Math.abs(d[i + 2] - bg[2]) > 90;
+        };
+        let x0 = w, y0 = h, x1 = -1, y1 = -1; const all = [], red = [];
+        for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++) {
+          const i = (yy * w + xx) * 4;
+          if (!ink(i)) continue;
+          if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy;
+          all.push(xx, yy);
+          if (d[i] > d[i + 2] + 25 && d[i] > d[i + 1] + 15) red.push(xx, yy);   // ក្រហម (ត្រា + ឈ្មោះ) មិនមែនខៀវ (ហត្ថលេខា)
+        }
+        if (x1 < 0) return res(null);
+        const cw = x1 - x0 + 1, ch = y1 - y0 + 1, o = document.createElement('canvas');
+        o.width = cw; o.height = ch; o.getContext('2d').drawImage(c, x0, y0, cw, ch, 0, 0, cw, ch);
+        const url = o.toDataURL('image/png');
+        let pts = red.length >= 200 ? red : all;
+        const stride = Math.max(2, Math.floor(pts.length / 2 / 5000) * 2); const P = [];
+        for (let i = 0; i < pts.length; i += stride) P.push(pts[i] - x0, pts[i + 1] - y0);
+        let L = cw, T = ch; for (let i = 0; i < P.length; i += 2) { if (P[i] < L) L = P[i]; if (P[i + 1] < T) T = P[i + 1]; }
+        const maxR = Math.min(cw - L, ch - T) / 2, minR = Math.max(20, Math.min(cw, ch) * 0.2);
+        let best = null;
+        for (let r = Math.floor(minR); r <= maxR; r += 2) {
+          const cx = L + r, cy = T + r, tol = Math.max(2.5, r * 0.04), bins = new Uint8Array(72); let cnt = 0;
+          for (let i = 0; i < P.length; i += 2) {
+            const dx = P[i] - cx, dy = P[i + 1] - cy, dist = Math.sqrt(dx * dx + dy * dy);
+            if (Math.abs(dist - r) <= tol) { bins[Math.min(71, Math.floor((Math.atan2(dy, dx) + Math.PI) / (2 * Math.PI) * 72))] = 1; cnt++; }
+          }
+          let cov = 0; for (let b = 0; b < 72; b++) cov += bins[b]; cov /= 72;
+          if (!best || cov > best.cov + 0.02 || (Math.abs(cov - best.cov) <= 0.02 && cnt > best.cnt)) best = { r, cov, cnt };
+        }
+        if (!best || best.cov < 0.5) return res({ url, x: 0, y: 0, d: Math.min(cw, ch), w: cw, h: ch, fallback: true });
+        res({ url, x: L, y: T, d: best.r * 2, w: cw, h: ch });
+      } catch (e) { res(null); }
+    };
+    im.src = src;
+  });
+}
+
 function pick(k){PICK=k;$('filePick').click()}
 function resize(file,maxW,maxH,png,q){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=()=>rej(new Error('អានឯកសារមិនបាន'));
   fr.onload=()=>{const im=new Image();im.onerror=()=>rej(new Error('រូបភាពមិនត្រឹមត្រូវ'));im.onload=()=>{
@@ -300,7 +355,12 @@ async function onPicked(inp){
     else if(k==='cover'){const u=await resize(f,1400,420,false,.82);const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{cover_url:u}});MEDIA.cover=d.cover_url||''}
     else if(k==='sign'){const u=await resize(f,600,200,true);const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{signature_url:u}});MEDIA.sign=d.signature_url||''}
     else if(k==='logo'){const u=await resize(f,300,300,true);const d=await rpc('staff_school_save',{p_data:{},p_media:{logo_url:u}});SCH.logo=d.logo_url||''}
-    else if(k==='stamp'){const u=await resize(f,420,420,true);const d=await rpc('staff_school_save',{p_data:{},p_media:{stamp_url:u}});SCH.stamp=d.stamp_url||''}
+    else if(k==='stamp'){
+      const u=await resize(f,800,800,true);const a=await analyzeStamp(u);
+      if(!a){uiAlert('❌ រកមិនឃើញត្រាក្នុងរូបនេះ សូមជ្រើសរូបផ្សេង');return}
+      const d=await rpc('staff_school_save',{p_data:{stamp_circle:{x:a.x,y:a.y,d:a.d,w:a.w,h:a.h}},p_media:{stamp_url:a.url}});SCH.stamp=d.stamp_url||'';SCH.data=d.data||SCH.data;
+      if(a.fallback)toast('⚠️ រកមិនឃើញរង្វង់ត្រាច្បាស់ — ប្រើទំហំរូបទាំងមូលជាទំហំត្រា');
+    }
     setImg();toast('✅ បានរក្សាទុករូប');
   }catch(e){uiAlert('❌ '+(e.message||e))}
 }
@@ -309,7 +369,7 @@ async function delMedia(k){
   try{
     if(k==='sign'){const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{signature_url:''}});MEDIA.sign=d.signature_url||''}
     else if(k==='logo'){const d=await rpc('staff_school_save',{p_data:{},p_media:{logo_url:''}});SCH.logo=d.logo_url||''}
-    else if(k==='stamp'){const d=await rpc('staff_school_save',{p_data:{},p_media:{stamp_url:''}});SCH.stamp=d.stamp_url||''}
+    else if(k==='stamp'){const d=await rpc('staff_school_save',{p_data:{stamp_circle:null},p_media:{stamp_url:''}});SCH.stamp=d.stamp_url||''}
     setImg();toast('🗑️ បានដកចេញ');
   }catch(e){uiAlert('❌ '+(e.message||e))}
 }
