@@ -1213,7 +1213,7 @@ body{background:var(--bg)}
 
       <div class="import-class-row">
         <span>ថ្នាក់</span>
-        <span class="import-class-tag" id="importClassTag">-</span>
+        <span class="import-class-tag" id="importClassTag">-</span><select id="importClassSel" class="import-class-tag" style="display:none;max-width:60%" onchange="document.getElementById('importClassSel').style.borderColor=''"></select>
       </div>
 
       <div class="import-tabs-bar">
@@ -2880,7 +2880,18 @@ body{background:var(--bg)}
     /* 10. IMPORT (EXCEL + PASTE) */
     function openImportModal(tab) {
       if (tab === 'paste' || tab === 'excel') switchImportTab(tab);
-      document.getElementById('importClassTag').innerText = currentSelectedClass ? `ថ្នាក់ទី ${currentSelectedClass}` : 'ថ្នាក់ទី១ (លំនាំដើម)';
+      const tag = document.getElementById('importClassTag'), sel = document.getElementById('importClassSel');
+      if (IS_ADMIN) {
+        const names = classesWithData.map(c => c.name);
+        if (currentSelectedClass && !names.includes(currentSelectedClass)) names.push(currentSelectedClass);
+        sel.innerHTML = '<option value="">— ជ្រើសថ្នាក់ —</option>' + names.map(n => `<option value="${esc(n)}">ថ្នាក់ទី ${esc(n)}</option>`).join('') + '<option value="__new__">➕ បង្កើតថ្នាក់ថ្មី...</option>';
+        sel.value = currentSelectedClass || '';
+        sel.onchange = () => { sel.style.borderColor = ''; if (sel.value === '__new__') { sel.value = currentSelectedClass || ''; closeImportModal(); openCreateClass(); } };
+        sel.style.display = ''; tag.style.display = 'none';
+      } else {
+        sel.style.display = 'none'; tag.style.display = '';
+        tag.innerText = currentSelectedClass ? `ថ្នាក់ទី ${currentSelectedClass}` : 'ថ្នាក់ទី១ (លំនាំដើម)';
+      }
       document.getElementById('importModalOverlay').style.display = 'flex';
     }
     function closeImportModal() { document.getElementById('importModalOverlay').style.display = 'none'; resetExcelPreview(); }
@@ -2921,6 +2932,11 @@ body{background:var(--bg)}
     async function submitImportStudents() {
       if (activeImportTab === 'excel') return doExcelImport();
       if (!pendingImportStudents.length) return;
+      if (IS_ADMIN) {
+        const se = document.getElementById('importClassSel');
+        if (!se.value) { se.style.borderColor = '#dc2626'; showToast('⚠️ សូមជ្រើសថ្នាក់ដែលត្រូវនាំចូលសិស្សជាមុន', true); return; }
+        pendingImportStudents.forEach(p => { p.grade = `ថ្នាក់ទី${se.value}`; });
+      }
 
       const importIds = pendingImportStudents.map(p => String(p.student_id).trim()).filter(Boolean);
 
@@ -3141,6 +3157,10 @@ body{background:var(--bg)}
           document.getElementById('dzTitle').textContent = '📄 ' + file.name;
           document.getElementById('dzTypes').textContent = Math.max(1, Math.round(file.size / 1024)) + ' KB · ចុចដើម្បីជ្រើសផ្សេង';
           renderXlPreview();
+          if (IS_ADMIN && pendingExcel && pendingExcel.fileClass) {
+            const se = document.getElementById('importClassSel'), fk = clsKey(fileClassToKh(pendingExcel.fileClass));
+            if (se && !se.value) { const o = [...se.options].find(x => x.value && x.value !== '__new__' && clsKey(x.value) === fk); if (o) se.value = o.value; }
+          }
         } catch (err) { uiAlert("កំហុស Excel: " + (err.message || err)); }
         input.value = '';
       };
@@ -3153,9 +3173,11 @@ body{background:var(--bg)}
       /* 🏫 កំណត់ថ្នាក់ */
       let gradeStr = '', note = '';
       const fileCls = pendingExcel.fileClass ? fileClassToKh(pendingExcel.fileClass) : '';
-      if (currentSelectedClass) {
-        gradeStr = `ថ្នាក់ទី${currentSelectedClass}`;
-        if (fileCls && clsKey(fileCls) !== clsKey(currentSelectedClass)) note = `\n⚠️ ឯកសារនេះសរសេរថ្នាក់ «${pendingExcel.fileClass}» ប៉ុន្តែអ្នកកំពុងជ្រើសថ្នាក់ «${currentSelectedClass}» — សិស្សនឹងចូលទៅថ្នាក់ «${currentSelectedClass}»។`;
+      const impCls = IS_ADMIN ? document.getElementById('importClassSel').value : currentSelectedClass;
+      if (IS_ADMIN && !impCls) { const se = document.getElementById('importClassSel'); se.style.borderColor = '#dc2626'; showToast('⚠️ សូមជ្រើសថ្នាក់ដែលត្រូវនាំចូលសិស្សជាមុន', true); return; }
+      if (impCls) {
+        gradeStr = `ថ្នាក់ទី${impCls}`;
+        if (fileCls && clsKey(fileCls) !== clsKey(impCls)) note = `\n⚠️ ឯកសារនេះសរសេរថ្នាក់ «${pendingExcel.fileClass}» ប៉ុន្តែអ្នកកំពុងជ្រើសថ្នាក់ «${currentSelectedClass}» — សិស្សនឹងចូលទៅថ្នាក់ «${currentSelectedClass}»។`;
       } else if (fileCls) { gradeStr = `ថ្នាក់ទី${fileCls}`; note = `\n(ថ្នាក់ត្រូវបានយកតាមឯកសារ៖ ${fileCls})`; }
       else gradeStr = getDefaultGrade();
 
