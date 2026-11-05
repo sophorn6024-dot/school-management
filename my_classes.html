@@ -15,19 +15,21 @@ body{font-family:'Khmer OS Battambang','Battambang',sans-serif;background:linear
 button,input,select{font-family:inherit}
 .head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:16px}
 .cnt{color:var(--muted);font-size:15px}
-.btn{height:46px;padding:0 20px;border-radius:14px;border:0;background:var(--primary);color:#fff;font-weight:800;font-size:15px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:16px}
-.card{background:var(--card);border:1.5px solid var(--border);border-radius:22px;padding:16px;box-shadow:var(--shadow);position:relative}
+.btn{height:38px;padding:0 14px;border-radius:12px;border:0;background:var(--primary);color:#fff;font-weight:800;font-size:14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.btn.up{background:rgba(245,158,11,.16);color:#b45309}
+.hbtns{display:flex;gap:8px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:10px;box-shadow:var(--shadow);position:relative}
 .card.active{border-color:var(--primary);box-shadow:0 0 0 3px rgba(5,122,85,.18),var(--shadow)}
-.top{display:flex;align-items:center;gap:12px}
-.ico{width:48px;height:48px;border-radius:14px;background:rgba(37,99,235,.12);display:flex;align-items:center;justify-content:center;font-size:24px}
-.nm{flex:1;font-size:20px;font-weight:800;min-width:0}
-.ib{width:40px;height:40px;border-radius:12px;border:0;background:rgba(127,127,127,.1);cursor:pointer;font-size:16px}
-.sub{color:var(--muted);margin:10px 0 12px;font-size:14px}
-.badge{display:inline-block;font-size:11.5px;font-weight:800;color:#fff;background:var(--primary);border-radius:10px;padding:2px 9px;margin-left:6px;vertical-align:middle}
+.top{display:flex;align-items:center;gap:8px}
+.ico{width:30px;height:30px;border-radius:9px;background:rgba(37,99,235,.12);display:flex;align-items:center;justify-content:center;font-size:15px}
+.nm{flex:1;font-size:15px;font-weight:800;min-width:0}
+.ib{width:28px;height:28px;border-radius:8px;border:0;background:rgba(127,127,127,.1);cursor:pointer;font-size:12px}
+.sub{color:var(--muted);margin:6px 0 8px;font-size:12px}
+.badge{display:inline-block;font-size:10.5px;font-weight:800;color:#fff;background:var(--primary);border-radius:10px;padding:2px 9px;margin-left:6px;vertical-align:middle}
 .own{font-size:12.5px;color:var(--blue);font-weight:700}
 .go2{width:100%;height:42px;border-radius:13px;border:0;background:rgba(245,158,11,.14);color:#b45309;font-weight:800;font-size:14px;cursor:pointer;margin-top:8px}
-.go{width:100%;height:46px;border-radius:13px;border:0;background:rgba(37,99,235,.1);color:var(--blue);font-weight:800;font-size:15px;cursor:pointer}
+.go{width:100%;height:32px;border-radius:10px;border:0;background:rgba(37,99,235,.1);color:var(--blue);font-weight:800;font-size:13px;cursor:pointer}
 .empty{text-align:center;padding:60px 16px;color:var(--muted)}
 .empty .big{font-size:46px}
 .empty h3{color:var(--text);margin:8px 0}
@@ -68,7 +70,7 @@ button,input,select{font-family:inherit}
 <div id="main">
   <div class="head">
     <div style="display:flex;align-items:center;gap:12px"><button class="ib" style="border-radius:50%" onclick="goHub()" title="ត្រឡប់">‹</button><div class="cnt" id="cnt">សរុប 0 ថ្នាក់</div></div>
-    <button class="btn" onclick="openCls()">＋ បង្កើតថ្នាក់</button>
+    <div class="hbtns"><button class="btn up" onclick="openPromote()">⬆️ ដំឡើងថ្នាក់</button><button class="btn" onclick="openCls()">＋ បង្កើតថ្នាក់</button></div>
   </div>
   <div class="grid" id="grid"></div>
   <div class="empty" id="empty" style="display:none"><div class="big">🏫</div><h3>មិនទាន់មានថ្នាក់</h3><p>ចុច «បង្កើតថ្នាក់» ដើម្បីចាប់ផ្តើម</p></div>
@@ -97,12 +99,27 @@ button,input,select{font-family:inherit}
   <div class="cc-box" role="dialog">
     <div class="cc-head"><span id="pmTitle">⬆️ ដំឡើងថ្នាក់</span><button type="button" class="cc-x" onclick="closePm()" aria-label="បិទ">✕</button></div>
     <div class="pm-warn">⚠️ ពេលបញ្ជាក់ ប្រព័ន្ធនឹង <b>រក្សាទុក (archive)</b> ពិន្ទុ និងវត្តមានឆ្នាំនេះរបស់ថ្នាក់នេះ រួច <b>សម្អាត</b> វាចេញ សម្រាប់ឆ្នាំសិក្សាថ្មី។ សូមបោះពុម្ពរបាយការណ៍ឆ្នាំនេះ ឬ backup ជាមុន។</div>
+    <div class="cc-sec" style="padding:10px"><label style="display:block;font-size:13px;font-weight:700;margin-bottom:6px">ដំឡើងពីថ្នាក់</label><select id="pmSrc" onchange="pmLoadSrc(+this.value)"></select></div>
+    <div class="pm-seg"><button type="button" id="pmModeUp" class="on" onclick="pmMode('up')">⬆️ ឡើងថ្នាក់</button><button type="button" id="pmModeGrad" onclick="pmMode('grad')">🎓 បញ្ចប់ការសិក្សា</button></div>
+    <div class="cc-sec" id="pmDestSec"><h5>ថ្នាក់ទិសដៅ (ឆ្នាំសិក្សាថ្មី)</h5>
+      <div><label style="display:block;font-size:13px;font-weight:700;margin-bottom:6px">ជ្រើសថ្នាក់ដែលមានក្នុងប្រព័ន្ធ</label><select id="pmDestSel" onchange="pmUpd()"></select></div>
+      <div class="cc-prev"><div><small>ឈ្មោះដែលនឹងបង្ហាញ</small><b id="ccPreview"></b></div><button type="button" onclick="ccCustom()">ដាក់ឈ្មោះផ្សេង</button></div>
+      <div id="ccCustomWrap" style="display:none;margin-top:10px"><input type="text" id="ccCustomIn" placeholder="ឧ. 4ក, 5-ខ" oninput="ccUpdate()"></div>
+    </div>
+    <div class="cc-acts"><button type="button" class="c" onclick="closeCls()">បោះបង់</button><button type="button" class="s" id="ccSave" onclick="saveCls()">បង្កើត</button></div>
+  </div>
+</div>
+<div class="cc-bg" id="pmBg" onclick="if(event.target===this)closePm()">
+  <div class="cc-box" role="dialog">
+    <div class="cc-head"><span id="pmTitle">⬆️ ដំឡើងថ្នាក់</span><button type="button" class="cc-x" onclick="closePm()" aria-label="បិទ">✕</button></div>
+    <div class="pm-warn">⚠️ ពេលបញ្ជាក់ ប្រព័ន្ធនឹង <b>រក្សាទុក (archive)</b> ពិន្ទុ និងវត្តមានឆ្នាំនេះរបស់ថ្នាក់នេះ រួច <b>សម្អាត</b> វាចេញ សម្រាប់ឆ្នាំសិក្សាថ្មី។ សូមបោះពុម្ពរបាយការណ៍ឆ្នាំនេះ ឬ backup ជាមុន។</div>
+    <div class="cc-sec" style="padding:10px"><label style="display:block;font-size:13px;font-weight:700;margin-bottom:6px">ដំឡើងពីថ្នាក់</label><select id="pmSrc" onchange="pmLoadSrc(+this.value)"></select></div>
     <div class="pm-seg"><button type="button" id="pmModeUp" class="on" onclick="pmMode('up')">⬆️ ឡើងថ្នាក់</button><button type="button" id="pmModeGrad" onclick="pmMode('grad')">🎓 បញ្ចប់ការសិក្សា</button></div>
     <div class="cc-sec" id="pmDestSec"><h5>ថ្នាក់ទិសដៅ (ឆ្នាំសិក្សាថ្មី)</h5>
       <div class="cc-grid"><div><label>កម្រិត</label><select id="pmLevel" onchange="pmUpd()"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
       <div><label>អក្សរថ្នាក់</label><select id="pmLetter" onchange="pmUpd()"></select></div></div>
       <div class="cc-prev"><div><small>ផ្ទេរសិស្សទៅ</small><b id="pmPrev"></b></div></div>
-      <div class="note" style="font-size:12px;color:var(--muted);margin-top:6px">សិស្សធ្លាក់ត្រូវដោះធីកចេញ — ពួកគេនៅថ្នាក់ចាស់។ គ្រូទទួលថ្នាក់ថ្មីនឹងឃើញសិស្សពេលគាត់មានថ្នាក់ដូចគ្នា។</div></div>
+      <div class="note" style="font-size:12px;color:var(--muted);margin-top:6px">សិស្សធ្លាក់ត្រូវដោះធីកចេញ — ពួកគេនៅថ្នាក់ចាស់។ បើមិនទាន់មានថ្នាក់ទិសដៅ សូមចុច «បង្កើតថ្នាក់» ជាមុន។</div></div>
     <label class="pm-row" style="border:1px solid var(--border);border-radius:12px;font-weight:800"><input type="checkbox" id="pmAll" onchange="pmAllChg(this.checked)" checked> ជ្រើសទាំងអស់</label>
     <div class="pm-list" id="pmList"></div>
     <div class="pm-sum" id="pmSum"></div>
@@ -153,39 +170,56 @@ function render(){
     return '<div class="card'+(act?' active':'')+'"><div class="top"><div class="ico">🏫</div><div class="nm">ថ្នាក់ទី'+esc(c.name)+(act?'<span class="badge">កំពុងប្រើ</span>':'')+'</div>'
       +'<button class="ib" title="កែ" onclick="openCls('+c.id+')">✏️</button><button class="ib" title="លុប" onclick="delCls('+c.id+')">🗑️</button></div>'
       +'<div class="sub">'+(lv?'ថ្នាក់ទី '+esc(lv)+' · ':'')+'ឆ្នាំសិក្សា '+esc(c.school_year||'—')+' · សិស្ស '+(c.students||0)+' នាក់'+(IS_ADMIN&&c.owner?'<br><span class="own">👤 '+esc(c.owner)+'</span>':'')+'</div>'
-      +'<button class="go" onclick="goStudents('+c.id+')">👥 សិស្ស →</button>'+((c.students||0)>0?'<button class="go2" onclick="openPromote('+c.id+')">⬆️ ដំឡើងថ្នាក់ (ចុងឆ្នាំ)</button>':'')+'</div>';
+      +'<button class="go" onclick="goStudents('+c.id+')">👥 សិស្ស →</button>'+'</div>';
   }).join('');
 }
 function goHub(){try{parent.postMessage({type:'NAVIGATE',page:'classes'},'*')}catch(e){}location.href='classes.html'}
 
 /* ⬆️ ដំឡើងថ្នាក់ចុងឆ្នាំ */
 let PM={cls:null,stu:[],mode:'up'};
-function pmFill(sel){const a=KM;document.getElementById('pmLetter').innerHTML=a.map(x=>'<option'+(x===sel?' selected':'')+'>'+x+'</option>').join('')}
-function pmDest(){return document.getElementById('pmLevel').value+document.getElementById('pmLetter').value}
-function pmUpd(){document.getElementById('pmPrev').textContent='ថ្នាក់ទី'+pmDest();pmSum()}
+function pmFill(sel){return;const a=KM;document.getElementById('pmLetter').innerHTML=a.map(x=>'<option'+(x===sel?' selected':'')+'>'+x+'</option>').join('')}
+function pmDest(){return document.getElementById('pmDestSel').value}
+function pmUpd(){const d=pmDest();document.getElementById('pmPrev').textContent=d?'ថ្នាក់ទី'+d:'—';pmSum()}
 function pmMode(m){PM.mode=m;document.getElementById('pmModeUp').classList.toggle('on',m==='up');document.getElementById('pmModeGrad').classList.toggle('on',m==='grad');document.getElementById('pmDestSec').style.display=m==='up'?'block':'none';pmSum()}
 function pmChecked(){return [...document.querySelectorAll('#pmList input:checked')].map(i=>+i.dataset.id)}
 function pmAllChg(v){document.querySelectorAll('#pmList input').forEach(i=>i.checked=v);pmSum()}
 function pmSum(){const n=pmChecked().length,t=PM.stu.length;document.getElementById('pmSum').textContent=(PM.mode==='up'?'ឡើងថ្នាក់ '+n+' នាក់ · នៅថ្នាក់ចាស់ '+(t-n)+' នាក់':'បញ្ចប់ការសិក្សា '+n+' នាក់ · នៅថ្នាក់ចាស់ '+(t-n)+' នាក់');document.getElementById('pmAll').checked=n===t&&t>0}
 async function openPromote(id){
+  const list=ROWS.filter(x=>(x.students||0)>0);
+  if(!list.length){uiAlert('មិនទាន់មានថ្នាក់ណាមានសិស្សសម្រាប់ដំឡើងទេ');return}
+  const sel=document.getElementById('pmSrc');
+  sel.innerHTML=list.map(x=>'<option value="'+x.id+'">ថ្នាក់ទី'+esc(x.name)+' ('+(x.students||0)+' នាក់)'+(IS_ADMIN&&x.owner?' · '+esc(x.owner):'')+'</option>').join('');
+  let pick=id&&list.find(x=>x.id===id)?id:null;
+  if(!pick){const a=list.find(x=>cg(x.name).toLowerCase()===ACTIVE.toLowerCase());pick=(a||list[0]).id}
+  sel.value=String(pick);
+  await pmLoadSrc(pick,true);
+}
+async function pmLoadSrc(id,show){
   const c=ROWS.find(x=>x.id===id);if(!c)return;PM.cls=c;PM.mode='up';
   let stu=[];
   try{const {data,error}=await sb.from('students').select('id,student_name,grade').order('id',{ascending:true});if(error)throw error;
     stu=(data||[]).filter(s=>cg(s.grade).toLowerCase()===cg(c.name).toLowerCase()).sort((a,b)=>String(a.student_name).localeCompare(String(b.student_name),'km'))}
   catch(e){uiAlert('❌ ទាញសិស្សមិនបាន៖ '+(e.message||e));return}
-  if(!stu.length){uiAlert('ថ្នាក់នេះមិនទាន់មានសិស្សទេ');return}
   PM.stu=stu;
-  const m=String(c.name).match(/^(\d+)(.*)$/);const lv=m?Math.min(6,(+m[1])+1):1,lt=m&&KM.includes(m[2])?m[2]:'ក';
+  // ថ្នាក់ទិសដៅ = ថ្នាក់ដែលមានក្នុងប្រព័ន្ធ (ដកថ្នាក់ប្រភព, មិនស្ទួនឈ្មោះ)
+  const seen=new Set([cg(c.name).toLowerCase()]),opts=[];
+  ROWS.forEach(x=>{const k=cg(x.name).toLowerCase();if(!seen.has(k)){seen.add(k);opts.push(cg(x.name))}});
+  opts.sort((a,b)=>a.localeCompare(b,'km',{numeric:true}));
+  const m=String(c.name).match(/^(\d+)/),nextLv=m?String((+m[1])+1):'';
+  const ds=document.getElementById('pmDestSel');
+  ds.innerHTML=opts.length?opts.map(o=>'<option value="'+esc(o)+'">ថ្នាក់ទី'+esc(o)+'</option>').join(''):'<option value="">(គ្មានថ្នាក់ផ្សេង — សូមបង្កើតថ្នាក់ជាមុន)</option>';
+  const pref=opts.find(o=>nextLv&&o.startsWith(nextLv));if(pref)ds.value=pref;
   document.getElementById('pmTitle').textContent='⬆️ ដំឡើងថ្នាក់ទី'+c.name;
-  document.getElementById('pmLevel').value=String(lv);pmFill(lt);
+  document.getElementById('pmAll').checked=true;
   document.getElementById('pmList').innerHTML=stu.map((s,i)=>'<label class="pm-row"><input type="checkbox" checked data-id="'+s.id+'" onchange="pmSum()"><span>'+(i+1)+'. '+esc(s.student_name||'គ្មានឈ្មោះ')+'</span></label>').join('');
   pmMode(m&&+m[1]>=6?'grad':'up');pmUpd();
-  document.getElementById('pmBg').style.display='flex';
+  if(show!==undefined)document.getElementById('pmBg').style.display='flex';
 }
 function closePm(){document.getElementById('pmBg').style.display='none'}
 async function doPromote(){
   const c=PM.cls,ids=pmChecked(),all=PM.stu.length,stay=all-ids.length;
   const dest=pmDest(),up=PM.mode==='up';
+  if(up&&!dest){toast('⚠️ សូមជ្រើសថ្នាក់ទិសដៅ');return}
   if(up&&cg(dest).toLowerCase()===cg(c.name).toLowerCase()){toast('⚠️ ថ្នាក់ទិសដៅដូចថ្នាក់ចាស់');return}
   if(!ids.length&&!await uiConfirm('មិនបានជ្រើសសិស្សណាទេ។ នៅតែ archive និងសម្អាតពិន្ទុ/វត្តមានថ្នាក់នេះ?',{danger:true,okText:'បន្ត'}))return;
   const msg=(up?'ផ្ទេរ '+ids.length+' នាក់ ពីថ្នាក់ទី'+c.name+' ទៅថ្នាក់ទី'+dest:'ដាក់ '+ids.length+' នាក់ ជា «បញ្ចប់ការសិក្សា»')+(stay?'\nនៅថ្នាក់ចាស់ '+stay+' នាក់':'')+'\n\nពិន្ទុ និងវត្តមានឆ្នាំនេះនឹងត្រូវ archive រួចសម្អាត។ មិនអាចត្រឡប់វិញដោយចុចតែមួយទេ។';
