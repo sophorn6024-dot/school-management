@@ -93,7 +93,7 @@ label.l .rq{color:var(--danger)}
       <div class="sign-box">
         <div class="sign-row">
           <div class="sign-prev" id="signPrev"></div>
-          <button class="btn" onclick="pick('sign')">⬆️ ប្តូររូប</button>
+          <button class="btn" id="signBtn" onclick="pick('sign')">⬆️ ផ្ទុករូប</button>
           <button class="btn del" id="signDel" onclick="delMedia('sign')">🗑️ ដកចេញ</button>
         </div>
         <div class="note">ទំហំពិតលើក្រដាស 45 × 15 មម</div>
@@ -260,9 +260,9 @@ function fill(){
 function setImg(){
   const av=$('avatar');const ph=ROW&&ROW.photo_url;av.style.backgroundImage=ph?'url("'+ph+'")':'';$('avLetter').style.display=ph?'none':'';
   $('cover').style.backgroundImage=MEDIA.cover?'url("'+MEDIA.cover+'")':'';
-  $('signPrev').style.backgroundImage=MEDIA.sign?'url("'+MEDIA.sign+'")':'';$('signDel').style.display=MEDIA.sign?'':'none';
-  $('logoPrev').style.backgroundImage=SCH.logo?'url("'+SCH.logo+'")':'';$('logoDel').style.display=SCH.logo&&SCH.admin?'':'none';
-  $('stampPrev').style.backgroundImage=SCH.stamp?'url("'+SCH.stamp+'")':'';$('stampDel').style.display=SCH.stamp&&SCH.admin?'':'none';
+  $('signPrev').style.backgroundImage=MEDIA.sign?'url("'+MEDIA.sign+'")':'';$('signDel').style.display=MEDIA.sign?'':'none';$('signBtn').textContent=MEDIA.sign?'⬆️ ប្តូររូប':'⬆️ ផ្ទុករូប';
+  $('logoPrev').style.backgroundImage=SCH.logo?'url("'+SCH.logo+'")':'';$('logoDel').style.display=SCH.logo&&SCH.admin?'':'none';$('logoBtn').textContent=SCH.logo?'⬆️ ប្តូររូប':'⬆️ ផ្ទុករូប';
+  $('stampPrev').style.backgroundImage=SCH.stamp?'url("'+SCH.stamp+'")':'';$('stampDel').style.display=SCH.stamp&&SCH.admin?'':'none';$('stampBtn').textContent=SCH.stamp?'⬆️ ប្តូររូប':'⬆️ ផ្ទុករូប';
 }
 function syncUser(row){
   if(!row)return;ROW=row;USER=Object.assign({},USER,row);
