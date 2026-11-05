@@ -234,10 +234,9 @@
     .footer-left { text-align: center; width: 40%; }
     .sig-space { height: 15mm; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
     .sig-space img { max-height: 15mm; max-width: 45mm; object-fit: contain; }
-    .stamp-space { position: relative; height: 15mm; margin-top: 2px; }
-    .stamp-space img { position: absolute; left: 50%; top: 1mm; transform: translateX(-50%); width: 34mm; height: 34mm; object-fit: contain; mix-blend-mode: multiply; }
+    .stamp-space { height: 34mm; display: flex; align-items: flex-start; justify-content: center; margin-top: -1mm; }
+    .stamp-space img { width: 34mm; height: 34mm; object-fit: contain; mix-blend-mode: multiply; }
     .dir-name { font-family: 'Moul', cursive; font-size: 12px; margin-top: 6px; min-height: 0; }
-    .stamp-space.on + .dir-name { margin-top: 20mm; }
     .footer-right { text-align: center; width: 55%; }
     .inline-input {
       border: 1px dashed #94a3b8; border-radius: 3px; padding: 2px 4px; font-size: 11.5px;
@@ -1880,7 +1879,7 @@ exports.default = {
     });
 
     /* ✍ ហត្ថលេខាគ្រូ + ត្រានាយក + ឈ្មោះនាយក ពីទំព័រ «ប្រវត្តិរូបរបស់ខ្ញុំ» (ទុកតាមគណនី) */
-    let SCHOOL_PLACE = '';
+    let SCHOOL_PLACE = '', stampOn = false;
     async function loadSignAssets() {
       try {
         const pw = localStorage.getItem('krou_pw') || '';
@@ -1891,8 +1890,8 @@ exports.default = {
         if (pd && pd.signature_url) { const i = document.getElementById('sigImg'); i.src = pd.signature_url; document.getElementById('sigSpace').style.display = 'flex'; }
         if (sd && sd.ok) {
           const d = sd.data || {};
-          if (sd.stamp_url) { const i = document.getElementById('stampImg'); i.src = sd.stamp_url; const w = document.getElementById('stampSpace'); w.style.display = 'block'; w.classList.add('on'); }
-          const dn = document.getElementById('dirName'); if (dn) dn.textContent = d.director_name || '';
+          if (sd.stamp_url) { const i = document.getElementById('stampImg'); i.src = sd.stamp_url; const w = document.getElementById('stampSpace'); w.style.display = 'flex'; stampOn = true; }
+          const dn = document.getElementById('dirName'); if (dn) dn.textContent = stampOn ? '' : (d.director_name || '');   /* ត្រាមានឈ្មោះក្នុងរូបរួចហើយ */
           if (d.sign_place) { SCHOOL_PLACE = d.sign_place; renderSignDates(); }
         }
       } catch (e) { console.warn('sign assets', e); }
