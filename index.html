@@ -1034,8 +1034,8 @@ function qrStampLogo(box){
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-user-header">
       <div class="user-profile-summary">
-        <div class="user-green-avatar" id="sidebarAvatar" onclick="openProfileModal()" title="ព័ត៌មានផ្ទាល់ខ្លួន"><span id="sidebarInitialChar">ស</span></div>
-        <div class="user-profile-meta" onclick="openProfileModal()" style="cursor:pointer;" title="ព័ត៌មានផ្ទាល់ខ្លួន">
+        <div class="user-green-avatar" id="sidebarAvatar" onclick="navigate('my_profile')" title="ព័ត៌មានផ្ទាល់ខ្លួន"><span id="sidebarInitialChar">ស</span></div>
+        <div class="user-profile-meta" onclick="navigate('my_profile')" style="cursor:pointer;" title="ព័ត៌មានផ្ទាល់ខ្លួន">
           <div class="user-display-name" id="sidebarTeacherName">...</div>
           <div class="user-display-role" id="sidebarTeacherRole">គ្រូបង្រៀន</div>
         </div>
@@ -1061,7 +1061,6 @@ function qrStampLogo(box){
       <div class="nav-link-btn" data-page="chat" onclick="navigate('chat', this)"><span class="nav-icon-box">💬</span><span class="nav-text">សារសន្ទនា</span><span class="nav-badge" data-chat-badge></span></div>
       <div class="nav-link-btn" data-page="reportsHub" onclick="navigate('reportsHub', this)"><span class="nav-icon-box">📄</span><span class="nav-text">របាយការណ៍</span></div>
       <div class="nav-link-btn" id="studentAccNav" data-page="student_accounts" onclick="navigate('student_accounts', this)"><span class="nav-icon-box">🎓</span><span class="nav-text">គណនីសិស្ស និងបណ្ណាល័យ</span></div>
-      <div class="nav-link-btn" data-page="my_profile" onclick="navigate('my_profile', this)"><span class="nav-icon-box">🪪</span><span class="nav-text">ប្រវត្តិរូបរបស់ខ្ញុំ</span></div>
       <div class="nav-link-btn" id="teacherAdminNav" data-page="teacher" onclick="navigate('teacher', this)" style="display:none;"><span class="nav-icon-box">👨‍🏫</span><span class="nav-text">គ្រប់គ្រងគ្រូ</span></div>
     </nav>
 
@@ -1192,7 +1191,7 @@ function qrStampLogo(box){
         <div class="ms-pill"><span>🏫</span><span id="msClass">ថ្នាក់...</span></div>
         <button type="button" class="ms-ib" id="msTheme" onclick="toggleTheme()" aria-label="ប្តូរ Theme">🌙</button>
       </div>
-      <div class="ms-profile" onclick="closeMoreSheet();openProfileModal()"><div class="ms-av" id="msAvatar">ស</div><div class="ms-grow"><div class="ms-name" id="msName">...</div><div class="ms-role" id="msRole">គ្រូបង្រៀន</div></div><span class="ms-arrow">›</span></div>
+      <div class="ms-profile" onclick="closeMoreSheet();navigate('my_profile')"><div class="ms-av" id="msAvatar">ស</div><div class="ms-grow"><div class="ms-name" id="msName">...</div><div class="ms-role" id="msRole">គ្រូបង្រៀន</div></div><span class="ms-arrow">›</span></div>
       <div id="msList"></div>
     </div>
     <nav class="mobile-bottom-nav" id="mobileNav">
