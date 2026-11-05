@@ -187,12 +187,16 @@ async function pmLoadSrc(id,show){
   catch(e){uiAlert('❌ ទាញសិស្សមិនបាន៖ '+(e.message||e));return}
   PM.stu=stu;
   // ថ្នាក់ទិសដៅ = ថ្នាក់ដែលមានក្នុងប្រព័ន្ធ (ដកថ្នាក់ប្រភព, មិនស្ទួនឈ្មោះ)
-  const seen=new Set([cg(c.name).toLowerCase()]),opts=[];
-  ROWS.forEach(x=>{const k=cg(x.name).toLowerCase();if(!seen.has(k)){seen.add(k);opts.push(cg(x.name))}});
+  // ថ្នាក់ទិសដៅ = ថ្នាក់ទាំងអស់ក្នុងសាលា (រួមទាំងថ្នាក់របស់គ្រូផ្សេង)
+  let all=ROWS;
+  try{const d=await rpc('staff_class_dest_list');if(d&&d.rows)all=d.rows}catch(e){}
+  const seen=new Set([cg(c.name).toLowerCase()]),opts=[],own={};
+  all.forEach(x=>{const k=cg(x.name).toLowerCase();if(!seen.has(k)){seen.add(k);opts.push(cg(x.name))}
+    if(x.owner&&String(x.owner).toLowerCase()!==String(USER.username).toLowerCase())(own[k]=own[k]||[]).push(x.owner)});
   opts.sort((a,b)=>a.localeCompare(b,'km',{numeric:true}));
   const m=String(c.name).match(/^(\d+)/),nextLv=m?String((+m[1])+1):'';
   const ds=document.getElementById('pmDestSel');
-  ds.innerHTML=opts.length?opts.map(o=>'<option value="'+esc(o)+'">ថ្នាក់ទី'+esc(o)+'</option>').join(''):'<option value="">(គ្មានថ្នាក់ផ្សេង — សូមបង្កើតថ្នាក់ជាមុន)</option>';
+  ds.innerHTML=opts.length?opts.map(o=>'<option value="'+esc(o)+'">ថ្នាក់ទី'+esc(o)+(own[o.toLowerCase()]?' · 👤 '+esc(own[o.toLowerCase()].join(', ')):'')+'</option>').join(''):'<option value="">(គ្មានថ្នាក់ផ្សេង — សូមបង្កើតថ្នាក់ជាមុន)</option>';
   const pref=opts.find(o=>nextLv&&o.startsWith(nextLv));if(pref)ds.value=pref;
   document.getElementById('pmTitle').textContent='⬆️ ដំឡើងថ្នាក់ទី'+c.name;
   document.getElementById('pmAll').checked=true;
