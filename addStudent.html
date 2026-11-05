@@ -1060,6 +1060,10 @@ body{background:var(--bg)}
               <span>ឈប់រៀន</span>
               <span class="check-mark">✓</span>
             </div>
+            <div class="status-item" onclick="selectStatusFilter('បានបញ្ចប់', this)">
+              <span>បានបញ្ចប់</span>
+              <span class="check-mark">✓</span>
+            </div>
             <div class="status-item" onclick="selectStatusFilter('ស្ថានភាពទាំងអស់', this)">
               <span>ស្ថានភាពទាំងអស់</span>
               <span class="check-mark">✓</span>
@@ -1477,7 +1481,7 @@ body{background:var(--bg)}
           <div class="em-section-body">
             <div class="form-row-2">
               <div class="form-group"><label>ទូរស័ព្ទ</label><input type="tel" class="modal-input" id="modalPhone"></div>
-              <div class="form-group"><label>ស្ថានភាព (Semester ឈប់រៀន)</label><input type="text" class="modal-input" id="modalDropout" placeholder="ទុកទទេបើកំពុងរៀន"></div>
+              <div class="form-group"><label>ស្ថានភាព (Semester ឈប់រៀន)</label><input type="text" class="modal-input" id="modalDropout" list="dropoutOpts" placeholder="ទុកទទេបើកំពុងរៀន"><datalist id="dropoutOpts"><option value="ឆមាសទី១"><option value="ឆមាសទី២"><option value="បានបញ្ចប់"></datalist></div>
             </div>
             <div class="form-group" style="margin-bottom:12px;"><label>ទីកន្លែងកំណើត</label>
               <div class="addr4"><div class="form-group"><label>ភូមិ</label><input type="text" class="modal-input" id="mPob_village" placeholder="ភូមិ"></div><div class="form-group"><label>ឃុំ / សង្កាត់</label><input type="text" class="modal-input" id="mPob_commune" placeholder="ឃុំ / សង្កាត់"></div><div class="form-group"><label>ស្រុក / ខណ្ឌ / ក្រុង</label><input type="text" class="modal-input" id="mPob_district" placeholder="ស្រុក / ខណ្ឌ"></div><div class="form-group"><label>ខេត្ត / រាជធានី</label><input type="text" class="modal-input" id="mPob_province" placeholder="ខេត្ត / រាជធានី"></div></div></div>
@@ -2388,8 +2392,10 @@ body{background:var(--bg)}
         if (!matchSearch) return false;
 
         const isDropout = Boolean(s.dropoutSemester && String(s.dropoutSemester).trim() !== '');
+        const isGrad = String(s.dropoutSemester || '').trim() === 'បានបញ្ចប់';
         if (currentStatusFilter === 'កំពុងសិក្សា' && isDropout) return false;
-        if (currentStatusFilter === 'ឈប់រៀន' && !isDropout) return false;
+        if (currentStatusFilter === 'ឈប់រៀន' && (!isDropout || isGrad)) return false;
+        if (currentStatusFilter === 'បានបញ្ចប់' && !isGrad) return false;
 
         if (isMissingFilterActive && getMissingFields(s).length === 0) return false;
 
@@ -3289,6 +3295,7 @@ body{background:var(--bg)}
         bg.className = 'dlg-bg';
         bg.innerHTML = '<div class="dlg warn"><div class="ic">🚪</div><h3>ដាក់ឱ្យបោះបង់ ' + count + ' នាក់</h3><p>ជ្រើសរើសឆមាសដែលសិស្សបោះបង់ការសិក្សា</p>' +
           '<div class="acts" style="flex-wrap:wrap"><button data-v="ឆមាសទី១">ឆមាសទី១</button><button data-v="ឆមាសទី២">ឆមាសទី២</button></div>' +
+          '<div class="acts" style="margin-top:8px"><button data-v="បានបញ្ចប់">🎓 បានបញ្ចប់ការសិក្សា</button></div>' +
           '<div class="acts" style="margin-top:8px"><button data-v="">បោះបង់</button><button data-v="__restore" class="pri">ត្រឡប់មកសិក្សាវិញ</button></div></div>';
         bg.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; document.body.removeChild(bg); resolve(b.dataset.v === undefined ? null : (b.dataset.v === '' ? null : b.dataset.v)); });
         document.body.appendChild(bg);
@@ -3308,7 +3315,7 @@ body{background:var(--bg)}
       }, 8, (d, n) => setBulkBusy(true, '⏳ កំពុងរក្សាទុក ' + d + '/' + n));
       setBulkBusy(false);
       applyFilterAndRender();
-      showToast(fail ? ('រក្សាទុកបាន ' + ok + ' នាក់ · មិនបាន ' + fail + ' នាក់') : (val ? ('🚪 បានដាក់ ' + ok + ' នាក់ ' + val) : ('✅ បានត្រឡប់ ' + ok + ' នាក់មកសិក្សាវិញ')), !!fail);
+      showToast(fail ? ('រក្សាទុកបាន ' + ok + ' នាក់ · មិនបាន ' + fail + ' នាក់') : (val ? ((val === 'បានបញ្ចប់' ? '🎓 បានដាក់បានបញ្ចប់ ' : '🚪 បានដាក់ ') + ok + ' នាក់' + (val === 'បានបញ្ចប់' ? '' : ' ' + val)) : ('✅ បានត្រឡប់ ' + ok + ' នាក់មកសិក្សាវិញ')), !!fail);
     }
     async function bulkTransfer() {
       if (guardLocked()) return;
