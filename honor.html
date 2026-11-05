@@ -280,7 +280,7 @@
     .honor-paper.raster .footer-row { position:absolute; left:46px; right:46px; top:var(--fy,930px); margin:0; padding:0 8px;
              z-index:5; color:#111; font-size:14px; }
     .honor-paper.raster .footer-col .sign-title { font-size:14px; margin-top:1px; color:#1e3a8a !important; }
-    .honor-paper.raster .footer-col .sign-space { height:30px; }
+    .honor-paper.raster .footer-col .sign-space { height:22px; }
     .honor-paper.raster .footer-col div { color:#111; }
     .honor-paper.raster .footer-col .sign-title { color:#1e3a8a !important; }
     .honor-paper.raster .footer-col { min-width:230px; }
@@ -1373,7 +1373,7 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         const anyR = hasR.some(Boolean);
         let lastPx = R.last;
         if (anyR) lastPx = Math.max(...R.t.map((tr, i) => hasR[i] ? (tr[1] + tr[3]) * 1123 / 100 : 0));
-        paper.style.setProperty('--fy', Math.min(lastPx + 6, 925) + 'px');
+        paper.style.setProperty('--fy', (lastPx + 1) + 'px');
         /* លាក់ប្រអប់ដែលគ្មានសិស្ស (បើមានសិស្សតិចជាង ៥) */
         const has = s.map(x => !!(x && x.name));
         const anyData = has.some(Boolean);
