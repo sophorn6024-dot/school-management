@@ -240,9 +240,16 @@
     /* ✍️ FOOTER DATES & SIGNATURES (លើកឡើងលើមិនកៀកបាតក្រោម) */
     .footer-row {
       display: flex; justify-content: space-between; align-items: flex-end;
-      margin-bottom: 15px; padding: 0 35px; font-size: 13.5px;
+      margin-bottom: calc(15px + var(--lift, 0px)); padding: 0 35px; font-size: 13.5px;
     }
-    .footer-col { text-align: center; min-width: 250px; }
+    .footer-col { text-align: center; min-width: 250px; position: relative; }
+    /* ✍ ត្រានាយក (រង្វង់ 34 មម) + ហត្ថលេខាគ្រូ (45×15 មម) ពីទំព័រ «ប្រវត្តិរូបរបស់ខ្ញុំ» */
+    .stamp-anchor { position: relative; height: 0; display: none; }
+    .stamp-anchor.on { display: block; }
+    .stamp-anchor .stamp-circle { position: absolute; left: 50%; top: -10mm; margin-left: -17mm; width: 34mm; height: 34mm; z-index: 6; pointer-events: none; }
+    .stamp-circle img { position: absolute; max-width: none; max-height: none; height: auto; }
+    .sign-space.has-sig { height: 15mm !important; display: flex; align-items: center; justify-content: center; }
+    .sign-space.has-sig img { max-height: 15mm; max-width: 45mm; object-fit: contain; }
     .footer-col .sign-title { font-size: 14px; margin-top: 3px; }
     .footer-col .sign-space { height: 42px; }
 
@@ -269,7 +276,7 @@
     .honor-paper.raster .main-title-box { position:absolute; left:0; right:0; top:var(--tb,300px); margin:0; text-align:center; }
     .honor-paper.raster .period-title { margin:0; font-size:17px; line-height:1.4;
              background:none; -webkit-text-fill-color:#581c87; color:#581c87; text-shadow:none; }
-    .honor-paper.raster .footer-row { position:absolute; left:46px; right:46px; top:var(--fy,930px); margin:0; padding:0 8px;
+    .honor-paper.raster .footer-row { position:absolute; left:46px; right:46px; top:calc(var(--fy,930px) - var(--lift,0px)); margin:0; padding:0 8px;
              z-index:5; color:#111; font-size:14px; }
     .honor-paper.raster .footer-col .sign-title { font-size:14px; margin-top:1px; color:#1e3a8a !important; }
     .honor-paper.raster .footer-col .sign-space { height:30px; }
@@ -552,6 +559,7 @@
             <div class="footer-col" style="margin-top: 15px;">
               <div class="font-moul sign-title">បានឃើញនិងឯកភាព</div>
               <div class="font-moul sign-title" style="margin-top:3px;">នាយកសាលា</div>
+              <div class="stamp-anchor" id="stampAnchor"><div class="stamp-circle" id="stampBox"><img id="stampImg" alt=""></div></div>
               <div class="sign-space"></div>
               <div id="lblPrincipalName" class="font-moul" style="font-size:13px;"></div>
             </div>
@@ -561,7 +569,7 @@
               <!-- 🌟 កាលបរិច្ឆេទសូរិយគតិ៖ ដាក់ត្រឹមតែ «ថ្ងៃទី...» គ្មានឈ្មោះថ្ងៃនៃសប្តាហ៍ឡើយ -->
               <div id="lblSolarDate" style="font-size:13px; margin-top:2px;"></div>
               <div class="font-moul sign-title" style="color:#2b3990; margin-top:4px;">គ្រូបន្ទុកថ្នាក់</div>
-              <div class="sign-space"></div>
+              <div class="sign-space" id="sigSpace"></div>
               <div id="lblTeacherName" class="font-moul" style="font-size:13.5px;"></div>
             </div>
           </div>
@@ -1102,6 +1110,95 @@
     const SUPABASE_URL = "https://nggnuobnrxiqjtcwlvwk.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    /* 🔍 ស្កេនរូបត្រា៖ កាត់គែមទទេ រួចរកខ្សែបន្ទាត់រង្វង់ត្រា (ក្រហម) → {url,x,y,d,w,h}  (ហត្ថលេខា/ឈ្មោះដែលលើសរង្វង់ មិនគិតក្នុងទំហំត្រា) */
+    function analyzeStamp(src) {
+      return new Promise(res => {
+        const im = new Image();
+        im.onerror = () => res(null);
+        im.onload = () => {
+          try {
+            const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement('canvas');
+            c.width = w; c.height = h; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0);
+            const d = x.getImageData(0, 0, w, h).data;
+            const cr = (cx, cy) => { const i = (cy * w + cx) * 4; return [d[i], d[i + 1], d[i + 2], d[i + 3]]; };
+            const cs = [cr(0, 0), cr(w - 1, 0), cr(0, h - 1), cr(w - 1, h - 1)];
+            const bg = [0, 1, 2, 3].map(k => Math.round(cs.reduce((t, q) => t + q[k], 0) / 4));
+            const ink = i => {
+              const a = d[i + 3];
+              if (bg[3] < 30) return a > 40;
+              if (Math.abs(a - bg[3]) > 60) return true;
+              return Math.abs(d[i] - bg[0]) + Math.abs(d[i + 1] - bg[1]) + Math.abs(d[i + 2] - bg[2]) > 90;
+            };
+            let x0 = w, y0 = h, x1 = -1, y1 = -1; const all = [], red = [];
+            for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++) {
+              const i = (yy * w + xx) * 4;
+              if (!ink(i)) continue;
+              if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy;
+              all.push(xx, yy);
+              if (d[i] > d[i + 2] + 25 && d[i] > d[i + 1] + 15) red.push(xx, yy);   // ក្រហម (ត្រា + ឈ្មោះ) មិនមែនខៀវ (ហត្ថលេខា)
+            }
+            if (x1 < 0) return res(null);
+            const cw = x1 - x0 + 1, ch = y1 - y0 + 1, o = document.createElement('canvas');
+            o.width = cw; o.height = ch; o.getContext('2d').drawImage(c, x0, y0, cw, ch, 0, 0, cw, ch);
+            /* ផ្ទៃរូបមិនថ្លា (ស/ប្រផេះ) → ធ្វើឱ្យថ្លា ដើម្បីមិនបាំងអក្សរ */
+            if (bg[3] >= 30) {
+              const oc = o.getContext('2d', { willReadFrequently: true }), od = oc.getImageData(0, 0, cw, ch), q = od.data;
+              for (let i = 0; i < q.length; i += 4) {
+                const dist = Math.abs(q[i] - bg[0]) + Math.abs(q[i + 1] - bg[1]) + Math.abs(q[i + 2] - bg[2]);
+                if (dist < 40) q[i + 3] = 0; else if (dist < 110) q[i + 3] = Math.round(q[i + 3] * (dist - 40) / 70);
+              }
+              oc.putImageData(od, 0, 0);
+            }
+            const url = o.toDataURL('image/png');
+            let pts = red.length >= 200 ? red : all;
+            const stride = Math.max(2, Math.floor(pts.length / 2 / 5000) * 2); const P = [];
+            for (let i = 0; i < pts.length; i += stride) P.push(pts[i] - x0, pts[i + 1] - y0);
+            let L = cw, T = ch; for (let i = 0; i < P.length; i += 2) { if (P[i] < L) L = P[i]; if (P[i + 1] < T) T = P[i + 1]; }
+            const maxR = Math.min(cw - L, ch - T) / 2, minR = Math.max(20, Math.min(cw, ch) * 0.2);
+            let best = null;
+            for (let r = Math.floor(minR); r <= maxR; r += 2) {
+              const cx = L + r, cy = T + r, tol = Math.max(2.5, r * 0.04), bins = new Uint8Array(72); let cnt = 0;
+              for (let i = 0; i < P.length; i += 2) {
+                const dx = P[i] - cx, dy = P[i + 1] - cy, dist = Math.sqrt(dx * dx + dy * dy);
+                if (Math.abs(dist - r) <= tol) { bins[Math.min(71, Math.floor((Math.atan2(dy, dx) + Math.PI) / (2 * Math.PI) * 72))] = 1; cnt++; }
+              }
+              let cov = 0; for (let b = 0; b < 72; b++) cov += bins[b]; cov /= 72;
+              if (!best || cov > best.cov + 0.02 || (Math.abs(cov - best.cov) <= 0.02 && cnt > best.cnt)) best = { r, cov, cnt };
+            }
+            if (!best || best.cov < 0.5) return res({ url, x: 0, y: 0, d: Math.min(cw, ch), w: cw, h: ch, fallback: true });
+            res({ url, x: L, y: T, d: best.r * 2, w: cw, h: ch });
+          } catch (e) { res(null); }
+        };
+        im.src = src;
+      });
+    }
+    
+    async function placeStamp(url, meta) {
+      const m = meta && meta.d ? Object.assign({}, meta, { url }) : await analyzeStamp(url);
+      if (!m) return false;
+      const K = 34 / m.d, img = document.getElementById('stampImg');
+      img.src = m.url; img.style.width = (m.w * K) + 'mm'; img.style.left = (-m.x * K) + 'mm'; img.style.top = (-m.y * K) + 'mm';
+      /* ហត្ថលេខា/ឈ្មោះដែលលើសរង្វង់ចុះក្រោម → លើកជួរហត្ថលេខាឡើង កុំឱ្យជាន់ស៊ុម */
+      const lift = Math.max(0, (-10 + (m.h - m.y) * K) - 16);
+      const paper = document.querySelector('.honor-paper'); if (paper) paper.style.setProperty('--lift', lift + 'mm');
+      return true;
+    }
+    async function loadSignAssets() {
+      try {
+        const pw = localStorage.getItem('krou_pw') || '';
+        if (!CURRENT_USER || !CURRENT_USER.username || !pw) return;
+        const a = { p_u: CURRENT_USER.username, p_p: pw };
+        const [pr, sc] = await Promise.all([sb.rpc('staff_my_profile_get', a), sb.rpc('staff_school_get', a)]);
+        const pd = pr.data, sd = sc.data;
+        if (pd && pd.signature_url) { const sp = document.getElementById('sigSpace'); sp.innerHTML = '<img alt="">'; sp.firstChild.src = pd.signature_url; sp.classList.add('has-sig'); }
+        if (sd && sd.ok) {
+          const d = sd.data || {}; let stamped = false;
+          if (sd.stamp_url && await placeStamp(sd.stamp_url, d.stamp_circle)) { document.getElementById('stampAnchor').classList.add('on'); stamped = true; }
+          const pn = document.getElementById('lblPrincipalName'); if (pn && !stamped) pn.innerText = d.director_name || '';   /* ត្រាមានឈ្មោះក្នុងរូបរួច */
+        }
+      } catch (e) { console.warn('sign assets', e); }
+    }
 
     function cleanGrade(g) { return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').replace(/[()\-_\s]/g, '').trim(); }
 
@@ -1664,7 +1761,7 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       window.print();
     }
 
-    window.addEventListener('DOMContentLoaded', initPage);
+    window.addEventListener('DOMContentLoaded', () => { initPage(); loadSignAssets(); });
   </script>
 </body>
 </html>
