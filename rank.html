@@ -234,8 +234,8 @@
     .footer-left { text-align: center; width: 40%; }
     .sig-space { height: 15mm; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
     .sig-space img { max-height: 15mm; max-width: 45mm; object-fit: contain; }
-    .stamp-space { height: 34mm; display: flex; align-items: flex-start; justify-content: center; margin-top: -1mm; }
-    .stamp-space img { width: 34mm; height: 34mm; object-fit: contain; mix-blend-mode: multiply; }
+    .stamp-space { display: flex; align-items: flex-start; justify-content: center; margin-top: 1mm; }
+    .stamp-space img { max-width: 45mm; max-height: 45mm; width: auto; height: auto; mix-blend-mode: multiply; }
     .dir-name { font-family: 'Moul', cursive; font-size: 12px; margin-top: 6px; min-height: 0; }
     .footer-right { text-align: center; width: 55%; }
     .inline-input {
@@ -1880,6 +1880,30 @@ exports.default = {
 
     /* ✍ ហត្ថលេខាគ្រូ + ត្រានាយក + ឈ្មោះនាយក ពីទំព័រ «ប្រវត្តិរូបរបស់ខ្ញុំ» (ទុកតាមគណនី) */
     let SCHOOL_PLACE = '', stampOn = false;
+    /* កាត់គែមទទេ/ថ្លាចេញពីរូបត្រា ដើម្បីឱ្យរូបជាប់នឹងចំណងជើង ហើយមានទំហំពិត (រូបទាំងមូល = ត្រា + ហត្ថលេខា + ឈ្មោះ) */
+    function trimImage(src) {
+      return new Promise(res => {
+        const im = new Image();
+        im.onerror = () => res(src);
+        im.onload = () => {
+          try {
+            const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement('canvas');
+            c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(im, 0, 0);
+            const d = x.getImageData(0, 0, w, h).data;
+            let x0 = w, y0 = h, x1 = -1, y1 = -1;
+            for (let y = 0; y < h; y++) for (let xx = 0; xx < w; xx++) {
+              const i = (y * w + xx) * 4;
+              if (d[i + 3] > 12 && !(d[i] > 240 && d[i + 1] > 240 && d[i + 2] > 240)) { if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+            }
+            if (x1 < 0) return res(src);
+            const cw = x1 - x0 + 1, ch = y1 - y0 + 1, o = document.createElement('canvas');
+            o.width = cw; o.height = ch; o.getContext('2d').drawImage(c, x0, y0, cw, ch, 0, 0, cw, ch);
+            res(o.toDataURL('image/png'));
+          } catch (e) { res(src); }
+        };
+        im.src = src;
+      });
+    }
     async function loadSignAssets() {
       try {
         const pw = localStorage.getItem('krou_pw') || '';
@@ -1890,7 +1914,7 @@ exports.default = {
         if (pd && pd.signature_url) { const i = document.getElementById('sigImg'); i.src = pd.signature_url; document.getElementById('sigSpace').style.display = 'flex'; }
         if (sd && sd.ok) {
           const d = sd.data || {};
-          if (sd.stamp_url) { const i = document.getElementById('stampImg'); i.src = sd.stamp_url; const w = document.getElementById('stampSpace'); w.style.display = 'flex'; stampOn = true; }
+          if (sd.stamp_url) { const i = document.getElementById('stampImg'); i.src = await trimImage(sd.stamp_url); const w = document.getElementById('stampSpace'); w.style.display = 'flex'; stampOn = true; }
           const dn = document.getElementById('dirName'); if (dn) dn.textContent = stampOn ? '' : (d.director_name || '');   /* ត្រាមានឈ្មោះក្នុងរូបរួចហើយ */
           if (d.sign_place) { SCHOOL_PLACE = d.sign_place; renderSignDates(); }
         }
