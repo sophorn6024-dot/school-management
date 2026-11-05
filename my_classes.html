@@ -103,21 +103,6 @@ button,input,select{font-family:inherit}
     <div class="pm-seg"><button type="button" id="pmModeUp" class="on" onclick="pmMode('up')">⬆️ ឡើងថ្នាក់</button><button type="button" id="pmModeGrad" onclick="pmMode('grad')">🎓 បញ្ចប់ការសិក្សា</button></div>
     <div class="cc-sec" id="pmDestSec"><h5>ថ្នាក់ទិសដៅ (ឆ្នាំសិក្សាថ្មី)</h5>
       <div><label style="display:block;font-size:13px;font-weight:700;margin-bottom:6px">ជ្រើសថ្នាក់ដែលមានក្នុងប្រព័ន្ធ</label><select id="pmDestSel" onchange="pmUpd()"></select></div>
-      <div class="cc-prev"><div><small>ឈ្មោះដែលនឹងបង្ហាញ</small><b id="ccPreview"></b></div><button type="button" onclick="ccCustom()">ដាក់ឈ្មោះផ្សេង</button></div>
-      <div id="ccCustomWrap" style="display:none;margin-top:10px"><input type="text" id="ccCustomIn" placeholder="ឧ. 4ក, 5-ខ" oninput="ccUpdate()"></div>
-    </div>
-    <div class="cc-acts"><button type="button" class="c" onclick="closeCls()">បោះបង់</button><button type="button" class="s" id="ccSave" onclick="saveCls()">បង្កើត</button></div>
-  </div>
-</div>
-<div class="cc-bg" id="pmBg" onclick="if(event.target===this)closePm()">
-  <div class="cc-box" role="dialog">
-    <div class="cc-head"><span id="pmTitle">⬆️ ដំឡើងថ្នាក់</span><button type="button" class="cc-x" onclick="closePm()" aria-label="បិទ">✕</button></div>
-    <div class="pm-warn">⚠️ ពេលបញ្ជាក់ ប្រព័ន្ធនឹង <b>រក្សាទុក (archive)</b> ពិន្ទុ និងវត្តមានឆ្នាំនេះរបស់ថ្នាក់នេះ រួច <b>សម្អាត</b> វាចេញ សម្រាប់ឆ្នាំសិក្សាថ្មី។ សូមបោះពុម្ពរបាយការណ៍ឆ្នាំនេះ ឬ backup ជាមុន។</div>
-    <div class="cc-sec" style="padding:10px"><label style="display:block;font-size:13px;font-weight:700;margin-bottom:6px">ដំឡើងពីថ្នាក់</label><select id="pmSrc" onchange="pmLoadSrc(+this.value)"></select></div>
-    <div class="pm-seg"><button type="button" id="pmModeUp" class="on" onclick="pmMode('up')">⬆️ ឡើងថ្នាក់</button><button type="button" id="pmModeGrad" onclick="pmMode('grad')">🎓 បញ្ចប់ការសិក្សា</button></div>
-    <div class="cc-sec" id="pmDestSec"><h5>ថ្នាក់ទិសដៅ (ឆ្នាំសិក្សាថ្មី)</h5>
-      <div class="cc-grid"><div><label>កម្រិត</label><select id="pmLevel" onchange="pmUpd()"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
-      <div><label>អក្សរថ្នាក់</label><select id="pmLetter" onchange="pmUpd()"></select></div></div>
       <div class="cc-prev"><div><small>ផ្ទេរសិស្សទៅ</small><b id="pmPrev"></b></div></div>
       <div class="note" style="font-size:12px;color:var(--muted);margin-top:6px">សិស្សធ្លាក់ត្រូវដោះធីកចេញ — ពួកគេនៅថ្នាក់ចាស់។ បើមិនទាន់មានថ្នាក់ទិសដៅ សូមចុច «បង្កើតថ្នាក់» ជាមុន។</div></div>
     <label class="pm-row" style="border:1px solid var(--border);border-radius:12px;font-weight:800"><input type="checkbox" id="pmAll" onchange="pmAllChg(this.checked)" checked> ជ្រើសទាំងអស់</label>
