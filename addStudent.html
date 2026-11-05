@@ -1865,6 +1865,12 @@ body{background:var(--bg)}
           if (!data || data.length < step) break;
           from += step;
         }
+        /* ថ្នាក់ដែលបានបង្កើតរួច តែមិនទាន់មានសិស្ស (teacher_classes) */
+        try {
+          let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+          const { data: cl } = await sb.rpc('staff_class_list', { p_u: CURRENT_USER.username, p_p: pw });
+          ((cl && cl.rows) || []).forEach(c => { const g = normGrade(c.name); if (g && !(g in counts)) counts[g] = 0; });
+        } catch (e) { console.warn('class list', e); }
         classesWithData = Object.keys(counts)
           .sort((a, b) => classSortKey(a) - classSortKey(b) || a.localeCompare(b, 'km'))
           .map(c => ({ name: c, count: counts[c] }));
