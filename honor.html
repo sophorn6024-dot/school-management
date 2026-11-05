@@ -239,7 +239,7 @@
 
     /* ✍️ FOOTER DATES & SIGNATURES (លើកឡើងលើមិនកៀកបាតក្រោម) */
     .footer-row {
-      display: flex; justify-content: space-between; align-items: flex-end;
+      display: flex; justify-content: space-between; align-items: flex-start;
       margin-bottom: calc(15px + var(--lift, 0px)); padding: 0 35px; font-size: 13.5px;
     }
     .footer-col { text-align: center; min-width: 250px; position: relative; }
@@ -276,7 +276,7 @@
     .honor-paper.raster .main-title-box { position:absolute; left:0; right:0; top:var(--tb,300px); margin:0; text-align:center; }
     .honor-paper.raster .period-title { margin:0; font-size:17px; line-height:1.4;
              background:none; -webkit-text-fill-color:#581c87; color:#581c87; text-shadow:none; }
-    .honor-paper.raster .footer-row { position:absolute; left:46px; right:46px; top:calc(var(--fy,930px) - var(--lift,0px)); margin:0; padding:0 8px;
+    .honor-paper.raster .footer-row { position:absolute; left:46px; right:46px; top:var(--fy,930px); margin:0; padding:0 8px;
              z-index:5; color:#111; font-size:14px; }
     .honor-paper.raster .footer-col .sign-title { font-size:14px; margin-top:1px; color:#1e3a8a !important; }
     .honor-paper.raster .footer-col .sign-space { height:30px; }
@@ -556,7 +556,7 @@
 
           <!-- ✍️ ហត្ថលេខា និងកាលបរិច្ឆេទចន្ទគតិ-សូរិយគតិ -->
           <div class="footer-row font-siemreap">
-            <div class="footer-col" style="margin-top: 15px;">
+            <div class="footer-col" id="dirCol" style="margin-top: 21px;">
               <div class="font-moul sign-title">បានឃើញនិងឯកភាព</div>
               <div class="font-moul sign-title" id="dirTitle" style="margin-top:3px;">នាយកសាលា</div>
               <div class="stamp-anchor" id="stampAnchor"><div class="stamp-circle" id="stampBox"><img id="stampImg" alt=""></div></div>
@@ -1178,10 +1178,17 @@
       const m = meta && meta.d ? Object.assign({}, meta, { url }) : await analyzeStamp(url);
       if (!m) return false;
       const K = 34 / m.d, img = document.getElementById('stampImg');
+      document.getElementById('stampAnchor').classList.add('on');
       img.src = m.url; img.style.width = (m.w * K) + 'mm'; img.style.left = (-m.x * K) + 'mm'; img.style.top = (-m.y * K) + 'mm';
-      /* ហត្ថលេខា/ឈ្មោះដែលលើសរង្វង់ចុះក្រោម → លើកជួរហត្ថលេខាឡើង កុំឱ្យជាន់ស៊ុម */
-      const lift = Math.max(0, (-10 + (m.h - m.y) * K) - 16);
-      const paper = document.querySelector('.honor-paper'); if (paper) paper.style.setProperty('--lift', lift + 'mm');
+      /* ហត្ថលេខា/ឈ្មោះដែលលើសរង្វង់ចុះក្រោម → លើកជួរហត្ថលេខាឡើង កុំឱ្យជាន់ស៊ុម (តែក្នុងទម្រង់ធម្មតា) */
+      const paper = document.querySelector('.honor-paper'), row = document.querySelector('.footer-row'), anc = document.getElementById('stampAnchor');
+      if (paper && row && anc) {
+        const sc = (paper.getBoundingClientRect().width / paper.offsetWidth) || 1, rr = row.getBoundingClientRect();
+        paper.style.setProperty('--lift', '0px');
+        const stampBottom = (anc.getBoundingClientRect().top - rr.top) / sc + (-10 + (m.h - m.y) * K) * 3.7795;
+        const lift = Math.max(0, stampBottom - rr.height / sc + 4);
+        paper.style.setProperty('--lift', lift + 'px');
+      }
       return true;
     }
 
@@ -1191,7 +1198,7 @@
       const dept = (d.dept || '').trim(), office = (d.office || '').trim(), cl = (d.cluster || '').trim(), L = [];
       if (t === 'doc' && dept) L.push(dept);
       if (t !== 's' && office) L.push(office);
-      if ((t === 'oc' || t === 'doc') && cl) L.push('សាលាកម្រង ' + cl);
+      if ((t === 'oc' || t === 'doc') && cl) L.push(cl);
       L.push(school);
       return L;
     }
@@ -1365,7 +1372,7 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         const anyR = hasR.some(Boolean);
         let lastPx = R.last;
         if (anyR) lastPx = Math.max(...R.t.map((tr, i) => hasR[i] ? (tr[1] + tr[3]) * 1123 / 100 : 0));
-        paper.style.setProperty('--fy', Math.min(lastPx + 24, 925) + 'px');
+        paper.style.setProperty('--fy', Math.min(lastPx + 14, 925) + 'px');
         /* លាក់ប្រអប់ដែលគ្មានសិស្ស (បើមានសិស្សតិចជាង ៥) */
         const has = s.map(x => !!(x && x.name));
         const anyData = has.some(Boolean);
