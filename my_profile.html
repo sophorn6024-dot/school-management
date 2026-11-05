@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="km" data-theme="light">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ប្រវត្តិរូបរបស់ខ្ញុំ - សាលាបឋមសិក្សាកំពង់ល្ពៅ</title>
+<link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+:root,[data-theme="light"]{--bg:#e6f6fb;--bg2:#f1fbf8;--surface:#fff;--card:rgba(255,255,255,.72);--input:#fff;--border:#d3e6ef;--text:#0f172a;--muted:#5b6b80;--primary:#0e8fb0;--primary2:#0b6f88;--danger:#dc2626;--shadow:0 8px 28px rgba(15,23,42,.08)}
+[data-theme="dark"]{--bg:#0a1220;--bg2:#0c1626;--surface:#131e33;--card:rgba(19,30,51,.78);--input:#0f1a2e;--border:#23324d;--text:#f1f5f9;--muted:#9aa8bd;--primary:#22b5d8;--primary2:#0e8fb0;--danger:#f87171;--shadow:0 8px 28px rgba(0,0,0,.45)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Khmer OS Battambang','Battambang',sans-serif;background:linear-gradient(135deg,var(--bg),var(--bg2));color:var(--text);min-height:100vh;padding:16px;font-size:14px}
+button,input,select{font-family:inherit;font-size:14px;color:var(--text)}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.card{background:var(--card);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow);padding:20px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.ttl{text-align:center;font-weight:800;font-size:17px;margin-bottom:12px;color:var(--muted)}
+h3.sec{font-size:18px;font-weight:800;display:flex;align-items:center;gap:10px;margin-bottom:14px}
+h3.sec small{font-weight:400;color:var(--muted);font-size:14px}
+/* cover + avatar */
+.cover{position:relative;height:200px;border-radius:16px;background:linear-gradient(135deg,#9fe3f5,#c8f1ea 55%,#c6dcf8);background-size:cover;background-position:center;overflow:visible}
+.cover .cv-btn{position:absolute;right:10px;top:10px}
+.avatar{position:absolute;left:14px;bottom:-26px;width:92px;height:92px;border-radius:50%;border:4px solid #fff;background:#0f5fd8 center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.avatar .cam{position:absolute;right:-2px;bottom:-2px;width:28px;height:28px;border-radius:50%;background:var(--primary);border:2px solid #fff;font-size:13px;display:flex;align-items:center;justify-content:center}
+.cover-pad{height:30px}
+.sign-box{border:1.5px dashed var(--border);border-radius:16px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:14px;background:rgba(127,127,127,.05)}
+.sign-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
+.sign-prev{width:170px;height:58px;border:1.5px dashed var(--border);border-radius:12px;background:#fff center/contain no-repeat}
+.note{color:var(--muted);font-size:12.5px;text-align:center;line-height:1.6}
+.btn{height:40px;padding:0 16px;border-radius:12px;border:0;background:rgba(127,127,127,.14);font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.btn.pri{background:var(--primary2);color:#fff}.btn.pri:disabled,.btn.sec:disabled{opacity:.45;cursor:not-allowed}
+.btn.sec{background:var(--primary);color:#fff}
+.btn.del{color:var(--danger);background:rgba(220,38,38,.08)}
+/* forms */
+label.l{display:block;font-weight:800;font-size:14px;margin-bottom:6px;text-align:left}
+label.l .rq{color:var(--danger)}
+.in,select.in{width:100%;height:46px;border-radius:12px;border:1px solid var(--border);background:var(--input);padding:0 14px}
+.in:focus{outline:2px solid var(--primary);outline-offset:0}
+.in:disabled{opacity:.7}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
+.fg .full{grid-column:1/-1}
+.unit{position:relative}.unit span{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.acc{display:grid;grid-template-columns:1fr 1.5fr;gap:0}
+.acc>div{padding:0 18px}.acc>div:first-child{border-right:1px solid var(--border);padding-left:0}.acc>div:last-child{padding-right:0}
+.acc label.l{text-align:center}
+.row{display:flex;gap:8px;align-items:center}
+.row .in{flex:1;min-width:0;text-align:center}
+.pwrow .in{font-size:13px}
+.link{display:block;text-align:center;margin-top:14px;color:var(--primary);font-weight:700;cursor:pointer;background:none;border:0;width:100%}
+.tabs{display:flex;gap:8px;background:var(--surface);border-radius:16px;padding:8px;margin-bottom:18px;flex-wrap:wrap}
+.tab{border:0;background:transparent;border-radius:12px;padding:10px 16px;font-weight:800;cursor:pointer;color:var(--muted);display:flex;align-items:center;gap:8px}
+.tab.on{background:var(--primary);color:#fff}
+.tab i{font-style:normal;font-size:12px;font-weight:700;background:rgba(127,127,127,.18);border-radius:10px;padding:2px 9px}
+.tab.on i{background:rgba(255,255,255,.28)}
+.sub{font-weight:800;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.foot{display:flex;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+.radios{display:flex;gap:18px;align-items:center;height:46px}
+.radios label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.radios input{width:18px;height:18px}
+.qr-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.qr-box{display:none;margin-top:14px;text-align:center}
+.qr-box .qrc{display:inline-block;background:#fff;padding:12px;border-radius:14px}
+.hint{color:var(--muted);font-size:12.5px;margin-top:6px;line-height:1.6}
+.dlg-bg{position:fixed;inset:0;z-index:100000;background:rgba(10,18,32,.55);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px}
+.dlg{background:var(--surface);border-radius:22px;padding:22px;max-width:380px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.dlg h3{margin:6px 0}.dlg p{color:var(--muted);white-space:pre-line;margin-bottom:16px;line-height:1.7}
+.dlg .acts{display:flex;gap:10px}.dlg .acts button{flex:1;height:44px;border-radius:12px;border:0;font-weight:800;font-size:15px;cursor:pointer;background:rgba(127,127,127,.14);color:var(--text)}
+.dlg .acts .pri{background:var(--primary2);color:#fff}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:11px 18px;border-radius:14px;font-weight:700;z-index:100001;display:none;max-width:90vw}
+.auth{display:none;text-align:center;padding:80px 16px}
+@media(max-width:820px){.two,.acc{grid-template-columns:1fr}.acc>div{padding:0;border:0!important}.acc>div+div{margin-top:20px;padding-top:18px;border-top:1px solid var(--border)!important}.fg{grid-template-columns:1fr}.cover{height:150px}.pwrow{flex-wrap:wrap}.pwrow .in{flex:1 1 30%}}
+</style>
+</head>
+<body>
+<div class="auth" id="auth"><h2>🔒 សូមចូលប្រព័ន្ធជាមុន</h2></div>
+<div class="wrap" id="main" style="display:none">
+
+  <!-- Profile + ហត្ថលេខា -->
+  <div class="card two">
+    <div>
+      <div class="ttl">Profile</div>
+      <div class="cover" id="cover">
+        <button class="btn cv-btn" onclick="pick('cover')">📷 ប្តូររូបខាងក្រោយ</button>
+        <div class="avatar" id="avatar" onclick="pick('avatar')" title="ប្តូររូប Profile"><span id="avLetter">ក</span><span class="cam">📷</span></div>
+      </div>
+      <div class="cover-pad"></div>
+    </div>
+    <div>
+      <div class="ttl">ហត្ថលេខាគ្រូ (សម្រាប់របាយការណ៍)</div>
+      <div class="sign-box">
+        <div class="sign-row">
+          <div class="sign-prev" id="signPrev"></div>
+          <button class="btn" onclick="pick('sign')">⬆️ ប្តូររូប</button>
+          <button class="btn del" id="signDel" onclick="delMedia('sign')">🗑️ ដកចេញ</button>
+        </div>
+        <div class="note">ទំហំពិតលើក្រដាស 45 × 15 មម</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- គណនីប្រើប្រាស់ -->
+  <div class="card">
+    <h3 class="sec">🔒 គណនីប្រើប្រាស់ <small>(បង្កើតលេខសម្ងាត់ថ្មី)</small></h3>
+    <div class="acc">
+      <div>
+        <label class="l">ឈ្មោះអ្នកប្រើប្រាស់ <span class="rq">*</span></label>
+        <div class="row"><input class="in" id="uName" oninput="uNameChg()" autocomplete="off"><button class="btn" onclick="copyU()">⧉ ចម្លង</button><button class="btn sec" id="uBtn" onclick="saveUsername()" disabled>ប្តូរ username</button></div>
+      </div>
+      <div>
+        <label class="l">ពាក្យសម្ងាត់</label>
+        <div class="row pwrow">
+          <input class="in" type="password" id="pwOld" placeholder="បច្ចុប្បន្ន" autocomplete="current-password" oninput="pwChg()">
+          <input class="in" type="password" id="pwNew" placeholder="បញ្ចូលថ្មី" autocomplete="new-password" oninput="pwChg()">
+          <input class="in" type="password" id="pwCfm" placeholder="បញ្ជាក់" autocomplete="new-password" oninput="pwChg()">
+          <button class="btn" onclick="togglePw()" title="បង្ហាញ/លាក់">👁</button>
+          <button class="btn pri" id="pwBtn" onclick="savePw()" disabled>ប្តូរពាក្យសម្ងាត់</button>
+        </div>
+        <button class="link" onclick="forgot()">ភ្លេចពាក្យសម្ងាត់?</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ផ្ទាល់ខ្លួន / គណនី -->
+  <div class="card">
+    <div class="tabs"><button class="tab on" id="tabP" onclick="setTab('p')">ផ្ទាល់ខ្លួន <i id="cntP">0/0</i></button><button class="tab" id="tabA" onclick="setTab('a')">គណនី <i id="cntA">0/0</i></button></div>
+    <div id="paneP"><div class="sub">ព័ត៌មានផ្ទាល់ខ្លួន</div><div class="fg" id="fgP"></div><div class="foot"><button class="btn pri" id="saveP" onclick="saveForm('p')" disabled>💾 រក្សាទុកព័ត៌មាន</button></div></div>
+    <div id="paneA" style="display:none"><div class="sub">ព័ត៌មានគណនី</div><div class="fg" id="fgA"></div><div class="foot"><button class="btn pri" id="saveA" onclick="saveForm('a')" disabled>💾 រក្សាទុកព័ត៌មាន</button></div></div>
+  </div>
+
+  <!-- QR -->
+  <div class="card">
+    <div class="qr-head"><h3 class="sec" style="margin:0">▦ QR ចូលប្រើ</h3><div class="row"><button class="btn" id="qrBtn" onclick="toggleQr()">បង្ហាញ QR</button></div></div>
+    <p class="hint" style="margin-top:12px">សម្រាប់ចូលគណនីគ្រូរបស់អ្នក។ កុំចែករំលែក QR នេះ ដូចលេខសម្ងាត់ដែរ។</p>
+    <div class="qr-box" id="qrBox"><div class="qrc" id="qrCanvas"></div><div style="margin-top:10px"><button class="btn del" onclick="qrReset()">បង្កើត QR ថ្មី</button></div></div>
+  </div>
+
+  <!-- ព័ត៌មានសាលា -->
+  <div class="card">
+    <h3 class="sec">🏫 ព័ត៌មានសាលា <small id="schoolNote"></small></h3>
+    <div class="fg">
+      <div class="full"><label class="l">ឈ្មោះសាលា</label><input class="in" id="sName" oninput="schChg()"></div>
+      <div><label class="l">ងារនាយក <small style="font-weight:400;color:var(--muted)">(លើហត្ថលេខា)</small></label><input class="in" id="sDirTitle" placeholder="នាយកសាលា" oninput="schChg()"></div>
+      <div><label class="l">ឈ្មោះនាយក</label><input class="in" id="sDirName" placeholder="ឈ្មោះនាយក" oninput="schChg()"></div>
+      <div class="full" style="border:1px solid var(--border);border-radius:16px;padding:14px;background:rgba(127,127,127,.05)">
+        <label class="l">ក្បាលឯកសារ <small style="font-weight:400;color:var(--muted)">(បន្ទាត់ខាងលើឈ្មោះសាលា លើគ្រប់របាយការណ៍)</small></label>
+        <select class="in" id="sHeadType" onchange="schHead()">
+          <option value="oc">ការិយាល័យអប់រំ · សាលាកម្រង · សាលា</option>
+          <option value="o">ការិយាល័យអប់រំ · សាលា</option>
+          <option value="doc">មន្ទីរអប់រំ · ការិយាល័យអប់រំ · សាលាកម្រង · សាលា</option>
+          <option value="s">សាលា (គ្មានក្បាលផ្សេង)</option>
+        </select>
+        <div class="fg" style="margin-top:12px">
+          <div id="wDept"><label class="l">មន្ទីរអប់រំ យុវជន និងកីឡា</label><input class="in" id="sDept" placeholder="ទទេ = សង់ពីខេត្ត/រាជធានី" oninput="schHead()"></div>
+          <div id="wOffice"><label class="l">ការិយាល័យអប់រំ យុវជន និងកីឡា</label><input class="in" id="sOffice" oninput="schHead()"></div>
+          <div class="full" id="wCluster"><label class="l">សាលាកម្រង</label><input class="in" id="sCluster" oninput="schHead()"></div>
+        </div>
+        <div class="hint" id="sPrev"></div>
+      </div>
+      <div class="full"><label class="l">ទីកន្លែងចុះហត្ថលេខា <small style="font-weight:400;color:var(--muted)">(មុនកាលបរិច្ឆេទលើហត្ថលេខា)</small></label><input class="in" id="sPlace" placeholder="កំពង់ល្ពៅ" oninput="schChg()"><div class="hint">ទុកទទេ ⇒ ក្រដាសសរសេរ «កំពង់ល្ពៅ»។ វាយពាក្យដែលចង់បាន ឧ. ឈ្មោះភូមិ ឬឃុំ។</div></div>
+      <div class="full"><label class="l">ទូរស័ព្ទសាលា</label><input class="in" id="sPhone" placeholder="0XX XXX XXX" oninput="schChg()"></div>
+      <div class="sc-media"><label class="l">ស្លាកសញ្ញាសាលា (Logo)</label>
+        <div style="text-align:center"><div class="sign-prev" id="logoPrev" style="width:120px;height:120px;margin:0 auto 10px;border-radius:14px"></div>
+        <button class="btn" id="logoBtn" onclick="pick('logo')">⬆️ ផ្ទុករូប</button> <button class="btn del" id="logoDel" onclick="delMedia('logo')">🗑️</button>
+        <div class="note" style="margin-top:6px">ទំហំពិតលើក្រដាស 24 × 24 មម<br>លើក្បាលរបាយការណ៍</div></div></div>
+      <div class="sc-media"><label class="l">ត្រានាយក</label>
+        <div style="text-align:center"><div class="sign-prev" id="stampPrev" style="width:150px;height:150px;margin:0 auto 10px;border-radius:50%"></div>
+        <button class="btn" id="stampBtn" onclick="pick('stamp')">⬆️ ប្តូររូប</button> <button class="btn del" id="stampDel" onclick="delMedia('stamp')">🗑️ ដកចេញ</button>
+        <div class="note" style="margin-top:6px">ទំហំពិតលើក្រដាស 34 × 34 មម<br>លើប្លុកហត្ថលេខាខាងឆ្វេង · PNG ផ្ទៃថ្លាល្អបំផុត</div></div></div>
+    </div>
+    <div class="note" style="text-align:left;margin-top:14px">កម្រិតសាលា៖ <b>បឋមសិក្សា</b> · កំណត់ពេលចុះឈ្មោះ មិនអាចប្តូរ (វាជាមូលដ្ឋានពិន្ទុ ១០/៥០)។</div>
+    <div class="foot"><button class="btn pri" id="saveS" onclick="saveSchool()" disabled>💾 រក្សាទុកព័ត៌មានសាលា</button></div>
+  </div>
+</div>
+<input type="file" id="filePick" accept="image/*" style="display:none" onchange="onPicked(this)">
+<div class="toast" id="toast"></div>
+
+<script>
+const sb = supabase.createClient("https://nggnuobnrxiqjtcwlvwk.supabase.co", "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML");
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light')}
+applyTheme(new URLSearchParams(location.search).get('theme')||'light');
+window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme))applyTheme(e.data.theme||e.data)});
+const $=id=>document.getElementById(id);
+function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>t.style.display='none',2800)}
+function uiConfirm(msg,opt){opt=opt||{};return new Promise(res=>{const bg=document.createElement('div');bg.className='dlg-bg';
+  bg.innerHTML='<div class="dlg"><div style="font-size:30px">❓</div><h3>'+esc(opt.title||'សូមបញ្ជាក់')+'</h3><p>'+esc(msg)+'</p><div class="acts"><button data-v="0">បដិសេធ</button><button class="pri" data-v="1">'+esc(opt.okText||'យល់ព្រម')+'</button></div></div>';
+  bg.addEventListener('click',e=>{const b=e.target.closest('button');if(b){bg.remove();res(b.dataset.v==='1')}else if(e.target===bg){bg.remove();res(false)}});document.body.appendChild(bg)})}
+function uiAlert(msg){return new Promise(res=>{const bg=document.createElement('div');bg.className='dlg-bg';
+  bg.innerHTML='<div class="dlg"><div style="font-size:30px">ℹ️</div><h3>ជូនដំណឹង</h3><p>'+esc(msg)+'</p><div class="acts"><button class="pri">យល់ព្រម</button></div></div>';
+  bg.addEventListener('click',e=>{if(e.target.closest('button')||e.target===bg){bg.remove();res()}});document.body.appendChild(bg)})}
+
+let USER=null; try{USER=JSON.parse(localStorage.getItem('krou_supabase_user')||'null')}catch(e){}
+function pw(){try{return localStorage.getItem('krou_pw')||''}catch(e){return ''}}
+const ERR={auth:'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ សូមចូលប្រព័ន្ធឡើងវិញ',forbidden:'គ្មានសិទ្ធិ',short:'Username ត្រូវមានយ៉ាងតិច ៣ តួ',taken:'Username នេះមានអ្នកប្រើរួចហើយ'};
+async function rpc(fn,args){
+  const {data,error}=await sb.rpc(fn,Object.assign({p_u:USER.username,p_p:pw()},args||{}));
+  if(error)throw new Error((error.message||error)+(/function|schema cache|does not exist/i.test(error.message||'')?'\n(ត្រូវ run my_profile.sql ក្នុង Supabase ជាមុន)':''));
+  if(data&&data.error)throw new Error(ERR[data.error]||data.error);
+  return data;
+}
+
+/* ===== ទម្រង់ ===== */
+const NAT=['ខ្មែរ','វៀតណាម','ចិន','ថៃ','ឡាវ','ផ្សេងៗ'];
+const ETH=['ខ្មែរ','ចាម','ចិន','វៀតណាម','ជនជាតិដើមភាគតិច','ផ្សេងៗ'];
+const DIS=['មិនមាន','ពិការភាពចលនា','ពិការភាពចក្ខុ','ពិការភាពសោតទស្សន៍','ពិការភាពផ្សេងៗ'];
+const REL=['ព្រះពុទ្ធសាសនា','ឥស្លាម','គ្រិស្តសាសនា','ផ្សេងៗ'];
+const FP=[
+ {k:'family_name',l:'នាមត្រកូល',req:1},{k:'given_name',l:'នាមខ្លួន',req:1},
+ {k:'latin_name',l:'ឈ្មោះឡាតាំង',ph:'KHAN VAN',up:1},{k:'gender',l:'ភេទ',req:1,sel:['ប្រុស','ស្រី']},
+ {k:'dob',l:'ថ្ងៃកំណើត',t:'date'},{k:'nationality',l:'សញ្ជាតិ',sel:NAT},
+ {k:'ethnic',l:'ជនជាតិ',sel:ETH,ph:'ជ្រើសរើសក្រុមជនជាតិ'},{k:'disability',l:'ប្រភេទពិការភាព',sel:DIS},
+ {k:'religion',l:'សាសនា',sel:REL,ph:'ជ្រើសរើស'},{k:'weight',l:'ទម្ងន់',t:'number',unit:'kg'},
+ {k:'height',l:'កម្ពស់',t:'number',unit:'cm'},{k:'passport_no',l:'លេខលិខិតឆ្លងដែន'},
+ {k:'passport_issue',l:'ថ្ងៃចេញលិខិតឆ្លងដែន',t:'date'},{k:'passport_expiry',l:'ថ្ងៃផុតកំណត់លិខិតឆ្លងដែន',t:'date'},
+ {k:'pss_no',l:'លេខ ប.ស.ស.'},{k:'sbsk_no',l:'លេខសមាជិកសបសខ'}];
+const FA=[
+ {k:'email',l:'អ៊ីមែល',t:'email'},{k:'phone',l:'លេខទូរស័ព្ទ',t:'tel'},
+ {k:'phone2',l:'លេខទូរស័ព្ទខ្សែទី២',t:'tel'},{k:'id_type',l:'ប្រភេទអត្តសញ្ញាណប័ណ្ណ',radio:[['valid','មានសុពលភាព'],['perm','អចិន្ត្រៃយ៍']]},
+ {k:'id_no',l:'លេខអត្តសញ្ញាណប័ណ្ណ',ph:'បញ្ចូលជាលេខ',num:1},{k:'id_from',l:'សុពលភាពចាប់ពី',t:'date'},
+ {k:'id_expiry',l:'ថ្ងៃផុតកំណត់អត្តសញ្ញាណប័ណ្ណ',t:'date'}];
+let ROW=null, EXT={}, MEDIA={cover:'',sign:''}, SCH={data:{},logo:'',stamp:'',admin:false}, TAB='p';
+function fieldHtml(f){
+  const id='f_'+f.k;let c;
+  if(f.sel)c='<select class="in" id="'+id+'" onchange="fchg()"><option value="">'+esc(f.ph||'ជ្រើសរើស')+'</option>'+f.sel.map(o=>'<option>'+esc(o)+'</option>').join('')+'</select>';
+  else if(f.radio)c='<div class="radios">'+f.radio.map(r=>'<label><input type="radio" name="'+id+'" value="'+r[0]+'" onchange="fchg()">'+esc(r[1])+'</label>').join('')+'</div>';
+  else{c='<input class="in" id="'+id+'" type="'+(f.t||'text')+'" '+(f.ph?'placeholder="'+esc(f.ph)+'"':'')+(f.num?' inputmode="numeric"':'')+(f.t==='number'?' step="0.1" min="0"':'')+' oninput="fchg()">';
+    if(f.unit)c='<div class="unit">'+c+'<span>'+f.unit+'</span></div>'}
+  return '<div><label class="l">'+esc(f.l)+(f.req?' <span class="rq">*</span>':'')+'</label>'+c+'</div>';
+}
+function gv(f){
+  if(f.radio){const r=document.querySelector('input[name="f_'+f.k+'"]:checked');return r?r.value:''}
+  let v=$('f_'+f.k).value.trim();if(f.up)v=v.toUpperCase();if(f.num)v=v.replace(/\D/g,'');return v;
+}
+function sv(f,v){
+  v=v==null?'':String(v);
+  if(f.radio){document.querySelectorAll('input[name="f_'+f.k+'"]').forEach(r=>r.checked=r.value===v);return}
+  $('f_'+f.k).value=v;
+}
+function fchg(){counts();$('saveP').disabled=!dirty('p');$('saveA').disabled=!dirty('a')}
+let BASE={p:{},a:{}};
+function snap(t){const o={};(t==='p'?FP:FA).forEach(f=>o[f.k]=gv(f));return JSON.stringify(o)}
+function dirty(t){return snap(t)!==BASE[t]}
+function counts(){const fill=a=>a.filter(f=>gv(f)!=='').length;$('cntP').textContent=fill(FP)+'/'+FP.length;$('cntA').textContent=fill(FA)+'/'+FA.length}
+function setTab(t){TAB=t;$('paneP').style.display=t==='p'?'block':'none';$('paneA').style.display=t==='a'?'block':'none';$('tabP').classList.toggle('on',t==='p');$('tabA').classList.toggle('on',t==='a')}
+
+function fill(){
+  const r=ROW||{},d=EXT||{};
+  let fam=d.family_name,giv=d.given_name;
+  if(fam==null&&giv==null){const p=String(r.teacher_name||'').trim().split(/\s+/);fam=p[0]||'';giv=p.slice(1).join(' ')}
+  const vals=Object.assign({},d,{family_name:fam,given_name:giv,gender:r.gender||d.gender,dob:(r.dob||d.dob||'').toString().slice(0,10),phone:r.phone||d.phone||''});
+  FP.forEach(f=>sv(f,vals[f.k]));FA.forEach(f=>sv(f,vals[f.k]));
+  $('uName').value=r.username||'';uNameChg();
+  BASE.p=snap('p');BASE.a=snap('a');counts();fchg();
+  $('avLetter').textContent=(String(r.teacher_name||r.username||'ក').trim()[0]||'ក');
+  setImg();
+}
+function setImg(){
+  const av=$('avatar');const ph=ROW&&ROW.photo_url;av.style.backgroundImage=ph?'url("'+ph+'")':'';$('avLetter').style.display=ph?'none':'';
+  $('cover').style.backgroundImage=MEDIA.cover?'url("'+MEDIA.cover+'")':'';
+  $('signPrev').style.backgroundImage=MEDIA.sign?'url("'+MEDIA.sign+'")':'';$('signDel').style.display=MEDIA.sign?'':'none';
+  $('logoPrev').style.backgroundImage=SCH.logo?'url("'+SCH.logo+'")':'';$('logoDel').style.display=SCH.logo&&SCH.admin?'':'none';
+  $('stampPrev').style.backgroundImage=SCH.stamp?'url("'+SCH.stamp+'")':'';$('stampDel').style.display=SCH.stamp&&SCH.admin?'':'none';
+}
+function syncUser(row){
+  if(!row)return;ROW=row;USER=Object.assign({},USER,row);
+  try{localStorage.setItem('krou_supabase_user',JSON.stringify(USER))}catch(e){}
+  try{parent.postMessage({type:'CLASS_CHANGED',user:USER},'*')}catch(e){}
+}
+async function saveForm(t){
+  const arr=t==='p'?FP:FA;
+  for(const f of arr){if(f.req&&!gv(f)){toast('⚠️ សូមបំពេញ «'+f.l+'»');$('f_'+f.k).focus();return}}
+  const o={};arr.forEach(f=>o[f.k]=gv(f));
+  const users={};
+  if(t==='p'){users.teacher_name=(o.family_name+' '+o.given_name).trim();users.gender=o.gender;users.dob=o.dob||'';}
+  else users.phone=o.phone;
+  const b=$(t==='p'?'saveP':'saveA');b.disabled=true;const tx=b.textContent;b.textContent='⏳ កំពុងរក្សាទុក...';
+  try{
+    const d=await rpc('staff_my_profile_save',{p_users:users,p_data:o,p_media:{}});
+    syncUser(d.row);EXT=d.data||{};
+    arr.forEach(f=>sv(f,o[f.k]));BASE[t]=snap(t);toast('✅ បានរក្សាទុក');
+  }catch(e){uiAlert('❌ '+(e.message||e))}
+  finally{b.textContent=tx;fchg()}
+}
+
+/* ===== រូបភាព ===== */
+let PICK=null;
+function pick(k){PICK=k;if((k==='logo'||k==='stamp')&&!SCH.admin){uiAlert('មានតែ Admin ទេដែលអាចប្តូររូបសាលា');return}$('filePick').click()}
+function resize(file,maxW,maxH,png,q){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=()=>rej(new Error('អានឯកសារមិនបាន'));
+  fr.onload=()=>{const im=new Image();im.onerror=()=>rej(new Error('រូបភាពមិនត្រឹមត្រូវ'));im.onload=()=>{
+    let w=im.width,h=im.height,s=Math.min(1,maxW/w,maxH/h);w=Math.round(w*s);h=Math.round(h*s);
+    const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
+    if(!png){x.fillStyle='#fff';x.fillRect(0,0,w,h)}x.drawImage(im,0,0,w,h);res(c.toDataURL(png?'image/png':'image/jpeg',q||.85))};im.src=fr.result};fr.readAsDataURL(file)})}
+async function onPicked(inp){
+  const f=inp.files&&inp.files[0];inp.value='';if(!f||!PICK)return;const k=PICK;
+  try{
+    if(k==='avatar'){const u=await resize(f,360,360,false,.85);const d=await rpc('staff_my_profile_save',{p_users:{photo_url:u},p_data:{},p_media:{}});syncUser(d.row)}
+    else if(k==='cover'){const u=await resize(f,1400,420,false,.82);const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{cover_url:u}});MEDIA.cover=d.cover_url||''}
+    else if(k==='sign'){const u=await resize(f,600,200,true);const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{signature_url:u}});MEDIA.sign=d.signature_url||''}
+    else if(k==='logo'){const u=await resize(f,300,300,true);const d=await rpc('staff_school_save',{p_data:{},p_media:{logo_url:u}});SCH.logo=d.logo_url||''}
+    else if(k==='stamp'){const u=await resize(f,420,420,true);const d=await rpc('staff_school_save',{p_data:{},p_media:{stamp_url:u}});SCH.stamp=d.stamp_url||''}
+    setImg();toast('✅ បានរក្សាទុករូប');
+  }catch(e){uiAlert('❌ '+(e.message||e))}
+}
+async function delMedia(k){
+  if(!await uiConfirm('ដកចេញរូបនេះ?',{okText:'ដកចេញ'}))return;
+  try{
+    if(k==='sign'){const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{signature_url:''}});MEDIA.sign=d.signature_url||''}
+    else if(k==='logo'){const d=await rpc('staff_school_save',{p_data:{},p_media:{logo_url:''}});SCH.logo=d.logo_url||''}
+    else if(k==='stamp'){const d=await rpc('staff_school_save',{p_data:{},p_media:{stamp_url:''}});SCH.stamp=d.stamp_url||''}
+    setImg();toast('🗑️ បានដកចេញ');
+  }catch(e){uiAlert('❌ '+(e.message||e))}
+}
+
+/* ===== គណនី ===== */
+function uNameChg(){$('uBtn').disabled=!$('uName').value.trim()||$('uName').value.trim()===(ROW&&ROW.username)}
+async function copyU(){try{await navigator.clipboard.writeText($('uName').value);toast('📋 បានចម្លង')}catch(e){$('uName').select();document.execCommand('copy');toast('📋 បានចម្លង')}}
+async function saveUsername(){
+  const nn=$('uName').value.trim();
+  if(!await uiConfirm('ប្តូរ username ពី «'+ROW.username+'» ទៅ «'+nn+'» ?\nលើកក្រោយត្រូវចូលដោយប្រើ username ថ្មី។',{okText:'ប្តូរ'}))return;
+  try{const d=await rpc('staff_change_my_username',{p_new:nn});syncUser(d.row);uNameChg();toast('✅ បានប្តូរ username')}
+  catch(e){uiAlert('❌ '+(e.message||e))}
+}
+function pwChg(){$('pwBtn').disabled=!($('pwOld').value&&$('pwNew').value&&$('pwCfm').value)}
+function togglePw(){['pwOld','pwNew','pwCfm'].forEach(i=>{const e=$(i);e.type=e.type==='password'?'text':'password'})}
+async function savePw(){
+  const o=$('pwOld').value,n=$('pwNew').value,c=$('pwCfm').value;
+  if(n.length<4){toast('⚠️ ពាក្យសម្ងាត់ថ្មីយ៉ាងតិច ៤ តួ');return}
+  if(n!==c){toast('⚠️ ពាក្យសម្ងាត់បញ្ជាក់មិនដូចគ្នា');return}
+  $('pwBtn').disabled=true;
+  try{
+    const {data,error}=await sb.rpc('app_change_password',{p_id:ROW.id,p_old:o,p_new:n});
+    if(error)throw new Error(error.message||error);
+    if(data===false){uiAlert('❌ ពាក្យសម្ងាត់បច្ចុប្បន្នមិនត្រឹមត្រូវ');return}
+    try{localStorage.setItem('krou_pw',n)}catch(e){}
+    ['pwOld','pwNew','pwCfm'].forEach(i=>$(i).value='');toast('✅ បានប្តូរពាក្យសម្ងាត់');
+  }catch(e){uiAlert('❌ '+(e.message||e))}
+  finally{pwChg()}
+}
+function forgot(){uiAlert('ប្រសិនបើភ្លេចពាក្យសម្ងាត់បច្ចុប្បន្ន សូមទាក់ទង Admin ដើម្បីកំណត់ពាក្យសម្ងាត់ថ្មី (ទំព័រ «គ្រប់គ្រងគ្រូ»)។ ឬចូលតាម QR នៅខាងក្រោម។')}
+
+/* ===== QR ===== */
+let qrOn=false;
+async function qrLoad(reset){
+  const t=await rpc0('teacher_qr_get',{p_reset:!!reset});
+  if(!t)throw new Error('មិនអាចយក QR បាន (ត្រូវ run teacher_qr.sql)');
+  const box=$('qrCanvas');box.innerHTML='';new QRCode(box,{text:t,width:220,height:220,correctLevel:QRCode.CorrectLevel.H});
+}
+async function rpc0(fn,args){const {data,error}=await sb.rpc(fn,Object.assign({p_u:USER.username,p_p:pw()},args||{}));if(error)throw new Error(error.message||error);return data}
+async function toggleQr(){
+  if(qrOn){qrOn=false;$('qrBox').style.display='none';$('qrBtn').textContent='បង្ហាញ QR';return}
+  try{await qrLoad(false);qrOn=true;$('qrBox').style.display='block';$('qrBtn').textContent='លាក់ QR'}catch(e){uiAlert('❌ '+(e.message||e))}
+}
+async function qrReset(){
+  if(!await uiConfirm('បង្កើត QR ថ្មី? QR ចាស់នឹងឈប់ប្រើបាន។',{okText:'បង្កើតថ្មី'}))return;
+  try{await qrLoad(true);toast('✅ បានបង្កើត QR ថ្មី')}catch(e){uiAlert('❌ '+(e.message||e))}
+}
+
+/* ===== សាលា ===== */
+const SK={sName:'school_name',sDirTitle:'director_title',sDirName:'director_name',sHeadType:'head_type',sDept:'dept',sOffice:'office',sCluster:'cluster',sPlace:'sign_place',sPhone:'phone'};
+let SBASE='';
+function schSnap(){return JSON.stringify(Object.keys(SK).map(i=>$(i).value.trim()))}
+function schHead(){
+  const t=$('sHeadType').value;
+  $('wDept').style.display=t==='doc'?'':'none';$('wOffice').style.display=(t==='s')?'none':'';$('wCluster').style.display=(t==='oc'||t==='doc')?'':'none';
+  const p=[];if(t==='doc'&&$('sDept').value.trim())p.push($('sDept').value.trim());
+  if(t!=='s'&&$('sOffice').value.trim())p.push($('sOffice').value.trim());
+  if((t==='oc'||t==='doc')&&$('sCluster').value.trim())p.push('សាលាកម្រង '+$('sCluster').value.trim());
+  p.push($('sName').value.trim());
+  $('sPrev').textContent='នឹងចេញជា ៖ '+p.filter(Boolean).join(' · ');
+  schChg();
+}
+function schChg(){$('saveS').disabled=!SCH.admin||schSnap()===SBASE}
+function schFill(){
+  const d=SCH.data||{};
+  Object.keys(SK).forEach(i=>{$(i).value=d[SK[i]]||(i==='sHeadType'?'oc':'')});
+  if(!$('sName').value)$('sName').value='សាលាបឋមសិក្សាកំពង់ល្ពៅ';
+  Object.keys(SK).forEach(i=>{$(i).disabled=!SCH.admin});
+  $('schoolNote').textContent=SCH.admin?'':'(មានតែ Admin ទេដែលអាចកែ)';
+  document.querySelectorAll('.sc-media .btn').forEach(b=>{b.style.display=SCH.admin?'':'none'});
+  schHead();SBASE=schSnap();schChg();setImg();
+}
+async function saveSchool(){
+  const o={};Object.keys(SK).forEach(i=>o[SK[i]]=$(i).value.trim());
+  const b=$('saveS');b.disabled=true;const tx=b.textContent;b.textContent='⏳ កំពុងរក្សាទុក...';
+  try{const d=await rpc('staff_school_save',{p_data:o,p_media:{}});SCH.data=d.data||{};SBASE=schSnap();toast('✅ បានរក្សាទុកព័ត៌មានសាលា')}
+  catch(e){uiAlert('❌ '+(e.message||e))}
+  finally{b.textContent=tx;schChg()}
+}
+
+async function init(){
+  $('fgP').innerHTML=FP.map(fieldHtml).join('');$('fgA').innerHTML=FA.map(fieldHtml).join('');
+  try{
+    const d=await rpc('staff_my_profile_get');ROW=d.row;EXT=d.data||{};MEDIA={cover:d.cover_url||'',sign:d.signature_url||''};fill();
+  }catch(e){uiAlert('❌ '+(e.message||e))}
+  try{const s=await rpc('staff_school_get');SCH={data:s.data||{},logo:s.logo_url||'',stamp:s.stamp_url||'',admin:!!s.admin}}catch(e){SCH.admin=false}
+  schFill();
+}
+if(!USER||!USER.username||!pw()){$('auth').style.display='block'}
+else{$('main').style.display='flex';init()}
+</script>
+</body>
+</html>
