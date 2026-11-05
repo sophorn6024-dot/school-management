@@ -537,8 +537,8 @@
 
             <!-- 🏫 ស្ថាប័នរដ្ឋបាល -->
             <div class="meta-left font-siemreap">
-              <div>ការិយាល័យអប់រំ យុវជន និងកីឡា</div>
-              <div>សាលាបឋមសិក្សាកំពង់ល្ពៅ</div>
+              <div id="lblSchoolHead"><div>ការិយាល័យអប់រំ យុវជន និងកីឡា</div>
+              <div>សាលាបឋមសិក្សាកំពង់ល្ពៅ</div></div>
               <div id="lblDocumentClass" style="margin-top:2px;">ថ្នាក់ទី៤(ក)</div>
             </div>
 
@@ -558,7 +558,7 @@
           <div class="footer-row font-siemreap">
             <div class="footer-col" style="margin-top: 15px;">
               <div class="font-moul sign-title">បានឃើញនិងឯកភាព</div>
-              <div class="font-moul sign-title" style="margin-top:3px;">នាយកសាលា</div>
+              <div class="font-moul sign-title" id="dirTitle" style="margin-top:3px;">នាយកសាលា</div>
               <div class="stamp-anchor" id="stampAnchor"><div class="stamp-circle" id="stampBox"><img id="stampImg" alt=""></div></div>
               <div class="sign-space"></div>
               <div id="lblPrincipalName" class="font-moul" style="font-size:13px;"></div>
@@ -1184,6 +1184,17 @@
       const paper = document.querySelector('.honor-paper'); if (paper) paper.style.setProperty('--lift', lift + 'mm');
       return true;
     }
+
+    /* 🏫 ក្បាលឯកសារ + ងារនាយក ពីទំព័រ «ប្រវត្តិរូបរបស់ខ្ញុំ» → ព័ត៌មានសាលា */
+    function schoolHeadLines(d) {
+      const school = (d.school_name || '').trim() || 'សាលាបឋមសិក្សាកំពង់ល្ពៅ', t = d.head_type || 'oc';
+      const dept = (d.dept || '').trim(), office = (d.office || '').trim(), cl = (d.cluster || '').trim(), L = [];
+      if (t === 'doc' && dept) L.push(dept);
+      if (t !== 's' && office) L.push(office);
+      if ((t === 'oc' || t === 'doc') && cl) L.push('សាលាកម្រង ' + cl);
+      L.push(school);
+      return L;
+    }
     async function loadSignAssets() {
       try {
         const pw = localStorage.getItem('krou_pw') || '';
@@ -1195,6 +1206,11 @@
         if (sd && sd.ok) {
           const d = sd.data || {}; let stamped = false;
           if (sd.stamp_url && await placeStamp(sd.stamp_url, d.stamp_circle)) { document.getElementById('stampAnchor').classList.add('on'); stamped = true; }
+          if (d.school_name || d.office || d.cluster || d.dept || d.head_type) {
+            document.getElementById('lblSchoolHead').innerHTML = schoolHeadLines(d).map(x => '<div>' + String(x).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])) + '</div>').join('');
+          }
+          if (d.director_title) document.getElementById('dirTitle').textContent = d.director_title;
+          if (d.sign_place) { const el = document.getElementById('lblSolarDate'); if (el) el.innerText = el.innerText.replace(/^[^,]*, /, d.sign_place + ', '); window.SCHOOL_PLACE = d.sign_place; }
           const pn = document.getElementById('lblPrincipalName'); if (pn && !stamped) pn.innerText = d.director_name || '';   /* ត្រាមានឈ្មោះក្នុងរូបរួច */
         }
       } catch (e) { console.warn('sign assets', e); }
@@ -1498,7 +1514,7 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
 
       document.getElementById('lblLunarDate').innerText = fullText(o);
       // 🌟 កាលបរិច្ឆេទសូរិយគតិ៖ «កំពង់ល្ពៅ ថ្ងៃទី...» គ្មានឈ្មោះថ្ងៃនៃសប្តាហ៍ឡើយ
-      document.getElementById('lblSolarDate').innerText = 'កំពង់ល្ពៅ, ' + gText(o);
+      document.getElementById('lblSolarDate').innerText = (window.SCHOOL_PLACE || 'កំពង់ល្ពៅ') + ', ' + gText(o);
       document.getElementById('lblBtnDate').innerText = 'ថ្ងៃទី' + kn(d) + ' ' + GM[m - 1];
     }
 
