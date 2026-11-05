@@ -100,7 +100,7 @@ button,input,select{font-family:inherit}
     <div class="cc-head"><span id="pmTitle">⬆️ ដំឡើងថ្នាក់</span><button type="button" class="cc-x" onclick="closePm()" aria-label="បិទ">✕</button></div>
     <div class="pm-warn">ℹ️ ប្រព័ន្ធ <b>ចម្លង</b> សិស្សដែលបានធីក ទៅថ្នាក់ថ្មី។ <b>ថ្នាក់ចាស់រក្សាសិស្ស ពិន្ទុ និងវត្តមាននៅដដែល</b> មិនលុប មិនផ្ទេរ។</div>
     <div class="cc-sec" style="padding:10px"><label style="display:block;font-size:13px;font-weight:700;margin-bottom:6px">ដំឡើងពីថ្នាក់</label><select id="pmSrc" onchange="pmLoadSrc(+this.value)"></select></div>
-    <div class="pm-seg"><button type="button" id="pmModeUp" class="on" onclick="pmMode('up')">⬆️ ឡើងថ្នាក់</button></div>
+    <div class="pm-seg"><button type="button" id="pmModeUp" class="on" onclick="pmMode('up')">⬆️ ឡើងថ្នាក់</button><button type="button" id="pmModeGrad" onclick="pmMode('grad')">🎓 បានបញ្ចប់</button></div>
     <div class="cc-sec" id="pmDestSec"><h5>ថ្នាក់ទិសដៅ (ឆ្នាំសិក្សាថ្មី)</h5>
       <div><label style="display:block;font-size:13px;font-weight:700;margin-bottom:6px">ជ្រើសថ្នាក់ដែលមានក្នុងប្រព័ន្ធ</label><select id="pmDestSel" onchange="pmUpd()"></select></div>
       <div class="cc-prev"><div><small>ផ្ទេរសិស្សទៅ</small><b id="pmPrev"></b></div></div>
@@ -165,10 +165,10 @@ let PM={cls:null,stu:[],mode:'up'};
 function pmFill(sel){return;const a=KM;document.getElementById('pmLetter').innerHTML=a.map(x=>'<option'+(x===sel?' selected':'')+'>'+x+'</option>').join('')}
 function pmDest(){return document.getElementById('pmDestSel').value}
 function pmUpd(){const d=pmDest();document.getElementById('pmPrev').textContent=d?'ថ្នាក់ទី'+d:'—';pmSum()}
-function pmMode(m){PM.mode='up';document.getElementById('pmDestSec').style.display='block';pmSum()}
+function pmMode(m){PM.mode=m;document.getElementById('pmModeUp').classList.toggle('on',m==='up');document.getElementById('pmModeGrad').classList.toggle('on',m==='grad');document.getElementById('pmDestSec').style.display=m==='up'?'block':'none';pmSum()}
 function pmChecked(){return [...document.querySelectorAll('#pmList input:checked')].map(i=>+i.dataset.id)}
 function pmAllChg(v){document.querySelectorAll('#pmList input').forEach(i=>i.checked=v);pmSum()}
-function pmSum(){const n=pmChecked().length,t=PM.stu.length;document.getElementById('pmSum').textContent='ឡើងថ្នាក់ '+n+' នាក់ · មិនឡើង '+(t-n)+' នាក់';document.getElementById('pmAll').checked=n===t&&t>0}
+function pmSum(){const n=pmChecked().length,t=PM.stu.length;document.getElementById('pmSum').textContent=(PM.mode==='up'?'ឡើងថ្នាក់ '+n+' នាក់ · មិនឡើង '+(t-n)+' នាក់':'បានបញ្ចប់ '+n+' នាក់ · នៅរៀនបន្ត '+(t-n)+' នាក់');document.getElementById('pmAll').checked=n===t&&t>0}
 async function openPromote(id){
   const list=ROWS.filter(x=>(x.students||0)>0);
   if(!list.length){uiAlert('មិនទាន់មានថ្នាក់ណាមានសិស្សសម្រាប់ដំឡើងទេ');return}
@@ -201,12 +201,26 @@ async function pmLoadSrc(id,show){
   document.getElementById('pmTitle').textContent='⬆️ ដំឡើងថ្នាក់ទី'+c.name;
   document.getElementById('pmAll').checked=true;
   document.getElementById('pmList').innerHTML=stu.map((s,i)=>'<label class="pm-row"><input type="checkbox" checked data-id="'+s.id+'" onchange="pmSum()"><span>'+(i+1)+'. '+esc(s.student_name||'គ្មានឈ្មោះ')+'</span></label>').join('');
-  pmMode('up');pmUpd();
+  pmMode(m&&+m[1]>=6?'grad':'up');pmUpd();
   if(show!==undefined)document.getElementById('pmBg').style.display='flex';
 }
 function closePm(){document.getElementById('pmBg').style.display='none'}
 async function doPromote(){
   const c=PM.cls,ids=pmChecked(),dest=pmDest();
+  if(PM.mode==='grad'){
+    if(!ids.length){toast('⚠️ សូមធីកសិស្សយ៉ាងតិច ១ នាក់');return}
+    if(!await uiConfirm('ដាក់សិស្ស '+ids.length+' នាក់ ថ្នាក់ទី'+c.name+' ជា «បានបញ្ចប់»\n\nទិន្នន័យ ពិន្ទុ វត្តមាន នៅដដែល។ មើលបានក្នុង ព័ត៌មានសិស្ស → ស្ថានភាព «បានបញ្ចប់»។',{okText:'បញ្ជាក់',title:'បញ្ជាក់ការបញ្ចប់ការសិក្សា'}))return;
+    const b=document.getElementById('pmGo');b.disabled=true;const t=b.textContent;let ok=0,fail=0;
+    try{
+      for(let i=0;i<ids.length;i+=8){
+        await Promise.all(ids.slice(i,i+8).map(async id=>{
+          try{await rpc('staff_student_write',{p_op:'update',p_id:id,p_sid:null,p_data:{dropout_semester:'បានបញ្ចប់'}});ok++}catch(e){fail++}}));
+        b.textContent='⏳ '+Math.min(i+8,ids.length)+'/'+ids.length;
+      }
+      closePm();await uiAlert('🎓 បានដាក់ «បានបញ្ចប់» '+ok+' នាក់'+(fail?'\nមិនបាន '+fail+' នាក់':''));await load();
+    }finally{b.disabled=false;b.textContent=t}
+    return;
+  }
   if(!dest){toast('⚠️ សូមជ្រើសថ្នាក់ទិសដៅ');return}
   if(cg(dest).toLowerCase()===cg(c.name).toLowerCase()){toast('⚠️ ថ្នាក់ទិសដៅដូចថ្នាក់ចាស់');return}
   if(!ids.length){toast('⚠️ សូមធីកសិស្សយ៉ាងតិច ១ នាក់');return}
