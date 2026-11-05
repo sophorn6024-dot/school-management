@@ -246,6 +246,8 @@
     /* ✍ ត្រានាយក (រង្វង់ 34 មម) + ហត្ថលេខាគ្រូ (45×15 មម) ពីទំព័រ «ប្រវត្តិរូបរបស់ខ្ញុំ» */
     .stamp-anchor { position: relative; height: 0; display: none; }
     .stamp-anchor.on { display: block; }
+    .honor-paper.raster #dirCol { margin-top: 0 !important; }
+    .honor-paper.raster .stamp-anchor .stamp-circle { top: -12mm; }
     .stamp-anchor .stamp-circle { position: absolute; left: 50%; top: -10mm; margin-left: -17mm; width: 34mm; height: 34mm; z-index: 6; pointer-events: none; }
     .stamp-circle img { position: absolute; max-width: none; max-height: none; height: auto; }
     .sign-space.has-sig { height: 15mm !important; display: flex; align-items: center; justify-content: center; }
@@ -1667,6 +1669,21 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     }
 
     let loadSeq = 0;
+    /* ឈ្មោះគ្រូ៖ ទំព័រនេះមិនអានតារាង users ដោយផ្ទាល់បានទេ (សុវត្ថិភាព) → ប្រើឈ្មោះខ្លួនឯង ឬឈ្មោះម្ចាស់ថ្នាក់តាម RPC */
+    async function fillTeacherNameFallback() {
+      const el = document.getElementById('lblTeacherName'); if (!el) return;
+      let nm = '';
+      if (CURRENT_USER && (!IS_ADMIN || cleanGrade(USER_CLASS) === currentSelectedClass)) nm = CURRENT_USER.teacher_name || '';
+      if (!nm) {
+        try {
+          const pw = localStorage.getItem('krou_pw') || '';
+          const { data } = await sb.rpc('staff_class_dest_list', { p_u: CURRENT_USER.username, p_p: pw });
+          const r = ((data && data.rows) || []).find(x => cleanGrade(x.name) === currentSelectedClass);
+          if (r) nm = r.owner_name || r.owner || '';
+        } catch (e) {}
+      }
+      el.innerText = nm;
+    }
     async function loadHonorRoll() {
       document.getElementById('lblDocumentClass').innerText = `ថ្នាក់ទី${currentSelectedClass}`;
 
@@ -1682,7 +1699,8 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         const { data: users } = await sb.from('users').select('*');
         const teacher = (users || []).find(u => cleanGrade(u.assigned_classes || u.assigned_class) === currentSelectedClass);
         if (teacher) document.getElementById('lblTeacherName').innerText = teacher.teacher_name || '';
-      } catch(e) {}
+        if (!teacher || !teacher.teacher_name) await fillTeacherNameFallback();
+      } catch(e) { await fillTeacherNameFallback(); }
 
       // ទាញយកសិស្ស Top 5 តាមខែ/ឆមាស/ឆ្នាំ ដែលបានជ្រើស (គណនាដូចទំព័រចំណាត់ថ្នាក់)
       const mySeq = ++loadSeq;
