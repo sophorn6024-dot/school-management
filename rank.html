@@ -234,7 +234,7 @@
     .footer-left { text-align: center; width: 40%; }
     .sig-space { height: 15mm; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
     .sig-space img { max-height: 15mm; max-width: 45mm; object-fit: contain; }
-    .stamp-space { display: flex; align-items: flex-start; justify-content: center; margin-top: 1mm; }
+    .stamp-space { display: flex; align-items: flex-start; justify-content: center; margin-top: -5mm; position: relative; z-index: 1; pointer-events: none; }
     .stamp-space img { max-width: 45mm; max-height: 45mm; width: auto; height: auto; mix-blend-mode: multiply; }
     .dir-name { font-family: 'Moul', cursive; font-size: 12px; margin-top: 6px; min-height: 0; }
     .footer-right { text-align: center; width: 55%; }
@@ -1891,9 +1891,18 @@ exports.default = {
             c.width = w; c.height = h; const x = c.getContext('2d'); x.drawImage(im, 0, 0);
             const d = x.getImageData(0, 0, w, h).data;
             let x0 = w, y0 = h, x1 = -1, y1 = -1;
+            /* ពណ៌ផ្ទៃខាងក្រោយ = មធ្យមនៃជ្រុងទាំង ៤ (ថ្លា ឬស/ប្រផេះស្រាល) */
+            const corner = (cx, cy) => { const i = (cy * w + cx) * 4; return [d[i], d[i + 1], d[i + 2], d[i + 3]]; };
+            const cs = [corner(0, 0), corner(w - 1, 0), corner(0, h - 1), corner(w - 1, h - 1)];
+            const bg = [0, 1, 2, 3].map(k => Math.round(cs.reduce((t, c) => t + c[k], 0) / 4));
+            const isInk = i => {
+              const a = d[i + 3];
+              if (bg[3] < 30) return a > 40;                       // ផ្ទៃថ្លា
+              if (Math.abs(a - bg[3]) > 60) return true;
+              return Math.abs(d[i] - bg[0]) + Math.abs(d[i + 1] - bg[1]) + Math.abs(d[i + 2] - bg[2]) > 90;   // ខុសពីផ្ទៃ
+            };
             for (let y = 0; y < h; y++) for (let xx = 0; xx < w; xx++) {
-              const i = (y * w + xx) * 4;
-              if (d[i + 3] > 12 && !(d[i] > 240 && d[i + 1] > 240 && d[i + 2] > 240)) { if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+              if (isInk((y * w + xx) * 4)) { if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (y < y0) y0 = y; if (y > y1) y1 = y; }
             }
             if (x1 < 0) return res(src);
             const cw = x1 - x0 + 1, ch = y1 - y0 + 1, o = document.createElement('canvas');
