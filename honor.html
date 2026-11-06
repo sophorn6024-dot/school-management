@@ -174,7 +174,7 @@
       font-size: 13.5px; line-height: 1.6; font-weight: bold;
     }
 
-    .main-title-box { text-align: center; margin-top: 2px; margin-bottom: 0; }
+    .main-title-box { text-align: center; margin-top: 14px; margin-bottom: 0; }
     .main-title-text {
       font-size: 42px; color: #f59e0b;
       text-shadow: 2.5px 2.5px 0 #581c87, -2.5px -2.5px 0 #581c87, 2.5px -2.5px 0 #581c87, -2.5px 2.5px 0 #581c87, 0 4px 10px rgba(0,0,0,0.3);
@@ -274,7 +274,7 @@
     .honor-paper.raster .meta-left { top:var(--my,92px); left:50px; color:#111; font-size:13.5px; line-height:1.6;
              transform:scale(var(--ms,1)); transform-origin:top left; }
     .honor-paper.raster .main-title-box { position:absolute; left:0; right:0; top:var(--tt,234px); margin:0; text-align:center; z-index:6; }
-    .honor-paper.raster .main-title-text { font-size:40px; line-height:1.55; }
+    .honor-paper.raster .main-title-text { font-size:42px; line-height:normal; }
     .honor-paper.raster .period-title { margin:0; font-size:17px; line-height:1.4;
              background:none; -webkit-text-fill-color:#581c87; color:#581c87; text-shadow:none; }
     .honor-paper.raster .footer-row { position:absolute; left:46px; right:46px; top:var(--fy,930px); margin:0; padding:0 8px;
@@ -1409,7 +1409,7 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         paper.style.setProperty('--my', t === 'cat' ? '84px' : '92px');
         paper.style.setProperty('--ms', t === 'cat' ? '0.72' : '1');
         paper.style.setProperty('--tb', (R.tb + 2) + 'px');
-        paper.style.setProperty('--tt', Math.max(150, R.tb - 66 - 38) + 'px');
+        paper.style.setProperty('--tt', (96 + (R.hy - 32)) + 'px');
         const hasR = s.map(x => !!(x && x.name));
         const anyR = hasR.some(Boolean);
         let lastPx = R.last;
