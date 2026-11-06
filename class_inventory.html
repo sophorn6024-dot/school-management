@@ -136,7 +136,9 @@ td.nm:empty::before{content:'ឈ្មោះសម្ភារៈ...';color:#9ca
 .sig-l{text-align:center;min-width:14em;line-height:1.8;margin-top:1.8em}
 .sig-r{text-align:center;min-width:22em;line-height:1.8}
 .sig-r .role{color:#1d4ed8}
-.sig-space{height:4.7em}
+.sig-space{height:4.7em;display:flex;align-items:center;justify-content:center}
+.kit-stamp{display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}.kit-sig{max-height:100%;max-width:60%;object-fit:contain}
+
 .sig-name{color:#1d4ed8;font-family:'Moul',serif;font-size:.96em}
 
 @media screen and (max-width:768px){.fc,.btn,.date-btn{height:30px;font-size:11.5px;padding:3px 6px}.toolbar{padding:8px 10px;position:static}
@@ -1603,7 +1605,9 @@ function render(){
   if(!CUR_CLASS)return;
   const office=esc(document.getElementById('inOffice').value);
   const school=esc(document.getElementById('inSchool').value);
-  const place=esc(document.getElementById('inPlace').value);
+  const place=esc(kitHasProf()?kitPlace(document.getElementById('inPlace').value):document.getElementById('inPlace').value);
+  const hdrLines=kitHasProf()?schoolHeadLines(PROF).map(esc).join('<br>'):office+'<br>'+school;
+  const dirTitle=esc(((PROF&&PROF.director_title)||'').trim()||'នាយកសាលា'),dirNm=esc(kitDirName());
   const tVal=document.getElementById('inTeacherDate').value, tBlank=tVal==='blank';
   const tIso=(tVal&&!tBlank)?tVal:isoLocal(new Date());
   const dIso=document.getElementById('inDirectorDate').value;
@@ -1623,7 +1627,7 @@ function render(){
     <div class="kingdom moul">ព្រះរាជាណាចក្រកម្ពុជា</div>
     <div class="motto moul">ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
     <div class="divider"><span></span><b>❖</b><span></span></div>
-    <div class="hdr-left moul">${office}<br>${school}<br>ថ្នាក់ទី${esc(CUR_CLASS)}</div>
+    <div class="hdr-left moul">${hdrLines}<br>ថ្នាក់ទី${esc(CUR_CLASS)}</div>
     <div class="title moul">បញ្ជីសារពើភ័ណ្ឌ</div>
     <table class="inv" id="invTable">
       <colgroup><col style="width:8%"><col style="width:30%"><col style="width:12%"><col style="width:8%"><col style="width:30%"><col style="width:12%"></colgroup>
@@ -1633,14 +1637,15 @@ function render(){
     <div class="foot">
       <div class="sig-l">
         ${dIso?`<div style="font-size:.93em">${lunarOfIso(dIso)}</div><div>${fmtKhDate(dIso)}</div><div>បានឃើញ និងឯកភាព</div>`:`<div>&nbsp;</div><div>&nbsp;</div><div>បានឃើញ និងឯកភាព</div>`}
-        <div class="moul" style="font-size:.96em">នាយកសាលា</div>
-        <div class="sig-space"></div>
+        <div class="moul" style="font-size:.96em">${dirTitle}</div>
+        ${kitStamp()||'<div class="sig-space"></div>'}
+        ${dirNm?`<div class="moul" style="font-size:12px;margin-top:2px">${dirNm}</div>`:''}
       </div>
       <div class="sig-r">
         ${tBlank?`<div style="font-size:.93em">ថ្ងៃ.................... ខែ.......... ឆ្នាំ........... ពុទ្ធសករាជ ${toKh(((lunarOfIso(tIso).match(/ពុទ្ធសករាជ\s*(\S+)/)||[])[1])||'')}</div><div>${place}, ថ្ងៃទី...... ខែ...... ឆ្នាំ${toKh(tIso.slice(0,4))}</div>`:`<div style="font-size:.93em">${lunarOfIso(tIso)}</div><div>${place}, ${fmtKhDate(tIso)}</div>`}
         <div class="role moul" style="font-size:.96em">គ្រូទទួលបន្ទុកថ្នាក់</div>
-        <div class="sig-space"></div>
-        <div class="sig-name">${esc(TEACHER)}</div>
+        <div class="sig-space">${kitSig()}</div>
+        <div class="sig-name" style="font-size:12px;margin-top:2px">${esc(TEACHER)}</div>
       </div>
     </div>`;
 }
@@ -1676,6 +1681,109 @@ function downloadExcel(){
   a.download='class-inventory-'+(CUR_CLASS||'')+'.xls'; document.body.appendChild(a); a.click(); a.remove();
 }
 
+
+/* ===== ព័ត៌មានសាលា/ហត្ថលេខា/ត្រា ពីគណនី (ប្រវត្តិរូបរបស់ខ្ញុំ) ===== */
+let PROF=null,PROFILE_SIG='',STAMP_META=null;
+    /* 🔍 ស្កេនរូបត្រា៖ កាត់គែមទទេ រួចរកខ្សែបន្ទាត់រង្វង់ត្រា (ក្រហម) → {url,x,y,d,w,h}  (ហត្ថលេខា/ឈ្មោះដែលលើសរង្វង់ មិនគិតក្នុងទំហំត្រា) */
+    function analyzeStamp(src) {
+      return new Promise(res => {
+        const im = new Image();
+        im.onerror = () => res(null);
+        im.onload = () => {
+          try {
+            const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement('canvas');
+            c.width = w; c.height = h; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0);
+            const d = x.getImageData(0, 0, w, h).data;
+            const cr = (cx, cy) => { const i = (cy * w + cx) * 4; return [d[i], d[i + 1], d[i + 2], d[i + 3]]; };
+            const cs = [cr(0, 0), cr(w - 1, 0), cr(0, h - 1), cr(w - 1, h - 1)];
+            const bg = [0, 1, 2, 3].map(k => Math.round(cs.reduce((t, q) => t + q[k], 0) / 4));
+            const ink = i => {
+              const a = d[i + 3];
+              if (bg[3] < 30) return a > 40;
+              if (Math.abs(a - bg[3]) > 60) return true;
+              return Math.abs(d[i] - bg[0]) + Math.abs(d[i + 1] - bg[1]) + Math.abs(d[i + 2] - bg[2]) > 90;
+            };
+            let x0 = w, y0 = h, x1 = -1, y1 = -1; const all = [], red = [];
+            for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++) {
+              const i = (yy * w + xx) * 4;
+              if (!ink(i)) continue;
+              if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy;
+              all.push(xx, yy);
+              if (d[i] > d[i + 2] + 25 && d[i] > d[i + 1] + 15) red.push(xx, yy);   // ក្រហម (ត្រា + ឈ្មោះ) មិនមែនខៀវ (ហត្ថលេខា)
+            }
+            if (x1 < 0) return res(null);
+            const cw = x1 - x0 + 1, ch = y1 - y0 + 1, o = document.createElement('canvas');
+            o.width = cw; o.height = ch; o.getContext('2d').drawImage(c, x0, y0, cw, ch, 0, 0, cw, ch);
+            /* ផ្ទៃរូបមិនថ្លា (ស/ប្រផេះ) → ធ្វើឱ្យថ្លា ដើម្បីមិនបាំងអក្សរ */
+            if (bg[3] >= 30) {
+              const oc = o.getContext('2d', { willReadFrequently: true }), od = oc.getImageData(0, 0, cw, ch), q = od.data;
+              for (let i = 0; i < q.length; i += 4) {
+                const dist = Math.abs(q[i] - bg[0]) + Math.abs(q[i + 1] - bg[1]) + Math.abs(q[i + 2] - bg[2]);
+                if (dist < 40) q[i + 3] = 0; else if (dist < 110) q[i + 3] = Math.round(q[i + 3] * (dist - 40) / 70);
+              }
+              oc.putImageData(od, 0, 0);
+            }
+            const url = o.toDataURL('image/png');
+            let pts = red.length >= 200 ? red : all;
+            const stride = Math.max(2, Math.floor(pts.length / 2 / 5000) * 2); const P = [];
+            for (let i = 0; i < pts.length; i += stride) P.push(pts[i] - x0, pts[i + 1] - y0);
+            let L = cw, T = ch; for (let i = 0; i < P.length; i += 2) { if (P[i] < L) L = P[i]; if (P[i + 1] < T) T = P[i + 1]; }
+            const maxR = Math.min(cw - L, ch - T) / 2, minR = Math.max(20, Math.min(cw, ch) * 0.2);
+            let best = null;
+            for (let r = Math.floor(minR); r <= maxR; r += 2) {
+              const cx = L + r, cy = T + r, tol = Math.max(2.5, r * 0.04), bins = new Uint8Array(72); let cnt = 0;
+              for (let i = 0; i < P.length; i += 2) {
+                const dx = P[i] - cx, dy = P[i + 1] - cy, dist = Math.sqrt(dx * dx + dy * dy);
+                if (Math.abs(dist - r) <= tol) { bins[Math.min(71, Math.floor((Math.atan2(dy, dx) + Math.PI) / (2 * Math.PI) * 72))] = 1; cnt++; }
+              }
+              let cov = 0; for (let b = 0; b < 72; b++) cov += bins[b]; cov /= 72;
+              if (!best || cov > best.cov + 0.02 || (Math.abs(cov - best.cov) <= 0.02 && cnt > best.cnt)) best = { r, cov, cnt };
+            }
+            if (!best || best.cov < 0.5) return res({ url, x: 0, y: 0, d: Math.min(cw, ch), w: cw, h: ch, fallback: true });
+            res({ url, x: L, y: T, d: best.r * 2, w: cw, h: ch });
+          } catch (e) { res(null); }
+        };
+        im.src = src;
+      });
+    }
+    
+
+function schoolHeadLines(d){
+  const school=((d&&d.school_name)||'').trim()||'សាលាបឋមសិក្សាកំពង់ល្ពៅ',t=(d&&d.head_type)||'oc';
+  const dept=((d&&d.dept)||'').trim(),office=((d&&d.office)||'').trim(),cl=((d&&d.cluster)||'').trim(),L=[];
+  if(t==='doc'&&dept)L.push(dept);
+  if(t!=='s'&&office)L.push(office);
+  if((t==='oc'||t==='doc')&&cl)L.push(cl);
+  L.push(school);return L;
+}
+function kitHasProf(){return !!(PROF&&(PROF.school_name||PROF.office||PROF.cluster||PROF.dept||PROF.head_type))}
+function kitPlace(def){return ((PROF&&PROF.sign_place)||'').trim()||def||'កំពង់ល្ពៅ'}
+function kitStamp(){
+  const m=STAMP_META;if(!m)return '';
+  const K=34/m.d,mb=Math.max(0,(m.h-(m.y+m.d))*K);
+  return '<div class="kit-stamp" style="margin-bottom:'+mb+'mm"><div class="kit-circle"><img alt="" src="'+m.url+'" style="width:'+(m.w*K)+'mm;left:'+(-m.x*K)+'mm;top:'+(-m.y*K)+'mm"></div></div>';
+}
+function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'">':''}
+function kitDirName(){return STAMP_META?'':(((PROF&&PROF.director_name)||'').trim())}
+async function loadKit(done){
+  try{
+    let pw='';try{pw=localStorage.getItem('krou_pw')||''}catch(e){}
+    if(!sb||!USER||!USER.username||!pw)return;
+    const a={p_u:USER.username,p_p:pw};
+    const [pr,sc]=await Promise.all([sb.rpc('staff_my_profile_get',a),sb.rpc('staff_school_get',a)]);
+    PROFILE_SIG=(pr.data&&pr.data.signature_url)||'';
+    const sd=sc.data;
+    if(sd&&sd.ok){
+      PROF=sd.data||{};
+      if(sd.stamp_url){
+        const m=PROF.stamp_circle&&PROF.stamp_circle.d?Object.assign({},PROF.stamp_circle,{url:sd.stamp_url}):await analyzeStamp(sd.stamp_url);
+        if(m)STAMP_META=m;
+      }
+    }
+    if(done)done();
+  }catch(e){console.warn('kit',e)}
+}
+
 window.addEventListener('DOMContentLoaded',async()=>{
   if(!USER||!USER.username){document.getElementById('authDenied').style.display='flex';return}
   document.getElementById('toolbar').style.display='flex';
@@ -1683,6 +1791,7 @@ window.addEventListener('DOMContentLoaded',async()=>{
   const dts=loadDates(); setDateValue('inTeacherDate',dts.t); setDateValue('inDirectorDate',dts.d);
   applyPage();
   await initClasses();
+  loadKit(()=>{try{render()}catch(e){}});
 });
 </script>
 </body>
