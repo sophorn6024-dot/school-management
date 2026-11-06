@@ -150,14 +150,14 @@ async function load(){
   }catch(e){ document.getElementById('grid').innerHTML=''; uiAlert('❌ ទាញទិន្នន័យមិនបាន៖ '+(e.message||e)+'\n(បើនៅមិនទាន់ run classes_multi.sql សូម run វាក្នុង Supabase សិន)'); }
 }
 function render(){
-  document.getElementById('cnt').textContent='សរុប '+ROWS.length+' ថ្នាក់';
+  document.getElementById('cnt').textContent='សរុប '+toKh(ROWS.length)+' ថ្នាក់';
   document.getElementById('empty').style.display=ROWS.length?'none':'block';
   document.getElementById('grid').innerHTML=ROWS.map(c=>{
     const act=!IS_ADMIN&&cg(c.name).toLowerCase()===ACTIVE.toLowerCase();
     const lv=c.level||(String(c.name).match(/^[0-9០-៩]+/)||[''])[0];
-    return '<div class="card'+(act?' active':'')+'"><div class="top"><div class="ico">🏫</div><div class="nm">ថ្នាក់ទី'+esc(c.name)+(act?'<span class="badge">កំពុងប្រើ</span>':'')+'</div>'
+    return '<div class="card'+(act?' active':'')+'"><div class="top"><div class="ico">🏫</div><div class="nm">ថ្នាក់ទី'+esc(toKh(c.name))+(act?'<span class="badge">កំពុងប្រើ</span>':'')+'</div>'
       +'<button class="ib" title="កែ" onclick="openCls('+c.id+')">✏️</button><button class="ib" title="លុប" onclick="delCls('+c.id+')">🗑️</button></div>'
-      +'<div class="sub">'+(lv?'ថ្នាក់ទី '+esc(lv)+' · ':'')+'ឆ្នាំសិក្សា '+esc(c.school_year||'—')+' · សិស្ស '+(c.students||0)+' នាក់'+(IS_ADMIN&&c.owner?'<br><span class="own">👤 '+esc(c.owner)+'</span>':'')+'</div>'
+      +'<div class="sub">'+(lv?'ថ្នាក់ទី '+esc(toKh(lv))+' · ':'')+'ឆ្នាំសិក្សា '+esc(toKh(c.school_year||'—'))+' · សិស្ស '+toKh(c.students||0)+' នាក់'+(IS_ADMIN&&c.owner?'<br><span class="own">👤 '+esc(c.owner)+'</span>':'')+'</div>'
       +'<button class="go" onclick="goStudents('+c.id+')">👥 សិស្ស →</button>'+'</div>';
   }).join('');
 }
@@ -167,16 +167,16 @@ function goHub(){try{parent.postMessage({type:'NAVIGATE',page:'classes'},'*')}ca
 let PM={cls:null,stu:[],mode:'up'};
 function pmFill(sel){return;const a=KM;document.getElementById('pmLetter').innerHTML=a.map(x=>'<option'+(x===sel?' selected':'')+'>'+x+'</option>').join('')}
 function pmDest(){return document.getElementById('pmDestSel').value}
-function pmUpd(){const d=pmDest();document.getElementById('pmPrev').textContent=d?'ថ្នាក់ទី'+d:'—';pmSum()}
+function pmUpd(){const d=pmDest();document.getElementById('pmPrev').textContent=d?'ថ្នាក់ទី'+toKh(d):'—';pmSum()}
 function pmMode(m){PM.mode=m;document.getElementById('pmModeUp').classList.toggle('on',m==='up');document.getElementById('pmModeGrad').classList.toggle('on',m==='grad');document.getElementById('pmDestSec').style.display=m==='up'?'block':'none';pmSum()}
 function pmChecked(){return [...document.querySelectorAll('#pmList input:checked')].map(i=>+i.dataset.id)}
 function pmAllChg(v){document.querySelectorAll('#pmList input').forEach(i=>i.checked=v);pmSum()}
-function pmSum(){const n=pmChecked().length,t=PM.stu.length;document.getElementById('pmSum').textContent=(PM.mode==='up'?'ឡើងថ្នាក់ '+n+' នាក់ · មិនឡើង '+(t-n)+' នាក់':'បានបញ្ចប់ '+n+' នាក់ · នៅរៀនបន្ត '+(t-n)+' នាក់');document.getElementById('pmAll').checked=n===t&&t>0}
+function pmSum(){const n=pmChecked().length,t=PM.stu.length;document.getElementById('pmSum').textContent=(PM.mode==='up'?'ឡើងថ្នាក់ '+toKh(n)+' នាក់ · មិនឡើង '+toKh(t-n)+' នាក់':'បានបញ្ចប់ '+toKh(n)+' នាក់ · នៅរៀនបន្ត '+toKh(t-n)+' នាក់');document.getElementById('pmAll').checked=n===t&&t>0}
 async function openPromote(id){
   const list=ROWS.filter(x=>(x.students||0)>0);
   if(!list.length){uiAlert('មិនទាន់មានថ្នាក់ណាមានសិស្សសម្រាប់ដំឡើងទេ');return}
   const sel=document.getElementById('pmSrc');
-  sel.innerHTML=list.map(x=>'<option value="'+x.id+'">ថ្នាក់ទី'+esc(x.name)+' ('+(x.students||0)+' នាក់)'+(IS_ADMIN&&x.owner?' · '+esc(x.owner):'')+'</option>').join('');
+  sel.innerHTML=list.map(x=>'<option value="'+x.id+'">ថ្នាក់ទី'+esc(toKh(x.name))+' ('+toKh(x.students||0)+' នាក់)'+(IS_ADMIN&&x.owner?' · '+esc(x.owner):'')+'</option>').join('');
   let pick=id&&list.find(x=>x.id===id)?id:null;
   if(!pick){const a=list.find(x=>cg(x.name).toLowerCase()===ACTIVE.toLowerCase());pick=(a||list[0]).id}
   sel.value=String(pick);
@@ -199,9 +199,9 @@ async function pmLoadSrc(id,show){
   opts.sort((a,b)=>a.localeCompare(b,'km',{numeric:true}));
   const m=String(c.name).match(/^(\d+)/),nextLv=m?String((+m[1])+1):'';
   const ds=document.getElementById('pmDestSel');
-  ds.innerHTML=opts.length?opts.map(o=>'<option value="'+esc(o)+'">ថ្នាក់ទី'+esc(o)+(own[o.toLowerCase()]?' · 👤 '+esc(own[o.toLowerCase()].join(', ')):'')+'</option>').join(''):'<option value="">(គ្មានថ្នាក់ផ្សេង — សូមបង្កើតថ្នាក់ជាមុន)</option>';
+  ds.innerHTML=opts.length?opts.map(o=>'<option value="'+esc(o)+'">ថ្នាក់ទី'+esc(toKh(o))+(own[o.toLowerCase()]?' · 👤 '+esc(own[o.toLowerCase()].join(', ')):'')+'</option>').join(''):'<option value="">(គ្មានថ្នាក់ផ្សេង — សូមបង្កើតថ្នាក់ជាមុន)</option>';
   const pref=opts.find(o=>nextLv&&o.startsWith(nextLv));if(pref)ds.value=pref;
-  document.getElementById('pmTitle').textContent='⬆️ ដំឡើងថ្នាក់ទី'+c.name;
+  document.getElementById('pmTitle').textContent='⬆️ ដំឡើងថ្នាក់ទី'+toKh(c.name);
   document.getElementById('pmAll').checked=true;
   document.getElementById('pmList').innerHTML=stu.map((s,i)=>'<label class="pm-row"><input type="checkbox" checked data-id="'+s.id+'" onchange="pmSum()"><span>'+(i+1)+'. '+esc(s.student_name||'គ្មានឈ្មោះ')+'</span></label>').join('');
   pmMode(m&&+m[1]>=6?'grad':'up');pmUpd();
@@ -212,7 +212,7 @@ async function doPromote(){
   const c=PM.cls,ids=pmChecked(),dest=pmDest();
   if(PM.mode==='grad'){
     if(!ids.length){toast('⚠️ សូមធីកសិស្សយ៉ាងតិច ១ នាក់');return}
-    if(!await uiConfirm('ដាក់សិស្ស '+ids.length+' នាក់ ថ្នាក់ទី'+c.name+' ជា «បានបញ្ចប់»\n\nទិន្នន័យ ពិន្ទុ វត្តមាន នៅដដែល។ មើលបានក្នុង ព័ត៌មានសិស្ស → ស្ថានភាព «បានបញ្ចប់»។',{okText:'បញ្ជាក់',title:'បញ្ជាក់ការបញ្ចប់ការសិក្សា'}))return;
+    if(!await uiConfirm('ដាក់សិស្ស '+toKh(ids.length)+' នាក់ ថ្នាក់ទី'+toKh(c.name)+' ជា «បានបញ្ចប់»\n\nទិន្នន័យ ពិន្ទុ វត្តមាន នៅដដែល។ មើលបានក្នុង ព័ត៌មានសិស្ស → ស្ថានភាព «បានបញ្ចប់»។',{okText:'បញ្ជាក់',title:'បញ្ជាក់ការបញ្ចប់ការសិក្សា'}))return;
     const b=document.getElementById('pmGo');b.disabled=true;const t=b.textContent;let ok=0,fail=0;
     try{
       for(let i=0;i<ids.length;i+=8){
@@ -220,14 +220,14 @@ async function doPromote(){
           try{await rpc('staff_student_write',{p_op:'update',p_id:id,p_sid:null,p_data:{dropout_semester:'បានបញ្ចប់'}});ok++}catch(e){fail++}}));
         b.textContent='⏳ '+Math.min(i+8,ids.length)+'/'+ids.length;
       }
-      closePm();await uiAlert('🎓 បានដាក់ «បានបញ្ចប់» '+ok+' នាក់'+(fail?'\nមិនបាន '+fail+' នាក់':''));await load();
+      closePm();await uiAlert('🎓 បានដាក់ «បានបញ្ចប់» '+toKh(ok)+' នាក់'+(fail?'\nមិនបាន '+toKh(fail)+' នាក់':''));await load();
     }finally{b.disabled=false;b.textContent=t}
     return;
   }
   if(!dest){toast('⚠️ សូមជ្រើសថ្នាក់ទិសដៅ');return}
   if(cg(dest).toLowerCase()===cg(c.name).toLowerCase()){toast('⚠️ ថ្នាក់ទិសដៅដូចថ្នាក់ចាស់');return}
   if(!ids.length){toast('⚠️ សូមធីកសិស្សយ៉ាងតិច ១ នាក់');return}
-  if(!await uiConfirm('ចម្លងសិស្ស '+ids.length+' នាក់ ពីថ្នាក់ទី'+c.name+' ទៅថ្នាក់ទី'+dest+'\n\nថ្នាក់ចាស់រក្សាសិស្ស ពិន្ទុ និងវត្តមាននៅដដែល។',{okText:'បញ្ជាក់ ដំឡើង',title:'បញ្ជាក់ការដំឡើងថ្នាក់'}))return;
+  if(!await uiConfirm('ចម្លងសិស្ស '+toKh(ids.length)+' នាក់ ពីថ្នាក់ទី'+toKh(c.name)+' ទៅថ្នាក់ទី'+toKh(dest)+'\n\nថ្នាក់ចាស់រក្សាសិស្ស ពិន្ទុ និងវត្តមាននៅដដែល។',{okText:'បញ្ជាក់ ដំឡើង',title:'បញ្ជាក់ការដំឡើងថ្នាក់'}))return;
   const b=document.getElementById('pmGo');b.disabled=true;const t=b.textContent;b.textContent='⏳ កំពុងធ្វើ...';
   try{
     const d=await rpc('staff_class_promote_copy',{p_class_id:c.id,p_to:dest,p_ids:ids});
