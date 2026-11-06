@@ -240,7 +240,7 @@
     /* ✍️ FOOTER DATES & SIGNATURES (លើកឡើងលើមិនកៀកបាតក្រោម) */
     .footer-row {
       display: flex; justify-content: space-between; align-items: flex-end;
-      margin-bottom: calc(15px + var(--lift, 0px)); padding: 0 35px; font-size: 13.5px;
+      margin-bottom: 15px; position: relative; top: calc(-1 * var(--lift, 0px)); padding: 0 35px; font-size: 13.5px;
     }
     .footer-col { text-align: center; min-width: 250px; position: relative; }
     /* ✍ ត្រានាយក (រង្វង់ 34 មម) + ហត្ថលេខាគ្រូ (45×15 មម) ពីទំព័រ «ប្រវត្តិរូបរបស់ខ្ញុំ» */
@@ -1175,21 +1175,40 @@
       });
     }
     
+    /* 📐 រក្សាផ្នែកហត្ថលេខា+ត្រា (រួមទាំងឈ្មោះលើសរង្វង់) ឱ្យនៅក្នុងស៊ុម គ្រប់ទម្រង់ (ធម្មតា/រូបថត/raster) */
+    function fitFooter() {
+      const paper = document.querySelector('.honor-paper'), row = document.querySelector('.footer-row');
+      if (!paper || !row) return;
+      const raster = paper.classList.contains('raster');
+      const pr = paper.getBoundingClientRect(), sc = (pr.width / paper.offsetWidth) || 1;
+      const limit = 1123 - (raster ? 62 : 42);
+      const bottomOf = () => {
+        let b = row.getBoundingClientRect().bottom;
+        const anc = document.getElementById('stampAnchor'), img = document.getElementById('stampImg');
+        if (anc && anc.classList.contains('on') && img && img.complete) b = Math.max(b, img.getBoundingClientRect().bottom);
+        return (b - pr.top) / sc;
+      };
+      let over = bottomOf() - limit;
+      if (raster) {
+        const lp = parseFloat(paper.dataset.lastPx) || 0, cur = parseFloat(paper.style.getPropertyValue('--fy')) || 930;
+        paper.style.setProperty('--fy', Math.max(lp - 2, Math.min(lp + 1, cur - over)) + 'px');
+      } else {
+        const cur = parseFloat(paper.style.getPropertyValue('--lift')) || 0;
+        paper.style.setProperty('--lift', Math.max(0, Math.min(60, cur + over)) + 'px');
+      }
+    }
+    function fitFooterSoon() { fitFooter(); requestAnimationFrame(fitFooter); setTimeout(fitFooter, 400); setTimeout(fitFooter, 1500); }
+    window.addEventListener('load', fitFooterSoon);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitFooterSoon);
+
     async function placeStamp(url, meta) {
       const m = meta && meta.d ? Object.assign({}, meta, { url }) : await analyzeStamp(url);
       if (!m) return false;
       const K = 34 / m.d, img = document.getElementById('stampImg');
       document.getElementById('stampAnchor').classList.add('on');
+      img.onload = fitFooterSoon;
       img.src = m.url; img.style.width = (m.w * K) + 'mm'; img.style.left = (-m.x * K) + 'mm'; img.style.top = (-m.y * K) + 'mm';
-      /* ហត្ថលេខា/ឈ្មោះដែលលើសរង្វង់ចុះក្រោម → លើកជួរហត្ថលេខាឡើង កុំឱ្យជាន់ស៊ុម (តែក្នុងទម្រង់ធម្មតា) */
-      const paper = document.querySelector('.honor-paper'), row = document.querySelector('.footer-row'), anc = document.getElementById('stampAnchor');
-      if (paper && row && anc) {
-        const sc = (paper.getBoundingClientRect().width / paper.offsetWidth) || 1, rr = row.getBoundingClientRect();
-        paper.style.setProperty('--lift', '0px');
-        const stampBottom = (anc.getBoundingClientRect().top - rr.top) / sc + (-10 + (m.h - m.y) * K) * 3.7795;
-        const lift = Math.max(0, stampBottom - rr.height / sc + 4);
-        paper.style.setProperty('--lift', lift + 'px');
-      }
+      fitFooter();
       return true;
     }
 
@@ -1222,6 +1241,7 @@
           const pn = document.getElementById('lblPrincipalName'); if (pn && !stamped) pn.innerText = d.director_name || '';   /* ត្រាមានឈ្មោះក្នុងរូបរួច */
         }
       } catch (e) { console.warn('sign assets', e); }
+      fitFooterSoon();
     }
 
     function cleanGrade(g) { return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').replace(/[()\-_\s]/g, '').trim(); }
@@ -1373,7 +1393,9 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         const anyR = hasR.some(Boolean);
         let lastPx = R.last;
         if (anyR) lastPx = Math.max(...R.t.map((tr, i) => hasR[i] ? (tr[1] + tr[3]) * 1123 / 100 : 0));
+        paper.dataset.lastPx = lastPx;
         paper.style.setProperty('--fy', (lastPx + 1) + 'px');
+        fitFooterSoon();
         /* លាក់ប្រអប់ដែលគ្មានសិស្ស (បើមានសិស្សតិចជាង ៥) */
         const has = s.map(x => !!(x && x.name));
         const anyData = has.some(Boolean);
