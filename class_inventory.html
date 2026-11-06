@@ -141,6 +141,7 @@ td.nm:empty::before{content:'ឈ្មោះសម្ភារៈ...';color:#9ca
 
 .sig-name{color:#1d4ed8;font-family:'Moul',serif;font-size:.96em}
 
+@media screen and (min-width:900px){.toolbar{flex-direction:row;flex-wrap:wrap;align-items:center}.toolbar>.row{display:contents}}
 @media screen and (max-width:768px){.fc,.btn,.date-btn{height:30px;font-size:11.5px;padding:3px 6px}.toolbar{padding:8px 10px;position:static}
   .row>*{min-width:0}.pill{max-width:100%}.cs-btn{min-width:110px}}
 
@@ -1645,7 +1646,7 @@ function render(){
         ${tBlank?`<div style="font-size:.93em">ថ្ងៃ.................... ខែ.......... ឆ្នាំ........... ពុទ្ធសករាជ ${toKh(((lunarOfIso(tIso).match(/ពុទ្ធសករាជ\s*(\S+)/)||[])[1])||'')}</div><div>${place}, ថ្ងៃទី...... ខែ...... ឆ្នាំ${toKh(tIso.slice(0,4))}</div>`:`<div style="font-size:.93em">${lunarOfIso(tIso)}</div><div>${place}, ${fmtKhDate(tIso)}</div>`}
         <div class="role moul" style="font-size:.96em">គ្រូទទួលបន្ទុកថ្នាក់</div>
         <div class="sig-space">${kitSig()}</div>
-        <div class="sig-name" style="font-size:12px;margin-top:2px">${esc(TEACHER)}</div>
+        <div class="sig-name" style="font-size:12px;margin-top:2px;text-align:center;padding-left:70px">${esc(TEACHER)}</div>
       </div>
     </div>`;
 }
