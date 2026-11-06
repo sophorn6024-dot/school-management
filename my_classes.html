@@ -81,7 +81,7 @@ button,input,select{font-family:inherit}
     <div class="cc-head"><span id="ccTitle">＋ បង្កើតថ្នាក់ថ្មី</span><button type="button" class="cc-x" onclick="closeCls()" aria-label="បិទ">✕</button></div>
     <div class="cc-sec"><h5>១ · កម្រិត និងឆ្នាំសិក្សា</h5>
       <div class="cc-grid">
-        <div><label>កម្រិតថ្នាក់</label><select id="ccLevel" onchange="ccUpdate()"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+        <div><label>កម្រិតថ្នាក់</label><select id="ccLevel" onchange="ccUpdate()"><option value="1">១</option><option value="2">២</option><option value="3">៣</option><option value="4">៤</option><option value="5">៥</option><option value="6">៦</option></select></div>
         <div><label>ឆ្នាំសិក្សា</label><select id="ccYear"></select></div>
       </div></div>
     <div class="cc-sec"><h5>២ · ឈ្មោះថ្នាក់</h5>
@@ -90,7 +90,7 @@ button,input,select{font-family:inherit}
         <div><label>អក្សរថ្នាក់</label><select id="ccLetter" onchange="ccUpdate()"></select></div>
       </div>
       <div class="cc-prev"><div><small>ឈ្មោះដែលនឹងបង្ហាញ</small><b id="ccPreview"></b></div><button type="button" onclick="ccCustom()">ដាក់ឈ្មោះផ្សេង</button></div>
-      <div id="ccCustomWrap" style="display:none;margin-top:10px"><input type="text" id="ccCustomIn" placeholder="ឧ. 4ក, 5-ខ" oninput="ccUpdate()"></div>
+      <div id="ccCustomWrap" style="display:none;margin-top:10px"><input type="text" id="ccCustomIn" placeholder="ឧ. ៤ក, ៥-ខ" oninput="ccUpdate()"></div>
     </div>
     <div class="cc-acts"><button type="button" class="c" onclick="closeCls()">បោះបង់</button><button type="button" class="s" id="ccSave" onclick="saveCls()">បង្កើត</button></div>
   </div>
@@ -139,6 +139,7 @@ async function rpc(fn,args){
 }
 let ROWS=[], ACTIVE='', editId=null, customOn=false;
 const KM=['ក','ខ','គ','ឃ','ង','ច','ឆ','ជ'], LA=['A','B','C','D','E','F','G','H'];
+const toKh=s=>String(s==null?'':s).replace(/[0-9]/g,d=>'០១២៣៤៥៦៧៨៩'[d]), toLa=s=>String(s==null?'':s).replace(/[០-៩]/g,d=>'០១២៣៤៥៦៧៨៩'.indexOf(d));
 const cg=s=>String(s==null?'':s).replace(/^ថ្នាក់ទី\s*/,'').trim();
 
 async function load(){
@@ -243,8 +244,8 @@ async function goStudents(id){
   try{parent.postMessage({type:'NAVIGATE',page:'addStudent'},'*')}catch(e){ location.href='addStudent.html'; }
 }
 function ccFill(sel){const a=document.getElementById('ccScript').value==='la'?LA:KM;document.getElementById('ccLetter').innerHTML=a.map(x=>'<option'+(x===sel?' selected':'')+'>'+x+'</option>').join('')}
-function ccVal(){return customOn?cg(document.getElementById('ccCustomIn').value):document.getElementById('ccLevel').value+document.getElementById('ccLetter').value}
-function ccUpdate(){document.getElementById('ccPreview').textContent='ថ្នាក់ទី'+(ccVal()||'—')}
+function ccVal(){return customOn?toLa(cg(document.getElementById('ccCustomIn').value)):document.getElementById('ccLevel').value+document.getElementById('ccLetter').value}
+function ccUpdate(){document.getElementById('ccPreview').textContent='ថ្នាក់ទី'+(toKh(ccVal())||'—')}
 function ccCustom(){customOn=!customOn;document.getElementById('ccCustomWrap').style.display=customOn?'block':'none';if(customOn)document.getElementById('ccCustomIn').focus();ccUpdate()}
 function openCls(id){
   editId=id||null; customOn=false; document.getElementById('ccCustomWrap').style.display='none'; document.getElementById('ccCustomIn').value='';
@@ -252,7 +253,7 @@ function openCls(id){
   let yr=y0+'-'+(y0+1), lv='1', letter='ក', script='km', c=null;
   if(editId){ c=ROWS.find(x=>x.id===editId); if(c){ yr=c.school_year||yr; const m=String(c.name).match(/^(\d+)([^\d].*)$/); if(m&&/^[A-Za-z]$/.test(m[2]))script='la'; if(m&&(m[2].length===1)){lv=m[1];letter=m[2]}else{customOn=true;document.getElementById('ccCustomWrap').style.display='block';document.getElementById('ccCustomIn').value=c.name} } }
   const yrs=[y0-1,y0,y0+1].map(a=>a+'-'+(a+1)); if(!yrs.includes(yr))yrs.push(yr);
-  document.getElementById('ccYear').innerHTML=yrs.map(a=>'<option'+(a===yr?' selected':'')+'>'+a+'</option>').join('');
+  document.getElementById('ccYear').innerHTML=yrs.map(a=>'<option value="'+a+'"'+(a===yr?' selected':'')+'>'+toKh(a)+'</option>').join('');
   document.getElementById('ccLevel').value=lv; document.getElementById('ccScript').value=script; ccFill(letter); ccUpdate();
   document.getElementById('ccTitle').textContent=editId?'✏️ កែប្រែថ្នាក់':'＋ បង្កើតថ្នាក់ថ្មី'; document.getElementById('ccSave').textContent=editId?'រក្សាទុក':'បង្កើត';
   document.getElementById('ccBg').style.display='flex';
