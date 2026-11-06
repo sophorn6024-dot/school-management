@@ -284,7 +284,11 @@
     .honor-paper.raster .footer-col .sign-space { height:22px; }
     .honor-paper.raster .footer-col div { color:#111; }
     .honor-paper.raster .footer-col .sign-title { color:#1e3a8a !important; }
-    .honor-paper.raster .footer-col { min-width:230px; }
+    .honor-paper.raster .footer-col { min-width:0; width:268px; margin-left:auto; line-height:1.35; }
+    .honor-paper.raster #lblLunarDate, .honor-paper.raster #lblSolarDate { font-size:12px !important; margin-top:0 !important; }
+    .honor-paper.raster .footer-col .sign-space { height:20px; }
+    /* នាយក+ត្រា នៅចំកណ្តាល (ចន្លោះទំនេររវាងប្រអប់សិស្ស) → ត្រាមិនលើសស៊ុមខាងក្រោម */
+    .honor-paper.raster #dirCol { position:absolute; margin:0 !important; width:190px; left:calc(50% - 95px); top:var(--dy,0px); }
 
     /* ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ */
     .cal-modal-backdrop {
@@ -1182,7 +1186,7 @@
       if (!paper || !row) return;
       const raster = paper.classList.contains('raster');
       const pr = paper.getBoundingClientRect(), sc = (pr.width / paper.offsetWidth) || 1;
-      const limit = 1123 - (raster ? 62 : 42);
+      const limit = 1123 - (raster ? 58 : 42);
       const bottomOf = () => {
         let b = row.getBoundingClientRect().bottom;
         const anc = document.getElementById('stampAnchor'), img = document.getElementById('stampImg');
@@ -1192,7 +1196,14 @@
       let over = bottomOf() - limit;
       if (raster) {
         const lp = parseFloat(paper.dataset.lastPx) || 0, cur = parseFloat(paper.style.getPropertyValue('--fy')) || 930;
+        over = (row.getBoundingClientRect().bottom - pr.top) / sc - limit;
         paper.style.setProperty('--fy', Math.max(lp - 2, Math.min(lp + 1, cur - over)) + 'px');
+        /* នាយក+ត្រា៖ លើកឡើងលើតាមតម្រូវការ (ក្នុងចន្លោះកណ្តាល) */
+        const dc = document.getElementById('dirCol'), img = document.getElementById('stampImg'), anc = document.getElementById('stampAnchor');
+        let db = dc.getBoundingClientRect().bottom;
+        if (anc && anc.classList.contains('on') && img) db = Math.max(db, img.getBoundingClientRect().bottom);
+        const dOver = (db - pr.top) / sc - limit, dcur = parseFloat(paper.style.getPropertyValue('--dy')) || 0;
+        paper.style.setProperty('--dy', Math.max(-170, Math.min(0, dcur - dOver)) + 'px');
       } else {
         const cur = parseFloat(paper.style.getPropertyValue('--lift')) || 0;
         paper.style.setProperty('--lift', Math.max(0, Math.min(60, cur + over)) + 'px');
