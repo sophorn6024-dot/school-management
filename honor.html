@@ -1178,14 +1178,14 @@
     }
     
     /* 📐 រក្សាផ្នែកហត្ថលេខា+ត្រា (រួមទាំងឈ្មោះលើសរង្វង់) ឱ្យនៅក្នុងស៊ុម គ្រប់ទម្រង់ (ធម្មតា/រូបថត/raster) */
-    /* នាយកសាលា ទាបជាងគ្រូបន្ទុកថ្នាក់ត្រឹម ~3 មម */
+    /* «បានឃើញនិងឯកភាព» ស្មើជួរ «គ្រូបន្ទុកថ្នាក់» */
     function alignDir() {
-      const dc = document.getElementById('dirCol'), dt = document.getElementById('dirTitle');
+      const dc = document.getElementById('dirCol'), dt = dc && dc.querySelector('.sign-title');
       const tt = [...document.querySelectorAll('.footer-col .sign-title')].find(e => e.textContent.includes('គ្រូ'));
       if (!dc || !dt || !tt) return;
       dc.style.marginTop = '0px';
       const sc = (document.querySelector('.honor-paper').getBoundingClientRect().width / 794) || 1;
-      const diff = (tt.getBoundingClientRect().top - dt.getBoundingClientRect().top) / sc + 3 * 3.7795;
+      const diff = (tt.getBoundingClientRect().top - dt.getBoundingClientRect().top) / sc;
       dc.style.marginTop = Math.max(0, diff) + 'px';
     }
     function fitFooter() {
