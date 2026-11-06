@@ -762,10 +762,6 @@
           <span id="txtDirectorSignDate" style="color:#38bdf8; font-weight:bold;">មិនដាក់</span>
         </button>
 
-        <!-- 🖊️ មុខងារហត្ថលេខា -->
-        <button type="button" class="bar-pill" onclick="openSignatureModal()" style="border-color:#38bdf8; color:#38bdf8;" title="គូរ ឬ Upload ហត្ថលេខាគ្រូ">
-          <i class="fa-solid fa-signature"></i> <span>ហត្ថលេខា</span>
-        </button>
 
         <!-- ⚙️ ប៊ូតុងកំណត់ទំព័រ -->
         <button type="button" class="bar-pill" onclick="openPageSetupModal()" title="កំណត់ទំព័រ (ក្រដាស កែម អក្សរ កម្ពស់ជួរ)">
@@ -853,7 +849,7 @@
           <div class="f-moul" style="font-size:12px; color:#1e40af; margin-top:4px;">គ្រូទទួលបន្ទុកថ្នាក់</div>
           
           <!-- 🌟 ប្រអប់ហត្ថលេខា (គ្មានហត្ថលេខាគំរូ ទុកទំនេរស្អាត) -->
-          <div class="signature-interactive-box" id="sigImageBox" onclick="openSignatureModal()" title="ចុចដើម្បីគូរ ឬ Upload ហត្ថលេខាផ្ទាល់ខ្លួន">
+          <div class="signature-interactive-box" id="sigImageBox" style="cursor:default">
             <img id="teacherSigImg" src="" alt="ហត្ថលេខាគ្រូ" style="display:none;">
           </div>
 
@@ -980,65 +976,6 @@
       <button type="button" class="cal-btn-action" onclick="selectCalToday()">ថ្ងៃនេះ</button>
       <button type="button" class="cal-btn-action" id="calBtnSame" onclick="calSame()">ដូចថ្ងៃគ្រូ</button>
       <button type="button" class="cal-btn-action" id="calBtnBlank" onclick="calBlank()">ទុកទទេ</button>
-    </div>
-  </div>
-
-  <!-- ══════════════ ✍️ 5. SIGNATURE MODAL ══════════════ -->
-  <div class="sig-modal-backdrop" id="signatureModal" onclick="if(event.target===this) closeSignatureModal()">
-    <div class="sig-modal-card">
-      <div class="sig-modal-header">
-        <div style="font-size:14.5px; font-weight:700;"><i class="fa-solid fa-signature" style="color:var(--primary);"></i> ហត្ថលេខាគ្រូទទួលបន្ទុកថ្នាក់</div>
-        <button type="button" onclick="closeSignatureModal()" style="background:none; border:none; color:var(--text-muted); font-size:16px; cursor:pointer;">✕</button>
-      </div>
-
-      <div class="sig-modal-body">
-        <div class="sig-tabs-bar">
-          <button type="button" class="sig-tab-btn active" id="tabDrawBtn" onclick="switchSigTab('draw')">
-            <i class="fa-solid fa-pen"></i> គូរហត្ថលេខា
-          </button>
-          <button type="button" class="sig-tab-btn" id="tabUploadBtn" onclick="switchSigTab('upload')">
-            <i class="fa-solid fa-upload"></i> Upload រូបភាព
-          </button>
-        </div>
-
-        <!-- Tab 1: Draw Pad -->
-        <div id="sigDrawTab">
-          <div class="canvas-wrap">
-            <canvas id="signatureCanvas" width="440" height="180"></canvas>
-            <button type="button" class="canvas-clear-btn" onclick="clearSignatureCanvas()">
-              <i class="fa-solid fa-trash-can"></i> លុបគូរឡើងវិញ
-            </button>
-          </div>
-          <p style="font-size:11.5px; color:var(--text-muted); margin-top:6px; text-align:center;">
-            👆 ប្រើម្រាមដៃ (លើទូរស័ព្ទ/Tablet) ឬ Mouse ដើម្បីគូរហត្ថលេខាពណ៌ទឹកប៊ិកខៀវ
-          </p>
-        </div>
-
-        <!-- Tab 2: Upload Image -->
-        <div id="sigUploadTab" style="display:none;">
-          <div class="upload-zone" onclick="document.getElementById('sigFileInput').click()">
-            <i class="fa-solid fa-cloud-arrow-up" style="font-size:32px; color:var(--primary); margin-bottom:6px;"></i>
-            <div style="font-size:13px; font-weight:700;">ចុចទីនេះ ដើម្បីជ្រើសរើសរូបហត្ថលេខា</div>
-            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">PNG (គ្មាន background) ឬ JPG</div>
-          </div>
-          <input type="file" id="sigFileInput" accept="image/*" style="display:none;" onchange="onSigFileSelected(this)">
-          <div id="sigUploadPreviewWrap" style="text-align:center; display:none; margin-top:10px;">
-            <img id="sigUploadPreviewImg" style="max-height:70px; border:1px dashed #cbd5e1; border-radius:8px; padding:4px;">
-          </div>
-        </div>
-      </div>
-
-      <div class="sig-modal-footer">
-        <button type="button" class="bar-pill" style="color:#ef4444;" onclick="removeSavedSignature()">
-          <i class="fa-solid fa-trash"></i> លុបហត្ថលេខា
-        </button>
-        <div style="display:flex; gap:8px;">
-          <button type="button" class="bar-pill" onclick="closeSignatureModal()">បិទ</button>
-          <button type="button" class="btn-save-main" onclick="applyAndSaveSignature()">
-            <i class="fa-solid fa-check"></i> យល់ព្រម & រក្សាទុក
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -2276,12 +2213,6 @@ exports.default = {
     let rawStudentsList = [];
     let bookRecordsMap = {};
 
-    /* ហត្ថលេខារក្សាទុកដាច់ដោយឡែកតាមគណនីគ្រូនីមួយៗ (មិនចែករំលែកគ្នាលើ browser តែមួយ) */
-    const SIG_KEY = 'krou_teacher_signature_v2:' + String((CURRENT_USER && CURRENT_USER.username) || '').trim().toLowerCase();
-    function readSavedSig() { try { return localStorage.getItem(SIG_KEY) || ''; } catch (e) { return ''; } }
-    let savedSignatureDataUrl = readSavedSig();
-    let activeSigTab = 'draw';
-    let uploadedSigBase64 = null;
 
 
 
@@ -2327,7 +2258,6 @@ exports.default = {
       
       loadSignDates();
       renderSignDates();
-      initSignatureCanvas();
       loadDisplaySignature();
       loadSignAssets();
       initPageSetupValues();
@@ -2376,7 +2306,7 @@ exports.default = {
       return 'ថ្ងៃ' + SD_DOW[o.dow] + ' ' + toKhmerNum(o.kd) + (o.ph === 0 ? 'កើត' : 'រោច') + ' ខែ' + o.mname + ' ឆ្នាំ' + o.animal + ' ' + o.sak + ' ពុទ្ធសករាជ ' + toKhmerNum(o.be);
     }
     function solarLine(p, place) {
-      return (place ? 'កំពង់ល្ពៅ ' : '') + 'ថ្ងៃទី' + toKhmerNum(p.d) + ' ខែ' + KHMER_MONTHS[p.m - 1] + ' ឆ្នាំ' + toKhmerNum(p.y);
+      return (place ? SIGN_PLACE + ' ' : '') + 'ថ្ងៃទី' + toKhmerNum(p.d) + ' ខែ' + KHMER_MONTHS[p.m - 1] + ' ឆ្នាំ' + toKhmerNum(p.y);
     }
     function safeLunar(p) { try { return lunarLine(sdInfo(p.y, p.m, p.d)); } catch (e) { return ''; } }
 
@@ -2386,7 +2316,7 @@ exports.default = {
       if (st.blank) {
         let be = ''; try { be = toKhmerNum(sdInfo(pt.y, pt.m, pt.d).be); } catch (e) {}
         lun.innerText = 'ថ្ងៃ.................... ខែ.......... ឆ្នាំ........... ពុទ្ធសករាជ ' + be;
-        sol.innerText = 'កំពង់ល្ពៅ ថ្ងៃទី...... ខែ...... ឆ្នាំ' + toKhmerNum(pt.y);
+        sol.innerText = SIGN_PLACE + ' ថ្ងៃទី...... ខែ...... ឆ្នាំ' + toKhmerNum(pt.y);
       } else {
         lun.innerText = safeLunar(pt);
         sol.innerText = solarLine(pt, true);
@@ -2648,125 +2578,7 @@ exports.default = {
       }, 50);
     }
 
-    /* =========================================================
-       ✍️ 6. SIGNATURE CANVAS & MODAL
-    ========================================================= */
-    let canvas, ctx, isDrawing = false;
-
-    function initSignatureCanvas() {
-      canvas = document.getElementById('signatureCanvas');
-      if (!canvas) return;
-      ctx = canvas.getContext('2d');
-      ctx.lineWidth = 2.4;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      ctx.strokeStyle = '#1d4ed8';
-
-      function getPos(e) {
-        const rect = canvas.getBoundingClientRect();
-        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        return {
-          x: (clientX - rect.left) * (canvas.width / rect.width),
-          y: (clientY - rect.top) * (canvas.height / rect.height)
-        };
-      }
-
-      function start(e) {
-        isDrawing = true;
-        const p = getPos(e);
-        ctx.beginPath();
-        ctx.moveTo(p.x, p.y);
-        e.preventDefault();
-      }
-      function move(e) {
-        if (!isDrawing) return;
-        const p = getPos(e);
-        ctx.lineTo(p.x, p.y);
-        ctx.stroke();
-        e.preventDefault();
-      }
-      function stop() { isDrawing = false; }
-
-      canvas.addEventListener('mousedown', start);
-      canvas.addEventListener('mousemove', move);
-      window.addEventListener('mouseup', stop);
-
-      canvas.addEventListener('touchstart', start, { passive: false });
-      canvas.addEventListener('touchmove', move, { passive: false });
-      window.addEventListener('touchend', stop);
-    }
-
-    function clearSignatureCanvas() {
-      if (ctx && canvas) ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    function isCanvasBlank() {
-      const pixelBuffer = new Uint32Array(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
-      return !pixelBuffer.some(color => color !== 0);
-    }
-
-    function openSignatureModal() {
-      document.getElementById('signatureModal').style.display = 'flex';
-      switchSigTab('draw');
-      clearSignatureCanvas();
-    }
-    function closeSignatureModal() {
-      document.getElementById('signatureModal').style.display = 'none';
-    }
-
-    function switchSigTab(tab) {
-      activeSigTab = tab;
-      document.getElementById('tabDrawBtn').classList.toggle('active', tab === 'draw');
-      document.getElementById('tabUploadBtn').classList.toggle('active', tab === 'upload');
-      document.getElementById('sigDrawTab').style.display = (tab === 'draw') ? 'block' : 'none';
-      document.getElementById('sigUploadTab').style.display = (tab === 'upload') ? 'block' : 'none';
-    }
-
-    function onSigFileSelected(input) {
-      const file = input.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        uploadedSigBase64 = e.target.result;
-        document.getElementById('sigUploadPreviewImg').src = uploadedSigBase64;
-        document.getElementById('sigUploadPreviewWrap').style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function applyAndSaveSignature() {
-      if (activeSigTab === 'draw') {
-        if (isCanvasBlank()) {
-          uiAlert('សូមគូរហត្ថលេខាលើផ្ទាំងសិន!');
-          return;
-        }
-        savedSignatureDataUrl = canvas.toDataURL('image/png');
-      } else {
-        if (!uploadedSigBase64) {
-          uiAlert('សូមជ្រើសរើសរូបភាពហត្ថលេខាសិន!');
-          return;
-        }
-        savedSignatureDataUrl = uploadedSigBase64;
-      }
-
-      try { localStorage.setItem(SIG_KEY, savedSignatureDataUrl); }
-      catch (e) { showToast('❌ រក្សាទុកមិនបាន (រូបធំពេក ឬ browser ពេញ)'); return; }
-      loadDisplaySignature();
-      closeSignatureModal();
-      showToast('🖋️ បានរក្សាទុកហត្ថលេខាជោគជ័យ!');
-    }
-
-    async function removeSavedSignature() {
-      if (!await uiConfirm('តើអ្នកពិតជាចង់លុបហត្ថលេខានេះមែនទេ?', { danger: true, okText: 'លុប', title: 'លុបហត្ថលេខា' })) return;
-      savedSignatureDataUrl = '';
-      try { localStorage.removeItem(SIG_KEY); } catch (e) {}
-      loadDisplaySignature();
-      closeSignatureModal();
-      showToast('🗑️ បានលុបហត្ថលេខារួចរាល់');
-    }
-
-    let stampOn = false, PROFILE_SIG = '';
+    let stampOn = false, PROFILE_SIG = '', SIGN_PLACE = 'កំពង់ល្ពៅ', SCHOOL_NAME = '';
     /* 🔍 ស្កេនរូបត្រា៖ កាត់គែមទទេ រួចរកខ្សែបន្ទាត់រង្វង់ត្រា (ក្រហម) → {url,x,y,d,w,h}  (ហត្ថលេខា/ឈ្មោះដែលលើសរង្វង់ មិនគិតក្នុងទំហំត្រា) */
     function analyzeStamp(src) {
       return new Promise(res => {
@@ -2862,6 +2674,8 @@ exports.default = {
         loadDisplaySignature();
         if (sd && sd.ok) {
           const d = sd.data || {};
+          if ((d.school_name || '').trim()) { SCHOOL_NAME = d.school_name.trim(); try { buildIntro(); } catch (e) {} }
+          if ((d.sign_place || '').trim()) { SIGN_PLACE = d.sign_place.trim(); renderSignDates(); }
           if (sd.stamp_url && await placeStamp(sd.stamp_url, d.stamp_circle)) { document.getElementById('stampSpace').style.display = 'flex'; stampOn = true; }
           const dn = document.getElementById('dirName'); if (dn) dn.textContent = stampOn ? '' : (d.director_name || '');   /* ត្រាមានឈ្មោះក្នុងរូបរួចហើយ */
           if (d.school_name || d.office || d.cluster || d.dept || d.head_type) {
@@ -2875,7 +2689,7 @@ exports.default = {
 
     function loadDisplaySignature() {
       const img = document.getElementById('teacherSigImg');
-      const sigSrc = (savedSignatureDataUrl && savedSignatureDataUrl.trim() !== '') ? savedSignatureDataUrl : PROFILE_SIG;
+      const sigSrc = PROFILE_SIG;
       if (sigSrc) {
         img.src = sigSrc;
         img.style.display = 'inline-block';
@@ -3239,7 +3053,7 @@ exports.default = {
       const when = signDates.teacher.blank ? '' : ' នៅ' + safeLunar(pt) + ' ត្រូវនឹង' + solarLine(pt, false);
       const verb = activeTab === 'borrow' ? 'បានឱ្យសិស្សខ្ចី' : 'បានប្រមូលសៀវភៅសិក្សាគោលវិញ';
       const obj = activeTab === 'borrow' ? 'សៀវភៅសិក្សាគោល' : '';
-      const t = 'សាលាបឋមសិក្សាកំពង់ល្ពៅ' + when + ' ក្នុងថ្នាក់ទី' + toKhmerNum(cleanGrade(currentClassName)) +
+      const t = (SCHOOL_NAME || 'សាលាបឋមសិក្សាកំពង់ល្ពៅ') + when + ' ក្នុងថ្នាក់ទី' + toKhmerNum(cleanGrade(currentClassName)) +
         ' លោកគ្រូ/អ្នកគ្រូ <b>' + (TEACHER_NAME || '') + '</b> ' + verb + obj + ' សរុបចំនួន <b>' + toKhmerNum(total) + '</b> ក្បាល' +
         (list ? ' ក្នុងនោះមានសៀវភៅ ' + list : '') + ' ។';
       document.getElementById('rptIntro').innerHTML = t;
