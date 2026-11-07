@@ -602,7 +602,7 @@
     .signature-name.teacher-name-shift { position: relative; left: 28px; }
     .signature-space { height: 46px; position: relative; display: flex; align-items: center; justify-content: center; }
     .signature-space{min-height:15mm}
-    .signature-space .kit-stamp-abs { position: absolute; left: 50%; top: -4mm; transform: translateX(-50%); width: 24mm; height: 24mm; pointer-events: none; z-index: 2; }
+    .signature-space .kit-stamp-abs { position: absolute; left: 50%; top: -14mm; transform: translateX(-50%); width: 34mm; height: 34mm; pointer-events: none; z-index: 2; }
     .signature-space .kit-stamp-abs img { position: absolute; max-width: none; max-height: none; height: auto; }
 .kit-stamp{display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}.kit-sig{max-height:100%;max-width:60%;object-fit:contain}
 
@@ -2475,7 +2475,7 @@ async function loadKit(done){
 const USER = CURRENT_USER;
 function kitStampAbs(){
   const m=STAMP_META; if(!m) return '';
-  const K=24/m.d;
+  const K=34/m.d;
   return '<div class="kit-stamp-abs"><img alt="" src="'+m.url+'" style="width:'+(m.w*K)+'mm;left:'+(-m.x*K)+'mm;top:'+(-m.y*K)+'mm"></div>';
 }
 
