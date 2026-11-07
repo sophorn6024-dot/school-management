@@ -600,7 +600,12 @@
     }
 
     .signature-name.teacher-name-shift { position: relative; left: 28px; }
-    .signature-space { height: 46px; }
+    .signature-space { height: 46px; position: relative; display: flex; align-items: center; justify-content: center; }
+    .signature-space{min-height:15mm}
+    .signature-space .kit-stamp-abs { position: absolute; left: 50%; top: -4mm; transform: translateX(-50%); width: 24mm; height: 24mm; pointer-events: none; z-index: 2; }
+    .signature-space .kit-stamp-abs img { position: absolute; max-width: none; max-height: none; height: auto; }
+.kit-stamp{display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}.kit-sig{max-height:100%;max-width:60%;object-fit:contain}
+
     .signature-name {
       font-family: 'Moul', serif;
       font-size: 12px;
@@ -2163,7 +2168,7 @@ exports.default = {
     const SD_GM = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
     const SD_DOW = ['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
     const SD_LM = {0:'មិគសិរ',1:'បុស្ស',2:'មាឃ',3:'ផល្គុន',4:'ចេត្រ',5:'ពិសាខ',6:'ជេស្ឋ',7:'អាសាឍ',8:'ស្រាពណ៍',9:'ភទ្របទ',10:'អស្សុជ',11:'កត្តិក',12:'បឋមាសាឍ',13:'ទុតិយាសាឍ'};
-    const SCHOOL_PLACE = 'កំពង់ល្ពៅ';
+    const SCHOOL_PLACE_DEFAULT = 'កំពង់ល្ពៅ';
 
     function cleanSD(o) { return { blank: !!(o && o.blank), date: (o && /^\d{4}-\d{2}-\d{2}$/.test(o.date || '')) ? o.date : '' }; }
     function loadSignDates() {
@@ -2195,7 +2200,7 @@ exports.default = {
     }
     function dateLinesHTML(role, withPlace) {
       const { y, m, d } = signParts(role);
-      const place = withPlace ? SCHOOL_PLACE + ', ' : '';
+      const place = withPlace ? kitPlace(SCHOOL_PLACE_DEFAULT) + ', ' : '';
       const st = signDates[role];
       if (st.blank && role === 'director') {
         return '<div class="sd-l">&nbsp;</div><div class="sd-s">&nbsp;</div>';   // ទទេ : មិនបង្ហាញអ្វី
@@ -2364,6 +2369,116 @@ exports.default = {
     }
 
     /* 4. INITIALIZATION */
+
+/* ===== ព័ត៌មានសាលា/ហត្ថលេខា/ត្រា ពីគណនី (ប្រវត្តិរូបរបស់ខ្ញុំ) ===== */
+let PROF=null,PROFILE_SIG='',STAMP_META=null;
+    /* 🔍 ស្កេនរូបត្រា៖ កាត់គែមទទេ រួចរកខ្សែបន្ទាត់រង្វង់ត្រា (ក្រហម) → {url,x,y,d,w,h}  (ហត្ថលេខា/ឈ្មោះដែលលើសរង្វង់ មិនគិតក្នុងទំហំត្រា) */
+    function analyzeStamp(src) {
+      return new Promise(res => {
+        const im = new Image();
+        im.onerror = () => res(null);
+        im.onload = () => {
+          try {
+            const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement('canvas');
+            c.width = w; c.height = h; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0);
+            const d = x.getImageData(0, 0, w, h).data;
+            const cr = (cx, cy) => { const i = (cy * w + cx) * 4; return [d[i], d[i + 1], d[i + 2], d[i + 3]]; };
+            const cs = [cr(0, 0), cr(w - 1, 0), cr(0, h - 1), cr(w - 1, h - 1)];
+            const bg = [0, 1, 2, 3].map(k => Math.round(cs.reduce((t, q) => t + q[k], 0) / 4));
+            const ink = i => {
+              const a = d[i + 3];
+              if (bg[3] < 30) return a > 40;
+              if (Math.abs(a - bg[3]) > 60) return true;
+              return Math.abs(d[i] - bg[0]) + Math.abs(d[i + 1] - bg[1]) + Math.abs(d[i + 2] - bg[2]) > 90;
+            };
+            let x0 = w, y0 = h, x1 = -1, y1 = -1; const all = [], red = [];
+            for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++) {
+              const i = (yy * w + xx) * 4;
+              if (!ink(i)) continue;
+              if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy;
+              all.push(xx, yy);
+              if (d[i] > d[i + 2] + 25 && d[i] > d[i + 1] + 15) red.push(xx, yy);   // ក្រហម (ត្រា + ឈ្មោះ) មិនមែនខៀវ (ហត្ថលេខា)
+            }
+            if (x1 < 0) return res(null);
+            const cw = x1 - x0 + 1, ch = y1 - y0 + 1, o = document.createElement('canvas');
+            o.width = cw; o.height = ch; o.getContext('2d').drawImage(c, x0, y0, cw, ch, 0, 0, cw, ch);
+            /* ផ្ទៃរូបមិនថ្លា (ស/ប្រផេះ) → ធ្វើឱ្យថ្លា ដើម្បីមិនបាំងអក្សរ */
+            if (bg[3] >= 30) {
+              const oc = o.getContext('2d', { willReadFrequently: true }), od = oc.getImageData(0, 0, cw, ch), q = od.data;
+              for (let i = 0; i < q.length; i += 4) {
+                const dist = Math.abs(q[i] - bg[0]) + Math.abs(q[i + 1] - bg[1]) + Math.abs(q[i + 2] - bg[2]);
+                if (dist < 40) q[i + 3] = 0; else if (dist < 110) q[i + 3] = Math.round(q[i + 3] * (dist - 40) / 70);
+              }
+              oc.putImageData(od, 0, 0);
+            }
+            const url = o.toDataURL('image/png');
+            let pts = red.length >= 200 ? red : all;
+            const stride = Math.max(2, Math.floor(pts.length / 2 / 5000) * 2); const P = [];
+            for (let i = 0; i < pts.length; i += stride) P.push(pts[i] - x0, pts[i + 1] - y0);
+            let L = cw, T = ch; for (let i = 0; i < P.length; i += 2) { if (P[i] < L) L = P[i]; if (P[i + 1] < T) T = P[i + 1]; }
+            const maxR = Math.min(cw - L, ch - T) / 2, minR = Math.max(20, Math.min(cw, ch) * 0.2);
+            let best = null;
+            for (let r = Math.floor(minR); r <= maxR; r += 2) {
+              const cx = L + r, cy = T + r, tol = Math.max(2.5, r * 0.04), bins = new Uint8Array(72); let cnt = 0;
+              for (let i = 0; i < P.length; i += 2) {
+                const dx = P[i] - cx, dy = P[i + 1] - cy, dist = Math.sqrt(dx * dx + dy * dy);
+                if (Math.abs(dist - r) <= tol) { bins[Math.min(71, Math.floor((Math.atan2(dy, dx) + Math.PI) / (2 * Math.PI) * 72))] = 1; cnt++; }
+              }
+              let cov = 0; for (let b = 0; b < 72; b++) cov += bins[b]; cov /= 72;
+              if (!best || cov > best.cov + 0.02 || (Math.abs(cov - best.cov) <= 0.02 && cnt > best.cnt)) best = { r, cov, cnt };
+            }
+            if (!best || best.cov < 0.5) return res({ url, x: 0, y: 0, d: Math.min(cw, ch), w: cw, h: ch, fallback: true });
+            res({ url, x: L, y: T, d: best.r * 2, w: cw, h: ch });
+          } catch (e) { res(null); }
+        };
+        im.src = src;
+      });
+    }
+    
+
+function schoolHeadLines(d){
+  const school=((d&&d.school_name)||'').trim()||'សាលាបឋមសិក្សាកំពង់ល្ពៅ',t=(d&&d.head_type)||'oc';
+  const dept=((d&&d.dept)||'').trim(),office=((d&&d.office)||'').trim(),cl=((d&&d.cluster)||'').trim(),L=[];
+  if(t==='doc'&&dept)L.push(dept);
+  if(t!=='s'&&office)L.push(office);
+  if((t==='oc'||t==='doc')&&cl)L.push(cl);
+  L.push(school);return L;
+}
+function kitHasProf(){return !!(PROF&&(PROF.school_name||PROF.office||PROF.cluster||PROF.dept||PROF.head_type))}
+function kitPlace(def){return ((PROF&&PROF.sign_place)||'').trim()||def||'កំពង់ល្ពៅ'}
+function kitStamp(){
+  const m=STAMP_META;if(!m)return '';
+  const K=34/m.d,mb=Math.max(0,(m.h-(m.y+m.d))*K);
+  return '<div class="kit-stamp" style="margin-bottom:'+mb+'mm"><div class="kit-circle"><img alt="" src="'+m.url+'" style="width:'+(m.w*K)+'mm;left:'+(-m.x*K)+'mm;top:'+(-m.y*K)+'mm"></div></div>';
+}
+function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'" style="height:15mm!important;width:45mm!important;max-height:none!important;max-width:none!important;object-fit:contain">':''}
+function kitDirName(){return STAMP_META?'':(((PROF&&PROF.director_name)||'').trim())}
+async function loadKit(done){
+  try{
+    let pw='';try{pw=localStorage.getItem('krou_pw')||''}catch(e){}
+    if(!sb||!USER||!USER.username||!pw)return;
+    const a={p_u:USER.username,p_p:pw};
+    const [pr,sc]=await Promise.all([sb.rpc('staff_my_profile_get',a),sb.rpc('staff_school_get',a)]);
+    PROFILE_SIG=(pr.data&&pr.data.signature_url)||'';
+    const sd=sc.data;
+    if(sd&&sd.ok){
+      PROF=sd.data||{};
+      if(sd.stamp_url){
+        const m=PROF.stamp_circle&&PROF.stamp_circle.d?Object.assign({},PROF.stamp_circle,{url:sd.stamp_url}):await analyzeStamp(sd.stamp_url);
+        if(m)STAMP_META=m;
+      }
+    }
+    if(done)done();
+  }catch(e){console.warn('kit',e)}
+}
+
+const USER = CURRENT_USER;
+function kitStampAbs(){
+  const m=STAMP_META; if(!m) return '';
+  const K=24/m.d;
+  return '<div class="kit-stamp-abs"><img alt="" src="'+m.url+'" style="width:'+(m.w*K)+'mm;left:'+(-m.x*K)+'mm;top:'+(-m.y*K)+'mm"></div>';
+}
+
     window.addEventListener('DOMContentLoaded', async () => {
       if (!checkAuthentication()) return;
 
@@ -2374,6 +2489,7 @@ exports.default = {
 
       await initClasses();
       setFitZoom();
+      loadKit(function(){ try{ if(window.__lastCert) renderAllCertificates(window.__lastCert[0], window.__lastCert[1]); }catch(e){} });
     });
 
     async function initClasses() {
@@ -2550,7 +2666,8 @@ exports.default = {
         return;
       }
 
-      const schoolInput = document.getElementById('inSchool').value || 'សាលាបឋមសិក្សាកំពង់ល្ពៅ';
+      const schoolInput = ((PROF && (PROF.school_name||'').trim()) || document.getElementById('inSchool').value || 'សាលាបឋមសិក្សាកំពង់ល្ពៅ');
+      window.__lastCert = [topStudents, selectedClass];
       const yearInput   = document.getElementById('inYear').value || defaultAcademicYear();
 
       let html = '';
@@ -2616,9 +2733,9 @@ exports.default = {
                 <div class="signature-box" style="align-self:start; margin-top:4px;">
                   <div class="cert-out-ddate">${directorDateHTML()}</div>
                   <span>បានឃើញ និងឯកភាព</span><br>
-                  <div class="signature-title">នាយកសាលា</div>
-                  <div class="signature-space"></div>
-                  <div class="signature-name"></div>
+                  <div class="signature-title">${escHtml(((PROF&&PROF.director_title)||'').trim()||'នាយកសាលា')}</div>
+                  <div class="signature-space">${kitStampAbs()}</div>
+                  <div class="signature-name">${escHtml(kitDirName())}</div>
                 </div>
 
                 <div class="student-photo-box">
@@ -2628,7 +2745,7 @@ exports.default = {
                 <div class="signature-box" style="align-self:start; margin-top:4px;">
                   <div class="cert-out-tdate">${teacherDateHTML()}</div>
                   <div class="signature-title">គ្រូបន្ទុកថ្នាក់</div>
-                  <div class="signature-space"></div>
+                  <div class="signature-space">${kitSig()}</div>
                   <div class="signature-name teacher-name-shift">${escHtml(HOMEROOM_NAME)}</div>
                 </div>
               </div>
@@ -2643,7 +2760,7 @@ exports.default = {
     }
 
     function updateAllCertText() {
-      const schoolVal = document.getElementById('inSchool').value || '...................';
+      const schoolVal = ((PROF && (PROF.school_name||'').trim()) || document.getElementById('inSchool').value || '...................');
       const yearVal   = toKhmerDigits(document.getElementById('inYear').value || '...................');
 
       document.querySelectorAll('.cert-out-school').forEach(el => el.innerText = schoolVal);
