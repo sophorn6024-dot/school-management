@@ -85,7 +85,7 @@
     .f-moul { font-family: 'Khmer OS Muol Light', 'Moul', cursive; font-weight: normal; letter-spacing: 0.3px; }
 
 .kit-stamp{display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}.kit-sig{max-height:100%;max-width:60%;object-fit:contain}
-    .rep-stamp{position:absolute;left:50%;top:30px;width:0;height:0;pointer-events:none;z-index:2}.rep-stamp .kit-stamp{position:absolute;left:0;top:0;margin:0 !important;transform:translateX(-50%) scale(.62);transform-origin:top center}
+    .rep-stamp{position:absolute;left:50%;top:-30px;width:0;height:0;pointer-events:none;z-index:2}.rep-stamp .kit-stamp{position:absolute;left:0;top:0;margin:0 !important;transform:translateX(-50%) scale(1);transform-origin:top center}
     .f-bold { font-family: 'Khmer OS Battambang', 'Battambang', sans-serif; font-weight: 700; }
     .f-regular { font-family: 'Khmer OS Battambang', 'Battambang', sans-serif; font-weight: 400; }
 
@@ -2944,7 +2944,7 @@ async function loadKit(done){
                   ${sigDateHTML('teacher', month)}
                   <div class="sig-title" style="margin-top: 3px;">គ្រូទទួលបន្ទុកថ្នាក់</div>
                 </div>
-                <div class="sig-name" style="font-size: 12px; position: relative; padding-left: 70px;">${PROFILE_SIG ? '<span style="position:absolute;left:calc(50% + 35px);bottom:100%;transform:translateX(-50%);height:15mm;display:flex;align-items:center;">' + kitSig() + '</span>' : ''}${TEACHER_NAME || ''}</div>
+                <div class="sig-name" style="font-size: 12px; position: relative; padding-left: 70px;">${PROFILE_SIG ? '<span style="position:absolute;left:calc(50% + 35px);bottom:100%;transform:translateX(-50%);height:11mm;display:flex;align-items:center;">' + kitSig().replace('15mm','11mm').replace('45mm','33mm') + '</span>' : ''}${TEACHER_NAME || ''}</div>
               </div>
             </div>
           </div>
