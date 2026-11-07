@@ -1925,7 +1925,7 @@ function kitStamp(){
   const K=34/m.d,mb=Math.max(0,(m.h-(m.y+m.d))*K);
   return '<div class="kit-stamp" style="margin-bottom:'+mb+'mm"><div class="kit-circle"><img alt="" src="'+m.url+'" style="width:'+(m.w*K)+'mm;left:'+(-m.x*K)+'mm;top:'+(-m.y*K)+'mm"></div></div>';
 }
-function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'">':''}
+function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'" style="height:15mm!important;width:45mm!important;max-height:none!important;max-width:none!important;object-fit:contain">':''}
 function kitDirName(){return STAMP_META?'':(((PROF&&PROF.director_name)||'').trim())}
 async function loadKit(done){
   try{
@@ -2897,7 +2897,7 @@ function renderScorePrintReport(){
       <div style="display:inline-flex;flex-direction:column;align-items:center;text-align:center;min-width:320px;">
         <div id="teacherDateBox" style="font-size:11.5px;font-weight:bold;color:#1e3a8a;line-height:1.7;"></div>
         <div class="f-moul" style="font-size:12.5px;color:#1e3a8a;margin-top:5px;">គ្រូទទួលបន្ទុកថ្នាក់</div>
-        <div style="height:45px;display:flex;align-items:center;justify-content:center;margin-top:2px;">${kitSig()}</div>
+        <div style="height:15mm;display:flex;align-items:center;justify-content:center;margin-top:2px;">${kitSig()}</div>
         <div style="font-weight:bold;font-size:12px;color:#1e3a8a;margin-top:2px;text-align:center;padding-left:70px;">${TEACHER_NAME||''}</div>
       </div>
     </div>`;
