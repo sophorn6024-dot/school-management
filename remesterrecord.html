@@ -2544,7 +2544,7 @@ function kitStamp(){
   const K=34/m.d,mb=Math.max(0,(m.h-(m.y+m.d))*K);
   return '<div class="kit-stamp" style="margin-bottom:'+mb+'mm"><div class="kit-circle"><img alt="" src="'+m.url+'" style="width:'+(m.w*K)+'mm;left:'+(-m.x*K)+'mm;top:'+(-m.y*K)+'mm"></div></div>';
 }
-function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'">':''}
+function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'" style="height:15mm!important;width:45mm!important;max-height:none!important;max-width:none!important;object-fit:contain">':''}
 function kitDirName(){return STAMP_META?'':(((PROF&&PROF.director_name)||'').trim())}
 async function loadKit(done){
   try{
