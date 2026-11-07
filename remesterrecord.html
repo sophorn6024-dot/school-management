@@ -3202,7 +3202,7 @@ async function loadKit(done){
                 </thead>
                 <tbody>
                   <tr>
-                    <td>២០២៦-២០២៧</td>
+                    <td>${(function(){var n=new Date(),y=n.getMonth()>=9?n.getFullYear():n.getFullYear()-1;return (y+'-'+(y+1)).replace(/[0-9]/g,function(d){return '០១២៣៤៥៦៧៨៩'[d]})})()}</td>
                     <td>${cls}</td>
                     <td>${bundleData.schoolName || 'កំពង់ល្ពៅ'}</td>
                     <td>០១ វិច្ឆិកា ២០២៦</td>
@@ -3343,7 +3343,7 @@ async function loadKit(done){
               <div>
                 <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px;" class="f-bold">
                   <div>សាលា ៖ ${bundleData.schoolName || 'កំពង់ល្ពៅ'}</div>
-                  <div>ឆ្នាំសិក្សា ៖ ២០២៦-២០២៧</div>
+                  <div>ឆ្នាំសិក្សា ៖ ${(function(){var n=new Date(),y=n.getMonth()>=9?n.getFullYear():n.getFullYear()-1;return (y+'-'+(y+1)).replace(/[0-9]/g,function(d){return '០១២៣៤៥៦៧៨៩'[d]})})()}</div>
                 </div>
 
                 <div class="f-moul" style="margin-bottom: 6px; font-size: 14.5px;">គ. វាយតម្លៃសិស្សលើការសិក្សា</div>
