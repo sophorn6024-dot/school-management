@@ -13,7 +13,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- ⚡ Supabase JS Client (v2) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>window.__kc=function(s){return String(s==null?'':s).replace(/[0-9]/g,function(d){return '០១២៣៤៥៦៧៨៩'[d]})};</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     /* =========================================================
@@ -462,7 +463,7 @@
       position: relative;
     }
 .kit-stamp{display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}.kit-sig{max-height:100%;max-width:60%;object-fit:contain}
-    .kit-sigwrap{height:0;position:relative}.kit-sigwrap .kit-sig{position:absolute;left:50%;top:6px;transform:translateX(-50%);height:38px;max-height:38px;max-width:140px;pointer-events:none}
+    .kit-sigwrap{height:0;position:relative}.kit-sigwrap .kit-sig{position:absolute;left:50%;top:0;transform:translateX(-50%);pointer-events:none}
     .footer-left { text-align: center; width: 44%; margin-top: 50px; font-weight: 700; }
     .footer-right { text-align: center; width: 54%; font-weight: 700; }
 
@@ -483,7 +484,7 @@
       font-family: 'Moul', cursive;
       font-size: 12px;
       color: #000 !important;
-      margin-top: 40px;
+      margin-top: 58px;
       min-height: 24px;
       text-align: center;
       display: inline-block;
@@ -2660,7 +2661,7 @@ function kitStamp(){
   const K=34/m.d,mb=Math.max(0,(m.h-(m.y+m.d))*K);
   return '<div class="kit-stamp" style="margin-bottom:'+mb+'mm"><div class="kit-circle"><img alt="" src="'+m.url+'" style="width:'+(m.w*K)+'mm;left:'+(-m.x*K)+'mm;top:'+(-m.y*K)+'mm"></div></div>';
 }
-function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'">':''}
+function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'" style="height:15mm!important;width:45mm!important;max-height:none!important;max-width:none!important;object-fit:contain">':''}
 function kitDirName(){return STAMP_META?'':(((PROF&&PROF.director_name)||'').trim())}
 async function loadKit(done){
   try{
@@ -2746,7 +2747,7 @@ async function loadKit(done){
           var cleanCls = cleanGrade(USER_CLASS);
 
           if (cleanCls) {
-            document.getElementById('titleClass').value = cleanCls;
+            document.getElementById('titleClass').value = __kc(cleanCls);
             renderRoster();
           } else {
             document.getElementById('rosterBody').innerHTML = 
@@ -2769,7 +2770,7 @@ async function loadKit(done){
 
           if (uniqueClasses.length > 0) {
             select.value = uniqueClasses[0];
-            document.getElementById('titleClass').value = uniqueClasses[0];
+            document.getElementById('titleClass').value = __kc(uniqueClasses[0]);
             renderRoster();
           }
         }
@@ -2782,7 +2783,7 @@ async function loadKit(done){
 
     async function loadRoster() {
       var cls = document.getElementById('classSelect').value || cleanGrade(USER_CLASS);
-      document.getElementById('titleClass').value = cls || '...';
+      document.getElementById('titleClass').value = __kc(cls) || '...';
       renderRoster();
     }
 
