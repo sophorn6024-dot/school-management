@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Moul&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script>window.__kc=function(s){return String(s==null?'':s).replace(/[0-9]/g,function(d){return '០១២៣៤៥៦៧៨៩'[d]})};</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
@@ -219,7 +220,7 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
 .barnav.show{display:flex}
 .bar-pill{background:var(--elev);color:var(--text);border:1px solid var(--border);padding:6px 12px;border-radius:10px;font-weight:600;font-size:12.5px;display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;font-family:inherit}
 .bar-pill:hover{border-color:var(--primary)}.bar-pill b{color:var(--primary)}.bar-pill.green{background:#059669;border-color:#059669;color:#fff}
-.signature-box{height:48px;display:flex;align-items:center;justify-content:center;margin:2px 0}.signature-box img{max-height:46px;max-width:140px;object-fit:contain}
+.signature-box{height:15mm;display:flex;align-items:center;justify-content:center;margin:2px 0}.signature-box img{height:15mm;width:45mm;object-fit:contain}
 
 
 
@@ -1940,7 +1941,7 @@ function buildSheet(){
       <div style="font-size:12px;letter-spacing:4px;margin:2px 0 6px">─────── ❖ ───────</div>
       <div class="s" id="rptSchoolLines" style="text-align:left;font-size:12px;font-weight:700;line-height:1.6;margin-bottom:6px">${schoolLinesHtml()}</div>
       <div class="t moul">កាលវិភាគសិក្សាប្រចាំសប្តាហ៍</div>
-      <div class="s">ថ្នាក់ទី ${esc(String(curClass))}${list.length>1?'':' · '+SESS[list[0]]}${who?' · គ្រូបន្ទុក ៖ '+esc(who):''}</div></div>`
+      <div class="s">ថ្នាក់ទី ${esc(__kc(curClass))}${list.length>1?'':' · '+SESS[list[0]]}${who?' · គ្រូបន្ទុក ៖ '+esc(who):''}</div></div>`
     +(tables||'<div style="text-align:center;padding:30px">មិនទាន់មានម៉ោងសម្រាប់បោះពុម្ព</div>')
     +(o.sign?`<div class="pf">
       <div style="margin-top:34px"><div id="directorDateLine" style="font-size:11.5px;margin-bottom:3px;display:none"></div><b class="moul" style="font-size:12px">បានឃើញ និងឯកភាព</b><br><b class="moul" id="dirTitle" style="font-size:12px">${esc((SCH&&SCH.director_title)||'នាយកសាលា')}</b><div class="sp" id="spBlank"></div><div class="stamp-space" id="stampSpace" style="display:none"><div class="stamp-circle"><img id="stampImg" alt=""></div></div><div id="dirName" class="moul" style="font-size:12px;margin-top:6px"></div></div>
