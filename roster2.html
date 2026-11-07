@@ -73,8 +73,10 @@ body{background:var(--bg);color:var(--text);padding:14px 14px 70px;min-height:10
 .sign-row{display:flex;justify-content:space-between;align-items:flex-start;margin-top:18px;padding:0 14px}
 .sign-col{text-align:center;min-width:240px;font-size:11.5px;font-weight:700}
 .sign-col .sign-title{font-size:12px;margin-top:4px}
-.sign-col .sign-space{height:65px}
-.sign-col .sign-name{font-size:13px;font-weight:700}
+.sign-col .sign-space{height:65px;display:flex;align-items:center;justify-content:center}
+.kit-stamp{display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}.kit-sig{max-height:100%;max-width:60%;object-fit:contain}
+
+.sign-col .sign-name{font-size:12px;font-weight:700;margin-top:2px}
 .editable-input{border:none;background:transparent;text-align:center;font-size:11.5px;font-weight:700;color:inherit;outline:none;width:100%}
 .editable-input:focus{background:rgba(2,132,199,.08);border-radius:4px}
 
@@ -261,8 +263,8 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
 
         <div class="doc-meta-row">
           <div class="doc-left-info">
-            <div>ការិយាល័យអប់រំ យុវជន និងកីឡា</div>
-            <div>សាលាបឋមសិក្សាកំពង់ល្ពៅ</div>
+            <div id="kitHead"><div>ការិយាល័យអប់រំ យុវជន និងកីឡា</div>
+            <div>សាលាបឋមសិក្សាកំពង់ល្ពៅ</div></div>
             <div id="lblDisplayClass">ថ្នាក់ទី ៤ក</div>
           </div>
         </div>
@@ -299,8 +301,8 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
           <div class="sign-col" style="margin-top:36px;">
             <div id="lblPrincipalDate" style="font-size:11px;margin-bottom:4px;display:none;line-height:1.5;"></div>
             <div class="f-moul sign-title">បានឃើញនិងឯកភាព</div>
-            <div class="f-moul sign-title" style="margin-top:4px;">នាយកសាលា</div>
-            <div class="sign-space"></div>
+            <div class="f-moul sign-title" id="kitDirTitle" style="margin-top:4px;">នាយកសាលា</div>
+            <div class="sign-space" id="kitDirSpace"></div>
             <div class="sign-name" id="lblPrincipalName"></div>
           </div>
 
@@ -308,7 +310,7 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
             <input type="text" class="editable-input" id="lblLunarDate" value="ថ្ងៃសុក្រ ៥កើត ខែអស្សុជ ឆ្នាំមមែ អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០">
             <input type="text" class="editable-input" id="lblSolarDate" value="កំពង់ល្ពៅ ថ្ងៃទី១៦ ខែតុលា ឆ្នាំ២០២៦">
             <div class="f-moul sign-title" style="margin-top:6px;">គ្រូទទួលបន្ទុកថ្នាក់</div>
-            <div class="sign-space"></div>
+            <div class="sign-space" id="kitTeaSpace"></div>
             <div class="sign-name" id="lblTeacherName">សេង សុភាន់</div>
           </div>
         </div>
@@ -905,7 +907,7 @@ function exportToExcel() {
 /* =========================================================
    5. 📅 KHMER LUNAR CALENDAR + SIGNATURE DATES
 ========================================================= */
-const SCHOOL_PLACE = 'កំពង់ល្ពៅ';
+let SCHOOL_PLACE = 'កំពង់ល្ពៅ';
 const CAL_GM = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
 const CAL_DOW = ['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
 const CAL_DOWS = ['អា','ច','អ','ព','ព្រ','សុ','ស'];
@@ -1144,6 +1146,125 @@ function downloadPDF() {
 }
 function printReport() { closePageSetup(); window.print(); }
 
+const USER=CURRENT_USER;
+const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function applyKit(){
+  const g=id=>document.getElementById(id);
+  if(kitHasProf()){
+    g('kitHead').innerHTML=schoolHeadLines(PROF).map(x=>'<div>'+esc(x)+'</div>').join('');
+    const pl=kitPlace();
+    SCHOOL_PLACE=pl;
+    ['lblSolarDate'].forEach(id=>{const e=g(id);if(e)e.value=e.value.replace(/^.*?(?= ថ្ងៃទី)/,pl)});
+    const pd=g('lblPrincipalDate');if(pd&&pd.innerHTML)pd.innerHTML=pd.innerHTML.replace(/(<div>)[^<]*?(?= ថ្ងៃទី)/g,'$1'+pl);
+    if(PROF.director_title)g('kitDirTitle').textContent=PROF.director_title;
+  }
+  if(STAMP_META){g('kitDirSpace').innerHTML=kitStamp();g('kitDirSpace').style.height='auto';g('kitDirSpace').style.minHeight='34mm'}
+  g('lblPrincipalName').textContent=kitDirName();
+  g('kitTeaSpace').innerHTML=kitSig();
+}
+
+/* ===== ព័ត៌មានសាលា/ហត្ថលេខា/ត្រា ពីគណនី (ប្រវត្តិរូបរបស់ខ្ញុំ) ===== */
+let PROF=null,PROFILE_SIG='',STAMP_META=null;
+    /* 🔍 ស្កេនរូបត្រា៖ កាត់គែមទទេ រួចរកខ្សែបន្ទាត់រង្វង់ត្រា (ក្រហម) → {url,x,y,d,w,h}  (ហត្ថលេខា/ឈ្មោះដែលលើសរង្វង់ មិនគិតក្នុងទំហំត្រា) */
+    function analyzeStamp(src) {
+      return new Promise(res => {
+        const im = new Image();
+        im.onerror = () => res(null);
+        im.onload = () => {
+          try {
+            const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement('canvas');
+            c.width = w; c.height = h; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0);
+            const d = x.getImageData(0, 0, w, h).data;
+            const cr = (cx, cy) => { const i = (cy * w + cx) * 4; return [d[i], d[i + 1], d[i + 2], d[i + 3]]; };
+            const cs = [cr(0, 0), cr(w - 1, 0), cr(0, h - 1), cr(w - 1, h - 1)];
+            const bg = [0, 1, 2, 3].map(k => Math.round(cs.reduce((t, q) => t + q[k], 0) / 4));
+            const ink = i => {
+              const a = d[i + 3];
+              if (bg[3] < 30) return a > 40;
+              if (Math.abs(a - bg[3]) > 60) return true;
+              return Math.abs(d[i] - bg[0]) + Math.abs(d[i + 1] - bg[1]) + Math.abs(d[i + 2] - bg[2]) > 90;
+            };
+            let x0 = w, y0 = h, x1 = -1, y1 = -1; const all = [], red = [];
+            for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++) {
+              const i = (yy * w + xx) * 4;
+              if (!ink(i)) continue;
+              if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy;
+              all.push(xx, yy);
+              if (d[i] > d[i + 2] + 25 && d[i] > d[i + 1] + 15) red.push(xx, yy);   // ក្រហម (ត្រា + ឈ្មោះ) មិនមែនខៀវ (ហត្ថលេខា)
+            }
+            if (x1 < 0) return res(null);
+            const cw = x1 - x0 + 1, ch = y1 - y0 + 1, o = document.createElement('canvas');
+            o.width = cw; o.height = ch; o.getContext('2d').drawImage(c, x0, y0, cw, ch, 0, 0, cw, ch);
+            /* ផ្ទៃរូបមិនថ្លា (ស/ប្រផេះ) → ធ្វើឱ្យថ្លា ដើម្បីមិនបាំងអក្សរ */
+            if (bg[3] >= 30) {
+              const oc = o.getContext('2d', { willReadFrequently: true }), od = oc.getImageData(0, 0, cw, ch), q = od.data;
+              for (let i = 0; i < q.length; i += 4) {
+                const dist = Math.abs(q[i] - bg[0]) + Math.abs(q[i + 1] - bg[1]) + Math.abs(q[i + 2] - bg[2]);
+                if (dist < 40) q[i + 3] = 0; else if (dist < 110) q[i + 3] = Math.round(q[i + 3] * (dist - 40) / 70);
+              }
+              oc.putImageData(od, 0, 0);
+            }
+            const url = o.toDataURL('image/png');
+            let pts = red.length >= 200 ? red : all;
+            const stride = Math.max(2, Math.floor(pts.length / 2 / 5000) * 2); const P = [];
+            for (let i = 0; i < pts.length; i += stride) P.push(pts[i] - x0, pts[i + 1] - y0);
+            let L = cw, T = ch; for (let i = 0; i < P.length; i += 2) { if (P[i] < L) L = P[i]; if (P[i + 1] < T) T = P[i + 1]; }
+            const maxR = Math.min(cw - L, ch - T) / 2, minR = Math.max(20, Math.min(cw, ch) * 0.2);
+            let best = null;
+            for (let r = Math.floor(minR); r <= maxR; r += 2) {
+              const cx = L + r, cy = T + r, tol = Math.max(2.5, r * 0.04), bins = new Uint8Array(72); let cnt = 0;
+              for (let i = 0; i < P.length; i += 2) {
+                const dx = P[i] - cx, dy = P[i + 1] - cy, dist = Math.sqrt(dx * dx + dy * dy);
+                if (Math.abs(dist - r) <= tol) { bins[Math.min(71, Math.floor((Math.atan2(dy, dx) + Math.PI) / (2 * Math.PI) * 72))] = 1; cnt++; }
+              }
+              let cov = 0; for (let b = 0; b < 72; b++) cov += bins[b]; cov /= 72;
+              if (!best || cov > best.cov + 0.02 || (Math.abs(cov - best.cov) <= 0.02 && cnt > best.cnt)) best = { r, cov, cnt };
+            }
+            if (!best || best.cov < 0.5) return res({ url, x: 0, y: 0, d: Math.min(cw, ch), w: cw, h: ch, fallback: true });
+            res({ url, x: L, y: T, d: best.r * 2, w: cw, h: ch });
+          } catch (e) { res(null); }
+        };
+        im.src = src;
+      });
+    }
+    
+
+function schoolHeadLines(d){
+  const school=((d&&d.school_name)||'').trim()||'សាលាបឋមសិក្សាកំពង់ល្ពៅ',t=(d&&d.head_type)||'oc';
+  const dept=((d&&d.dept)||'').trim(),office=((d&&d.office)||'').trim(),cl=((d&&d.cluster)||'').trim(),L=[];
+  if(t==='doc'&&dept)L.push(dept);
+  if(t!=='s'&&office)L.push(office);
+  if((t==='oc'||t==='doc')&&cl)L.push(cl);
+  L.push(school);return L;
+}
+function kitHasProf(){return !!(PROF&&(PROF.school_name||PROF.office||PROF.cluster||PROF.dept||PROF.head_type))}
+function kitPlace(def){return ((PROF&&PROF.sign_place)||'').trim()||def||'កំពង់ល្ពៅ'}
+function kitStamp(){
+  const m=STAMP_META;if(!m)return '';
+  const K=34/m.d,mb=Math.max(0,(m.h-(m.y+m.d))*K);
+  return '<div class="kit-stamp" style="margin-bottom:'+mb+'mm"><div class="kit-circle"><img alt="" src="'+m.url+'" style="width:'+(m.w*K)+'mm;left:'+(-m.x*K)+'mm;top:'+(-m.y*K)+'mm"></div></div>';
+}
+function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'">':''}
+function kitDirName(){return STAMP_META?'':(((PROF&&PROF.director_name)||'').trim())}
+async function loadKit(done){
+  try{
+    let pw='';try{pw=localStorage.getItem('krou_pw')||''}catch(e){}
+    if(!sb||!USER||!USER.username||!pw)return;
+    const a={p_u:USER.username,p_p:pw};
+    const [pr,sc]=await Promise.all([sb.rpc('staff_my_profile_get',a),sb.rpc('staff_school_get',a)]);
+    PROFILE_SIG=(pr.data&&pr.data.signature_url)||'';
+    const sd=sc.data;
+    if(sd&&sd.ok){
+      PROF=sd.data||{};
+      if(sd.stamp_url){
+        const m=PROF.stamp_circle&&PROF.stamp_circle.d?Object.assign({},PROF.stamp_circle,{url:sd.stamp_url}):await analyzeStamp(sd.stamp_url);
+        if(m)STAMP_META=m;
+      }
+    }
+    if(done)done();
+  }catch(e){console.warn('kit',e)}
+}
+
 window.addEventListener('DOMContentLoaded', async () => {
   const isAuth = await checkAuthentication();
   if (!isAuth) return;
@@ -1151,6 +1272,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   await loadRosterData();
   applyPsStyles();
   setTimeout(fitPaper, 100);
+  loadKit(()=>{applyKit();try{fitPaper()}catch(e){}});
 });
 </script>
 </body>
