@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Moul&family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script>window.__kc=function(s){return String(s==null?'':s).replace(/[0-9]/g,function(d){return '០១២៣៤៥៦៧៨៩'[d]})};</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1628,7 +1629,7 @@ function render(){
     <div class="kingdom moul">ព្រះរាជាណាចក្រកម្ពុជា</div>
     <div class="motto moul">ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
     <div class="divider"><span></span><b>❖</b><span></span></div>
-    <div class="hdr-left moul">${hdrLines}<br>ថ្នាក់ទី${esc(CUR_CLASS)}</div>
+    <div class="hdr-left moul">${hdrLines}<br>ថ្នាក់ទី${esc(__kc(CUR_CLASS))}</div>
     <div class="title moul">បញ្ជីសារពើភ័ណ្ឌ</div>
     <table class="inv" id="invTable">
       <colgroup><col style="width:8%"><col style="width:30%"><col style="width:12%"><col style="width:8%"><col style="width:30%"><col style="width:12%"></colgroup>
@@ -1764,7 +1765,7 @@ function kitStamp(){
   const K=34/m.d,mb=Math.max(0,(m.h-(m.y+m.d))*K);
   return '<div class="kit-stamp" style="margin-bottom:'+mb+'mm"><div class="kit-circle"><img alt="" src="'+m.url+'" style="width:'+(m.w*K)+'mm;left:'+(-m.x*K)+'mm;top:'+(-m.y*K)+'mm"></div></div>';
 }
-function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'">':''}
+function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'" style="height:15mm!important;width:45mm!important;max-height:none!important;max-width:none!important;object-fit:contain">':''}
 function kitDirName(){return STAMP_META?'':(((PROF&&PROF.director_name)||'').trim())}
 async function loadKit(done){
   try{
