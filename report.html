@@ -2114,6 +2114,18 @@ function schoolHeadLines(d){
 }
 function kitHasProf(){return !!(PROF&&(PROF.school_name||PROF.office||PROF.cluster||PROF.dept||PROF.head_type))}
 function kitPlace(def){return ((PROF&&PROF.sign_place)||'').trim()||def||'កំពង់ល្ពៅ'}
+function _esc(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+/* ក្បាលទំព័រគម្រប: បន្ទាត់ក្រោយក្រសួង (ការិយាល័យ/ចង្កោម) នៅលើចំណងជើង ហើយឈ្មោះសាលានៅក្រោម */
+function coverHeadLines(){
+  if(!kitHasProf())return {top:['ការិយាល័យអប់រំ យុវជន និងកីឡា'],bottom:['សាលាបឋមសិក្សាកំពង់ល្ពៅ']};
+  var L=schoolHeadLines(PROF).map(_esc);var sch=L.pop();
+  return {top:L,bottom:[sch]};
+}
+/* ក្បាលទំព័រលទ្ធផលប្រចាំខែ: បន្ទាត់ទាំងអស់ពីគណនី */
+function pageHeadLines(){
+  if(!kitHasProf())return ['ការិយាល័យអប់រំ យុវជន និងកីឡា'];
+  return schoolHeadLines(PROF).map(_esc);
+}
 function kitStamp(){
   const m=STAMP_META;if(!m)return '';
   const K=34/m.d,mb=Math.max(0,(m.h-(m.y+m.d))*K);
@@ -2776,9 +2788,9 @@ async function loadKit(done){
 
               <div class="cover-title-block">
                 <h2 class="f-moul">ក្រសួងអប់រំ យុវជន និងកីឡា</h2>
-                <h3 class="f-moul">${(PROF && PROF.office) || 'ការិយាល័យអប់រំ យុវជន និងកីឡា'}</h3>
+                ${coverHeadLines().top.map(x => '<h3 class="f-moul">' + x + '</h3>').join('')}
                 <h1 class="f-moul">សៀវភៅតាមដានការសិក្សា</h1>
-                <h3 class="f-moul school-name">${(PROF && PROF.school_name) || 'សាលាបឋមសិក្សាកំពង់ល្ពៅ'}</h3>
+                ${coverHeadLines().bottom.map(x => '<h3 class="f-moul school-name">' + x + '</h3>').join('')}
               </div>
 
               <div class="dotted-info-list">
@@ -2874,7 +2886,7 @@ async function loadKit(done){
               </div>
 
               <div class="report-meta-grid">
-                <div class="f-bold" style="grid-column: span 2; font-size: 13.5px;">${(PROF && PROF.office) || 'ការិយាល័យអប់រំ យុវជន និងកីឡា'}</div>
+                <div class="f-bold" style="grid-column: span 2; font-size: 13.5px; line-height: 1.35;">${pageHeadLines().map(x => '<div>' + x + '</div>').join('')}</div>
                 <div style="grid-column: span 2; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;">
                   <div class="f-bold">ថ្នាក់ទី ${toKhmerNum(cls)}</div>
                   <div class="f-bold" style="text-align: center; white-space: nowrap;">លទ្ធផលនៃការសិក្សាប្រចាំខែ${month}</div>
