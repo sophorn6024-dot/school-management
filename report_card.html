@@ -467,10 +467,10 @@
     .sig-title-moul { font-size: 11.5px; color: #000; margin-bottom: 3px; }
     .sig-role { font-weight: 700; font-size: 11.5px; margin-bottom: 45px; }
     .sig-name { font-weight: 700; font-size: 12px; margin-top: 2px; }
-    .kit-abs{position:relative;height:0}
+    .kit-abs{position:relative;height:15mm}
     .kit-abs .kit-stamp{position:absolute;left:0;right:0;top:-40px;margin-top:0}
     .kit-abs .kit-circle{transform:scale(.72);transform-origin:top center}
-    .kit-abs .kit-sig{position:absolute;left:50%;transform:translateX(-50%);top:-42px;height:38px;max-height:38px;max-width:140px}
+    .kit-abs .kit-sig{position:absolute;left:50%;transform:translateX(-50%);top:0}
     .kit-stamp{pointer-events:none}
     .kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}
     .kit-stamp{display:flex;justify-content:center;z-index:1}
@@ -2835,7 +2835,7 @@ function kitStamp(){
   const K=34/m.d,mb=Math.max(0,(m.h-(m.y+m.d))*K);
   return '<div class="kit-stamp" style="margin-bottom:'+mb+'mm"><div class="kit-circle"><img alt="" src="'+m.url+'" style="width:'+(m.w*K)+'mm;left:'+(-m.x*K)+'mm;top:'+(-m.y*K)+'mm"></div></div>';
 }
-function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'">':''}
+function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'" style="height:15mm!important;width:45mm!important;max-height:none!important;max-width:none!important;object-fit:contain">':''}
 function kitDirName(){return STAMP_META?'':(((PROF&&PROF.director_name)||'').trim())}
 async function loadKit(done){
   try{
