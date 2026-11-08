@@ -1318,7 +1318,7 @@ function qrStampLogo(box){
       box.innerHTML = glData.map(g => {
         let act = '';
         if (g.status === 'approved') act = '<div class="nm">ភ្ជាប់ទៅ៖ <b>' + glEsc(g.teacher_name || '—') + '</b></div><div class="gl-row"><button class="gl-no" onclick="glSet(' + g.id + ',\'reject\')">ដកការអនុញ្ញាត</button><button class="gl-del" onclick="glSet(' + g.id + ',\'delete\')">លុប</button></div>';
-        else act = '<div class="gl-row"><select id="glSel' + g.id + '"><option value="">— ជ្រើសគណនីគ្រូ —</option>' + opts + '</select><button class="gl-ok" onclick="glApprove(' + g.id + ')">អនុញ្ញាត</button>' + (g.status === 'pending' ? '<button class="gl-no" onclick="glSet(' + g.id + ',\'reject\')">បដិសេធ</button>' : '') + '<button class="gl-del" onclick="glSet(' + g.id + ',\'delete\')">លុប</button></div>';
+        else act = '<div class="gl-row"><button class="gl-ok" onclick="glCreate(' + g.id + ')">✅ អនុញ្ញាត (បង្កើតគណនីគ្រូថ្មី)</button>' + (g.status === 'pending' ? '<button class="gl-no" onclick="glSet(' + g.id + ',\'reject\')">បដិសេធ</button>' : '') + '<button class="gl-del" onclick="glSet(' + g.id + ',\'delete\')">លុប</button></div><div class="nm" style="margin-top:8px">ឬភ្ជាប់ទៅគណនីដែលមានស្រាប់៖</div><div class="gl-row"><select id="glSel' + g.id + '"><option value="">— ជ្រើសគណនីគ្រូ —</option>' + opts + '</select><button class="gl-ok" onclick="glApprove(' + g.id + ')">ភ្ជាប់</button></div>';
         return '<div class="gl-item"><div class="em">' + glEsc(g.email) + '<span class="gl-st ' + g.status + '">' + (stTxt[g.status] || g.status) + '</span></div><div class="nm">' + glEsc(g.full_name || '') + '</div>' + act + '</div>';
       }).join('');
     }
@@ -1336,6 +1336,15 @@ function qrStampLogo(box){
       const { data, error } = await sb.rpc('google_link_approve', { p_u: CURRENT_USER.username, p_p: pw, p_id: id, p_user_id: Number(v) });
       if (error || !data) { showToast('❌ មិនអាចអនុញ្ញាតបាន', true); return; }
       showToast('✅ បានអនុញ្ញាត'); await glFetch(); glRender();
+    }
+    async function glCreate(id) {
+      if (!(await uiConfirm('អនុញ្ញាត ហើយបង្កើតគណនីគ្រូថ្មីឱ្យអ៊ីមែលនេះ? គ្រូអាចកែព័ត៌មានក្នុង Profile ក្រោយ។', { icon: '👩‍🏫', okText: 'អនុញ្ញាត' }))) return;
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      const { data, error } = await sb.rpc('google_link_create', { p_u: CURRENT_USER.username, p_p: pw, p_id: id });
+      if (error || !data) { showToast('❌ មិនអាចបង្កើតបាន', true); return; }
+      showToast('✅ បានអនុញ្ញាត និងបង្កើតគណនី ' + (data.username || ''));
+      try { await loadTeachers(); } catch (e) {}
+      await glFetch(); glRender();
     }
     async function glSet(id, action) {
       if (action === 'delete' && !(await uiConfirm('លុបសំណើនេះ?', { danger: true }))) return;
