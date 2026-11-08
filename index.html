@@ -196,7 +196,7 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .reports-grid-clean.rg-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(270px,100%),1fr));gap:30px 18px;align-items:start;padding-top:18px}
 .rg-card{--gc:#ef4444;position:relative;border:2px solid var(--gc);border-radius:22px;padding:34px 14px 12px;background:var(--surface-card)}
 .rg-col{display:flex;flex-direction:column;gap:30px;min-width:0}
-.rg-red{--gc:#ef4444;--gc2:#b91c1c}.rg-purple{--gc:#4f46e5;--gc2:#3730a3}.rg-yellow{--gc:#eab308;--gc2:#ca8a04}.rg-green{--gc:#16a34a;--gc2:#15803d}
+.rg-red{--gc:#ef4444;--gc2:#b91c1c}.rg-purple{--gc:#4f46e5;--gc2:#3730a3}.rg-teal{--gc:#0d9488;--gc2:#0f766e}.rg-yellow{--gc:#eab308;--gc2:#ca8a04}.rg-green{--gc:#16a34a;--gc2:#15803d}
 .rg-title{position:absolute;left:50%;top:-18px;transform:translateX(-50%);white-space:nowrap;padding:5px 24px;border-radius:999px;background:linear-gradient(180deg,var(--gc),var(--gc2));color:#fff;font-size:17px;box-shadow:0 4px 10px rgba(0,0,0,.18)}
 .rg-yellow .rg-title{color:#3b2a00}
 .rg-row,.rg-roster{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 6px;border-radius:10px}
@@ -206,7 +206,7 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .rg-pr{flex:none;width:32px;height:32px;border:0;border-radius:9px;background:transparent;color:var(--gc);cursor:pointer;display:flex;align-items:center;justify-content:center}
 .rg-pr svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .rg-pr:hover{background:color-mix(in srgb,var(--gc) 16%,transparent)}
-.rg-roster .rf-row{flex:none}
+.rg-roster{flex-direction:column;align-items:stretch;gap:8px}.rg-roster .rf-row{display:flex;gap:8px;width:100%}.rg-roster .rf-select{flex:1;min-width:0}.rg-roster .rf-open{flex:none}
 .rg-wide .rg-row{break-inside:avoid}
 @media (min-width:900px){.rg-wide{grid-column:span 2;column-count:2;column-gap:22px;display:block}.rg-wide .rg-row{width:100%}}
 @media (min-width:1200px){.rg-wide{grid-column:span 2}}
@@ -1181,6 +1181,11 @@ function qrStampLogo(box){
             </div>
               <div class="rg-row" onclick="openInTab('student_age_stats')"><span class="rg-name">ស្ថិតិសិស្សតាមអាយុ នាដើមឆ្នាំ</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('student_age_stats')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg></button></div>
               <div class="rg-row" onclick="openInTab('student_age_table')"><span class="rg-name">តារាងចំនួនសិស្សតាមអាយុ</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('student_age_table')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg></button></div>
+            </div>
+            <div class="rg-card rg-teal">
+              <div class="rg-title f-moul">វត្តមាន និងស្រង់ពិន្ទុ</div>
+              <div class="rg-row" onclick="openInTab('attendance','report')"><span class="rg-name">របាយការណ៍វត្តមាន</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('attendance','report')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg></button></div>
+              <div class="rg-row" onclick="openInTab('score','report')"><span class="rg-name">របាយការណ៍ស្រង់ពិន្ទុ</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('score','report')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg></button></div>
             </div>
             <div class="rg-card rg-yellow">
               <div class="rg-title f-moul">របាយការណ៍ចុងឆ្នាំ</div>
@@ -3157,6 +3162,7 @@ function syncThemeToIframe(theme) {
 
 /* NAVIGATION */
 /* របៀប tab របាយការណ៍: បង្ហាញតែ form (គ្មាន sidebar/ទំព័រដើម) */
+let PENDING_VIEW = (function(){ try { return new URLSearchParams(location.search).get('view') || ''; } catch(e) { return ''; } })();
 const SOLO = (function(){ try { return new URLSearchParams(location.search).get('only') === '1'; } catch(e) { return false; } })();
 if (SOLO) document.body.classList.add('solo');
 let currentPage = window.location.hash.replace('#', '') || localStorage.getItem('krou_active_page') || 'dashboard';
@@ -3236,7 +3242,8 @@ function navigate(page, el) {
   overlay.classList.add('show');
   const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
   const themeConfig = DAY_THEMES[new Date().getDay()] || DAY_THEMES[6];
-  frame.src = `${page}.html?theme=${encodeURIComponent(currentTheme)}&primary=${encodeURIComponent(softPalette(themeConfig, currentTheme === 'dark').primary)}`;
+  frame.src = `${page}.html?theme=${encodeURIComponent(currentTheme)}&primary=${encodeURIComponent(softPalette(themeConfig, currentTheme === 'dark').primary)}${PENDING_VIEW ? '&view=' + encodeURIComponent(PENDING_VIEW) : ''}`;
+  PENDING_VIEW = '';
   /* លាក់ «កំពុងផ្ទុក» ភ្លាមពេលទំព័រកូនអាចប្រើបាន (មិនរង់ចាំ font/CDN ចប់) */
   const want = page + '.html';
   let tries = 0;
@@ -4073,11 +4080,11 @@ function toggleRosterFormatMenu(ev) {
 }
 function openRosterFormat() { closeRosterFormatMenu(); openInTab(rosterFormat); }
 /* បើករបាយការណ៍ក្នុង tab ថ្មី (session ចែករំលែកតាម localStorage) */
-function openInTab(page) {
+function openInTab(page, view) {
   if (!page) return;
   let w = null;
-  try { w = window.open(location.href.split('#')[0].split('?')[0] + '?only=1#' + encodeURIComponent(page), '_blank'); } catch(e) {}
-  if (!w) navigate(page, null);   // browser រារាំង popup → បើកក្នុង tab ដដែល
+  try { w = window.open(location.href.split('#')[0].split('?')[0] + '?only=1' + (view ? '&view=' + encodeURIComponent(view) : '') + '#' + encodeURIComponent(page), '_blank'); } catch(e) {}
+  if (!w) { PENDING_VIEW = view || ''; navigate(page, null); }   // browser រារាំង popup → បើកក្នុង tab ដដែល
 }
 document.addEventListener('click', e => { if (rfPopup && !e.target.closest('.rf-popup')) closeRosterFormatMenu(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeRosterFormatMenu(); });
