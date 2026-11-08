@@ -2039,12 +2039,8 @@ exports.default = {
     const FRAME_IMAGES = {
       "1": "https://lh3.googleusercontent.com/d/1QKu1DSp6pz3q1QmqXuT94QCPV6qVAsA3",
       "2": "https://lh3.googleusercontent.com/d/1cyb6NhrT93aNXrSrDDelvin3alc46lTH",
-      "3": "https://lh3.googleusercontent.com/d/1N57PmjOvX02wM-yGow7sef2DrWoGg8qq",
       "4": "https://lh3.googleusercontent.com/d/17d-TZq4oTkrjtRp_nzXbKbj4vyfJsQ3N",
-      "5": "https://lh3.googleusercontent.com/d/1JssVh9vT0J0Iq3PKK0USsBIwngD-OGv2",
-      "6": "https://lh3.googleusercontent.com/d/1Xf0jwMiDuDa8kyN858mISM0iZLzK06GG",
       "7": "https://lh3.googleusercontent.com/d/1FrGrRAz6now1IbDnK_umDSNNcIMFT5_J",
-      "8": "https://lh3.googleusercontent.com/d/11hrJOsGUv_X4HAOcrKi6gqfDrCGHjEvK",
       "9": "https://lh3.googleusercontent.com/d/1Ws58mgtFQLxAne6AUoUaovCeirskyj68",
       "10": "https://lh3.googleusercontent.com/d/1AiYIycD4gxMcFSd6rPBX2TEW-sDIc6qS",
       "11": "https://lh3.googleusercontent.com/d/13XXPmD2pTLAgmO_5-RB6TjzKEH0x9ybH",
@@ -2065,8 +2061,8 @@ exports.default = {
     function buildFrameDropdown() {
       const menu = document.getElementById('frameDdMenu');
       let h = '<div class="bb-dd-item active" data-val="" onclick="pickFrame(\'\', this)">ស៊ុមលំនាំដើម (Kbach)</div>';
-      Object.keys(FRAME_IMAGES).forEach(k => {
-        h += `<div class="bb-dd-item" data-val="${k}" onclick="pickFrame('${k}', this)">ស៊ុមទី${toKhmerDigits(k)}</div>`;
+      Object.keys(FRAME_IMAGES).forEach((k, i) => {
+        h += `<div class="bb-dd-item" data-val="${k}" onclick="pickFrame('${k}', this)">ស៊ុមទី${toKhmerDigits(i + 1)}</div>`;
       });
       menu.innerHTML = h;
     }
