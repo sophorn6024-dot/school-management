@@ -3164,6 +3164,7 @@ function syncThemeToIframe(theme) {
 /* NAVIGATION */
 /* របៀប tab របាយការណ៍: បង្ហាញតែ form (គ្មាន sidebar/ទំព័រដើម) */
 let PENDING_VIEW = (function(){ try { return new URLSearchParams(location.search).get('view') || ''; } catch(e) { return ''; } })();
+let PENDING_PAGE = (function(){ try { return decodeURIComponent(location.hash.replace('#','')) || ''; } catch(e) { return ''; } })();
 const SOLO = (function(){ try { return new URLSearchParams(location.search).get('only') === '1'; } catch(e) { return false; } })();
 if (SOLO) document.body.classList.add('solo');
 let currentPage = window.location.hash.replace('#', '') || localStorage.getItem('krou_active_page') || 'dashboard';
@@ -3243,8 +3244,8 @@ function navigate(page, el) {
   overlay.classList.add('show');
   const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
   const themeConfig = DAY_THEMES[new Date().getDay()] || DAY_THEMES[6];
-  frame.src = `${page}.html?theme=${encodeURIComponent(currentTheme)}&primary=${encodeURIComponent(softPalette(themeConfig, currentTheme === 'dark').primary)}${PENDING_VIEW ? '&view=' + encodeURIComponent(PENDING_VIEW) : ''}`;
-  PENDING_VIEW = '';
+  frame.src = `${page}.html?theme=${encodeURIComponent(currentTheme)}&primary=${encodeURIComponent(softPalette(themeConfig, currentTheme === 'dark').primary)}${(PENDING_VIEW && page === PENDING_PAGE) ? '&view=' + encodeURIComponent(PENDING_VIEW) : ''}`;
+  if (!SOLO) PENDING_VIEW = '';   /* tab របាយការណ៍ (SOLO) រក្សាទុក ព្រោះ navigate ត្រូវបានហៅច្រើនដង */
   /* លាក់ «កំពុងផ្ទុក» ភ្លាមពេលទំព័រកូនអាចប្រើបាន (មិនរង់ចាំ font/CDN ចប់) */
   const want = page + '.html';
   let tries = 0;
@@ -4085,7 +4086,7 @@ function openInTab(page, view) {
   if (!page) return;
   let w = null;
   try { w = window.open(location.href.split('#')[0].split('?')[0] + '?only=1' + (view ? '&view=' + encodeURIComponent(view) : '') + '#' + encodeURIComponent(page), '_blank'); } catch(e) {}
-  if (!w) { PENDING_VIEW = view || ''; navigate(page, null); }   // browser រារាំង popup → បើកក្នុង tab ដដែល
+  if (!w) { PENDING_VIEW = view || ''; PENDING_PAGE = page; navigate(page, null); }   // browser រារាំង popup → បើកក្នុង tab ដដែល
 }
 document.addEventListener('click', e => { if (rfPopup && !e.target.closest('.rf-popup')) closeRosterFormatMenu(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeRosterFormatMenu(); });
