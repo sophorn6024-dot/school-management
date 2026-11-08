@@ -606,7 +606,7 @@
     /* ពាក្យ "ចំណាត់ថ្នាក់" ពណ៌ក្រហម (ទុកទំហំអក្សរតាមតួដើម) */
     .red-text { color: #dc2626 !important; font-weight: bold; }
 
-    .sig-block { display: flex; justify-content: flex-end; margin-top: 6px; }
+    .sig-block { display: flex; justify-content: flex-end; margin-top: 6px; padding-right: 14mm; }
     .sig-inner { text-align: center; min-width: 180px; }
     /* ទីតាំងនាយកសាលាចុះហត្ថលេខា និងបោះត្រា */
     .sig-inner.principal { min-width: 230px; }
@@ -614,7 +614,7 @@
 .kit-stamp{display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}.kit-sig{max-height:100%;max-width:60%;object-fit:contain}
 
     .sheet3 .sign-space { height: 64px; }
-    .sheet3 .sign-space.teacher { height: 40px; }
+    .sheet3 .sign-space.teacher { height: 15mm; }
     .principal-name { font-weight: 700; min-height: 20px; font-size: 14px; }
 
     /* =========================================================
@@ -3388,7 +3388,7 @@ async function loadKit(done){
                     <div>${signDateHTML('teacher')}</div>
                     <div class="f-bold" style="margin-top: 2px;">គ្រូទទួលបន្ទុកថ្នាក់</div>
                     <div class="sign-space teacher" style="display:flex;align-items:center;justify-content:center;">${kitSig()}</div>
-                    <div class="principal-name" style="font-size:12px;margin-top:2px;">${TEACHER_NAME || ''}</div>
+                    <div class="principal-name" style="font-size:12px;margin-top:2px;padding-left:70px;">${TEACHER_NAME || ''}</div>
                   </div>
                 </div>
 
