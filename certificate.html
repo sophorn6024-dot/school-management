@@ -301,6 +301,18 @@
     .sd-s { font-size: 12px; line-height: 1.45; white-space: nowrap; }
 
     /* ⚙️ រៀបចំទំព័រ */
+    .col-pop{display:none;position:absolute;top:calc(100% + 8px);left:0;z-index:9000;width:310px;background:#fff;color:#0f172a;border:1px solid #e2e8f0;border-radius:12px;box-shadow:0 14px 34px rgba(0,0,0,.28);padding:12px}
+    .col-pop.show{display:block}
+    .col-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:14px}
+    .col-reset{border:0;background:#f1f5f9;border-radius:8px;padding:4px 9px;cursor:pointer;font:inherit;font-size:12px}
+    .col-row{padding:7px 0;border-top:1px solid #f1f5f9}
+    .col-row .nm{font-size:13px;font-weight:700;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center}
+    .col-sw{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
+    .col-sw button{width:22px;height:22px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #cbd5e1;cursor:pointer;padding:0}
+    .col-sw button.on{box-shadow:0 0 0 2px #2563eb}
+    .col-sw input[type=color]{width:30px;height:24px;padding:0;border:1px solid #cbd5e1;border-radius:6px;background:#fff;cursor:pointer}
+    .col-def{border:0;background:transparent;color:#64748b;font-size:11px;cursor:pointer;text-decoration:underline}
+    @media print{.col-pop{display:none !important}}
     .btn-ghost { background: var(--input-bg); color: var(--text-main); border-color: var(--input-border); }
     .btn-ghost:hover, .btn-ghost.open { border-color: var(--input-focus); }
     .ps-popup, .ps-popup * { font-family: 'Battambang', 'Siemreap', sans-serif; }
@@ -738,6 +750,17 @@
           </button>
           <div class="bb-dd-menu" id="frameDdMenu"></div>
           <input type="hidden" id="selectFrame" value="">
+        </div>
+      </div>
+
+      <!-- 🎨 ពណ៌អក្សរ -->
+      <div class="panel-pill-box" style="position:relative;">
+        <button type="button" class="btn btn-ghost" id="colBtn" onclick="toggleColorPop(event)" title="ប្តូរពណ៌អក្សរ">
+          <i class="fa-solid fa-palette" style="color:#db2777;"></i> <span class="hide-xs">ពណ៌អក្សរ</span>
+        </button>
+        <div class="col-pop no-print" id="colPop" onclick="event.stopPropagation()">
+          <div class="col-head"><b>ពណ៌អក្សរ</b><button type="button" class="col-reset" onclick="resetColors()"><i class="fa-solid fa-rotate-left"></i> ដើមវិញទាំងអស់</button></div>
+          <div id="colRows"></div>
         </div>
       </div>
 
@@ -2050,6 +2073,49 @@ exports.default = {
 
 
     /* 🔽 Custom dropdown (ស៊ុម + ថ្នាក់) */
+    /* ===== ប្តូរពណ៌អក្សរ (រក្សាទុកក្នុង browser) ===== */
+    const COL_GROUPS = [
+      { id: 'head', name: 'ក្បាល និងចំណងជើង', sel: '.cert-title, .kingdom-line, .motto-line' },
+      { id: 'org',  name: 'ស្ថាប័ន/សាលា',      sel: '.header-admin-line1, .header-admin-line2, .header-admin-line3, .cert-subtitle-school' },
+      { id: 'name', name: 'ឈ្មោះ និងព័ត៌មានសិស្ស', sel: '.student-name, .field-highlight' },
+      { id: 'body', name: 'អត្ថបទ',            sel: '.cert-body' },
+      { id: 'sign', name: 'ហត្ថលេខា',          sel: '.signature-title, .signature-name' }
+    ];
+    const COL_PRESETS = ['#800000', '#002b66', '#4B0082', '#0b6b3a', '#b45309', '#111111', '#be123c', '#0e7490'];
+    let COL_VAL = {};
+    try { COL_VAL = JSON.parse(localStorage.getItem('cert_text_colors') || '{}') || {}; } catch (e) { COL_VAL = {}; }
+    function applyColors() {
+      let css = '';
+      COL_GROUPS.forEach(g => {
+        const c = COL_VAL[g.id];
+        if (/^#[0-9a-fA-F]{6}$/.test(c || '')) css += g.sel.split(',').map(x => x.trim() + ',' + x.trim() + ' *').join(',') + '{color:' + c + ' !important}\n';
+      });
+      let st = document.getElementById('colStyle');
+      if (!st) { st = document.createElement('style'); st.id = 'colStyle'; document.head.appendChild(st); }
+      st.textContent = css;
+    }
+    function saveColors() { try { localStorage.setItem('cert_text_colors', JSON.stringify(COL_VAL)); } catch (e) {} }
+    function setCol(id, c) { if (c) COL_VAL[id] = c; else delete COL_VAL[id]; saveColors(); applyColors(); buildColorRows(); }
+    function resetColors() { COL_VAL = {}; saveColors(); applyColors(); buildColorRows(); }
+    function buildColorRows() {
+      const box = document.getElementById('colRows'); if (!box) return;
+      box.innerHTML = COL_GROUPS.map(g => {
+        const cur = COL_VAL[g.id] || '';
+        return '<div class="col-row"><div class="nm"><span>' + g.name + '</span><button type="button" class="col-def" onclick="setCol(\'' + g.id + '\',\'\')">ដើម</button></div><div class="col-sw">' +
+          COL_PRESETS.map(c => '<button type="button" style="background:' + c + '" class="' + (cur.toLowerCase() === c.toLowerCase() ? 'on' : '') + '" title="' + c + '" onclick="setCol(\'' + g.id + '\',\'' + c + '\')"></button>').join('') +
+          '<input type="color" value="' + (cur || '#800000') + '" title="ជ្រើសពណ៌ផ្សេង" oninput="COL_VAL[\'' + g.id + '\']=this.value;saveColors();applyColors()" onchange="buildColorRows()"></div></div>';
+      }).join('');
+    }
+    function toggleColorPop(e) {
+      e.stopPropagation();
+      const p = document.getElementById('colPop'), open = !p.classList.contains('show');
+      try { closeAllDd(); closeCalPopup(); } catch (x) {}
+      p.classList.toggle('show', open);
+      if (open) buildColorRows();
+    }
+    document.addEventListener('click', () => { const p = document.getElementById('colPop'); if (p) p.classList.remove('show'); });
+    applyColors();
+
     function closeAllDd() {
       document.querySelectorAll('.bb-dd-menu').forEach(m => m.classList.remove('open'));
     }
