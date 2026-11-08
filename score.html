@@ -3402,12 +3402,16 @@ if(v!=='report')return;
 var st=document.createElement('style');st.textContent='.landing-header,.cards-wrapper,.top-sub-bar,.top-toolbar,.table-container-card{display:none !important}';document.head.appendChild(st);
 window.closeScoreReportModal=function(){try{closePageSetup()}catch(e){}try{window.top.close()}catch(e){}setTimeout(function(){try{window.top.location.href='index.html'}catch(e){location.href='index.html'}},250)};
 function addMonthPick(){try{var bar=document.querySelector('#scoreReportModal .vt-group');if(!bar||document.getElementById('rptMonthPick'))return;
- var months=SEMESTER_1_MONTHS.concat(SEMESTER_2_MONTHS),cur=document.getElementById('monthSelect').value;
- var sel=document.createElement('select');sel.id='rptMonthPick';sel.className='pill-select';sel.title='ជ្រើសខែ';
+ var months=SEMESTER_1_MONTHS.concat(SEMESTER_2_MONTHS);
+ var cur=(scoreType==='semester')?('S:'+document.getElementById('semesterExamSelect').value):('M:'+document.getElementById('monthSelect').value);
+ var sel=document.createElement('select');sel.id='rptMonthPick';sel.className='pill-select';sel.title='ជ្រើសខែ ឬឆមាស';
  sel.style.cssText='height:36px;font-weight:700;border-radius:999px;padding:0 12px';
- sel.innerHTML=months.map(function(m){return '<option value="'+m+'">ខែ '+m+'</option>'}).join('');sel.value=cur;
- sel.onchange=function(){var m=sel.value,sem=SEMESTER_1_MONTHS.indexOf(m)>-1?'1':'2';
-  document.getElementById('semesterFilterSelect').value=sem;updateMonthOptionsBySemester(sem,m);
+ sel.innerHTML='<optgroup label="ពិន្ទុប្រចាំខែ">'+months.map(function(m){return '<option value="M:'+m+'">ខែ '+m+'</option>'}).join('')+'</optgroup><optgroup label="ពិន្ទុប្រចាំឆមាស"><option value="S:ឆមាសទី១">ឆមាសទី ១</option><option value="S:ឆមាសទី២">ឆមាសទី ២</option></optgroup>';
+ sel.value=cur;
+ sel.onchange=function(){var k=sel.value.charAt(0),v=sel.value.slice(2);
+  if(k==='M'){scoreType='monthly';var sem=SEMESTER_1_MONTHS.indexOf(v)>-1?'1':'2';
+   document.getElementById('semesterFilterSelect').value=sem;updateMonthOptionsBySemester(sem,v)}
+  else{scoreType='semester';document.getElementById('semesterExamSelect').value=v}
   Promise.resolve(loadStudents()).then(function(){renderScorePrintReport()})};
  bar.insertBefore(sel,bar.firstChild)}catch(e){}}
 var started=false,n=0,t=setInterval(function(){n++;try{
