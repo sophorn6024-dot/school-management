@@ -3400,7 +3400,16 @@ window.addEventListener('DOMContentLoaded',function(){initEnhancers();renderSign
 (function(){var v='';try{v=new URLSearchParams(location.search).get('view')||''}catch(e){}
 if(v!=='report')return;
 var st=document.createElement('style');st.textContent='.landing-header,.cards-wrapper,.top-sub-bar,.top-toolbar,.table-container-card{display:none !important}#scoreReportModal .viewer-top-bar > .pill-btn:first-child{display:none !important}';document.head.appendChild(st);
-var n=0,t=setInterval(function(){n++;try{if(typeof displayedStudents!=='undefined'&&displayedStudents.length&&typeof openScoreReportModal==='function'){clearInterval(t);openScoreReportModal();return}}catch(e){}if(n>80)clearInterval(t)},250);
+function addMonthPick(){try{var bar=document.querySelector('#scoreReportModal .vt-group');if(!bar||document.getElementById('rptMonthPick'))return;
+ var months=SEMESTER_1_MONTHS.concat(SEMESTER_2_MONTHS),cur=document.getElementById('monthSelect').value;
+ var sel=document.createElement('select');sel.id='rptMonthPick';sel.className='pill-select';sel.title='ជ្រើសខែ';
+ sel.style.cssText='height:36px;font-weight:700;border-radius:999px;padding:0 12px';
+ sel.innerHTML=months.map(function(m){return '<option value="'+m+'">ខែ '+m+'</option>'}).join('');sel.value=cur;
+ sel.onchange=function(){var m=sel.value,sem=SEMESTER_1_MONTHS.indexOf(m)>-1?'1':'2';
+  document.getElementById('semesterFilterSelect').value=sem;updateMonthOptionsBySemester(sem,m);
+  Promise.resolve(loadStudents()).then(function(){renderScorePrintReport()})};
+ bar.insertBefore(sel,bar.firstChild)}catch(e){}}
+var n=0,t=setInterval(function(){n++;try{if(typeof displayedStudents!=='undefined'&&displayedStudents.length&&typeof openScoreReportModal==='function'){clearInterval(t);openScoreReportModal();addMonthPick();return}}catch(e){}if(n>80)clearInterval(t)},250);
 })();
 </script>
 </body>
