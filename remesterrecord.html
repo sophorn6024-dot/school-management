@@ -606,6 +606,18 @@
     /* ពាក្យ "ចំណាត់ថ្នាក់" ពណ៌ក្រហម (ទុកទំហំអក្សរតាមតួដើម) */
     .red-text { color: #dc2626 !important; font-weight: bold; }
 
+    .ev-overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9999;align-items:center;justify-content:center;padding:14px}
+    .ev-overlay.show{display:flex}
+    .ev-box{background:#fff;color:#0f172a;border-radius:14px;width:min(560px,100%);max-height:92vh;display:flex;flex-direction:column;box-shadow:0 20px 50px rgba(0,0,0,.35);overflow:hidden}
+    .ev-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 16px;background:#1e3a8a;color:#fff;font-weight:700;font-size:15px}
+    .ev-x{background:transparent;border:0;color:#fff;font-size:18px;cursor:pointer}
+    .ev-body{padding:12px 16px;overflow:auto;display:flex;flex-direction:column;gap:4px}
+    .ev-lbl{font-weight:700;font-size:13px;margin-top:6px}
+    .ev-nav{display:flex;gap:6px}.ev-nav select{flex:1;padding:7px;border:1px solid #cbd5e1;border-radius:8px;font:inherit}
+    .ev-hint{font-size:12px;color:#64748b}
+    .ev-body textarea{width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:8px;font:inherit;font-size:14px;line-height:1.6;resize:vertical;box-sizing:border-box}
+    .ev-foot{display:flex;gap:8px;align-items:center;padding:10px 16px;border-top:1px solid #e2e8f0}
+    @media print{.ev-overlay{display:none !important}}
     .sig-block { display: flex; justify-content: flex-end; margin-top: 6px; padding-right: 14mm; }
     .sig-inner { text-align: center; min-width: 180px; }
     /* ទីតាំងនាយកសាលាចុះហត្ថលេខា និងបោះត្រា */
@@ -744,6 +756,10 @@ try{const pr=window.parent&&window.parent!==window&&window.parent.document.docum
 
     <!-- ផ្នែកខាងស្តាំ ៖ Action Buttons -->
     <div class="tb-group tb-actions">
+      <button type="button" class="btn btn-secondary" id="evEditBtn" onclick="openEvEditor()" title="បំពេញ/កែ ផ្នែក គ. និង ង. ដោយខ្លួនឯង">
+        <i class="fa-solid fa-pen-to-square"></i> <span class="hide-xs">បំពេញខ្លួនឯង</span>
+      </button>
+
       <button type="button" class="btn btn-secondary" id="pageSetupBtn" onclick="togglePagePopup(event)" title="ការរៀបចំទំព័រ">
         <i class="fa-solid fa-sliders"></i> <span class="hide-xs">ការរៀបចំទំព័រ</span>
       </button>
@@ -778,6 +794,32 @@ try{const pr=window.parent&&window.parent!==window&&window.parent.document.docum
     <div class="cal-foot">
       <button type="button" class="cal-btn" onclick="calToday()"><i class="fa-solid fa-crosshairs"></i> ថ្ងៃនេះ</button>
       <label class="cal-blank"><input type="checkbox" id="signBlankIn" onchange="setSignBlank(this.checked)"> ទុកទទេ (សរសេរដោយដៃ)</label>
+    </div>
+  </div>
+
+  <div class="ev-overlay no-print" id="evOverlay" onclick="if(event.target===this)closeEvEditor()">
+    <div class="ev-box">
+      <div class="ev-head"><span><i class="fa-solid fa-pen-to-square"></i> បំពេញ គ. ការវាយតម្លៃ និង ង. ការសរសើរ/កំណែលម្អ</span><button type="button" class="ev-x" onclick="closeEvEditor()">✕</button></div>
+      <div class="ev-body">
+        <label class="ev-lbl">សិស្ស</label>
+        <div class="ev-nav">
+          <button type="button" class="btn btn-secondary" onclick="evStep(-1)">‹</button>
+          <select id="evStudent" onchange="evLoad()"></select>
+          <button type="button" class="btn btn-secondary" onclick="evStep(1)">›</button>
+        </div>
+        <div class="ev-hint">ទុកអក្សរស្វ័យប្រវត្តិ ឬកែដោយខ្លួនឯង។ ចុច «ដើមវិញ» ដើម្បីត្រឡប់ទៅអក្សរស្វ័យប្រវត្តិ។</div>
+        <label class="ev-lbl">គ. ឆមាសទី១</label><textarea id="evS1" rows="3"></textarea>
+        <label class="ev-lbl">គ. ឆមាសទី២</label><textarea id="evS2" rows="3"></textarea>
+        <label class="ev-lbl">គ. ប្រចាំឆ្នាំ</label><textarea id="evYr" rows="3"></textarea>
+        <label class="ev-lbl">ង. ការសរសើរ</label><textarea id="evPr" rows="3"></textarea>
+        <label class="ev-lbl">ង. កំណែលម្អ</label><textarea id="evIm" rows="3"></textarea>
+      </div>
+      <div class="ev-foot">
+        <button type="button" class="btn btn-secondary" onclick="evReset()"><i class="fa-solid fa-rotate-left"></i> ដើមវិញ</button>
+        <span style="flex:1"></span>
+        <button type="button" class="btn btn-secondary" onclick="closeEvEditor()">បិទ</button>
+        <button type="button" class="btn btn-success" onclick="evSave()"><i class="fa-solid fa-check"></i> រក្សាទុក</button>
+      </div>
     </div>
   </div>
 
@@ -2382,6 +2424,45 @@ exports.default = {
     }
 
     /* ឆមាសនីមួយៗ */
+    /* ===== បំពេញ គ. និង ង. ដោយខ្លួនឯង (រក្សាទុកក្នុង browser នេះ តាមថ្នាក់ និងឆ្នាំសិក្សា) ===== */
+    const EV_AUTO = {};
+    function evKey() {
+      const n = new Date(), y0 = n.getMonth() >= 8 ? n.getFullYear() : n.getFullYear() - 1;
+      return 'remester_ev_' + ((CURRENT_USER && CURRENT_USER.username) || '') + '_' + ((bundleData && bundleData.className) || '') + '_' + y0;
+    }
+    function evAll() { try { return JSON.parse(localStorage.getItem(evKey()) || '{}') || {}; } catch (e) { return {}; } }
+    function evPut(o) { try { localStorage.setItem(evKey(), JSON.stringify(o)); return true; } catch (e) { return false; } }
+    function evHtml(t) { return String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])).replace(/\n/g, '<br>'); }
+    function evPick(sid, k, auto) { const o = evAll()[sid]; return (o && typeof o[k] === 'string') ? evHtml(o[k]) : auto; }
+    function evPlain(h) { const d = document.createElement('div'); d.innerHTML = String(h || '').replace(/<br\s*\/?>/gi, '\n'); return d.textContent || ''; }
+    const EV_IDS = { s1: 'evS1', s2: 'evS2', yr: 'evYr', pr: 'evPr', im: 'evIm' };
+    function openEvEditor() {
+      if (!bundleData || !(bundleData.students || []).length) { alert('សូមរង់ចាំទិន្នន័យផ្ទុករួចសិន'); return; }
+      const sel = document.getElementById('evStudent'), cur = document.getElementById('studentSelect').value;
+      sel.innerHTML = bundleData.students.map((s, i) => '<option value="' + s.id + '">' + (i + 1) + '. ' + evHtml(s.name || s.id) + '</option>').join('');
+      if (cur && cur !== 'ALL') sel.value = cur;
+      evLoad();
+      document.getElementById('evOverlay').classList.add('show');
+    }
+    function closeEvEditor() { document.getElementById('evOverlay').classList.remove('show'); }
+    function evStep(d) { const s = document.getElementById('evStudent'); const i = s.selectedIndex + d; if (i >= 0 && i < s.options.length) { s.selectedIndex = i; evLoad(); } }
+    function evLoad() {
+      const sid = document.getElementById('evStudent').value, a = EV_AUTO[sid] || {}, o = evAll()[sid] || {};
+      Object.keys(EV_IDS).forEach(k => { document.getElementById(EV_IDS[k]).value = (typeof o[k] === 'string') ? o[k] : evPlain(a[k]); });
+    }
+    function evSave() {
+      const sid = document.getElementById('evStudent').value, a = EV_AUTO[sid] || {}, all = evAll(), o = {};
+      Object.keys(EV_IDS).forEach(k => { const v = document.getElementById(EV_IDS[k]).value; if (v.trim() !== evPlain(a[k]).trim()) o[k] = v; });
+      if (Object.keys(o).length) all[sid] = o; else delete all[sid];
+      if (!evPut(all)) { alert('រក្សាទុកមិនបាន (browser ហាមឃាត់ការផ្ទុក)'); return; }
+      renderSemesterView();
+      evLoad();
+    }
+    function evReset() {
+      const sid = document.getElementById('evStudent').value, all = evAll();
+      delete all[sid]; evPut(all); renderSemesterView(); evLoad();
+    }
+
     function semesterEvalText(scoreObj, semAvg) {
       if (!(semAvg > 0)) return '';
       const g = getGradeFromAverage(semAvg);
@@ -3051,11 +3132,16 @@ async function loadKit(done){
         const s1MonthlyVal = cm.month1 > 0 ? cm.month1.toFixed(2) : '';
         const s2MonthlyVal = cm.month2 > 0 ? cm.month2.toFixed(2) : '';
 
-        const evS1      = semesterEvalText(s1Score, s1SemVal);
-        const evS2      = semesterEvalText(s2Score, s2SemVal);
-        const evYear    = yearEvalText(cm.year, s1SemVal, s2SemVal);
-        const evPraise  = praiseText(yRankNum, s1Score, s2Score, s1SemVal, s2SemVal);
-        const evImprove = improveText(s1Score, s2Score, s1SemVal, s2SemVal);
+        const _a1 = semesterEvalText(s1Score, s1SemVal), _a2 = semesterEvalText(s2Score, s2SemVal),
+              _ay = yearEvalText(cm.year, s1SemVal, s2SemVal),
+              _ap = praiseText(yRankNum, s1Score, s2Score, s1SemVal, s2SemVal),
+              _ai = improveText(s1Score, s2Score, s1SemVal, s2SemVal);
+        EV_AUTO[student.id] = { s1: _a1, s2: _a2, yr: _ay, pr: _ap, im: _ai };
+        const evS1      = evPick(student.id, 's1', _a1);
+        const evS2      = evPick(student.id, 's2', _a2);
+        const evYear    = evPick(student.id, 'yr', _ay);
+        const evPraise  = evPick(student.id, 'pr', _ap);
+        const evImprove = evPick(student.id, 'im', _ai);
 
         // ================= SHEET 1: ក្របក្រៅ =================
         if (sheetFilter === 'ALL' || sheetFilter === '1') {
