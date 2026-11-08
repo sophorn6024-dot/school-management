@@ -1341,7 +1341,8 @@ function qrStampLogo(box){
       if (!(await uiConfirm('អនុញ្ញាត ហើយបង្កើតគណនីគ្រូថ្មីឱ្យអ៊ីមែលនេះ? គ្រូអាចកែព័ត៌មានក្នុង Profile ក្រោយ។', { icon: '👩‍🏫', okText: 'អនុញ្ញាត' }))) return;
       let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
       const { data, error } = await sb.rpc('google_link_create', { p_u: CURRENT_USER.username, p_p: pw, p_id: id });
-      if (error || !data) { showToast('❌ មិនអាចបង្កើតបាន', true); return; }
+      if (error) { showToast('❌ ' + (error.message || 'មិនអាចបង្កើតបាន') + (/function|schema cache/i.test(error.message || '') ? ' (ត្រូវដំណើរការ google_login.sql ថ្មី)' : ''), true); return; }
+      if (!data) { showToast('❌ មិនអាចបង្កើតបាន (សំណើនេះភ្ជាប់រួច ឬគ្មានសិទ្ធិ Admin)', true); return; }
       showToast('✅ បានអនុញ្ញាត និងបង្កើតគណនី ' + (data.username || ''));
       try { await loadTeachers(); } catch (e) {}
       await glFetch(); glRender();
