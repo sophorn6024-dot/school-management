@@ -4473,5 +4473,22 @@ async function loadKit(done){
 
     window.addEventListener('DOMContentLoaded', function() { initEnhancers(); initPage(); loadKit(function() { try { renderSignDates(); } catch (e) {} }); });
   </script>
+<script>
+/* បើកតែរបាយការណ៍ដែលត្រូវព្រីន (?view=report | report-year) — មិនបើកទម្រង់កែ */
+(function(){var v='';try{v=new URLSearchParams(location.search).get('view')||''}catch(e){}
+if(v!=='report'&&v!=='report-year')return;
+var type=(v==='report-year')?'yearly':'monthly';
+var st=document.createElement('style');st.textContent='.top-nav-bar,#tabDailyView,#tabReportsMenu{display:none !important}#reportViewerModal .viewer-top-bar > .tab-pill-btn:first-child{display:none !important}.only-month{height:36px;border-radius:999px;border:1px solid var(--border,#cbd5e1);background:var(--surface-card,#fff);color:var(--text,#0f172a);padding:0 12px;font:inherit;font-weight:700}';document.head.appendChild(st);
+var n=0,done=false,t=setInterval(function(){n++;try{
+ if(!done&&typeof switchNavTab==='function'&&typeof openReportView==='function'&&document.getElementById('rptMonthSelect')&&document.getElementById('reportViewerModal')){
+   var main=document.getElementById('mainPageContent');if(main&&main.style.display==='none'&&n<40)return;
+   done=true;switchNavTab('reports');openReportView(type);
+   if(type==='monthly'){var src=document.getElementById('rptMonthSelect'),bar=document.querySelector('#reportViewerModal .vt-group');
+     if(src&&bar){var sel=document.createElement('select');sel.className='only-month';sel.innerHTML=src.innerHTML;sel.value=src.value;
+       sel.onchange=function(){src.value=sel.value;try{renderHolidayConfigSection()}catch(e){};openReportView('monthly')};bar.insertBefore(sel,bar.firstChild)}}
+   clearInterval(t)}
+}catch(e){}if(n>60)clearInterval(t)},250);
+})();
+</script>
 </body>
 </html>
