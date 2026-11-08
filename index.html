@@ -896,9 +896,8 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
 .login-footer{color:#8392b3}
 .mascot .head{box-shadow:0 12px 28px rgba(0,0,0,.45),0 0 0 6px rgba(255,255,255,.06)}
 
-/* ===== 🖼 រូបភាពក្រោមសារស្វាគមន៍ (desktop/tablet ធំ) ===== */
-.lw-tags,.lw-shot{display:none}
-@media (min-width:900px) and (min-height:520px){
+/* ===== 🖼 រូបភាពក្រោមសារស្វាគមន៍ (desktop/tablet ធំ + ទូរស័ព្ទ) ===== */
+@media (min-width:1px){
   .lw-tags{display:flex;align-items:center;gap:12px;margin-top:14px;color:#c7d2fe;font-weight:600;font-size:15px;animation:lwIn .8s .5s both}
   .lw-tags i{font-style:normal;color:#f472b6;font-size:9px}
   .lw-shot{display:block;margin-top:clamp(12px,2.6vh,22px);width:min(100%,500px,calc((100vh - 300px) * 1.6));min-width:300px;animation:lwIn .9s .6s both}
@@ -947,6 +946,29 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
   .login-btn{height:52px}
   .lg-role{margin-bottom:16px}
 }
+
+
+/* ===== 📱 ទូរស័ព្ទ៖ បង្ហាញរូប slideshow ដូចកុំព្យូទ័រ ហើយអូសចុះក្រោមបាន ===== */
+@media (max-width:899px){
+  #authView{overflow-y:auto!important;-webkit-overflow-scrolling:touch;align-items:flex-start!important;padding:max(14px,env(safe-area-inset-top)) 14px 28px}
+  .login-wrap{margin:0 auto;width:min(480px,100%);display:flex;flex-direction:column;align-items:stretch}
+  .login-welcome{text-align:center;margin-bottom:6px}
+  .lw-tags{justify-content:center;font-size:13px;margin-top:8px}
+  .lw-shot{width:100%;min-width:0;margin:14px 0 22px}
+  .lw-slides{max-height:none!important}
+  .lw-cap{left:12px;bottom:12px;font-size:12px}
+  .lw-dots{right:12px;bottom:16px}
+  .login-card{margin-bottom:12px}
+}
+
+
+/* ===== ចូលតាម Gmail ===== */
+.lg-or{display:flex;align-items:center;gap:10px;margin:14px 0 10px;color:#94a3b8;font-size:12px}
+.lg-or:before,.lg-or:after{content:"";flex:1;height:1px;background:rgba(148,163,184,.35)}
+.lg-google{width:100%;height:48px;border-radius:14px;border:1.5px solid #dbe3ef;background:#fff;color:#0f172a;font:inherit;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:.15s}
+.lg-google:hover{box-shadow:0 8px 20px rgba(0,0,0,.18);transform:translateY(-1px)}
+.lg-google:disabled{opacity:.6;cursor:wait}
+.lg-google svg{width:20px;height:20px;flex:none}
 
 /* ===== 📄 tab របាយការណ៍ (?only=1): បង្ហាញតែ form ===== */
 body.solo{--mnav-reserve:0px}
@@ -1037,6 +1059,8 @@ function qrStampLogo(box){
         <div class="login-field"><label for="loginUsername">Username / ឈ្មោះគណនី</label><div class="login-input-wrap"><input id="loginUsername" type="text" placeholder="បញ្ចូល Username" required autocomplete="username"></div></div>
         <div class="login-field"><label for="loginPassword">Password / ពាក្យសម្ងាត់</label><div class="login-input-wrap"><input id="loginPassword" type="password" placeholder="បញ្ចូល Password" required autocomplete="current-password"><button class="login-toggle" type="button" onclick="toggleLoginPassword()">👁️</button></div></div>
         <button class="login-btn" id="loginSubmitBtn" type="submit"><span id="loginBtnText">🚪 ចូលប្រើប្រាស់ប្រព័ន្ធ</span></button>
+        <div class="lg-or"><span>ឬ</span></div>
+        <button class="lg-google" id="googleBtn" type="button" onclick="googleStart()"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.2C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.6c-.5-1.5-.8-3-.8-4.6s.3-3.1.8-4.6l-7.9-6.2C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 12-2.1 16-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.2C6.5 42.6 14.6 48 24 48z"/></svg><span id="googleBtnTxt">ចូលតាម Gmail (គ្រូ)</span></button>
       </form>
       <div class="login-field lg-role-field"><label for="loginAs">ចូលក្នុងនាម</label><div class="lg-select lg-dd" id="lgDd"><select id="loginAs" tabindex="-1" aria-hidden="true" style="display:none"><option value="teacher">គ្រូ / Admin</option><option value="student">សិស្ស</option></select>
           <button type="button" class="lg-dd-btn" id="lgDdBtn" onclick="lgDdToggle(event)"><span id="lgDdTxt">👩‍🏫  គ្រូ / Admin</span></button>
@@ -2502,7 +2526,7 @@ exports.default = {
 <script>
 const SUPABASE_URL = "https://nggnuobnrxiqjtcwlvwk.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { flowType: 'pkce' } });
 const TEACHERS_TABLE = 'users';
 // ជួរដែលអនុញ្ញាតឱ្យអាន (មិនរួមបញ្ចូល password)
 const USER_COLS = 'id, teacher_id, teacher_name, gender, phone, dob, address, username, role, assigned_classes, photo_url, created_at, updated_at';
@@ -2657,6 +2681,51 @@ function tchTab(t) {
   if (!q) stuStopCam();
   hideLoginError();
 }
+/* ===== 🔵 ចូលតាម Gmail (គ្រូប៉ុណ្ណោះ — ត្រូវ admin អនុញ្ញាតជាមុន) ===== */
+async function googleStart() {
+  hideLoginError();
+  const b = document.getElementById('googleBtn'); if (b) b.disabled = true;
+  try { sessionStorage.setItem('krou_g', '1'); } catch (e) {}
+  try {
+    const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname, queryParams: { prompt: 'select_account' } } });
+    if (error) throw error;
+  } catch (err) {
+    if (b) b.disabled = false;
+    try { sessionStorage.removeItem('krou_g'); } catch (e) {}
+    showLoginError('មិនអាចចូលតាម Gmail បានទេ៖ ' + (err.message || 'សូមពិនិត្យការកំណត់ Google ក្នុង Supabase'));
+  }
+}
+let _gBusy = false;
+async function googleBridge(session) {
+  let flag = ''; try { flag = sessionStorage.getItem('krou_g') || ''; } catch (e) {}
+  if (flag !== '1' || _gBusy) return;
+  const prov = session && session.user && session.user.app_metadata && session.user.app_metadata.provider;
+  if (prov !== 'google') return;
+  _gBusy = true;
+  try { sessionStorage.removeItem('krou_g'); } catch (e) {}
+  try {
+    const { data, error } = await sb.rpc('google_login');
+    if (error) throw error;
+    const st = data && data.status;
+    if (st === 'approved' && data.user && data.token) { finishTeacherLogin(data.user, data.token); return; }
+    await authSignOut();
+    const em = (session.user.email || '');
+    const msg = {
+      pending: '✅ បានផ្ញើសំណើសម្រាប់ ' + em + ' ហើយ។ សូមរង់ចាំ admin អនុញ្ញាត រួចចូលម្តងទៀត។',
+      rejected: '❌ admin មិនអនុញ្ញាតអ៊ីមែលនេះ (' + em + ') ទេ។ សូមទាក់ទង admin។',
+      disabled: '⚠️ គណនីដែលភ្ជាប់នឹងអ៊ីមែលនេះត្រូវបានបិទ។ សូមទាក់ទង admin។',
+      teacher_only: '⚠️ ការចូលតាម Gmail សម្រាប់តែគ្រូប៉ុណ្ណោះ។ Admin សូមចូលដោយ Username និង Password។'
+    }[st] || '❌ មិនអាចចូលបានទេ។ សូមព្យាយាមម្តងទៀត។';
+    uiDlg(msg);
+  } catch (err) {
+    await authSignOut();
+    showLoginError('កំហុស៖ ' + (err.message || 'មិនអាចភ្ជាប់បាន') + ' (admin ត្រូវដំណើរការ google_login.sql ជាមុន)');
+  } finally { _gBusy = false; const b = document.getElementById('googleBtn'); if (b) b.disabled = false; }
+}
+sb.auth.onAuthStateChange(function (ev, session) {
+  if (session && (ev === 'SIGNED_IN' || ev === 'INITIAL_SESSION')) setTimeout(function () { googleBridge(session); }, 0);
+});
+
 async function tchQrLogin(code) {
   hideLoginError();
   try {

@@ -379,6 +379,24 @@
       .form-grid { grid-template-columns: 1fr; }
       .modal-card { width: 100%; border-radius: 18px; }
     }
+
+    .gl-badge{background:#ef4444;color:#fff;border-radius:999px;padding:1px 8px;font-size:12px}
+    .gl-ov{display:none;position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9998;align-items:center;justify-content:center;padding:14px}
+    .gl-ov.show{display:flex}
+    .gl-box{background:#fff;color:#0f172a;border-radius:16px;width:min(620px,100%);max-height:90vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+    .gl-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;font-weight:800;font-size:16px;border-bottom:1px solid #e2e8f0}
+    .gl-head button{border:0;background:transparent;font-size:18px;cursor:pointer;color:inherit}
+    .gl-hint{padding:10px 18px;font-size:12.5px;color:#64748b}
+    .gl-list{padding:0 14px 16px;overflow:auto;display:flex;flex-direction:column;gap:10px}
+    .gl-item{border:1px solid #e2e8f0;border-radius:12px;padding:12px}
+    .gl-item .em{font-weight:800;word-break:break-all}.gl-item .nm{font-size:12.5px;color:#64748b}
+    .gl-st{display:inline-block;font-size:11.5px;font-weight:800;border-radius:999px;padding:2px 10px;margin-left:6px}
+    .gl-st.pending{background:#fef3c7;color:#92400e}.gl-st.approved{background:#dcfce7;color:#166534}.gl-st.rejected{background:#fee2e2;color:#991b1b}
+    .gl-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+    .gl-row select{flex:1;min-width:160px;height:38px;border-radius:10px;border:1.5px solid #dbe3ef;padding:0 10px;font:inherit;background:#fff;color:#0f172a}
+    .gl-row button{height:38px;border-radius:10px;border:0;padding:0 14px;font:inherit;font-weight:700;cursor:pointer}
+    .gl-ok{background:#16a34a;color:#fff}.gl-no{background:#fee2e2;color:#b91c1c}.gl-del{background:#e2e8f0;color:#334155}
+    .gl-empty{padding:26px;text-align:center;color:#64748b}
   </style>
 <script>
 /* ដាក់ logo សាលាចំកណ្ដាល QR (ត្រូវប្រើ correctLevel H ដើម្បីនៅតែស្កេនបាន) */
@@ -439,9 +457,14 @@ function qrStampLogo(box){
           <p>គ្រប់គ្រងព័ត៌មានគ្រូ តួនាទី ថ្នាក់ទទួលបន្ទុក និងគណនីចូលប្រើប្រាស់</p>
         </div>
       </div>
-      <button class="add-btn" onclick="openModal()">
-        <i class="fa-solid fa-user-plus"></i><span>បន្ថែមគ្រូថ្មី</span>
-      </button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="add-btn gl-btn" onclick="glOpen()" style="background:#fff;color:#0f172a;border:1.5px solid var(--border,#dbe3ef);">
+          <i class="fa-brands fa-google" style="color:#ea4335"></i><span>សំណើ Gmail</span><b id="glBadge" class="gl-badge" style="display:none">0</b>
+        </button>
+        <button class="add-btn" onclick="openModal()">
+          <i class="fa-solid fa-user-plus"></i><span>បន្ថែមគ្រូថ្មី</span>
+        </button>
+      </div>
     </div>
 
     <div class="search-bar">
@@ -464,6 +487,16 @@ function qrStampLogo(box){
           <tr class="empty-row"><td colspan="6"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយកទិន្នន័យ...</td></tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+
+  <!-- GMAIL REQUESTS MODAL -->
+  <div class="gl-ov" id="glOv" onclick="if(event.target===this)glClose()">
+    <div class="gl-box">
+      <div class="gl-head"><span><i class="fa-brands fa-google" style="color:#ea4335"></i> សំណើចូលតាម Gmail</span><button type="button" onclick="glClose()">✕</button></div>
+      <div class="gl-hint">គ្រូចុច «ចូលតាម Gmail» នៅទំព័រចូល ហើយសំណើនឹងមកនៅទីនេះ។ ជ្រើសគណនីគ្រូដែលមានស្រាប់ រួចចុច «អនុញ្ញាត»។ (Admin មិនអាចភ្ជាប់ Gmail បានទេ)</div>
+      <div class="gl-list" id="glList"><div class="gl-empty"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយក...</div></div>
     </div>
   </div>
 
@@ -1006,6 +1039,7 @@ function qrStampLogo(box){
         if (error) throw error;
         teachers = data || [];
         renderTable();
+        glFetch().catch(function () {});
       } catch (err) {
         body.innerHTML = `<tr class="empty-row"><td colspan="6" style="color:var(--danger);">❌ មានបញ្ហាក្នុងការទាញយកទិន្នន័យ៖ ${escapeHtml(err.message || err)}</td></tr>`;
       }
@@ -1263,6 +1297,54 @@ function qrStampLogo(box){
     /* =========================================================
        👤 VIEW / ACCOUNT CONTROL
     ========================================================= */
+
+    /* ===== 🔵 សំណើចូលតាម Gmail ===== */
+    let glData = [];
+    function glEsc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    async function glFetch() {
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      const { data, error } = await sb.rpc('google_links_list', { p_u: CURRENT_USER.username, p_p: pw });
+      if (error) throw error;
+      glData = Array.isArray(data) ? data : [];
+      const n = glData.filter(x => x.status === 'pending').length, b = document.getElementById('glBadge');
+      if (b) { b.textContent = n; b.style.display = n ? '' : 'none'; }
+    }
+    function glRender() {
+      const box = document.getElementById('glList');
+      if (!glData.length) { box.innerHTML = '<div class="gl-empty">មិនទាន់មានសំណើទេ</div>'; return; }
+      const opts = teachers.filter(t => String(t.role).toLowerCase() !== 'admin' && t.is_active !== false)
+        .map(t => '<option value="' + t.id + '">' + glEsc(t.teacher_name || t.username) + (t.assigned_classes ? ' · ' + glEsc(t.assigned_classes) : '') + '</option>').join('');
+      const stTxt = { pending: 'រង់ចាំ', approved: 'បានអនុញ្ញាត', rejected: 'បានបដិសេធ' };
+      box.innerHTML = glData.map(g => {
+        let act = '';
+        if (g.status === 'approved') act = '<div class="nm">ភ្ជាប់ទៅ៖ <b>' + glEsc(g.teacher_name || '—') + '</b></div><div class="gl-row"><button class="gl-no" onclick="glSet(' + g.id + ',\'reject\')">ដកការអនុញ្ញាត</button><button class="gl-del" onclick="glSet(' + g.id + ',\'delete\')">លុប</button></div>';
+        else act = '<div class="gl-row"><select id="glSel' + g.id + '"><option value="">— ជ្រើសគណនីគ្រូ —</option>' + opts + '</select><button class="gl-ok" onclick="glApprove(' + g.id + ')">អនុញ្ញាត</button>' + (g.status === 'pending' ? '<button class="gl-no" onclick="glSet(' + g.id + ',\'reject\')">បដិសេធ</button>' : '') + '<button class="gl-del" onclick="glSet(' + g.id + ',\'delete\')">លុប</button></div>';
+        return '<div class="gl-item"><div class="em">' + glEsc(g.email) + '<span class="gl-st ' + g.status + '">' + (stTxt[g.status] || g.status) + '</span></div><div class="nm">' + glEsc(g.full_name || '') + '</div>' + act + '</div>';
+      }).join('');
+    }
+    async function glOpen() {
+      document.getElementById('glOv').classList.add('show');
+      document.getElementById('glList').innerHTML = '<div class="gl-empty"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយក...</div>';
+      try { await glFetch(); glRender(); }
+      catch (e) { document.getElementById('glList').innerHTML = '<div class="gl-empty" style="color:#ef4444">❌ ' + glEsc(e.message || 'មិនអាចទាញយកបាន') + '<br>(ត្រូវដំណើរការ google_login.sql ជាមុន)</div>'; }
+    }
+    function glClose() { document.getElementById('glOv').classList.remove('show'); }
+    async function glApprove(id) {
+      const v = document.getElementById('glSel' + id).value;
+      if (!v) { showToast('សូមជ្រើសគណនីគ្រូជាមុន', true); return; }
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      const { data, error } = await sb.rpc('google_link_approve', { p_u: CURRENT_USER.username, p_p: pw, p_id: id, p_user_id: Number(v) });
+      if (error || !data) { showToast('❌ មិនអាចអនុញ្ញាតបាន', true); return; }
+      showToast('✅ បានអនុញ្ញាត'); await glFetch(); glRender();
+    }
+    async function glSet(id, action) {
+      if (action === 'delete' && !(await uiConfirm('លុបសំណើនេះ?', { danger: true }))) return;
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      const { data, error } = await sb.rpc('google_link_set', { p_u: CURRENT_USER.username, p_p: pw, p_id: id, p_action: action });
+      if (error || !data) { showToast('❌ មិនបានសម្រេច', true); return; }
+      showToast('✅ រួចរាល់'); await glFetch(); glRender();
+    }
+
     let viewId = null;
     async function adminPw(msg) {
       let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
