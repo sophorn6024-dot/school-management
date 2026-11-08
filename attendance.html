@@ -4471,7 +4471,7 @@ async function loadKit(done){
   }catch(e){console.warn('kit',e)}
 }
 
-    window.addEventListener('DOMContentLoaded', function() { initEnhancers(); initPage(); loadKit(function() { try { renderSignDates(); } catch (e) {} }); });
+    window.addEventListener('DOMContentLoaded', function() { initEnhancers(); initPage(); loadKit(function() { window.__kitDone = true; try { renderSignDates(); } catch (e) {} try { var rv = document.getElementById('reportViewerModal'); if (rv && rv.style.display === 'block') openReportView(lastReportType); } catch (e) {} }); });
   </script>
 <script>
 /* បើកតែរបាយការណ៍ដែលត្រូវព្រីន (?view=report | report-year) — មិនបើកទម្រង់កែ */
@@ -4483,7 +4483,8 @@ window.closeReportView=function(){try{closePageSetup()}catch(e){}try{window.top.
 var n=0,done=false,t=setInterval(function(){n++;try{
  if(!done&&typeof switchNavTab==='function'&&typeof openReportView==='function'&&document.getElementById('rptMonthSelect')&&document.getElementById('reportViewerModal')){
    var main=document.getElementById('mainPageContent');if(main&&main.style.display==='none'&&n<40)return;
-   if((typeof rawStudentsData==='undefined'||!rawStudentsData.length)&&n<60)return;   /* រង់ចាំបញ្ជីសិស្សផ្ទុករួច */
+   if((typeof rawStudentsData==='undefined'||!rawStudentsData.length)&&n<60)return;
+   if(!window.__kitDone&&n<60)return;   /* រង់ចាំត្រា ហត្ថលេខា និងទីតាំងពីគណនី */   /* រង់ចាំបញ្ជីសិស្សផ្ទុករួច */
    done=true;switchNavTab('reports');openReportView(type);
    if(type==='monthly'){var src=document.getElementById('rptMonthSelect'),bar=document.querySelector('#reportViewerModal .vt-group');
      if(src&&bar){var sel=document.createElement('select');sel.className='only-month';sel.innerHTML=src.innerHTML;sel.value=src.value;
