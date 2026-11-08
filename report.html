@@ -2132,7 +2132,8 @@ function _esc(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){retu
 function coverHeadLines(){
   var G='សាលាបឋមសិក្សាចំណេះទូទៅ';
   if(!kitHasProf())return {top:['ការិយាល័យអប់រំ យុវជន និងកីឡា'],bottom:[G,'សាលាបឋមសិក្សាកំពង់ល្ពៅ']};
-  var L=schoolHeadLines(PROF).map(_esc);var sch=L.pop();
+  var P=Object.assign({},PROF,{cluster:''});
+  var L=schoolHeadLines(P).map(_esc);var sch=L.pop();
   return {top:L,bottom:[G,sch]};
 }
 /* ក្បាលទំព័រលទ្ធផលប្រចាំខែ: បន្ទាត់ទាំងអស់ពីគណនី */
