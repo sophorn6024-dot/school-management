@@ -3395,5 +3395,13 @@ const SD_MONTHS=['មករា','កុម្ភៈ','មីនា','មេស�
 loadSignDates();
 window.addEventListener('DOMContentLoaded',function(){initEnhancers();renderSignDates()});
 </script>
+<script>
+/* បើកតែរបាយការណ៍ស្រង់ពិន្ទុដែលត្រូវព្រីន (?view=report) — មិនបើកទម្រង់កែ */
+(function(){var v='';try{v=new URLSearchParams(location.search).get('view')||''}catch(e){}
+if(v!=='report')return;
+var st=document.createElement('style');st.textContent='.landing-header,.cards-wrapper,.top-sub-bar,.top-toolbar,.table-container-card{display:none !important}#scoreReportModal .viewer-top-bar > .pill-btn:first-child{display:none !important}';document.head.appendChild(st);
+var n=0,t=setInterval(function(){n++;try{if(typeof displayedStudents!=='undefined'&&displayedStudents.length&&typeof openScoreReportModal==='function'){clearInterval(t);openScoreReportModal();return}}catch(e){}if(n>80)clearInterval(t)},250);
+})();
+</script>
 </body>
 </html>
