@@ -315,12 +315,15 @@
     .cd2-row b { color:#1f3a8a; font-weight:700; }
     .cd2-photo { position:absolute; left:7mm; bottom:5mm; width:31mm; height:41mm; border:.4mm solid #1f4fa3; background:#e2e8f0; z-index:1; display:flex; align-items:center; justify-content:center; overflow:hidden; color:#94a3b8; font-size:26px; }
     .cd2-photo img { width:100%; height:100%; object-fit:cover; display:block; }
-    .cd2-sign { position:absolute; right:5mm; bottom:7mm; width:84mm; text-align:center; z-index:2; }
+    .cd2-sign { position:absolute; right:5mm; bottom:5mm; width:84mm; text-align:center; z-index:2; }
     .cd2-sch { font-family:'Moul',serif; font-size:13px; color:#1f4fa3; line-height:1.6; }
     .cd2-sch small { font-size:12px; color:#1f3a8a; }
     .cd2 .sig-date { font-size:9.5px; color:#1f3a8a !important; font-weight:600; }
-    .cd2 .sig-stamp-wrapper { min-height:30mm; margin-top:1mm; }
-    .cd2 .stamp-overlay-box { top:calc(var(--stamp-top) - 1mm); }
+    .cd2 .sig-stamp-wrapper { min-height:26mm; margin-top:0; }
+    .cd2-sigimg { position:absolute; left:0; right:0; top:3mm; display:flex; justify-content:center; z-index:3; }
+    .cd2-sigimg .kit-sig { height:15mm; width:45mm; object-fit:contain; mix-blend-mode:multiply; }
+    .cd2-dir { font-family:'Moul',serif; font-size:12px; color:#1f3a8a; line-height:1.5; position:relative; z-index:2; }
+    .cd2 .stamp-overlay-box { top:calc(var(--stamp-top) - 9mm); }
     .cd2 .stamp-overlay-box:not(.kit) { height:var(--stamp-h); }
     .cd2-role { font-family:'Moul',serif; font-size:12.5px; color:#1f4fa3; line-height:1.5; position:relative; z-index:2; }
     .cd2 .card-qr { left:44mm; bottom:5mm; width:24mm; height:24mm; }
@@ -2576,7 +2579,9 @@ function card2Html(s, c) {
       <div class="cd2-sign">
         <div class="cd2-sch">ជាសិស្ស ${esc(c.schoolName)}</div>
         ${c.autoDateText}
-        <div class="sig-stamp-wrapper"><div class="cd2-role">នាយកសាលា</div>${c.stampHtml}</div>
+        <div class="cd2-role">នាយកសាលា</div>
+        <div class="sig-stamp-wrapper cd2-gap">${kitSig() ? '<div class="cd2-sigimg">' + kitSig() + '</div>' : ''}${c.stampHtml}</div>
+        ${kitDirName() ? '<div class="cd2-dir">' + esc(kitDirName()) + '</div>' : ''}
       </div>
     </div></div>`;
 }
