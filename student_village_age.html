@@ -353,7 +353,7 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
     <div>ធ្វើនៅ<span id="kitPl">កំពង់ល្ពៅ</span> <span id="signSolar"></span></div>
     <div><b>គ្រូបន្ទុកថ្នាក់</b></div>
     <div style="height:15mm;display:flex;align-items:center;justify-content:center" id="kitTeaGap"></div>
-    <div><b><span class="ed" contenteditable data-k="teacher" data-ph="ឈ្មោះគ្រូ"></span></b></div>
+    <div style="padding-left:70px"><b><span id="teaName"></span></b></div>
   </div></div>
   <div style="display:none"><span class="ed" data-k="school"></span><span id="kitDirTitle"></span><span id="kitDirGap"></span><span id="kitDirNameRow"></span><span class="ed" data-k="principal"></span></div>
 </div></div>
@@ -966,12 +966,12 @@ function villOf(s){
 const MAXV=6;
 function render(){
   document.getElementById('yrTxt').textContent=CUR.year.split('-').map(toKh).join('-');
-  document.getElementById('clsTxt').textContent=CUR.cls;
+  document.getElementById('clsTxt').textContent=toKh(CUR.cls);
   {const r=refDate();document.getElementById('asTxt').textContent=toKh(r.getDate())+' '+KM[r.getMonth()]+' '+toKh(r.getFullYear())}
-  document.querySelectorAll('.ed[data-k]').forEach(el=>{const v=INFO[el.dataset.k];if(v!==undefined)el.textContent=v;else if(el.dataset.k==='teacher'&&TEACHER.teacher_name)el.textContent=TEACHER.teacher_name});
+  document.getElementById('teaName').textContent=TEACHER.teacher_name||'';
   renderSign();document.getElementById('asOfBtn').lastChild.textContent=dLabel(document.getElementById('asOf').value);
   const [lo,hi]=ageRange(CUR.cls);
-  document.getElementById('rngTxt').textContent=toKh(lo)+' ដល់ '+toKh(hi)+' ឆ្នាំ';
+  document.getElementById('rngTxt').textContent='ទាំងអស់ដែលមានក្នុងថ្នាក់';
   const act=activeStu();
   // ភូមិពិតពីទិន្នន័យ
   const cnt={};act.forEach(s=>{const v=villOf(s);if(v)cnt[v]=(cnt[v]||0)+1});
@@ -981,7 +981,9 @@ function render(){
   const cols=main.map(n=>({n,m:v=>v===n}));
   if(extra.length)cols.push({n:'ភូមិផ្សេងៗ',m:v=>extra.includes(v)});
   if(noV)cols.push({n:'មិនបញ្ជាក់ភូមិ',m:v=>!v});
-  const ages=[];for(let a=lo;a<=hi;a++)ages.push(a);
+  const real=act.map(ageOf).filter(x=>x!==null&&x>=0&&x<100);
+  const aLo=real.length?Math.min(...real):lo,aHi=real.length?Math.max(...real):hi;
+  const ages=[];for(let a=aLo;a<=aHi;a++)ages.push(a);
   const n=v=>v?toKh(v):'';
   const cell=(a,fn)=>{let t=0,f=0;act.forEach(s=>{const x=ageOf(s);if(x===a&&fn(villOf(s))){t++;if(isF(s.gender))f++}});return [t,f]};
   const nc=cols.length,cw=Math.max(5,Math.floor(70/(nc+1)/2*10)/10);
@@ -998,11 +1000,9 @@ function render(){
   h+=`<tr class="t"><td class="c">សរុប</td>${colT.map(c=>`<td class="c">${n(c[0])}</td><td class="c">${n(c[1])}</td>`).join('')}<td class="c">${n(gT)}</td><td class="c">${n(gF)}</td><td></td></tr></tbody>`;
   document.getElementById('vaT').innerHTML=h;
   const noDob=act.filter(s=>ageOf(s)===null).length;
-  const outR=act.filter(s=>{const x=ageOf(s);return x!==null&&(x<lo||x>hi)}).length;
   document.getElementById('vaWarn').innerHTML=
     (!act.length?'<div>⚠️ មិនមានសិស្សក្នុងថ្នាក់នេះទេ</div>':'')+
     (noDob?`<div>⚠️ សិស្ស ${toKh(noDob)} នាក់ គ្មានថ្ងៃខែឆ្នាំកំណើតត្រឹមត្រូវ (មិនរាប់ក្នុងតារាង)</div>`:'')+
-    (outR?`<div>ℹ️ សិស្ស ${toKh(outR)} នាក់ មានអាយុក្រៅ ${toKh(lo)}–${toKh(hi)} ឆ្នាំ (មិនរាប់ក្នុងតារាង)</div>`:'')+
     (noV?`<div>⚠️ សិស្ស ${toKh(noV)} នាក់ មិនទាន់មានភូមិក្នុងព័ត៌មានសិស្ស (ដាក់ក្នុងជួរ «មិនបញ្ជាក់ភូមិ»)</div>`:'');
 }
 document.addEventListener('change',e=>{if(e.target.dataset&&e.target.dataset.edu){INFO.kv_edu=e.target.value;saveInfo()}});
