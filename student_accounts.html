@@ -99,13 +99,14 @@ function qrStampLogo(box){
       <div class="card">
         <div class="row" style="margin-bottom:10px">
           <button class="btn pri" onclick="createMissing()">➕ បង្កើតគណនីសិស្សដែលមិនទាន់មាន</button>
+          <button class="btn" onclick="renameSel()">🔤 ប្ដូរឈ្មោះគណនីទៅអង់គ្លេស (ដែលបានជ្រើស)</button>
           <button class="btn" onclick="resetSel()">🔑 កំណត់ពាក្យសម្ងាត់ថ្មី (ដែលបានជ្រើស)</button>
           <button class="btn" onclick="resetQrSel()">♻ QR + ពាក្យសម្ងាត់ថ្មី (ដែលបានជ្រើស)</button>
           <button class="btn" onclick="printSlips()">🖨 បោះពុម្ពកាត</button>
           <button class="btn" onclick="dlAllQr()">⬇ QR ទាំងអស់ (PNG)</button>
           <button class="btn" onclick="csv()">⬇ CSV</button>
         </div>
-        <div class="note">ឈ្មោះគណនី = អត្តលេខសិស្ស។ ពាក្យសម្ងាត់ជាលេខចៃដន្យ បង្ហាញតែម្តង (ក្រោយបង្កើត/កំណត់ថ្មី) ហើយមិនអាចមើលវិញបានទេ។ សិស្សចូលប្រព័ន្ធតាម <b>QR</b> បានដោយមិនបាច់ចាំពាក្យសម្ងាត់ (ស្កេនពីកាតរូបថតកាតរបស់ខ្លួន ឬផ្ទុករូប QR ឡើង)។ QR អាចបោះពុម្ព/ទាញយកឡើងវិញបានជានិច្ច។ កូដ QR អនុញ្ញាតឱ្យចូលដោយមិនបាច់ពាក្យសម្ងាត់ ដូច្នេះសូមប្រគល់ជូនសិស្សផ្ទាល់ខ្លួនប៉ុណ្ណោះ។</div>
+        <div class="note">ឈ្មោះគណនី = ឈ្មោះសិស្សជាអក្សរអង់គ្លេស (បម្លែងស្វ័យប្រវត្តិ ប្រហាក់ប្រហែល អាចកែបានដោយប៊ូតុង ✏️)។ ពាក្យសម្ងាត់ជាលេខចៃដន្យ បង្ហាញតែម្តង (ក្រោយបង្កើត/កំណត់ថ្មី) ហើយមិនអាចមើលវិញបានទេ។ សិស្សចូលប្រព័ន្ធតាម <b>QR</b> បានដោយមិនបាច់ចាំពាក្យសម្ងាត់ (ស្កេនពីកាតរូបថតកាតរបស់ខ្លួន ឬផ្ទុករូប QR ឡើង)។ QR អាចបោះពុម្ព/ទាញយកឡើងវិញបានជានិច្ច។ កូដ QR អនុញ្ញាតឱ្យចូលដោយមិនបាច់ពាក្យសម្ងាត់ ដូច្នេះសូមប្រគល់ជូនសិស្សផ្ទាល់ខ្លួនប៉ុណ្ណោះ។</div>
         <div class="sc"><table id="tbl"></table></div>
       </div>
     </div>
@@ -247,21 +248,91 @@ async function loadList(){
   drawList();
 }
 function drawList(){
-  $('tbl').innerHTML=`<tr><th><input type="checkbox" onchange="document.querySelectorAll('.ck').forEach(c=>c.checked=this.checked)"></th><th>#</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ឈ្មោះគណនី (អត្តលេខ)</th><th>ស្ថានភាព</th><th>ពាក្យសម្ងាត់ដើម</th><th>ចូលចុងក្រោយ</th><th></th></tr>`+
-  LIST.map((s,i)=>`<tr><td><input type="checkbox" class="ck" value="${s.pk}"></td><td>${i+1}</td><td>${esc(s.student_name)}</td><td>${esc(s.gender||'')}</td><td>${esc(s.username||s.student_id||'—')}</td>
+  $('tbl').innerHTML=`<tr><th><input type="checkbox" onchange="document.querySelectorAll('.ck').forEach(c=>c.checked=this.checked)"></th><th>#</th><th>ឈ្មោះ</th><th>ភេទ</th><th>ឈ្មោះគណនី (អង់គ្លេស)</th><th>ស្ថានភាព</th><th>ពាក្យសម្ងាត់ដើម</th><th>ចូលចុងក្រោយ</th><th></th></tr>`+
+  LIST.map((s,i)=>`<tr><td><input type="checkbox" class="ck" value="${s.pk}"></td><td>${i+1}</td><td>${esc(s.student_name)}</td><td>${esc(s.gender||'')}</td><td style="font-family:monospace">${esc(s.username||s.student_id||'—')}${s.has_account?` <button class="btn" onclick="renameOne(${s.pk})" title="កែឈ្មោះគណនី">✏️</button>`:''}</td>
    <td>${!s.has_account?'<span class="pill gr">គ្មានគណនី</span>':!s.is_active?'<span class="pill no">បិទ</span>':s.must_change?'<span class="pill wn">រង់ចាំប្តូរ PW</span>':'<span class="pill ok">ដំណើរការ</span>'}</td>
    <td style="font-family:monospace">${esc(GEN[s.pk]||'')}</td><td>${s.last_login?new Date(s.last_login).toLocaleDateString('en-GB'):'—'}</td>
    <td>${s.has_account?`<button class="btn" onclick="dlQr(${s.pk})" title="ទាញយករូប QR">⬇ QR</button> <button class="btn ${s.is_active?'bad':''}" onclick="toggle(${s.pk},${!s.is_active})">${s.is_active?'បិទ':'បើក'}</button>`:''}</td></tr>`).join('');
 }
 function genPw(){const A='abcdefghjkmnpqrstuvwxyz23456789';const b=new Uint32Array(8);crypto.getRandomValues(b);return [...b].map(x=>A[x%A.length]).join('')}
+/* ===== ខ្មែរ → អក្សរឡាតាំង (ប្រហាក់ប្រហែល UNGEGN) ===== */
+const KR={
+ 'ក':['k',0],'ខ':['kh',0],'គ':['k',1],'ឃ':['kh',1],'ង':['ng',1],'ច':['ch',0],'ឆ':['ch',0],'ជ':['ch',1],'ឈ':['ch',1],'ញ':['nh',1],
+ 'ដ':['d',0],'ឋ':['th',0],'ឌ':['d',1],'ឍ':['th',1],'ណ':['n',0],'ត':['t',0],'ថ':['th',0],'ទ':['t',1],'ធ':['th',1],'ន':['n',1],
+ 'ប':['b',0],'ផ':['ph',0],'ព':['p',1],'ភ':['ph',1],'ម':['m',1],'យ':['y',1],'រ':['r',1],'ល':['l',1],'វ':['v',1],'ឝ':['s',0],'ឞ':['s',0],'ស':['s',0],'ហ':['h',0],'ឡ':['l',0],'អ':['',0]
+};
+// [a-series, o-series]
+const KV={'ា':['a','ea'],'ិ':['e','i'],'ី':['ei','i'],'ឹ':['oe','oe'],'ឺ':['eu','eu'],'ុ':['o','u'],'ូ':['ou','u'],'ួ':['ua','ua'],'ើ':['oe','eu'],'ឿ':['oeu','oeu'],'ៀ':['ie','ie'],'េ':['e','e'],'ែ':['ae','ae'],'ៃ':['ai','ey'],'ោ':['ao','o'],'ៅ':['av','ov']};
+const KIND={'ឥ':'e','ឦ':'ei','ឧ':'o','ឩ':'ou','ឪ':'ov','ឫ':'rue','ឬ':'rue','ឭ':'lue','ឮ':'lue','ឯ':'ae','ឰ':'ai','ឱ':'ov','ឲ':'ov','ឳ':'av'};
+const KFIN={'ក':'k','ខ':'k','គ':'k','ឃ':'k','ង':'ng','ច':'t','ឆ':'t','ជ':'t','ឈ':'t','ញ':'n','ដ':'t','ឋ':'t','ឌ':'t','ឍ':'t','ណ':'n','ត':'t','ថ':'t','ទ':'t','ធ':'t','ន':'n','ប':'p','ផ':'p','ព':'p','ភ':'p','ម':'m','យ':'y','រ':'','ល':'l','វ':'w','ស':'s','ហ':'','ឡ':'l','អ':''};
+const isC=c=>Object.prototype.hasOwnProperty.call(KR,c);
+const isMod=c=>c==='្'||c==='៉'||c==='៊'||KV[c]!==undefined||'ំះ៍័់៌៎៑ៈ'.includes(c);
+function romanKhmer(str){
+  const t=[...String(str||'').normalize('NFC')];let out='';
+  for(let i=0;i<t.length;i++){
+    const c=t[i];
+    if(c===' '||c==='​'){out+=' ';continue}
+    if(KIND[c]){out+=KIND[c];continue}
+    if(!isC(c)){if(/[A-Za-z0-9]/.test(c))out+=c;continue}
+    // សិលារ៉ូម៉ាង: ព្យញ្ជនៈដើម + coeng
+    let ser=KR[c][1],ini=KR[c][0];i++;
+    while(i<t.length&&t[i]==='្'&&isC(t[i+1])){ini+=KR[t[i+1]][0];i+=2}
+    // coeng ដែលមកពី i: ទីតាំងរក្សា
+    let shift=null,vow=null,fin='',tail='';
+    while(i<t.length&&(t[i]==='៉'||t[i]==='៊')){shift=t[i]==='៉'?0:1;i++}
+    if(shift!==null)ser=shift;
+    // ស្រៈពីរ: ើ ា ... ហើយ ុ/ំ/ះ
+    let vowels=[];
+    while(i<t.length&&KV[t[i]]){vowels.push(t[i]);i++}
+    let nas=null;
+    if(i<t.length&&(t[i]==='ំ'||t[i]==='ះ'||t[i]==='ៈ')){nas=t[i];i++}
+    if(vowels.length)vow=vowels.map(v=>KV[v][ser]).join('');
+    // ស្រៈ "ាំ"
+    if(vowels.length===1&&vowels[0]==='ា'&&nas==='ំ'){vow=ser?'oam':'am';nas=null}
+    if(!vow)vow=ser?'o':'a';
+    if(vowels.length===1&&vowels[0]==='ុ'&&nas==='ំ'){vow=ser?'um':'om';nas=null}
+    if(nas==='ំ'){vow=(ser?'o':'o')===vow?vow:vow;fin='m'}
+    else if(nas==='ះ'||nas==='ៈ'){fin='h'}
+    // ព្យញ្ជនៈចុងក្រោយ
+    if(!fin&&i<t.length&&isC(t[i])){
+      const n=t[i+1],m=t[i+2];
+      const nVowelish=n!==undefined&&(KV[n]||n==='៉'||n==='៊'||n==='្'||n==='ំ'||n==='ះ'||n==='ៈ');
+      const isFin=n==='់'||n==='៍'||n===undefined||n===' '||n==='\u200b'||(isC(n)&&m!==undefined&&m!=='្'&&isMod(m));
+      if(isFin&&!nVowelish){fin=KFIN[t[i]]||'';i++}
+    }
+    while(i<t.length&&('់៍៌៎៑'.includes(t[i])))i++;
+    i--; // for-loop ++
+    out+=ini+vow+fin;
+  }
+  return out;
+}
+function usernameFromName(name){
+  const r=romanKhmer(name).toLowerCase().replace(/[^a-z0-9 ]+/g,'').trim().replace(/\s+/g,'.');
+  return r;
+}
+
+
+/* ឈ្មោះគណនីមិនឱ្យស្ទួនក្នុងបញ្ជី */
+function pickNames(pks){
+  const used=new Set(LIST.filter(s=>s.has_account&&!pks.includes(s.pk)).map(s=>String(s.username||'').toLowerCase()));
+  const out={};
+  pks.forEach(pk=>{
+    const st=LIST.find(x=>x.pk===pk)||{};
+    let b=usernameFromName(st.student_name)||String(st.student_id||'').toLowerCase().replace(/[^a-z0-9._-]/g,'')||('student'+pk);
+    let u=b,k=1;while(used.has(u)){k++;u=b+k}
+    used.add(u);out[pk]=u;
+  });
+  return out;
+}
 async function setAccounts(pks,resetQr){
   if(!pks.length){uiAlert('មិនមានសិស្សត្រូវធ្វើ');return}
-  const items=pks.map(pk=>({pk,password:genPw()}));
+  const nm=pickNames(pks.filter(pk=>{const x=LIST.find(z=>z.pk===pk);return x&&!x.has_account}));
+  const items=pks.map(pk=>({pk,password:genPw(),...(nm[pk]?{username:nm[pk]}:{})}));
   try{
     const r=await staff('staff_set_student_accounts',{p_items:items,p_reset_qr:!!resetQr});
     if(r.error){uiAlert('❌ '+r.error);return}
     items.forEach(i=>GEN[i.pk]=i.password);
-    uiAlert(`✅ បានកំណត់គណនី ${r.ok} នាក់ (ឈ្មោះគណនី = អត្តលេខ, ពាក្យសម្ងាត់ចៃដន្យ)\nសិស្សចូលតាម QR បាន។ សូមបោះពុម្ពកាត ឬទាញ QR/CSV ឥឡូវនេះ ព្រោះពាក្យសម្ងាត់មិនបង្ហាញម្តងទៀតទេ (QR អាចបោះពុម្ពឡើងវិញបានជានិច្ច)។`+(r.skipped?`\n⚠️ រំលង ${r.skipped} នាក់ — គ្មានអត្តលេខ ឬគ្មានសិទ្ធិ`:'')+(r.duplicates?`\n⚠️ រំលង ${r.duplicates} នាក់ — អត្តលេខស្ទួនគ្នា សូមកែក្នុងព័ត៌មានសិស្ស`:''));
+    uiAlert(`✅ បានកំណត់គណនី ${r.ok} នាក់ (ឈ្មោះគណនី = ឈ្មោះសិស្សជាអក្សរអង់គ្លេស, ពាក្យសម្ងាត់ចៃដន្យ)\nសិស្សចូលតាម QR បាន។ សូមបោះពុម្ពកាត ឬទាញ QR/CSV ឥឡូវនេះ ព្រោះពាក្យសម្ងាត់មិនបង្ហាញម្តងទៀតទេ (QR អាចបោះពុម្ពឡើងវិញបានជានិច្ច)។`+(r.skipped?`\n⚠️ រំលង ${r.skipped} នាក់ — គ្មានអត្តលេខ ឬគ្មានសិទ្ធិ`:'')+(r.duplicates?`\n⚠️ រំលង ${r.duplicates} នាក់ — អត្តលេខស្ទួនគ្នា សូមកែក្នុងព័ត៌មានសិស្ស`:''));
     await loadList();
   }catch(e){uiAlert('❌ '+(e.message||e))}
 }
@@ -332,6 +403,26 @@ async function dlAllQr(){
   const rows=LIST.filter(s=>s.has_account&&s.is_active);if(!rows.length){uiAlert('មិនទាន់មានគណនី');return}
   if(rows.length>10&&!await uiConfirm(`ទាញយករូប QR ${rows.length} ឯកសារ?`))return;
   for(const s of rows){await dlQr(s.pk);await new Promise(r=>setTimeout(r,250))}
+}
+
+async function renameSel(){
+  const pks=[...document.querySelectorAll('.ck:checked')].map(c=>+c.value).filter(pk=>LIST.find(s=>s.pk===pk&&s.has_account));
+  if(!pks.length){uiAlert('សូមជ្រើសសិស្សដែលមានគណនីរួច');return}
+  if(!await uiConfirm(`ប្តូរឈ្មោះគណនីសិស្ស ${pks.length} នាក់ ទៅជាឈ្មោះអង់គ្លេស? ឈ្មោះគណនីចាស់នឹងឈប់ប្រើបាន ពាក្យសម្ងាត់ និង QR នៅដដែល។`,{okText:'ប្តូរ'}))return;
+  const nm=pickNames(pks);
+  try{const r=await staff('staff_rename_student_accounts',{p_items:pks.map(pk=>({pk,username:nm[pk]}))});
+    if(r.error){uiAlert('❌ '+r.error);return}
+    uiAlert(`✅ បានប្តូរឈ្មោះគណនី ${r.ok} នាក់`+(r.skipped?` (រំលង ${r.skipped})`:''));await loadList()}
+  catch(e){uiAlert('❌ '+(e.message||e))}
+}
+async function renameOne(pk){
+  const s=LIST.find(x=>x.pk===pk);if(!s)return;
+  const v=prompt('ឈ្មោះគណនីថ្មីសម្រាប់ '+s.student_name+'\n(អក្សរអង់គ្លេស a-z លេខ . _ - យ៉ាងតិច ៣ តួ)',s.username||'');
+  if(v===null)return;
+  try{const r=await staff('staff_rename_student_accounts',{p_items:[{pk,username:v}]});
+    if(r.error){uiAlert('❌ '+r.error);return}
+    if(!r.ok){uiAlert('❌ ឈ្មោះមិនត្រឹមត្រូវ (យ៉ាងតិច ៣ តួ a-z, 0-9, . _ -)');return}
+    await loadList()}catch(e){uiAlert('❌ '+(e.message||e))}
 }
 function createMissing(){setAccounts(LIST.filter(s=>!s.has_account).map(s=>s.pk),false)}
 async function resetSel(){
