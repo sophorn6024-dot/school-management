@@ -968,6 +968,15 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
 .lg-google{width:100%;height:48px;border-radius:14px;border:1.5px solid #dbe3ef;background:#fff;color:#0f172a;font:inherit;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:.15s}
 .lg-google:hover{box-shadow:0 8px 20px rgba(0,0,0,.18);transform:translateY(-1px)}
 .lg-google:disabled{opacity:.6;cursor:wait}
+.gw-bg{position:fixed;inset:0;z-index:10000;background:rgba(2,6,23,.72);display:flex;align-items:center;justify-content:center;padding:18px;overflow-y:auto}
+.gw{background:#fff;color:#0f172a;border-radius:20px;width:min(400px,100%);padding:26px 20px 20px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.gw .sp{width:46px;height:46px;border-radius:50%;border:4px solid #dbe3ef;border-top-color:#2563eb;margin:0 auto 14px;animation:gwspin 1s linear infinite}
+@keyframes gwspin{to{transform:rotate(360deg)}}
+.gw h3{margin:0 0 6px;font-size:17px}.gw .em{font-size:12.5px;color:#64748b;word-break:break-all;margin-bottom:10px}
+.gw p{font-size:13.5px;line-height:1.8;margin:0 0 14px;color:#334155}
+.gw a.tg{display:flex;align-items:center;justify-content:center;gap:8px;height:46px;border-radius:12px;background:#229ed9;color:#fff;font-weight:800;text-decoration:none;margin-bottom:10px}
+.gw button{width:100%;height:42px;border-radius:12px;border:0;background:#e2e8f0;color:#334155;font:inherit;font-weight:700;cursor:pointer}
+
 .lg-google svg{width:20px;height:20px;flex:none}
 
 /* ===== 📄 tab របាយការណ៍ (?only=1): បង្ហាញតែ form ===== */
@@ -2696,10 +2705,37 @@ async function googleStart() {
     showLoginError('មិនអាចចូលតាម Gmail បានទេ៖ ' + (err.message || 'សូមពិនិត្យការកំណត់ Google ក្នុង Supabase'));
   }
 }
+
+const ADMIN_TG = 'https://t.me/SengSophorn';
+let _gwTimer = null, _gwEl = null;
+function googleWaitStop() { if (_gwTimer) { clearInterval(_gwTimer); _gwTimer = null; } if (_gwEl) { _gwEl.remove(); _gwEl = null; } try { sessionStorage.removeItem('krou_g'); } catch (e) {} }
+function googleWait(session) {
+  googleWaitStop();
+  try { sessionStorage.setItem('krou_g', '1'); } catch (e) {}
+  const em = (session.user.email || '').replace(/[<>&"']/g, '');
+  const bg = document.createElement('div'); bg.className = 'gw-bg'; _gwEl = bg;
+  bg.innerHTML = '<div class="gw" role="dialog"><div class="sp"></div><h3>⏳ រង់ចាំ admin អនុញ្ញាត</h3><div class="em">' + em + '</div>'
+    + '<p>សំណើរបស់អ្នកត្រូវបានផ្ញើហើយ។ សូមទុកទំព័រនេះបើកចោល ពេល admin អនុញ្ញាត អ្នកនឹងចូលប្រើប្រព័ន្ធដោយស្វ័យប្រវត្តិ។<br>ចង់ឱ្យលឿន សូមទាក់ទង admin តាម Telegram។</p>'
+    + '<a class="tg" href="' + ADMIN_TG + '" target="_blank" rel="noopener">✈️ ទាក់ទង Admin តាម Telegram</a>'
+    + '<button type="button" id="gwCancel">បោះបង់</button></div>';
+  document.body.appendChild(bg);
+  document.getElementById('gwCancel').onclick = async function () { googleWaitStop(); await authSignOut(); };
+  let busy = false;
+  _gwTimer = setInterval(async function () {
+    if (busy) return; busy = true;
+    try {
+      const { data, error } = await sb.rpc('google_login');
+      if (error) return;
+      const st = data && data.status;
+      if (st === 'approved' && data.user && data.token) { googleWaitStop(); finishTeacherLogin(data.user, data.token); }
+      else if (st === 'rejected' || st === 'disabled') { googleWaitStop(); await authSignOut(); uiDlg('❌ admin មិនអនុញ្ញាតអ៊ីមែលនេះ (' + em + ') ទេ។ សូមទាក់ទង admin តាម Telegram៖ ' + ADMIN_TG); }
+    } catch (e) {} finally { busy = false; }
+  }, 4000);
+}
 let _gBusy = false;
 async function googleBridge(session) {
   let flag = ''; try { flag = sessionStorage.getItem('krou_g') || ''; } catch (e) {}
-  if (flag !== '1' || _gBusy) return;
+  if (flag !== '1' || _gBusy || _gwEl) return;
   const prov = session && session.user && session.user.app_metadata && session.user.app_metadata.provider;
   if (prov !== 'google') return;
   _gBusy = true;
@@ -2709,11 +2745,12 @@ async function googleBridge(session) {
     if (error) throw error;
     const st = data && data.status;
     if (st === 'approved' && data.user && data.token) { finishTeacherLogin(data.user, data.token); return; }
+    if (st === 'pending') { googleWait(session); return; }
     await authSignOut();
     const em = (session.user.email || '');
     const msg = {
-      pending: '✅ បានផ្ញើសំណើសម្រាប់ ' + em + ' ហើយ។ សូមរង់ចាំ admin អនុញ្ញាត រួចចូលម្តងទៀត។',
-      rejected: '❌ admin មិនអនុញ្ញាតអ៊ីមែលនេះ (' + em + ') ទេ។ សូមទាក់ទង admin។',
+      pending: '',
+      rejected: '❌ admin មិនអនុញ្ញាតអ៊ីមែលនេះ (' + em + ') ទេ។ សូមទាក់ទង admin តាម Telegram៖ ' + ADMIN_TG,
       disabled: '⚠️ គណនីដែលភ្ជាប់នឹងអ៊ីមែលនេះត្រូវបានបិទ។ សូមទាក់ទង admin។',
       teacher_only: '⚠️ ការចូលតាម Gmail សម្រាប់តែគ្រូប៉ុណ្ណោះ។ Admin សូមចូលដោយ Username និង Password។'
     }[st] || '❌ មិនអាចចូលបានទេ។ សូមព្យាយាមម្តងទៀត។';
