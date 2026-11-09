@@ -294,8 +294,8 @@
 
 
     /* ===== ទម្រង់ទី ២: បណ្ណសម្គាល់ខ្លួនសិស្ស A5 (២ កាត/ទំព័រ) ===== */
-    .a4-page.layout-2 { display:grid; grid-template-columns:repeat(2,148mm); grid-template-rows:208mm; justify-content:center; align-content:center; gap:0; padding:0; }
-    .cd2 { width:148mm; height:208mm; box-sizing:border-box; border:1.5mm solid #1f4fa3; padding:3mm; background:#fff !important; color:#000 !important; position:relative; overflow:hidden; font-family:'Battambang',sans-serif; }
+    .a4-page.layout-2 { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:100%; gap:0; padding:0; }
+    .cd2 { width:100%; height:100%; min-width:0; min-height:0; box-sizing:border-box; border:1.5mm solid #1f4fa3; padding:3mm; background:#fff !important; color:#000 !important; position:relative; overflow:hidden; font-family:'Battambang',sans-serif; }
     .cd2-in { position:relative; height:100%; border:.45mm solid #1f4fa3; padding:4mm 7mm 0; box-sizing:border-box; overflow:hidden; }
     .cd2 .card-watermark { width:96mm; height:auto; max-height:108mm; top:52%; z-index:0; filter:grayscale(.15); }
     .cd2-head { position:relative; z-index:1; text-align:center; padding:0 0 2mm; border-bottom:.9mm solid #1f4fa3; }
@@ -315,11 +315,13 @@
     .cd2-row b { color:#1f3a8a; font-weight:700; }
     .cd2-photo { position:absolute; left:7mm; bottom:5mm; width:31mm; height:41mm; border:.4mm solid #1f4fa3; background:#e2e8f0; z-index:1; display:flex; align-items:center; justify-content:center; overflow:hidden; color:#94a3b8; font-size:26px; }
     .cd2-photo img { width:100%; height:100%; object-fit:cover; display:block; }
-    .cd2-sign { position:absolute; right:5mm; bottom:3mm; width:84mm; text-align:center; z-index:2; }
+    .cd2-sign { position:absolute; right:5mm; bottom:7mm; width:84mm; text-align:center; z-index:2; }
     .cd2-sch { font-family:'Moul',serif; font-size:13px; color:#1f4fa3; line-height:1.6; }
     .cd2-sch small { font-size:12px; color:#1f3a8a; }
     .cd2 .sig-date { font-size:9.5px; color:#1f3a8a !important; font-weight:600; }
     .cd2 .sig-stamp-wrapper { min-height:30mm; margin-top:1mm; }
+    .cd2 .stamp-overlay-box { top:calc(var(--stamp-top) - 1mm); }
+    .cd2 .stamp-overlay-box:not(.kit) { height:var(--stamp-h); }
     .cd2-role { font-family:'Moul',serif; font-size:12.5px; color:#1f4fa3; line-height:1.5; position:relative; z-index:2; }
     .cd2 .card-qr { left:44mm; bottom:5mm; width:24mm; height:24mm; }
 
@@ -505,6 +507,9 @@
       pointer-events: none; z-index: 6;
       display: flex; align-items: center; justify-content: center;
     }
+    .stamp-overlay-box.kit { height: var(--stamp-w); }
+    .stamp-overlay-box.kit .kit-circle { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 50%; }
+    .stamp-overlay-box.kit .kit-circle img { position: absolute; height: auto; max-width: none; max-height: none; object-fit: fill; mix-blend-mode: multiply; }
     .stamp-overlay-box img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
 
     /* ── Print Settings ── */
@@ -2250,6 +2255,11 @@ function kitStamp(){
   return '<div class="kit-stamp" style="margin-bottom:'+mb+'mm"><div class="kit-circle"><img alt="" src="'+m.url+'" style="width:'+(m.w*K)+'mm;left:'+(-m.x*K)+'mm;top:'+(-m.y*K)+'mm"></div></div>';
 }
 function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'" style="height:15mm!important;width:45mm!important;max-height:none!important;max-width:none!important;object-fit:contain">':''}
+/* ត្រាស្ដង់ដារ ដូចទំព័រផ្សេងៗ៖ រង្វង់ ៣៤មម (ប្ដូរតាមស្លាយទំហំត្រា) កាត់ពីរូបត្រាតាម STAMP_META */
+function kitCardStamp(){
+  const m=STAMP_META;
+  return '<div class="stamp-overlay-box kit"><div class="kit-circle"><img alt="ត្រានាយក" src="'+m.url+'" style="width:'+(m.w/m.d*100)+'%;left:'+(-m.x/m.d*100)+'%;top:'+(-m.y/m.d*100)+'%"></div></div>';
+}
 function kitDirName(){return STAMP_META?'':(((PROF&&PROF.director_name)||'').trim())}
 async function loadKit(done){
   try{
@@ -2363,6 +2373,7 @@ async function onClassChange() {
       })
       .map(s => ({
         id: s.student_id || s.id,
+        pk: s.id,
         name: s.student_name || 'គ្មានឈ្មោះ',
         sex: s.gender || 'ប្រុស',
         dob: s.dob || '',
@@ -2398,9 +2409,17 @@ function qrDataUrl(text) {
     document.body.appendChild(box);
     new QRCode(box, { text: text, width: 480, height: 480, correctLevel: QRCode.CorrectLevel.H });
     qrStampLogo(box);
-    const cv = box.querySelector('canvas'), im = box.querySelector('img');
+    let cv = box.querySelector('canvas'), im = box.querySelector('img');
     let src = '';
-    try { src = cv ? cv.toDataURL('image/png') : (im ? im.src : ''); } catch (e) {}
+    try { src = cv ? cv.toDataURL('image/png') : (im ? im.src : ''); }
+    catch (e) {   // canvas ត្រូវបានបំពុលដោយឡូហ្គោ → បង្កើត QR ដោយគ្មានឡូហ្គោ
+      box.innerHTML = '';
+      new QRCode(box, { text: text, width: 480, height: 480, correctLevel: QRCode.CorrectLevel.H });
+      cv = box.querySelector('canvas'); im = box.querySelector('img');
+      try { src = cv ? cv.toDataURL('image/png') : (im ? im.src : ''); } catch (e2) {}
+      box.remove();
+      return src;
+    }
     box.remove();
     return (QR_LOGO.complete && QR_LOGO.naturalWidth) ? (QR_CACHE[text] = src) : src;
   } catch (e) { return ''; }
@@ -2438,7 +2457,7 @@ async function qrLoadTokens(cls) {
     if (data === null) { QR_PW = null; try{localStorage.removeItem('krou_pw')}catch(e){} msg = 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ ឬគ្មានសិទ្ធិ'; continue; }
     const map = {};
     const meta = {};
-    (data || []).forEach(a => { meta[String(a.student_id)] = { pk: a.pk, has: !!(a.has_account && a.is_active && a.qr_token), un: a.username }; if (a.has_account && a.is_active && a.qr_token) map[String(a.student_id)] = a.qr_token; });
+    (data || []).forEach(a => { meta['pk' + a.pk] = { pk: a.pk, has: !!(a.has_account && a.is_active && a.qr_token), un: a.username }; if (a.has_account && a.is_active && a.qr_token) map['pk' + a.pk] = a.qr_token; });
     QR_TOK[cls] = map; QR_META[cls] = meta;
     try{localStorage.setItem('krou_pw',QR_PW)}catch(e){}
     return true;
@@ -2450,11 +2469,13 @@ async function toggleQr() {
   if (!window.QRCode) { toastQr('❌ បណ្ណាល័យ QR មិនទាន់ទាញបាន — សូមពិនិត្យអ៊ីនធឺណិត ហើយ refresh'); return; }
   const cls = (allStudents[0] && allStudents[0].grade) || cleanGrade(document.getElementById('classSelect').value || USER_CLASS);
   if (!cls) return;
-  if (!QR_TOK[cls]) { if (!(await qrLoadTokens(cls))) return; }
+  if (!(await qrLoadTokens(cls))) return;
   if (await qrCreateMissing(cls)) { if (!(await qrLoadTokens(cls))) return; }
   QR_SHOW = true;
   renderCards();
   const miss = allStudents.filter(s => !qrTokFor(s)).length;
+  const shown = document.querySelectorAll('.card-qr img').length;
+  if (!shown && allStudents.length - miss > 0) toastQr('❌ មាន token ប៉ុន្តែបង្កើតរូប QR មិនបាន — refresh ទំព័រ (Ctrl+F5) ហើយសាកម្ដងទៀត');
   if (miss) toastQr('មានសិស្ស ' + miss + ' នាក់ មិនទាន់មាន QR (គ្មានគណនី ឬត្រូវបានបិទ) — ពិនិត្យក្នុង «គណនីសិស្ស និងបណ្ណាល័យ»');
 }
 function toastQr(t) {
@@ -2562,23 +2583,21 @@ function card2Html(s, c) {
 
 /* ===== QR: រកថូខឹនតាមអត្តលេខសិស្ស (មិនអាស្រ័យឈ្មោះថ្នាក់) ===== */
 function qrTokFor(s) {
-  const id = String(s.id);
-  const m = QR_TOK[s.grade]; if (m && m[id]) return m[id];
-  for (const k in QR_TOK) { if (QR_TOK[k] && QR_TOK[k][id]) return QR_TOK[k][id]; }
+  for (const k in QR_TOK) { const m = QR_TOK[k]; if (m && s.pk != null && m['pk' + s.pk]) return m['pk' + s.pk]; }
   return '';
 }
 const QR_META = {};   // { ថ្នាក់: { student_id: {pk, has} } }
 function qrPw8() { const a = 'abcdefghjkmnpqrstuvwxyz23456789'; let r = ''; for (let i = 0; i < 8; i++) r += a[Math.floor(Math.random() * a.length)]; return r; }
 async function qrCreateMissing(cls) {
   const meta = QR_META[cls] || {};
-  const miss = allStudents.filter(s => { const m = meta[String(s.id)]; return m && !m.has; });
+  const miss = allStudents.filter(s => { const m = meta['pk' + s.pk]; return m && !m.has; });
   if (!miss.length) return false;
   if (!confirm('សិស្ស ' + miss.length + ' នាក់ មិនទាន់មានគណនីចូលប្រព័ន្ធ (ត្រូវការសម្រាប់ QR)។\nបង្កើតគណនីឥឡូវនេះ? (ឈ្មោះគណនី = ឈ្មោះសិស្សជាអក្សរអង់គ្លេស សិស្សចូលតាម QR ដោយមិនបាច់ពាក្យសម្ងាត់)')) return false;
   const used = new Set(); Object.values(meta).forEach(m => m.un && used.add(String(m.un).toLowerCase()));
   const items = miss.map(s => {
-    let b = usernameFromName(s.name) || String(s.id).toLowerCase().replace(/[^a-z0-9._-]/g, '') || ('s' + meta[String(s.id)].pk);
+    let b = usernameFromName(s.name) || String(s.id).toLowerCase().replace(/[^a-z0-9._-]/g, '') || ('s' + meta['pk' + s.pk].pk);
     let u = b, k = 1; while (used.has(u)) { k++; u = b + k; } used.add(u);
-    return { pk: meta[String(s.id)].pk, password: qrPw8(), username: u };
+    return { pk: meta['pk' + s.pk].pk, password: qrPw8(), username: u };
   });
   const { data, error } = await sb.rpc('staff_set_student_accounts', { p_u: CURRENT_USER && (CURRENT_USER.username || CURRENT_USER.teacher_id), p_p: QR_PW, p_items: items });
   if (error || !data || data.error) { alert('❌ ' + ((error && error.message) || (data && data.error) || 'មិនអាចបង្កើតគណនីបាន')); return false; }
@@ -2617,9 +2636,11 @@ function renderCards() {
         ? `<img src="${s.imageUrl}" alt="រូបថត" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-user\\'></i>'">`
         : `<i class="fa-solid fa-user"></i>`;
 
-      const stampHtml = (customStampUrl || kitStampUrl())
-        ? `<div class="stamp-overlay-box"><img src="${customStampUrl || kitStampUrl()}" alt="ត្រានាយក"></div>`
-        : '';
+      const stampHtml = (!customStampUrl && STAMP_META && STAMP_META.d)
+        ? kitCardStamp()
+        : ((customStampUrl || kitStampUrl())
+          ? `<div class="stamp-overlay-box"><img src="${customStampUrl || kitStampUrl()}" alt="ត្រានាយក"></div>`
+          : '');
 
       const headerLogoHtml = customLogoUrl
         ? `<img src="${customLogoUrl}" class="header-logo-img" alt="Logo" onerror="this.style.display='none'">`
