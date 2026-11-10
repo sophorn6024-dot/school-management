@@ -977,6 +977,7 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
 .gw a.tg{display:flex;align-items:center;justify-content:center;gap:8px;height:46px;border-radius:12px;background:#229ed9;color:#fff;font-weight:800;text-decoration:none;margin-bottom:10px}
 .gw button{width:100%;height:42px;border-radius:12px;border:0;background:#e2e8f0;color:#334155;font:inherit;font-weight:700;cursor:pointer}
 
+.gw .fld{display:block;text-align:left;font-size:12.5px;color:#475569;margin:0 0 3px}
 .gw-pay{width:min(420px,100%)}
 .gw .qrbox{background:#f8fafc;border:1.5px dashed #cbd5e1;border-radius:14px;padding:10px;margin:0 0 10px}
 .gw .qrbox img{max-width:100%;max-height:300px;border-radius:8px;display:block;margin:0 auto}
@@ -1079,6 +1080,7 @@ function qrStampLogo(box){
         <button class="login-btn" id="loginSubmitBtn" type="submit"><span id="loginBtnText">🚪 ចូលប្រើប្រាស់ប្រព័ន្ធ</span></button>
         <div class="lg-or"><span>ឬ</span></div>
         <button class="lg-google" id="googleBtn" type="button" onclick="googleStart()"><svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.2C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.6c-.5-1.5-.8-3-.8-4.6s.3-3.1.8-4.6l-7.9-6.2C.9 16.4 0 20.1 0 24s.9 7.6 2.6 10.8l7.9-6.2z"/><path fill="#34A853" d="M24 48c6.5 0 12-2.1 16-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.5 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.9 6.2C6.5 42.6 14.6 48 24 48z"/></svg><span id="googleBtnTxt">ចូលតាម Gmail (គ្រូ)</span></button>
+        <button class="lg-google lg-req" id="reqBtn" type="button" onclick="acctReqOpen()" style="margin-top:10px;height:42px;font-weight:600">📝 ស្នើសុំបង្កើតគណនីគ្រូថ្មី</button>
       </form>
       <div class="login-field lg-role-field"><label for="loginAs">ចូលក្នុងនាម</label><div class="lg-select lg-dd" id="lgDd"><select id="loginAs" tabindex="-1" aria-hidden="true" style="display:none"><option value="teacher">គ្រូ / Admin</option><option value="student">សិស្ស</option></select>
           <button type="button" class="lg-dd-btn" id="lgDdBtn" onclick="lgDdToggle(event)"><span id="lgDdTxt">👩‍🏫  គ្រូ / Admin</span></button>
@@ -2661,6 +2663,7 @@ function showAuthScreen() {
   try { setLoginRole(LOGIN_ROLE); } catch(e) {}
 }
 function showAppScreen(pageToOpen) {
+  setTimeout(function () { try { payGate(); } catch (e) {} }, 0);
   document.getElementById('authView').style.display = 'none';
   document.getElementById('mainAppLayout').style.display = 'flex';
   applyDayTheme();
@@ -2809,6 +2812,85 @@ async function googlePending(session) {   // pending → បើត្រូវ�
     if (!r.error && inf && inf.enabled && inf.pay_status === 'none') { googlePay(session, inf); return; }
   } catch (e) {}
   googleWait(session);
+}
+
+/* ===== 📝 ស្នើសុំបង្កើតគណនីគ្រូថ្មី ===== */
+function acctReqOpen() {
+  if (document.getElementById('arBg')) return;
+  var bg = document.createElement('div'); bg.className = 'gw-bg'; bg.id = 'arBg';
+  bg.innerHTML = '<div class="gw" role="dialog"><h3>📝 ស្នើសុំបង្កើតគណនីគ្រូ</h3>'
+    + '<p style="margin-bottom:10px">បំពេញព័ត៌មាន ហើយរង់ចាំ admin អនុញ្ញាត។ ឈ្មោះគណនីសម្រាប់ចូល = លេខទូរស័ព្ទរបស់អ្នក។</p>'
+    + '<label class="fld">ឈ្មោះពេញ</label><input type="text" id="arName" autocomplete="name">'
+    + '<label class="fld">លេខទូរស័ព្ទ</label><input type="text" id="arPhone" inputmode="tel" autocomplete="tel">'
+    + '<label class="fld">ពាក្យសម្ងាត់ដែលចង់បាន (យ៉ាងតិច ៦ តួ)</label><input type="text" id="arPw" autocomplete="new-password">'
+    + '<button type="button" class="pri" id="arGo">📨 ផ្ញើសំណើ</button><button type="button" id="arCancel">បោះបង់</button></div>';
+  document.body.appendChild(bg);
+  document.getElementById('arCancel').onclick = function () { bg.remove(); };
+  document.getElementById('arGo').onclick = async function () {
+    var b = this, nm = document.getElementById('arName').value.trim(), ph = document.getElementById('arPhone').value.trim(), pw = document.getElementById('arPw').value;
+    b.disabled = true;
+    try {
+      var r = await sb.rpc('account_request_create', { p_name: nm, p_phone: ph, p_password: pw });
+      if (r.error) throw r.error;
+      var d = r.data || {};
+      if (d.ok) { bg.remove(); uiDlg('✅ បានផ្ញើសំណើហើយ។ ពេល admin អនុញ្ញាត សូមចូលដោយ Username៖ ' + d.username + ' និងពាក្យសម្ងាត់ដែលអ្នកបានបញ្ចូល។\nចង់ឱ្យលឿន សូមទាក់ទង admin តាម Telegram៖ ' + ADMIN_TG); return; }
+      var m = { name: 'សូមបញ្ចូលឈ្មោះ', phone: 'លេខទូរស័ព្ទមិនត្រឹមត្រូវ', password: 'ពាក្យសម្ងាត់ត្រូវមានយ៉ាងតិច ៦ តួ', taken: 'លេខទូរស័ព្ទនេះមានគណនីរួចហើយ', exists: 'អ្នកបានស្នើរួចហើយ សូមរង់ចាំ admin', busy: 'មានសំណើច្រើនពេក សូមទាក់ទង admin' }[d.error] || 'មិនអាចផ្ញើបាន';
+      uiDlg('❌ ' + m);
+    } catch (e) { uiDlg('❌ ' + (e.message || 'មិនអាចផ្ញើបាន') + ' (admin ត្រូវរត់ account_requests.sql ជាមុន)'); }
+    finally { b.disabled = false; }
+  };
+}
+
+/* ===== 💳 គណនីថ្មីត្រូវទូទាត់ពេលចូលលើកដំបូង ===== */
+let _pgEl = null, _pgTimer = null, _pgBusy = false;
+function payGateClose() { if (_pgTimer) { clearInterval(_pgTimer); _pgTimer = null; } if (_pgEl) { _pgEl.remove(); _pgEl = null; } }
+async function payGate() {
+  if (!CURRENT_USER || _pgBusy) return;
+  _pgBusy = true;
+  try {
+    var pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+    if (!pw) return;
+    var r = await sb.rpc('my_pay_status', { p_u: CURRENT_USER.username, p_p: pw });
+    var d = r.data;
+    if (r.error || !d) return;            // មិនទាន់ដំណើរការ SQL ឬមិនមានសិទ្ធិ → មិនរារាំង
+    if (!d.required) { payGateClose(); return; }
+    payGateShow(d, pw);
+  } catch (e) {} finally { _pgBusy = false; }
+}
+function payGateShow(d, pw) {
+  var esc = function (x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+  payGateClose();
+  var bg = document.createElement('div'); bg.className = 'gw-bg'; bg.style.zIndex = 10200; _pgEl = bg;
+  var claimed = d.status === 'claimed';
+  bg.innerHTML = '<div class="gw gw-pay" role="dialog"><h3>' + (claimed ? '⏳ រង់ចាំ admin បញ្ជាក់ការទូទាត់' : '💳 ទូទាត់ប្រាក់ដើម្បីចាប់ផ្តើមប្រើ') + '</h3>'
+    + (d.amount ? '<div class="amt">' + esc(d.amount) + '</div>' : '')
+    + (d.payee ? '<div class="payee">អ្នកទទួល៖ <b>' + esc(d.payee) + '</b></div>' : '')
+    + (claimed ? '<p>អ្នកបានប្រាប់ថាបានបង់ហើយ។ ពេល admin បញ្ជាក់ ប្រព័ន្ធនឹងបើកដោយស្វ័យប្រវត្តិ (កុំបិទទំព័រ)។</p>'
+      : (d.qr_url ? '<div class="qrbox"><img alt="QR ទូទាត់" src="' + esc(d.qr_url) + '"></div>' : '<p>(admin មិនទាន់ដាក់ QR ទេ — សូមទាក់ទង admin)</p>')
+        + (d.note ? '<p>' + esc(d.note) + '</p>' : '')
+        + '<p style="margin-bottom:8px">ស្កេន QR បង់ប្រាក់ រួចបញ្ចូលលេខយោង និង/ឬភ្ជាប់រូបបង្កាន់ដៃ ហើយចុច «ខ្ញុំបានបង់ហើយ»។</p>'
+        + '<input type="text" id="pgRef" placeholder="លេខយោងប្រតិបត្តិការ (ស្រេចចិត្ត)"><input type="file" class="file" id="pgProof" accept="image/*">'
+        + '<button type="button" class="pri" id="pgPaid">✅ ខ្ញុំបានបង់ហើយ</button>')
+    + '<a class="tg" href="' + ADMIN_TG + '" target="_blank" rel="noopener">✈️ ទាក់ទង Admin តាម Telegram</a>'
+    + '<button type="button" id="pgOut">ចាកចេញ</button></div>';
+  document.body.appendChild(bg);
+  document.getElementById('pgOut').onclick = function () { payGateClose(); doLogout(); };
+  var pb = document.getElementById('pgPaid');
+  if (pb) pb.onclick = async function () {
+    var b = this; b.disabled = true; b.textContent = 'កំពុងផ្ញើ...';
+    try {
+      var proof = await gwImgData(document.getElementById('pgProof').files[0], 900), ref = document.getElementById('pgRef').value;
+      if (!ref.trim() && !proof) { b.disabled = false; b.textContent = '✅ ខ្ញុំបានបង់ហើយ'; uiDlg('សូមបញ្ចូលលេខយោង ឬភ្ជាប់រូបបង្កាន់ដៃ'); return; }
+      var r = await sb.rpc('my_pay_claim', { p_u: CURRENT_USER.username, p_p: pw, p_ref: ref, p_proof: proof });
+      if (r.error || !r.data) throw new Error((r.error && r.error.message) || 'មិនអាចផ្ញើបាន');
+      payGateShow({ required: true, status: 'claimed', amount: d.amount, payee: d.payee }, pw);
+    } catch (e) { b.disabled = false; b.textContent = '✅ ខ្ញុំបានបង់ហើយ'; uiDlg('❌ ' + (e.message || 'មិនអាចផ្ញើបាន')); }
+  };
+  if (claimed) {
+    _pgTimer = setInterval(async function () {
+      try { var r = await sb.rpc('my_pay_status', { p_u: CURRENT_USER.username, p_p: pw }); if (r.data && !r.data.required) { payGateClose(); loginToast && 0; } } catch (e) {}
+    }, 5000);
+  }
 }
 let _gBusy = false;
 async function googleBridge(session) {

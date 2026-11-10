@@ -517,6 +517,7 @@ function qrStampLogo(box){
         <label>ចំណាំ (ស្រេចចិត្ត)</label><textarea id="payNote" rows="2"></textarea>
         <div class="gl-row"><button class="gl-ok" onclick="paySave()">💾 រក្សាទុក</button></div>
       </details>
+      <div class="gl-list" id="arList" style="padding-bottom:4px"></div>
       <div class="gl-list" id="glList"><div class="gl-empty"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយក...</div></div>
     </div>
   </div>
@@ -1060,7 +1061,7 @@ function qrStampLogo(box){
         if (error) throw error;
         teachers = data || [];
         renderTable();
-        glFetch().catch(function () {});
+        arFetch().catch(function () {}).then(function () { return glFetch(); }).catch(function () {});
       } catch (err) {
         body.innerHTML = `<tr class="empty-row"><td colspan="6" style="color:var(--danger);">❌ មានបញ្ហាក្នុងការទាញយកទិន្នន័យ៖ ${escapeHtml(err.message || err)}</td></tr>`;
       }
@@ -1327,7 +1328,7 @@ function qrStampLogo(box){
       const { data, error } = await sb.rpc('google_links_list', { p_u: CURRENT_USER.username, p_p: pw });
       if (error) throw error;
       glData = Array.isArray(data) ? data : [];
-      const n = glData.filter(x => x.status === 'pending').length, b = document.getElementById('glBadge');
+      const n = glData.filter(x => x.status === 'pending').length + arData.filter(x => x.status === 'pending' || x.pay_status === 'claimed').length, b = document.getElementById('glBadge');
       if (b) { b.textContent = n; b.style.display = n ? '' : 'none'; }
     }
     function glRender() {
@@ -1385,8 +1386,64 @@ function qrStampLogo(box){
       if (!data) { showToast('គ្មានរូបបង្កាន់ដៃ', true); return; }
       const w = window.open(); if (w) { w.document.write('<img style="max-width:100%" src="' + data + '">'); w.document.close(); }
     }
+
+    /* ===== 📝 សំណើបង្កើតគណនីថ្មី (ពីទំព័រចូល) ===== */
+    let arData = [];
+    async function arFetch() {
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      const { data, error } = await sb.rpc('account_requests_list', { p_u: CURRENT_USER.username, p_p: pw });
+      if (error) { arData = []; return; }
+      arData = Array.isArray(data) ? data : [];
+    }
+    function arRender() {
+      const box = document.getElementById('arList'); if (!box) return;
+      const rows = arData.filter(x => x.status !== 'approved' || true);
+      if (!rows.length) { box.innerHTML = ''; return; }
+      const stTxt = { pending: 'រង់ចាំ', approved: 'បានអនុញ្ញាត', rejected: 'បានបដិសេធ' };
+      box.innerHTML = '<div style="font-weight:800;margin:6px 0 2px">📝 សំណើបង្កើតគណនីថ្មី</div>' + rows.map(r => {
+        let act = '';
+        if (r.status === 'pending') act = '<div class="gl-row"><button class="gl-ok" onclick="arApprove(' + r.id + ')">✅ អនុញ្ញាត (បង្កើតគណនី)</button><button class="gl-no" onclick="arSet(' + r.id + ',\'reject\')">បដិសេធ</button></div>';
+        else {
+          let pay = '';
+          if (r.pay_status === 'required') pay = '<span class="gl-paid none">💳 មិនទាន់បង់</span>';
+          else if (r.pay_status === 'claimed') pay = '<span class="gl-paid">💳 ប្រាប់ថាបានបង់</span>' + (r.pay_ref ? ' <span class="nm">លេខយោង៖ <b>' + glEsc(r.pay_ref) + '</b></span>' : '') + (r.has_proof ? ' <a href="#" onclick="apProof(' + r.user_id + ');return false">🧾 បង្កាន់ដៃ</a>' : '') + ' <button class="gl-ok" onclick="apConfirm(' + r.user_id + ')">✅ បញ្ជាក់បានទទួលប្រាក់</button>';
+          else if (r.pay_status === 'paid') pay = '<span class="gl-st approved">💳 បានបង់</span>';
+          act = '<div class="gl-row">' + (r.username ? '<span class="nm">Username៖ <b>' + glEsc(r.username) + '</b></span>' : '') + pay + '<button class="gl-del" onclick="arSet(' + r.id + ',\'delete\')">លុបចេញពីបញ្ជី</button></div>';
+        }
+        return '<div class="gl-item"><div class="em">' + glEsc(r.full_name) + '<span class="gl-st ' + r.status + '">' + (stTxt[r.status] || r.status) + '</span></div><div class="nm">📞 ' + glEsc(r.phone) + '</div>' + act + '</div>';
+      }).join('');
+    }
+
+    async function apConfirm(uid) {
+      if (!(await uiConfirm('បញ្ជាក់ថាបានទទួលប្រាក់ពីគ្រូនេះហើយ? ប្រព័ន្ធនឹងបើកឱ្យគាត់ប្រើ។', { icon: '💳', okText: 'បញ្ជាក់' }))) return;
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      const { data, error } = await sb.rpc('account_pay_confirm', { p_u: CURRENT_USER.username, p_p: pw, p_user_id: uid });
+      if (error || !data) { showToast('❌ មិនបានសម្រេច', true); return; }
+      showToast('✅ បានបញ្ជាក់'); await arFetch(); arRender();
+    }
+    async function apProof(uid) {
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      const { data } = await sb.rpc('account_pay_proof', { p_u: CURRENT_USER.username, p_p: pw, p_user_id: uid });
+      if (!data) { showToast('គ្មានរូបបង្កាន់ដៃ', true); return; }
+      const w = window.open(); if (w) { w.document.write('<img style="max-width:100%" src="' + data + '">'); w.document.close(); }
+    }
+    async function arApprove(id) {
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      const { data, error } = await sb.rpc('account_request_approve', { p_u: CURRENT_USER.username, p_p: pw, p_id: id });
+      if (error || !data) { showToast('❌ ' + ((error && error.message) || 'មិនអាចបង្កើតបាន'), true); return; }
+      showToast('✅ បានបង្កើតគណនី Username៖ ' + (data.username || ''));
+      try { await loadTeachers(); } catch (e) {}
+      await arFetch(); arRender();
+    }
+    async function arSet(id, action) {
+      if (action === 'delete' && !(await uiConfirm('លុបសំណើនេះ?', { danger: true }))) return;
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      const { data, error } = await sb.rpc('account_request_set', { p_u: CURRENT_USER.username, p_p: pw, p_id: id, p_action: action });
+      if (error || !data) { showToast('❌ មិនបានសម្រេច', true); return; }
+      showToast('✅ រួចរាល់'); await arFetch(); arRender();
+    }
     async function glOpen() {
-      payLoad();
+      payLoad(); arFetch().then(arRender);
       document.getElementById('glOv').classList.add('show');
       document.getElementById('glList').innerHTML = '<div class="gl-empty"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយក...</div>';
       try { await glFetch(); glRender(); }
