@@ -3796,6 +3796,13 @@ function stopChatNotifier() {
   chatSeenId = null;
   setChatUnread(0);
 }
+/* ចូល Google ក្នុង Chrome (Custom Tab) រួចត្រឡប់មកកម្មវិធី៖ បើមានការចូលរួចក្នុង storage ហើយទំព័រនេះនៅទំព័រចូល → ផ្ទុកឡើងវិញ */
+function _syncLoginFromStorage() {
+  try { if (!CURRENT_USER && localStorage.getItem('krou_supabase_user') && localStorage.getItem('krou_pw')) location.reload(); } catch (e) {}
+}
+document.addEventListener('visibilitychange', function () { if (!document.hidden) _syncLoginFromStorage(); });
+window.addEventListener('focus', _syncLoginFromStorage);
+window.addEventListener('pageshow', function (e) { if (e.persisted) _syncLoginFromStorage(); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) recountChatUnread(); });
 
 /* STATS & DASHBOARD */
