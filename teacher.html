@@ -397,6 +397,13 @@
     .gl-row button{height:38px;border-radius:10px;border:0;padding:0 14px;font:inherit;font-weight:700;cursor:pointer}
     .gl-ok{background:#16a34a;color:#fff}.gl-no{background:#fee2e2;color:#b91c1c}.gl-del{background:#e2e8f0;color:#334155}
     .gl-empty{padding:26px;text-align:center;color:#64748b}
+    .gl-pay{border:1.5px solid #e2e8f0;border-radius:12px;margin:0 14px 12px;padding:12px;background:#f8fafc}
+    .gl-pay summary{font-weight:800;cursor:pointer}
+    .gl-pay label{display:block;font-size:12.5px;color:#475569;margin:8px 0 3px}
+    .gl-pay input[type=text],.gl-pay textarea{width:100%;box-sizing:border-box;border-radius:10px;border:1.5px solid #dbe3ef;padding:8px 10px;font:inherit;background:#fff;color:#0f172a}
+    .gl-pay img{max-width:160px;max-height:160px;border-radius:8px;display:block;margin-top:6px;border:1px solid #e2e8f0}
+    .gl-paid{display:inline-block;font-size:11.5px;font-weight:800;border-radius:999px;padding:2px 10px;margin-left:6px;background:#dbeafe;color:#1e40af}
+    .gl-paid.none{background:#f1f5f9;color:#64748b}
   </style>
 <script>
 /* ដាក់ logo សាលាចំកណ្ដាល QR (ត្រូវប្រើ correctLevel H ដើម្បីនៅតែស្កេនបាន) */
@@ -496,6 +503,17 @@ function qrStampLogo(box){
     <div class="gl-box">
       <div class="gl-head"><span><i class="fa-brands fa-google" style="color:#ea4335"></i> សំណើចូលតាម Gmail</span><button type="button" onclick="glClose()">✕</button></div>
       <div class="gl-hint">គ្រូចុច «ចូលតាម Gmail» នៅទំព័រចូល ហើយសំណើនឹងមកនៅទីនេះ។ ជ្រើសគណនីគ្រូដែលមានស្រាប់ រួចចុច «អនុញ្ញាត»។ (Admin មិនអាចភ្ជាប់ Gmail បានទេ)</div>
+      <details class="gl-pay" id="glPay">
+        <summary>💳 ការកំណត់ទូទាត់ប្រាក់ (QR)</summary>
+        <label><input type="checkbox" id="payEn"> បើកការទូទាត់ (គ្រូថ្មីត្រូវបង់ជាមុនសិន)</label>
+        <label>រូប QR ទូទាត់ (ACLEDA / Canadia / KHQR)</label>
+        <input type="file" id="payQrFile" accept="image/*" onchange="payQrPick(this)">
+        <img id="payQrImg" alt="" style="display:none">
+        <label>ចំនួនទឹកប្រាក់ (ឧ. $5 ម្ដងគត់)</label><input type="text" id="payAmt">
+        <label>ឈ្មោះអ្នកទទួល</label><input type="text" id="payPayee">
+        <label>ចំណាំ (ស្រេចចិត្ត)</label><textarea id="payNote" rows="2"></textarea>
+        <div class="gl-row"><button class="gl-ok" onclick="paySave()">💾 រក្សាទុក</button></div>
+      </details>
       <div class="gl-list" id="glList"><div class="gl-empty"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយក...</div></div>
     </div>
   </div>
@@ -1319,10 +1337,53 @@ function qrStampLogo(box){
         let act = '';
         if (g.status === 'approved') act = '<div class="nm">ភ្ជាប់ទៅ៖ <b>' + glEsc(g.teacher_name || '—') + '</b></div><div class="gl-row"><button class="gl-no" onclick="glSet(' + g.id + ',\'reject\')">ដកការអនុញ្ញាត</button><button class="gl-del" onclick="glSet(' + g.id + ',\'delete\')">លុប</button></div>';
         else act = '<div class="gl-row"><button class="gl-ok" onclick="glCreate(' + g.id + ')">✅ អនុញ្ញាត (បង្កើតគណនីគ្រូថ្មី)</button>' + (g.status === 'pending' ? '<button class="gl-no" onclick="glSet(' + g.id + ',\'reject\')">បដិសេធ</button>' : '') + '<button class="gl-del" onclick="glSet(' + g.id + ',\'delete\')">លុប</button></div><div class="nm" style="margin-top:8px">ឬភ្ជាប់ទៅគណនីដែលមានស្រាប់៖</div><div class="gl-row"><select id="glSel' + g.id + '"><option value="">— ជ្រើសគណនីគ្រូ —</option>' + opts + '</select><button class="gl-ok" onclick="glApprove(' + g.id + ')">ភ្ជាប់</button></div>';
-        return '<div class="gl-item"><div class="em">' + glEsc(g.email) + '<span class="gl-st ' + g.status + '">' + (stTxt[g.status] || g.status) + '</span></div><div class="nm">' + glEsc(g.full_name || '') + '</div>' + act + '</div>';
+        const pay = g.pay_status === 'claimed' ? '<span class="gl-paid">💳 ប្រាប់ថាបានបង់</span>' : '';
+        const payInfo = g.pay_status === 'claimed' ? '<div class="nm">លេខយោង៖ <b>' + glEsc(g.pay_ref || '—') + '</b>' + (g.pay_at ? ' · ' + new Date(g.pay_at).toLocaleString() : '') + (g.has_proof ? ' · <a href="#" onclick="payProof(' + g.id + ');return false">🧾 មើលបង្កាន់ដៃ</a>' : '') + '</div>' : '';
+        return '<div class="gl-item"><div class="em">' + glEsc(g.email) + '<span class="gl-st ' + g.status + '">' + (stTxt[g.status] || g.status) + '</span>' + pay + '</div><div class="nm">' + glEsc(g.full_name || '') + '</div>' + payInfo + act + '</div>';
       }).join('');
     }
+
+    /* ===== 💳 ការកំណត់ទូទាត់ ===== */
+    let payQr = '';
+    function payQrPick(inp) {
+      const f = inp.files && inp.files[0]; if (!f) return;
+      const fr = new FileReader();
+      fr.onload = () => { const im = new Image(); im.onload = () => {
+        const k = Math.min(1, 700 / Math.max(im.width, im.height)), c = document.createElement('canvas');
+        c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+        const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height);
+        payQr = c.toDataURL('image/png'); const p = document.getElementById('payQrImg'); p.src = payQr; p.style.display = '';
+      }; im.src = fr.result; };
+      fr.readAsDataURL(f);
+    }
+    async function payLoad() {
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      const { data, error } = await sb.rpc('payment_settings_get', { p_u: CURRENT_USER.username, p_p: pw });
+      if (error || !data) return;
+      document.getElementById('payEn').checked = !!data.enabled;
+      document.getElementById('payAmt').value = data.amount || '';
+      document.getElementById('payPayee').value = data.payee || '';
+      document.getElementById('payNote').value = data.note || '';
+      payQr = data.qr_url || ''; const p = document.getElementById('payQrImg');
+      if (payQr) { p.src = payQr; p.style.display = ''; } else p.style.display = 'none';
+    }
+    async function paySave() {
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      const en = document.getElementById('payEn').checked;
+      if (en && !payQr) { showToast('សូមដាក់រូប QR ជាមុន', true); return; }
+      const { data, error } = await sb.rpc('payment_settings_set', { p_u: CURRENT_USER.username, p_p: pw, p_enabled: en, p_qr: payQr,
+        p_amount: document.getElementById('payAmt').value, p_payee: document.getElementById('payPayee').value, p_note: document.getElementById('payNote').value });
+      if (error || !data) { showToast('❌ ' + ((error && error.message) || 'មិនអាចរក្សាទុកបាន') + (error && /function|schema cache/i.test(error.message || '') ? ' (ត្រូវដំណើរការ google_payment.sql)' : ''), true); return; }
+      showToast('✅ បានរក្សាទុកការកំណត់ទូទាត់');
+    }
+    async function payProof(id) {
+      let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      const { data } = await sb.rpc('google_pay_proof', { p_u: CURRENT_USER.username, p_p: pw, p_id: id });
+      if (!data) { showToast('គ្មានរូបបង្កាន់ដៃ', true); return; }
+      const w = window.open(); if (w) { w.document.write('<img style="max-width:100%" src="' + data + '">'); w.document.close(); }
+    }
     async function glOpen() {
+      payLoad();
       document.getElementById('glOv').classList.add('show');
       document.getElementById('glList').innerHTML = '<div class="gl-empty"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយក...</div>';
       try { await glFetch(); glRender(); }
