@@ -2704,23 +2704,23 @@ function tchTab(t) {
 async function googleStart() {
   hideLoginError();
   const b = document.getElementById('googleBtn'); if (b) b.disabled = true;
-  try { sessionStorage.setItem('krou_g', '1'); } catch (e) {}
+  try { localStorage.setItem('krou_g', '1'); } catch (e) {}
   try {
     const { error } = await sb.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: location.origin + location.pathname, queryParams: { prompt: 'select_account' } } });
     if (error) throw error;
   } catch (err) {
     if (b) b.disabled = false;
-    try { sessionStorage.removeItem('krou_g'); } catch (e) {}
+    try { localStorage.removeItem('krou_g'); } catch (e) {}
     showLoginError('មិនអាចចូលតាម Gmail បានទេ៖ ' + (err.message || 'សូមពិនិត្យការកំណត់ Google ក្នុង Supabase'));
   }
 }
 
 const ADMIN_TG = 'https://t.me/SengSophorn';
 let _gwTimer = null, _gwEl = null;
-function googleWaitStop() { if (_gwTimer) { clearInterval(_gwTimer); _gwTimer = null; } if (_gwEl) { _gwEl.remove(); _gwEl = null; } try { sessionStorage.removeItem('krou_g'); } catch (e) {} }
+function googleWaitStop() { if (_gwTimer) { clearInterval(_gwTimer); _gwTimer = null; } if (_gwEl) { _gwEl.remove(); _gwEl = null; } try { localStorage.removeItem('krou_g'); } catch (e) {} }
 function googleWait(session) {
   googleWaitStop();
-  try { sessionStorage.setItem('krou_g', '1'); } catch (e) {}
+  try { localStorage.setItem('krou_g', '1'); } catch (e) {}
   const em = (session.user.email || '').replace(/[<>&"']/g, '');
   const bg = document.createElement('div'); bg.className = 'gw-bg'; _gwEl = bg;
   bg.innerHTML = '<div class="gw" role="dialog"><div class="sp"></div><h3>⏳ រង់ចាំ admin អនុញ្ញាត</h3><div class="em">' + em + '</div>'
@@ -2763,7 +2763,7 @@ function gwImgData(file, max) {
 }
 function googlePay(session, info) {
   googleWaitStop();
-  try { sessionStorage.setItem('krou_g', '1'); } catch (e) {}
+  try { localStorage.setItem('krou_g', '1'); } catch (e) {}
   var esc = function (x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var em = esc(session.user.email || '');
   var bg = document.createElement('div'); bg.className = 'gw-bg'; _gwEl = bg;
@@ -2812,12 +2812,13 @@ async function googlePending(session) {   // pending → បើត្រូវ�
 }
 let _gBusy = false;
 async function googleBridge(session) {
-  let flag = ''; try { flag = sessionStorage.getItem('krou_g') || ''; } catch (e) {}
-  if (flag !== '1' || _gBusy || _gwEl) return;
+  let flag = ''; try { flag = localStorage.getItem('krou_g') || ''; } catch (e) {}
+  /* ដំណើរការ ពេលមាន flag ឬ មាន session Google តែមិនទាន់ចូលប្រព័ន្ធ (ក្រែងលោ OAuth ត្រឡប់មកផ្ទាំងថ្មី) */
+  if ((flag !== '1' && CURRENT_USER) || _gBusy || _gwEl) return;
   const prov = session && session.user && session.user.app_metadata && session.user.app_metadata.provider;
   if (prov !== 'google') return;
   _gBusy = true;
-  try { sessionStorage.removeItem('krou_g'); } catch (e) {}
+  try { localStorage.removeItem('krou_g'); } catch (e) {}
   try {
     const { data, error } = await sb.rpc('google_login');
     if (error) throw error;
@@ -3652,7 +3653,7 @@ async function pushRemove() {
     await sub.unsubscribe();
   } catch (e) {}
 }
-try { navigator.serviceWorker && navigator.serviceWorker.addEventListener('message', ev => { if (ev.data && ev.data.type === 'GOTO_CHAT' && CURRENT_USER) navigate('chat', null); }); } catch (e) {}
+try { navigator.serviceWorker && navigator.serviceWorker.addEventListener('message', ev => { if (ev.data && ev.data.type === 'GOTO_CHAT' && CURRENT_USER) navigate('chat', null); if (ev.data && ev.data.type === 'GOTO_TEACHER' && CURRENT_USER) navigate('teacher', null); }); } catch (e) {}
 
 function loginToast() {
   try {

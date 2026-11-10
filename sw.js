@@ -32,7 +32,7 @@ self.addEventListener('notificationclick', e => {
   const url = new URL((e.notification.data && e.notification.data.url) || './#chat', self.registration.scope).href;
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cs => {
     for (const c of cs) {
-      if (c.url.startsWith(self.registration.scope)) { c.postMessage({ type: 'GOTO_CHAT' }); return c.focus(); }
+      if (c.url.startsWith(self.registration.scope)) { c.postMessage({ type: /#teacher/.test(url) ? 'GOTO_TEACHER' : 'GOTO_CHAT' }); return c.focus(); }
     }
     return self.clients.openWindow(url);
   }));
