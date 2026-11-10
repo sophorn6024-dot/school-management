@@ -293,41 +293,36 @@
     }
 
 
-    /* ===== ទម្រង់ទី ២: បណ្ណសម្គាល់ខ្លួនសិស្ស A5 (២ កាត/ទំព័រ) ===== */
-    .a4-page.layout-2 { display:grid; grid-template-columns:1fr 1fr; grid-template-rows:100%; gap:0; padding:0; }
-    .cd2 { width:100%; height:100%; min-width:0; min-height:0; box-sizing:border-box; border:1.5mm solid #1f4fa3; padding:3mm; background:#fff !important; color:#000 !important; position:relative; overflow:hidden; font-family:'Battambang',sans-serif; }
-    .cd2-in { position:relative; height:100%; border:.45mm solid #1f4fa3; padding:4mm 7mm 0; box-sizing:border-box; overflow:hidden; }
-    .cd2 .card-watermark { width:96mm; height:auto; max-height:108mm; top:52%; z-index:0; filter:grayscale(.15); }
-    .cd2-head { position:relative; z-index:1; text-align:center; padding:0 0 2mm; border-bottom:.9mm solid #1f4fa3; }
-    .cd2-logo { position:absolute; left:0; top:0; width:20mm; height:22mm; object-fit:contain; }
-    .cd2-k1 { font-family:'Moul',serif; font-size:17px; color:#1f4fa3; line-height:1.5; }
-    .cd2-k2 { font-family:'Moul',serif; font-size:12.5px; color:#1f4fa3; line-height:1.5; }
-    .cd2-orn { width:34mm; height:4mm; margin:.5mm auto 0; display:block; }
-    .cd2-dept { font-family:'Moul',serif; font-size:13px; color:#1f4fa3; line-height:1.6; margin-top:.5mm; }
-    .cd2-ttl { position:relative; z-index:1; text-align:center; margin-top:4mm; }
-    .cd2-ttl .t1 { font-family:'Moul',serif; font-size:21px; color:#c62828; line-height:1.5; }
-    .cd2-ttl .t2 { font-family:'Moul',serif; font-size:17px; color:#1f4fa3; line-height:1.6; }
-    .cd2-ttl .t3 { font-family:'Moul',serif; font-size:16px; color:#1f4fa3; line-height:1.6; }
-    .cd2-info { position:relative; z-index:1; margin-top:5mm; font-size:13.5px; }
-    .cd2-row { display:flex; gap:6mm; align-items:baseline; margin-bottom:3.3mm; line-height:1.55; }
+    /* ===== ទម្រង់ទី ២: បណ្ណសម្គាល់ខ្លួនសិស្ស (ទំហំ ៧×១០ ស.ម ដូចទម្រង់ទី ១) ===== */
+    .cd2 { width:70mm; height:100mm; box-sizing:border-box; border:1mm solid #1f4fa3; padding:1mm; background:#fff !important; color:#000 !important; position:relative; overflow:hidden; font-family:'Battambang',sans-serif; }
+    .cd2-in { position:relative; height:100%; border:.25mm solid #1f4fa3; padding:1.8mm 2.8mm 0; box-sizing:border-box; overflow:hidden; }
+    .cd2 .card-watermark { width:50mm; height:auto; max-height:56mm; top:50%; z-index:0; }
+    .cd2-head { position:relative; z-index:1; text-align:center; padding:0 0 .8mm; border-bottom:.5mm solid #1f4fa3; min-height:13mm; }
+    .cd2-logo { position:absolute; left:0; top:0; width:10.5mm; height:11.5mm; object-fit:contain; }
+    .cd2-k1 { font-family:'Moul',serif; font-size:8px; color:#1f4fa3; line-height:1.45; }
+    .cd2-k2 { font-family:'Moul',serif; font-size:6.4px; color:#1f4fa3; line-height:1.45; }
+    .cd2-orn { width:17mm; height:2mm; margin:.2mm auto 0; display:block; }
+    .cd2-dept { font-family:'Moul',serif; font-size:6px; color:#1f4fa3; line-height:1.5; }
+    .cd2-ttl { position:relative; z-index:1; text-align:center; margin-top:1.2mm; }
+    .cd2-ttl .t1 { font-family:'Moul',serif; font-size:10.5px; color:#c62828; line-height:1.5; }
+    .cd2-ttl .t2 { font-family:'Moul',serif; font-size:8px; color:#1f4fa3; line-height:1.55; }
+    .cd2-ttl .t3 { font-family:'Moul',serif; font-size:8px; color:#1f4fa3; line-height:1.55; }
+    .cd2-info { position:relative; z-index:1; margin-top:1.4mm; font-size:8px; }
+    .cd2-row { display:flex; gap:2mm; align-items:baseline; margin-bottom:.7mm; line-height:1.45; }
     .cd2-row > div { white-space:nowrap; }
     .cd2-row .grow { flex:1; white-space:normal; min-width:0; }
     .cd2-row b { color:#1f3a8a; font-weight:700; }
-    .cd2-photo { position:absolute; left:7mm; bottom:5mm; width:31mm; height:41mm; border:.4mm solid #1f4fa3; background:#e2e8f0; z-index:1; display:flex; align-items:center; justify-content:center; overflow:hidden; color:#94a3b8; font-size:26px; }
+    .cd2-photo { position:absolute; left:2.8mm; bottom:15mm; width:19mm; height:24.5mm; border:.3mm solid #1f4fa3; background:#e2e8f0; z-index:1; display:flex; align-items:center; justify-content:center; overflow:hidden; color:#94a3b8; font-size:16px; }
     .cd2-photo img { width:100%; height:100%; object-fit:cover; display:block; }
-    .cd2-sign { position:absolute; right:5mm; bottom:5mm; width:84mm; text-align:center; z-index:2; }
-    .cd2-sch { font-family:'Moul',serif; font-size:13px; color:#1f4fa3; line-height:1.6; }
-    .cd2-sch small { font-size:12px; color:#1f3a8a; }
-    .cd2 .sig-date { font-size:9.5px; color:#1f3a8a !important; font-weight:600; }
-    .cd2 .sig-stamp-wrapper { min-height:26mm; margin-top:0; }
-    .cd2-sigimg { position:absolute; left:0; right:0; top:3mm; display:flex; justify-content:center; z-index:3; }
-    .cd2-sigimg .kit-sig { height:15mm; width:45mm; object-fit:contain; mix-blend-mode:multiply; }
-    .cd2-dir { font-family:'Moul',serif; font-size:12px; color:#1f3a8a; line-height:1.5; position:relative; z-index:2; }
-    .cd2 .sig-stamp-wrapper .stamp-overlay-box.kit { top:calc(var(--stamp-top) - 17mm); }
-    .cd2 .stamp-overlay-box { top:calc(var(--stamp-top) - 9mm); }
-    .cd2 .stamp-overlay-box:not(.kit) { height:var(--stamp-h); }
-    .cd2-role { font-family:'Moul',serif; font-size:12.5px; color:#1f4fa3; line-height:1.5; position:relative; z-index:2; }
-    .cd2 .card-qr { left:44mm; bottom:5mm; width:24mm; height:24mm; }
+    .cd2 .card-qr { left:5.8mm; bottom:2mm; width:13mm; height:13mm; }
+    .cd2-sign { position:absolute; right:1.5mm; bottom:0; width:44mm; text-align:center; z-index:2; }
+    .cd2-sch { font-family:'Moul',serif; font-size:6.4px; color:#1f4fa3; line-height:1.5; }
+    .cd2 .sig-date { font-size:4.8px; line-height:1.35; color:#1f3a8a !important; font-weight:600; }
+    .cd2 .sig-stamp-wrapper { position:relative; min-height:24mm; margin-top:0; }
+    .cd2-role { font-family:'Moul',serif; font-size:7px; color:#1f4fa3; line-height:1.5; position:relative; z-index:2; }
+    .cd2-dir { font-family:'Moul',serif; font-size:7px; color:#1f3a8a; line-height:1.5; position:relative; z-index:2; }
+    .cd2 .sig-stamp-wrapper .stamp-overlay-box.kit { top:calc(var(--stamp-top) - 12mm); }
+    .cd2 .stamp-overlay-box:not(.kit) { top:calc(var(--stamp-top) - 4mm); height:var(--stamp-h); }
 
     /* 3x2 (6 កាត) */
     .a4-page.layout-6 {
@@ -635,7 +630,7 @@ function qrStampLogo(box){
       <select id="layoutSelect" style="display:none;" onchange="switchLayout(this.value)">
         <option value="8">៨ កាត (៤×២)</option>
         <option value="6">៦ កាត (៣×២)</option>
-        <option value="2">ទម្រង់ទី ២ · បណ្ណសម្គាល់ A5 (២ កាត)</option>
+        <option value="2">ទម្រង់ទី ២ · បណ្ណសម្គាល់ (៨ កាត ៧×១០ ស.ម)</option>
       </select>
     </div>
 
@@ -2262,7 +2257,7 @@ function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE
 function kitCardStamp(){
   /* ត្រាមួយទាំងសន្លឹក (រួមទាំងហត្ថលេខា និងឈ្មោះនាយក) មិនកាត់ ៖ ផ្នែករង្វង់ = ទំហំស្លាយ (លំនាំដើម ៣៤មម) */
   const m=STAMP_META, r=m.w/m.d, h=m.h/m.d, cx=(m.x+m.d/2)/m.d, ty=m.y/m.d;
-  return '<div class="stamp-overlay-box kit" style="width:calc(var(--stamp-w) * '+r+');height:calc(var(--stamp-w) * '+h+');margin-left:calc(var(--stamp-w) * '+(-cx)+');margin-top:calc(var(--stamp-w) * '+(-ty)+');left:50%;transform:none"><img alt="ត្រានាយក" src="'+m.url+'"></div>';
+  return '<div class="stamp-overlay-box kit" style="width:calc(var(--stamp-w) * '+r+');height:calc(var(--stamp-w) * '+h+');margin-left:calc(var(--stamp-w) * '+(-cx)+');margin-top:calc(var(--stamp-w) * '+(-ty)+');left:calc(50% + var(--stamp-left));transform:none"><img alt="ត្រានាយក" src="'+m.url+'"></div>';
 }
 function kitDirName(){return STAMP_META?'':(((PROF&&PROF.director_name)||'').trim())}
 async function loadKit(done){
@@ -2570,10 +2565,11 @@ function card2Html(s, c) {
         <div class="t3">ថ្នាក់ទី ${esc(cls)}</div>
       </div>
       <div class="cd2-info">
-        <div class="cd2-row"><div class="grow">គោត្តនាម នាម : <b>${esc(s.name || '')}</b></div><div>ភេទ : <b>${esc(s.sex || '')}</b></div></div>
-        <div class="cd2-row"><div class="grow">ថ្ងៃខែឆ្នាំកំណើត : <b>${esc(c.dobFormatted)}</b></div></div>
-        <div class="cd2-row"><div class="grow">ទីកន្លែងស្នាក់នៅបច្ចុប្បន្ន : <b>${esc(c.addressText)}</b></div></div>
-        <div class="cd2-row"><div class="grow">ឈ្មោះឪពុក : <b>${esc(s.father || '')}</b></div><div class="grow">ឈ្មោះម្តាយ : <b>${esc(s.mother || '')}</b></div></div>
+        <div class="cd2-row"><div class="grow">គោត្តនាម នាម : <b>${esc(s.name || '')}</b></div></div>
+        <div class="cd2-row"><div>ភេទ : <b>${esc(s.sex || '')}</b></div><div class="grow">ថ្ងៃខែឆ្នាំកំណើត : <b>${esc(c.dobFormatted)}</b></div></div>
+        <div class="cd2-row"><div class="grow">ឈ្មោះឪពុក : <b>${esc(s.father || '')}</b></div></div>
+        <div class="cd2-row"><div class="grow">ឈ្មោះម្តាយ : <b>${esc(s.mother || '')}</b></div></div>
+        <div class="cd2-row"><div class="grow">អាសយដ្ឋាន : <b>${esc(c.addressText)}</b></div></div>
       </div>
       <div class="cd2-photo">${c.photoHtml}</div>
       ${qrHtml}
@@ -2622,8 +2618,8 @@ function renderCards() {
   const schoolYear   = document.getElementById('schoolYear').value || '២០២៦~២០២៧';
   const autoDateText = getAutoKhmerDate();
 
-  const cardsPerPage = currentLayout;
-  const layoutClass  = (cardsPerPage === 6) ? 'layout-6' : (cardsPerPage === 2 ? 'layout-2' : 'layout-8');
+  const cardsPerPage = (currentLayout === 2) ? 8 : currentLayout;
+  const layoutClass  = (cardsPerPage === 6) ? 'layout-6' : 'layout-8';
   const totalPages   = Math.ceil(allStudents.length / cardsPerPage);
   let html = '';
 
