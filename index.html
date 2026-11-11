@@ -1266,7 +1266,7 @@ function qrStampLogo(box){
             <div class="rg-col">
             <div class="rg-card rg-green">
               <div class="rg-title f-moul">សៀវភៅរដ្ឋបាល</div>
-              <div class="rg-row" onclick="openInTab('schedule')"><span class="rg-name">កាលវិភាគ</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('schedule')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
+              <div class="rg-row" onclick="openInTab('schedule','preview')"><span class="rg-name">កាលវិភាគ</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('schedule','preview')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
               <div class="rg-row" onclick="openInTab('curriculum')"><span class="rg-name">កម្មវិធីសិក្សា</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('curriculum')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
               <div class="rg-row" onclick="openInTab('classroom_rules')"><span class="rg-name">បទបញ្ជាផ្ទៃក្នុង</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('classroom_rules')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
               <div class="rg-row" onclick="openInTab('class_inventory')"><span class="rg-name">បញ្ជីសារពើភ័ណ្ឌ</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('class_inventory')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
@@ -3543,7 +3543,7 @@ function navigate(page, el) {
 
 
 /* ===== 🖨️ tab របាយការណ៍: បង្ហាញតែទម្រង់បោះពុម្ព (ប្រើ style @media print លើអេក្រង់) ===== */
-const SOLO_SKIP = ['attendance','score'];   /* ទំព័រទាំងនេះមាន view=report ផ្ទាល់ខ្លួន */
+const SOLO_SKIP = ['attendance','score','schedule'];   /* ទំព័រទាំងនេះមាន view=report ផ្ទាល់ខ្លួន */
 let soloOpts = false;
 function soloFrame(){ return document.getElementById('pageFrame'); }
 function soloApply(){
@@ -3560,7 +3560,8 @@ function soloApply(){
       walk(r.cssRules);
     } } };
   for (const ss of doc.styleSheets) { try { walk(ss.cssRules); } catch(e) {} }
-  const b = document.getElementById('soloOpt'); if (b) b.style.display = SOLO_SKIP.includes(page) ? 'none' : '';
+  const sb_ = document.getElementById('soloBar'); if (sb_) sb_.style.display = SOLO_SKIP.includes(page) ? 'none' : '';
+  const b = document.getElementById('soloOpt');
   if (b) b.textContent = soloOpts ? '📄 ទម្រង់បោះពុម្ព' : '⚙️ ជម្រើស';
 }
 function soloToggle(){ soloOpts = !soloOpts; soloApply(); }
