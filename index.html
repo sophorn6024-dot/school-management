@@ -3482,7 +3482,7 @@ function navigate(page, el) {
   try { history.replaceState(null, '', '#' + page); } catch(e) {}
 
   document.querySelectorAll('.nav-link-btn').forEach(n => n.classList.remove('active'));
-  const HUB_CHILDREN = ['addStudent', 'group', 'seating', 'bmi', 'curriculum', 'my_classes', 'committee_meeting'];
+  const HUB_CHILDREN = ['addStudent', 'group', 'seating', 'bmi', 'curriculum', 'schedule', 'my_classes', 'committee_meeting'];
   const isReportChild = ['roster', 'roster2', 'rank', 'honor', 'certificate', 'report', 'remesterrecord'].includes(page);
   let target = el || document.querySelector(`[data-page="${page}"]`);
   if (!target && isReportChild) target = document.querySelector('[data-page="reportsHub"]');
@@ -3491,7 +3491,7 @@ function navigate(page, el) {
   if (target) target.classList.add('active');
 
   document.querySelectorAll('.m-nav-item').forEach(m => m.classList.remove('active'));
-  const mMap = { dashboard: 'mNavDash', classes: 'mNavStu', addStudent: 'mNavStu', group: 'mNavStu', seating: 'mNavStu', bmi: 'mNavStu', curriculum: 'mNavStu', my_classes: 'mNavStu', committee_meeting: 'mNavStu', attendance: 'mNavAtt', score: 'mNavScores', subject: 'mNavScores' };
+  const mMap = { dashboard: 'mNavDash', classes: 'mNavStu', addStudent: 'mNavStu', group: 'mNavStu', seating: 'mNavStu', bmi: 'mNavStu', curriculum: 'mNavStu', schedule: 'mNavStu', my_classes: 'mNavStu', committee_meeting: 'mNavStu', attendance: 'mNavAtt', score: 'mNavScores', subject: 'mNavScores' };
   if (mMap[page]) document.getElementById(mMap[page])?.classList.add('active');
   updateMobileNavIndicator();
 
@@ -3589,7 +3589,7 @@ document.getElementById('pageFrame').addEventListener('load', function() {
         document.querySelectorAll('.nav-link-btn').forEach(n => n.classList.remove('active'));
         let t = document.querySelector(`[data-page="${detectedPage}"]`);
         if (!t && detectedPage === 'subject') t = document.querySelector('[data-page="score"]');
-        if (!t && ['addStudent', 'group', 'seating', 'bmi', 'curriculum', 'my_classes', 'committee_meeting'].includes(detectedPage)) t = document.querySelector('[data-page="classes"]');
+        if (!t && ['addStudent', 'group', 'seating', 'bmi', 'curriculum', 'schedule', 'my_classes', 'committee_meeting'].includes(detectedPage)) t = document.querySelector('[data-page="classes"]');
         if (t) t.classList.add('active');
       }
     }
@@ -3647,7 +3647,7 @@ function closeMoreSheet() {
   const sh = document.getElementById('moreSheet');
   if (!sh || !sh.classList.contains('open')) return;
   sh.classList.remove('open'); sh.setAttribute('aria-hidden', 'true');
-  const mMap = { dashboard: 'mNavDash', classes: 'mNavStu', addStudent: 'mNavStu', group: 'mNavStu', seating: 'mNavStu', bmi: 'mNavStu', curriculum: 'mNavStu', my_classes: 'mNavStu', committee_meeting: 'mNavStu', attendance: 'mNavAtt', score: 'mNavScores', subject: 'mNavScores' };
+  const mMap = { dashboard: 'mNavDash', classes: 'mNavStu', addStudent: 'mNavStu', group: 'mNavStu', seating: 'mNavStu', bmi: 'mNavStu', curriculum: 'mNavStu', schedule: 'mNavStu', my_classes: 'mNavStu', committee_meeting: 'mNavStu', attendance: 'mNavAtt', score: 'mNavScores', subject: 'mNavScores' };
   document.querySelectorAll('.m-nav-item').forEach(m => m.classList.remove('active'));
   if (mMap[currentPage]) document.getElementById(mMap[currentPage])?.classList.add('active');
   updateMobileNavIndicator();
