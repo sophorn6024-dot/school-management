@@ -1910,7 +1910,7 @@ function printTable(sess,days){
 }
 const PGS={A4:[210,297],A5:[148,210],Letter:[216,279]};
 function openPreview(){document.getElementById('ppv').classList.add('show');document.body.style.overflow='hidden';buildSheet()}
-function closePreview(){document.getElementById('ppv').classList.remove('show');document.body.style.overflow='';closeKhmerCalendar()}
+function closePreview(){if(window.__solo){try{window.top.close()}catch(e){}setTimeout(function(){try{window.top.location.href='index.html'}catch(e){location.href='index.html'}},250);return}document.getElementById('ppv').classList.remove('show');document.body.style.overflow='';closeKhmerCalendar()}
 function prSave(close){
   const o={sess:prSess.value,paper:prPaper.value,ori:prOri.value,mar:Math.min(30,Math.max(3,+prMar.value||10)),font:prFont.value,sign:prSign.checked};
   try{localStorage.setItem(PRK,JSON.stringify(o))}catch(e){}
@@ -2154,7 +2154,9 @@ window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.return
 window.addEventListener('DOMContentLoaded',()=>{
   if(!USER||!USER.username){document.getElementById('authWrap').style.display='flex';return}
   document.getElementById('app').style.display='block';
-  render();initClasses();
+  render();
+  const _pv=(function(){try{return new URLSearchParams(location.search).get('view')==='preview'}catch(e){return false}})();
+  if(_pv){window.__solo=true;initClasses().then(()=>openPreview());}else initClasses();
   setInterval(()=>{if(!document.hidden&&!document.getElementById('setModal').classList.contains('show'))render()},60000);
 });
 </script>
