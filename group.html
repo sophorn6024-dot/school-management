@@ -879,6 +879,8 @@ async function loadKit(done){
             photoUrl: s.photo_url || '',
             className: cleanGrade(s.grade)
           }));
+        // តម្រៀបតាមអក្សរក្រមខ្មែរ (សម្រាប់បញ្ជីជ្រើសតួនាទី កង់ និងក្រុម)
+        try { const col = new Intl.Collator('km'); students.sort((x, y) => col.compare(x.name, y.name)); } catch (e) {}
 
         // 🎡 កង់
         loadSt(); rebuild(); renderSpinUI(); updateSplitPreview();
@@ -1552,6 +1554,9 @@ async function loadKit(done){
         for (let i = 0; i < pool.length; i += n) groups.push(pool.slice(i, i + n));
       }
 
+      // រៀបសិស្សក្នុងក្រុមនីមួយៗតាមលំដាប់បញ្ជីឈ្មោះក្នុងថ្នាក់ (ល.រ) មិនឱ្យរញ៉េរញ៉ៃ
+      const ord = new Map(students.map((s, i) => [s.id, i]));
+      groups.forEach(g => g.sort((x, y) => (ord.has(x.id) ? ord.get(x.id) : 1e9) - (ord.has(y.id) ? ord.get(y.id) : 1e9)));
       // រក្សាតែទិន្នន័យចាំបាច់ (មិនរក្សារូបថត)
       currentGroups = groups.map(g => g.map(s => ({ id: s.id, name: s.name, sex: s.sex })));
       document.getElementById('printClassName').innerText = 'ប្រចាំ ថ្នាក់ទី ' + __kc(curClass);
