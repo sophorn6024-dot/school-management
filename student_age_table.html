@@ -1191,6 +1191,23 @@ async function initClasses(){
   const last=localStorage.getItem('ageTbl_lastClass');if(last&&list.includes(last))cs.value=last;
 }
 let first=true;
+
+/* ===== ប្ដូរឆ្នាំសិក្សា: ឆ្នាំបច្ចុប្បន្ន = តារាងសិស្ស · ឆ្នាំចាស់ = ទិន្នន័យ archive ពេលដំឡើងថ្នាក់ ===== */
+let ARCH_MSG='';
+function nowYearVal(){const y=new Date().getFullYear(),m=new Date().getMonth(),b=m>=8?y:y-1;return b+'-'+(b+1)}
+async function yearData(cur){
+  ARCH_MSG='';
+  if(CUR.year===nowYearVal())return cur;
+  let pw='';try{pw=localStorage.getItem('krou_pw')||''}catch(e){}
+  try{
+    const {data,error}=await sb.rpc('staff_archive_get',{p_u:USER.username,p_p:pw,p_class:CUR.cls});
+    if(error||!Array.isArray(data)){ARCH_MSG='⚠️ មិនអាចអានទិន្នន័យឆ្នាំចាស់បានទេ (admin ត្រូវរត់ archive_read.sql ក្នុង Supabase)';return []}
+    const key=v=>fromKh(String(v||'')).replace(/\s+/g,'').replace(/[~–—]/g,'-');
+    const m=data.filter(a=>key(a.school_year)===key(CUR.year))[0];
+    if(!m){ARCH_MSG='ℹ️ ឆ្នាំសិក្សា '+toKh(CUR.year)+' មិនមានទិន្នន័យ archive សម្រាប់ថ្នាក់នេះទេ (ទិន្នន័យ archive កើតឡើងពេលធ្វើ «ដំឡើងថ្នាក់ចុងឆ្នាំ»)។ ឆ្នាំបច្ចុប្បន្ន៖ '+toKh(nowYearVal());return []}
+    return (m.students||[]).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km'));
+  }catch(e){ARCH_MSG='⚠️ '+(e.message||e);return []}
+}
 async function reload(keepAsOf){
   if(!keepAsOf&&!first)setAsOf();
   CUR.year=document.getElementById('selYear').value;CUR.cls=document.getElementById('selClass').value;
@@ -1201,10 +1218,11 @@ async function reload(keepAsOf){
     const {data,error}=await sb.from('students').select('id, student_id, student_name, gender, dob, grade, dropout_semester').order('id',{ascending:true});
     if(error)throw error;
     STU=(data||[]).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km')).filter(s=>cleanGrade(s.grade)===CUR.cls);
+    STU=await yearData(STU);
     await loadFlags();
     TEACHER=await fetchTeacher(CUR.cls);
     document.querySelectorAll('.ed[data-k]').forEach(el=>{if(INFO[el.dataset.k]===undefined)el.textContent=el.dataset.def||el.textContent});
-    render();setSt('ok','ទាញពី Database រួច');
+    render();if(ARCH_MSG){const w=document.getElementById('ageWarn')||document.getElementById('vaWarn');if(w)w.innerHTML='<div>'+ARCH_MSG+'</div>'+w.innerHTML;toast(ARCH_MSG.slice(0,90))}setSt('ok','ទាញពី Database រួច');
   }catch(err){setSt('err','កំហុស');toast('❌ '+err.message)}
   first=false;
 }
