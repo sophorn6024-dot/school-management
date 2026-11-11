@@ -306,10 +306,10 @@ select option{font-size:14px;font-weight:400}
 .vt td.c{height:24px;padding:2px 1px}
 #kgT{font-size:10px;table-layout:fixed}#kgT thead th{padding:3px 1px;font-size:10px;line-height:1.35}#kgT td.nm{font-size:10.5px;padding:3px 4px}#kgT td.ec .ed{padding:2px 0;font-size:10.5px}
 /* ===== ១.(ក) ព័ត៌មានគ្រូ: តូចសមល្មម ===== */
-.page>.cols{grid-template-columns:minmax(0,.6fr) minmax(0,1.4fr);align-items:start}
+.page>.cols{grid-template-columns:minmax(0,.6fr) minmax(0,1.4fr);align-items:stretch}
 .page>.cols .col:first-child .sec>h3{font-size:12px;padding:6px 8px}
-.page>.cols .col:first-child .sec>.body{flex:none;padding:5px}
-.page>.cols .col:first-child table.kv{font-size:11px;flex:none;height:auto}
+.page>.cols .col:first-child .sec>.body{flex:1;padding:5px}
+.page>.cols .col:first-child table.kv{font-size:11px;flex:1;height:100%}
 table.kv th{padding:3px 7px;width:42%;font-size:10.5px}
 table.kv td{padding:3px 6px}
 table.kv .ed{min-width:60px!important}
@@ -1031,6 +1031,7 @@ function layoutSheets(){
 }
 function toggleSheet2(){INFO.sheet2=!sheet2On();saveInfo();layoutSheets();toast(sheet2On()?'២.(ខ២) និងហត្ថលេខា ត្រូវបានរុញទៅសន្លឹកទី ២':'ដាក់ក្នុងសន្លឹកតែមួយ (បោះពុម្ពនឹងបង្រួមឱ្យស្រួល)')}
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.ex){INFO['ex_'+t.dataset.ex]=t.textContent;saveInfo();
+  if(/^kgx/.test(t.dataset.ex)){const m=t.dataset.ex.match(/^kgx(\d+)_(\d+)$/);if(m){const i=+m[1],g=+m[2]>=8?1:0;[0,1].forEach(k=>{let v=0;for(let q=0;q<3;q++)v+=num(INFO['ex_kgx'+i+'_'+(g*8+q*2+k)]);const el=document.getElementById('kgS'+i+'_'+(g*8+6+k));if(el)el.textContent=v?toKh(v):''})}}
   if(/^kgv/.test(t.dataset.ex))document.querySelectorAll('[data-ex="'+t.dataset.ex+'"]').forEach(o=>{if(o!==t)o.textContent=t.textContent});
   if(/^eth/.test(t.dataset.ex)){[0,1].forEach(c=>{const v=['eth0_'+c,'eth1_'+c].reduce((a,k)=>a+num(INFO['ex_'+k]),0);const el=document.getElementById('ethS'+c);if(el)el.textContent=v?toKh(v):''})}}});
 function count(fn){let t=0,f=0;activeStu().forEach(s=>{if(fn(s)){t++;if(isF(s.gender))f++}});return [t,f]}
@@ -1091,9 +1092,11 @@ function render(){
     const rows=['មត្តេយ្យរដ្ឋ','មត្តេយ្យឯកជន','មត្តេយ្យសហគមន៍','ការអប់រំតាមផ្ទះ/តាមខ្លួន'];
     const ec=(k)=>`<td class="ec"><span class="ed" contenteditable data-ex="${k}" data-ph="">${esc(INFO['ex_'+k]||'')}</span></td>`;
     const vn=v=>`<th colspan="2"><span class="ed" contenteditable data-ex="kgv${v}" data-ph="ភូមិ ${toKh(v+1)}" style="min-width:0;display:block;border-bottom:1px dotted #94a3b8;font-weight:700">${esc(INFO['ex_kgv'+v]||'')}</span></th>`;
-    const vg=[0,1,2].map(vn).join('');
-    document.getElementById('kgT').innerHTML=`<thead><tr><th rowspan="4" style="width:18%">ប្រភេទ</th><th colspan="12">ថ្នាក់ទី១ (សិស្សម្នាក់អាចរាប់បានតែមួយដង)</th></tr><tr><th colspan="6">សិស្សថ្មី</th><th colspan="6">សិស្សត្រួត</th></tr><tr>${vg}${vg}</tr><tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(6)}</tr></thead><tbody>`+
-      rows.map((r,i)=>`<tr><td class="nm">${r}</td>${Array.from({length:12},(_,c)=>ec('kgx'+i+'_'+c)).join('')}</tr>`).join('')+'</tbody>';
+    const vg=[0,1,2].map(vn).join('')+'<th colspan="2" style="background:#d9e1fb">សរុប</th>';
+    const kgs=(i,c)=>{const g=c>=8?1:0,k=(c-g*8)-6;return [0,1,2].reduce((t,v)=>t+num(INFO['ex_kgx'+i+'_'+(g*8+v*2+k)]),0)};
+    const kgc=(i,c)=>(c%8)<6?ec('kgx'+i+'_'+c):`<td class="c" id="kgS${i}_${c}" style="font-weight:700;background:#e5e9fb;height:26px;padding:2px 0">${n(kgs(i,c))}</td>`;
+    document.getElementById('kgT').innerHTML=`<thead><tr><th rowspan="4" style="width:16%">ប្រភេទ</th><th colspan="16">ថ្នាក់ទី១ (សិស្សម្នាក់អាចរាប់បានតែមួយដង)</th></tr><tr><th colspan="8">សិស្សថ្មី</th><th colspan="8">សិស្សត្រួត</th></tr><tr>${vg}${vg}</tr><tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(8)}</tr></thead><tbody>`+
+      rows.map((r,i)=>`<tr><td class="nm">${r}</td>${Array.from({length:16},(_,c)=>kgc(i,c)).join('')}</tr>`).join('')+'</tbody>';
     document.getElementById('kgT').style.opacity=g1?'1':'.45';
   }
   // 2.(គ២) ជនជាតិដើមភាគតិច
