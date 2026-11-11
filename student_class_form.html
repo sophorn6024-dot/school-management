@@ -30,7 +30,7 @@ body{background:var(--bg);color:var(--text);font-family:'Battambang','Kantumruy 
 .banner{display:none;margin:10px 14px 0;padding:12px 14px;border-radius:14px;background:#fef3c7;color:#92400e;font-size:13px;line-height:1.7;border:1px solid #fcd34d}
 .banner button{margin-left:8px;background:#f59e0b;color:#fff;border:0;border-radius:9px;padding:4px 12px;font:700 12px 'Kantumruy Pro',sans-serif;cursor:pointer}
 .stage{padding:16px;display:flex;justify-content:center;overflow-x:auto}
-.page{width:210mm;min-height:297mm;background:#fff;color:#0f172a;padding:9mm 9mm 12mm;box-shadow:0 12px 44px rgba(15,23,42,.18);position:relative;flex-shrink:0;border-radius:4px}
+.page{width:297mm;min-height:210mm;background:#fff;color:#0f172a;padding:9mm 9mm 12mm;box-shadow:0 12px 44px rgba(15,23,42,.18);position:relative;flex-shrink:0;border-radius:4px}
 .logo{position:absolute;right:9mm;top:6mm;width:56px;height:56px;border:2.5px solid #3730a3;border-radius:50%;display:flex;align-items:center;justify-content:center;font:italic 700 20px Georgia,serif;color:#3730a3}
 .ttl{font-family:'Moul',serif;text-align:center;font-size:21px;color:#1e3a8a;line-height:1.8;padding:0 60px}
 .sub{font-family:'Moul',serif;text-align:center;font-size:15px;color:#1e3a8a}
@@ -94,13 +94,14 @@ table.kv td{padding:6px 10px;text-align:center}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 18px;border-radius:14px;font-size:13px;font-weight:700;z-index:300;display:none}
 .auth{display:none;min-height:70vh;align-items:center;justify-content:center;text-align:center;padding:24px}
 .auth div{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:34px 26px;max-width:380px}
-@media(max-width:860px){.stage{padding:8px}.page{zoom:.46}}
-@media(max-width:600px){.page{zoom:.42}}
+@media(max-width:1200px){.stage{padding:8px}.page{zoom:.7}}
+@media(max-width:860px){.page{zoom:.52}}
+@media(max-width:600px){.page{zoom:.34}}
 @media print{
-  @page{size:210mm 297mm;margin:0}
+  @page{size:297mm 210mm;margin:0}
   body{background:#fff;padding:0}.tb,.banner,.tip,.ov,.toast{display:none!important}
   html,body{height:auto;overflow:visible}
-  .stage{padding:0;display:block;overflow:visible}.page{box-shadow:none;border-radius:0;margin:0 auto;min-height:0!important;height:297mm;overflow:hidden;padding:8mm 8mm 6mm;page-break-after:avoid;break-after:avoid}
+  .stage{padding:0;display:block;overflow:visible}.page{box-shadow:none;border-radius:0;margin:0 auto;min-height:0!important;height:210mm;overflow:hidden;padding:8mm 8mm 6mm;page-break-after:avoid;break-after:avoid}
   .ed{border-bottom:0}.ed:empty:before{content:''}
   td.nm.lk:after{display:none}th.clk{text-decoration:none}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -209,7 +210,7 @@ table.kv td{padding:6px 10px;text-align:center}
       margin-top: 40px;
     }
 
-    @page { size: A4 portrait; margin: 0; }
+    @page { size: A4 landscape; margin: 0; }
 
     @media print {
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -1047,14 +1048,15 @@ function render(){
   const ages=[];for(let a=aLo;a<=15;a++)ages.push(a);
   const isRep=s=>FLAGS.has(fk(s.student_id||s.id,'repeat'));
   const vh=cols.map(c=>`<th colspan="2">${esc(c.n)}</th>`).join('');
+  const tot='<th colspan="2" style="background:#d9e1fb">សរុប</th>';
   let h=`<table class="vt"><thead>
     <tr><th rowspan="3" style="width:8%">អាយុ<br>(ឆ្នាំ)</th>
-      <th colspan="${2*V}">សិស្សថ្មី</th>
-      <th colspan="${2*V}" class="clk" onclick="openModal('repeat')">សិស្សត្រួតថ្នាក់</th>
+      <th colspan="${2*V+2}">សិស្សថ្មី</th>
+      <th colspan="${2*V+2}" class="clk" onclick="openModal('repeat')">សិស្សត្រួតថ្នាក់</th>
       <th colspan="2" rowspan="2">សិស្សសរុប</th></tr>
-    <tr>${vh}${vh}</tr>
-    <tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(2*V+1)}</tr></thead><tbody>`;
-  const sum=new Array(4*V+2).fill(0);
+    <tr>${vh}${tot}${vh}${tot}</tr>
+    <tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(2*V+3)}</tr></thead><tbody>`;
+  const sum=new Array(4*V+6).fill(0);
   ages.forEach(a=>{
     const inAge=s=>{const x=ageOf(s);return x!==null&&(a===15?x>=15:x===a)};
     const newC=[],repC=[];
@@ -1063,8 +1065,8 @@ function render(){
       const rp=count(s=>inAge(s)&&c.m(villOf(s))&&isRep(s));
       newC.push(tt[0]-rp[0],tt[1]-rp[1]);repC.push(rp[0],rp[1]);
     });
-    const all=count(inAge);
-    const row=[...newC,...repC,...all];
+    const all=count(inAge),rpT=count(s=>inAge(s)&&isRep(s)),newT=[all[0]-rpT[0],all[1]-rpT[1]];
+    const row=[...newC,...newT,...repC,...rpT,...all];
     row.forEach((v,i)=>sum[i]+=v);
     h+=`<tr><td class="c">${a===15?'១៥+':toKh(a)}</td>${row.map(v=>`<td class="c">${n(v)}</td>`).join('')}</tr>`;
   });
@@ -1327,13 +1329,13 @@ async function reload(keepAsOf){
   first=false;
 }
 
-/* ===== បោះពុម្ពឱ្យចូលតែ ១ សន្លឹក A4 ===== */
+/* ===== បោះពុម្ពឱ្យចូលតែ ១ សន្លឹក A4 (ផ្ដេក) ===== */
 function visPages(){return [...document.querySelectorAll('.page')].filter(p=>!p.classList.contains('hide'))}
 function fitOnePage(){
-  const target=297/25.4*96-4;let zs=[];
+  const target=210/25.4*96-4;let zs=[];
   visPages().forEach(el=>{
     el.style.zoom='';el.style.width='';el.style.minHeight='0';el.style.height='auto';let z=1;
-    for(let i=0;i<8;i++){el.style.zoom=z;el.style.width=(210/z)+'mm';const h=el.scrollHeight*z;if(h<=target)break;z*=target/h*0.99}
+    for(let i=0;i<8;i++){el.style.zoom=z;el.style.width=(297/z)+'mm';const h=el.scrollHeight*z;if(h<=target)break;z*=target/h*0.99}
     zs.push(z);
   });
   return Math.min(...zs,1);
@@ -1465,12 +1467,12 @@ async function doPdf(){
   const pages=visPages(),zs=pages.map(p=>p.style.zoom);pages.forEach(p=>p.style.zoom='1');
   try{
     if(document.fonts&&document.fonts.ready)await document.fonts.ready;
-    const {jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');
+    const {jsPDF}=window.jspdf;const pdf=new jsPDF('l','mm','a4');
     for(let i=0;i<pages.length;i++){
       const c=await html2canvas(pages[i],{scale:3,backgroundColor:'#fff',useCORS:true});
-      let ih=c.height*210/c.width,iw=210;if(ih>297){iw=210*297/ih;ih=297}
+      let ih=c.height*297/c.width,iw=297;if(ih>210){iw=297*210/ih;ih=210}
       if(i)pdf.addPage();
-      pdf.addImage(c.toDataURL('image/png'),'PNG',(210-iw)/2,0,iw,ih,undefined,'FAST');
+      pdf.addImage(c.toDataURL('image/png'),'PNG',(297-iw)/2,0,iw,ih,undefined,'FAST');
     }
     pdf.save('តារាងចំនួនសិស្សតាមថ្នាក់_'+CUR.cls+'.pdf');
   }catch(err){toast('❌ PDF៖ '+err.message)}
