@@ -1646,7 +1646,7 @@ function openPv(type){
   $('pvPd').style.display=type==='chart'?'none':'';$('pvPd').previousElementSibling.style.display=type==='chart'?'none':'';
   renderPv();
 }
-function closePv(){$('pv').style.display='none';$('ed').style.display='block';renderTab()}
+function closePv(){if(window.__direct){try{window.top.close()}catch(e){}setTimeout(function(){try{window.top.location.href='index.html#reportsHub'}catch(e){location.href='index.html#reportsHub'}},250);return}$('pv').style.display='none';$('ed').style.display='block';renderTab()}
 function renderPv(){
   const p=GL.page;
   $('pvSign').innerHTML=IC.cal+'<span>'+esc(D.signDate?dLabel(D.signDate):'ជ្រើសថ្ងៃ')+'</span>';
@@ -1779,7 +1779,7 @@ async function reload(){
   loadG();initSelectors();await initClasses();enhanceAll($('ed'));
   if(!CLASSES.length){CLASSES=['—'];$('selClass').innerHTML='<option value="—">—</option>'}
   await reload();loadUsers();loadSignAssets();
-  try{const v=new URLSearchParams(location.search).get('view');if(['list','letter','minutes','chart'].includes(v))openPv(v)}catch(e){}
+  try{const v=new URLSearchParams(location.search).get('view');if(['list','letter','minutes','chart'].includes(v)){window.__direct=true;openPv(v)}}catch(e){}
 })();
 
 </script>
