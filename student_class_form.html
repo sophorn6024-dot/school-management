@@ -87,6 +87,7 @@ table.kv td{padding:6px 10px;text-align:center}
 .md .list{overflow:auto;padding:0 12px 12px;display:flex;flex-direction:column;gap:6px}
 .it{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:13px;border:1.5px solid var(--line);background:var(--in);cursor:pointer;transition:all .15s;user-select:none}
 .it:hover{border-color:var(--ac)}
+.it.lock{opacity:.45;cursor:not-allowed}
 .it.on{background:var(--oks);border-color:var(--ok)}
 .it .ck{width:22px;height:22px;border-radius:7px;border:2px solid var(--inl);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;flex-shrink:0}
 .it.on .ck{background:var(--ok);border-color:var(--ok)}
@@ -332,6 +333,8 @@ table.kv td,table.kv .ed{font-size:13px;font-weight:600;color:#0b1220}
 table.kv .csb,table.kv .edu-b{font-size:13px;font-weight:600;color:#0b1220}
 .sec>h3{font-size:14px}
 .tip{font-size:12.5px}
+#kgT .ed[data-ex^=kgv]:empty:before{color:#64748b;font-weight:700}
+#kgT thead th{color:#1b2a7a!important}
 .sec h3 small{font-weight:500;font-size:11px;display:block;opacity:.9}
 .hide{display:none!important}
 #blkRest .cols{align-items:start}
@@ -1001,6 +1004,8 @@ function isF(g){const s=String(g||'').trim();return s==='ស'||s.includes('ស�
 function refDate(){const v=document.getElementById('asOf').value;const [y,m,d]=v.split('-').map(Number);return new Date(y,m-1,d)}
 function activeStu(){return STU.filter(s=>!String(s.dropout_semester||'').trim())}
 function ageOf(s){const d=parseDob(s.dob);return d?ageAt(d,refDate()):null}
+/* សិស្សអាយុ ៦ឆ្នាំ (ឬក្រោម) មិនអាចត្រួតថ្នាក់បានទេ */
+function repLocked(s){const a=ageOf(s);return a!==null&&a<=6}
 
 /* ===== DB ===== */
 function lsKey(){return 'ageTbl_v1:'+CUR.year+':'+CUR.cls}
@@ -1076,7 +1081,7 @@ function render(){
   const real=act.map(ageOf).filter(x=>x!==null&&x>=0&&x<100);
   const aLo=Math.min(6,real.length?Math.min(...real):6);
   const ages=[];for(let a=aLo;a<=15;a++)ages.push(a);
-  const isRep=s=>FLAGS.has(fk(s.student_id||s.id,'repeat'));
+  const isRep=s=>FLAGS.has(fk(s.student_id||s.id,'repeat'))&&!repLocked(s);
   const vh=cols.map(c=>`<th colspan="2">${esc(c.n)}</th>`).join('');
   const tot='<th colspan="2" style="background:#d9e1fb">សរុប</th>';
   let h=`<table class="vt"><thead>
@@ -1115,7 +1120,7 @@ function render(){
     const kgc=(i,c)=>(c%8)<6?ec('kgx'+i+'_'+c):`<td class="c" id="kgS${i}_${c}" style="font-weight:700;background:#e5e9fb;height:26px;padding:2px 0">${n(kgs(i,c))}</td>`;
     document.getElementById('kgT').innerHTML=`<thead><tr><th rowspan="4" style="width:16%">ប្រភេទ</th><th colspan="16">ថ្នាក់ទី១ (សិស្សម្នាក់អាចរាប់បានតែមួយដង)</th></tr><tr><th colspan="8">សិស្សថ្មី</th><th colspan="8">សិស្សត្រួត</th></tr><tr>${vg}${vg}</tr><tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(8)}</tr></thead><tbody>`+
       rows.map((r,i)=>`<tr><td class="nm">${r}</td>${Array.from({length:16},(_,c)=>kgc(i,c)).join('')}</tr>`).join('')+'</tbody>';
-    document.getElementById('kgT').style.opacity=g1?'1':'.45';
+    document.getElementById('kgT').style.opacity='1';
   }
   // 2.(គ២) ជនជាតិដើមភាគតិច
   {
@@ -1297,11 +1302,11 @@ function closeModal(){document.getElementById('mdQ').parentNode.style.display=''
 function renderModal(){
   if(!MD)return;const q=document.getElementById('mdQ').value.trim();
   const list=activeStu().filter(s=>!q||String(s.student_name||'').includes(q));
-  document.getElementById('mdC').textContent='បានជ្រើស '+toKh([...activeStu()].filter(s=>FLAGS.has(fk(s.student_id||s.id,MD))).length)+' នាក់ ក្នុងចំណោម '+toKh(activeStu().length)+' នាក់ · ចុចលើឈ្មោះដើម្បីជ្រើស/ដក';
-  document.getElementById('mdL').innerHTML=list.map(s=>{const sid=s.student_id||s.id,on=FLAGS.has(fk(sid,MD)),a=ageOf(s);
-    return `<div class="it ${on?'on':''}" onclick="toggleStu('${esc(String(sid)).replace(/'/g,'')}')"><span class="ck">${on?'✓':''}</span><span class="n">${esc(s.student_name||'')}<div class="m">${isF(s.gender)?'ស្រី':'ប្រុស'}${a!==null?' · អាយុ '+toKh(a)+' ឆ្នាំ':''}</div></span></div>`}).join('')||'<div style="text-align:center;color:var(--muted);padding:20px">មិនមានសិស្ស</div>';
+  document.getElementById('mdC').textContent='បានជ្រើស '+toKh([...activeStu()].filter(s=>FLAGS.has(fk(s.student_id||s.id,MD))&&!(MD==='repeat'&&repLocked(s))).length)+' នាក់ ក្នុងចំណោម '+toKh(activeStu().length)+' នាក់ · ចុចលើឈ្មោះដើម្បីជ្រើស/ដក';
+  document.getElementById('mdL').innerHTML=list.map(s=>{const sid=s.student_id||s.id,a=ageOf(s),lock=MD==='repeat'&&repLocked(s),on=!lock&&FLAGS.has(fk(sid,MD));
+    return `<div class="it ${on?'on':''}${lock?' lock':''}" onclick="toggleStu('${esc(String(sid)).replace(/'/g,'')}')"><span class="ck">${on?'✓':''}</span><span class="n">${esc(s.student_name||'')}<div class="m">${isF(s.gender)?'ស្រី':'ប្រុស'}${a!==null?' · អាយុ '+toKh(a)+' ឆ្នាំ':''}${lock?' · មិនអាចត្រួតថ្នាក់បាន':''}</div></span></div>`}).join('')||'<div style="text-align:center;color:var(--muted);padding:20px">មិនមានសិស្ស</div>';
 }
-async function toggleStu(sid){const on=!FLAGS.has(fk(sid,MD));const ok=await setFlag(sid,MD,on);if(ok){renderModal();render()}}
+async function toggleStu(sid){if(MD==='repeat'){const st=STU.find(x=>String(x.student_id||x.id).replace(/'/g,'')===String(sid));if(st&&repLocked(st)){toast('សិស្សអាយុ ៦ឆ្នាំ មិនអាចត្រួតថ្នាក់បានទេ');return}}const on=!FLAGS.has(fk(sid,MD));const ok=await setFlag(sid,MD,on);if(ok){renderModal();render()}}
 
 /* ===== load ===== */
 function initSelectors(){
