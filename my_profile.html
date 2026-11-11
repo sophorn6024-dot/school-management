@@ -161,10 +161,6 @@ label.l .rq{color:var(--danger)}
       </div>
       <div class="full"><label class="l">ទីកន្លែងចុះហត្ថលេខា <small style="font-weight:400;color:var(--muted)">(មុនកាលបរិច្ឆេទលើហត្ថលេខា)</small></label><input class="in" id="sPlace" placeholder="កំពង់ល្ពៅ" oninput="schChg()"><div class="hint">ទុកទទេ ⇒ ក្រដាសសរសេរ «កំពង់ល្ពៅ»។ វាយពាក្យដែលចង់បាន ឧ. ឈ្មោះភូមិ ឬឃុំ។</div></div>
       <div class="full"><label class="l">ទូរស័ព្ទសាលា</label><input class="in" id="sPhone" placeholder="0XX XXX XXX" oninput="schChg()"></div>
-      <div class="sc-media"><label class="l">ស្លាកសញ្ញាសាលា (Logo)</label>
-        <div style="text-align:center"><div class="sign-prev" id="logoPrev" style="width:120px;height:120px;margin:0 auto 10px;border-radius:14px"></div>
-        <button class="btn" id="logoBtn" onclick="pick('logo')">⬆️ ផ្ទុករូប</button> <button class="btn del" id="logoDel" onclick="delMedia('logo')">🗑️</button>
-        <div class="note" style="margin-top:6px">ទំហំពិតលើក្រដាស 24 × 24 មម<br>លើក្បាលរបាយការណ៍</div></div></div>
       <div class="sc-media"><label class="l">ត្រានាយក</label>
         <div style="text-align:center"><div class="sign-prev" id="stampPrev" style="width:190px;height:150px;margin:0 auto 10px;border-radius:14px"></div>
         <button class="btn" id="stampBtn" onclick="pick('stamp')">⬆️ ប្តូររូប</button> <button class="btn del" id="stampDel" onclick="delMedia('stamp')">🗑️ ដកចេញ</button>
@@ -213,9 +209,8 @@ const FP=[
  {k:'dob',l:'ថ្ងៃកំណើត',t:'date'},{k:'nationality',l:'សញ្ជាតិ',sel:NAT},
  {k:'ethnic',l:'ជនជាតិ',sel:ETH,ph:'ជ្រើសរើសក្រុមជនជាតិ'},{k:'disability',l:'ប្រភេទពិការភាព',sel:DIS},
  {k:'religion',l:'សាសនា',sel:REL,ph:'ជ្រើសរើស'},{k:'weight',l:'ទម្ងន់',t:'number',unit:'kg'},
- {k:'height',l:'កម្ពស់',t:'number',unit:'cm'},{k:'passport_no',l:'លេខលិខិតឆ្លងដែន'},
- {k:'passport_issue',l:'ថ្ងៃចេញលិខិតឆ្លងដែន',t:'date'},{k:'passport_expiry',l:'ថ្ងៃផុតកំណត់លិខិតឆ្លងដែន',t:'date'},
- {k:'pss_no',l:'លេខ ប.ស.ស.'},{k:'sbsk_no',l:'លេខសមាជិកសបសខ'}];
+ {k:'height',l:'កម្ពស់',t:'number',unit:'cm'},
+ ];
 const FA=[
  {k:'email',l:'អ៊ីមែល',t:'email'},{k:'phone',l:'លេខទូរស័ព្ទ',t:'tel'},
  {k:'phone2',l:'លេខទូរស័ព្ទខ្សែទី២',t:'tel'},{k:'id_type',l:'ប្រភេទអត្តសញ្ញាណប័ណ្ណ',radio:[['valid','មានសុពលភាព'],['perm','អចិន្ត្រៃយ៍']]},
@@ -261,7 +256,6 @@ function setImg(){
   const av=$('avatar');const ph=ROW&&ROW.photo_url;av.style.backgroundImage=ph?'url("'+ph+'")':'';$('avLetter').style.display=ph?'none':'';
   $('cover').style.backgroundImage=MEDIA.cover?'url("'+MEDIA.cover+'")':'';
   $('signPrev').style.backgroundImage=MEDIA.sign?'url("'+MEDIA.sign+'")':'';$('signDel').style.display=MEDIA.sign?'':'none';$('signBtn').textContent=MEDIA.sign?'⬆️ ប្តូររូប':'⬆️ ផ្ទុករូប';
-  $('logoPrev').style.backgroundImage=SCH.logo?'url("'+SCH.logo+'")':'';$('logoDel').style.display=SCH.logo&&SCH.admin?'':'none';$('logoBtn').textContent=SCH.logo?'⬆️ ប្តូររូប':'⬆️ ផ្ទុករូប';
   $('stampPrev').style.backgroundImage=SCH.stamp?'url("'+SCH.stamp+'")':'';$('stampDel').style.display=SCH.stamp&&SCH.admin?'':'none';$('stampBtn').textContent=SCH.stamp?'⬆️ ប្តូររូប':'⬆️ ផ្ទុករូប';
 }
 function syncUser(row){
