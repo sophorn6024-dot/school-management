@@ -304,6 +304,7 @@ select option{font-size:14px;font-weight:400}
 .vt{font-size:10.5px;table-layout:fixed;width:100%}
 .vt thead th{padding:3px 1px;font-size:10px;line-height:1.35;word-break:break-word;overflow-wrap:anywhere}
 .vt td.c{height:24px;padding:2px 1px}
+#kgT{font-size:10px;table-layout:fixed}#kgT thead th{padding:3px 1px;font-size:10px;line-height:1.35}#kgT td.nm{font-size:10.5px;padding:3px 4px}#kgT td.ec .ed{padding:2px 0;font-size:10.5px}
 .sec h3 small{font-weight:500;font-size:11px;display:block;opacity:.9}
 .hide{display:none!important}
 #blkRest .cols{align-items:start}
@@ -1021,6 +1022,7 @@ function layoutSheets(){
 }
 function toggleSheet2(){INFO.sheet2=!sheet2On();saveInfo();layoutSheets();toast(sheet2On()?'២.(ខ២) និងហត្ថលេខា ត្រូវបានរុញទៅសន្លឹកទី ២':'ដាក់ក្នុងសន្លឹកតែមួយ (បោះពុម្ពនឹងបង្រួមឱ្យស្រួល)')}
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.ex){INFO['ex_'+t.dataset.ex]=t.textContent;saveInfo();
+  if(/^kgv/.test(t.dataset.ex))document.querySelectorAll('[data-ex="'+t.dataset.ex+'"]').forEach(o=>{if(o!==t)o.textContent=t.textContent});
   if(/^eth/.test(t.dataset.ex)){[0,1].forEach(c=>{const v=['eth0_'+c,'eth1_'+c].reduce((a,k)=>a+num(INFO['ex_'+k]),0);const el=document.getElementById('ethS'+c);if(el)el.textContent=v?toKh(v):''})}}});
 function count(fn){let t=0,f=0;activeStu().forEach(s=>{if(fn(s)){t++;if(isF(s.gender))f++}});return [t,f]}
 function render(){
@@ -1079,8 +1081,10 @@ function render(){
     const g1=gradeNo(CUR.cls)===1;
     const rows=['មត្តេយ្យរដ្ឋ','មត្តេយ្យឯកជន','មត្តេយ្យសហគមន៍','ការអប់រំតាមផ្ទះ/តាមខ្លួន'];
     const ec=(k)=>`<td class="ec"><span class="ed" contenteditable data-ex="${k}" data-ph="">${esc(INFO['ex_'+k]||'')}</span></td>`;
-    document.getElementById('kgT').innerHTML=`<thead><tr><th rowspan="3">ប្រភេទ</th><th colspan="4">ថ្នាក់ទី១ (សិស្សម្នាក់អាចរាប់បានតែមួយដង)</th></tr><tr><th colspan="2">សិស្សថ្មី</th><th colspan="2">សិស្សត្រួត</th></tr><tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(2)}</tr></thead><tbody>`+
-      rows.map((r,i)=>`<tr><td class="nm">${r}</td>${[0,1,2,3].map(c=>ec('kg'+i+'_'+c)).join('')}</tr>`).join('')+'</tbody>';
+    const vn=v=>`<th colspan="2"><span class="ed" contenteditable data-ex="kgv${v}" data-ph="ភូមិ ${toKh(v+1)}" style="min-width:0;display:block;border-bottom:1px dotted #94a3b8;font-weight:700">${esc(INFO['ex_kgv'+v]||'')}</span></th>`;
+    const vg=[0,1,2].map(vn).join('');
+    document.getElementById('kgT').innerHTML=`<thead><tr><th rowspan="4" style="width:18%">ប្រភេទ</th><th colspan="12">ថ្នាក់ទី១ (សិស្សម្នាក់អាចរាប់បានតែមួយដង)</th></tr><tr><th colspan="6">សិស្សថ្មី</th><th colspan="6">សិស្សត្រួត</th></tr><tr>${vg}${vg}</tr><tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(6)}</tr></thead><tbody>`+
+      rows.map((r,i)=>`<tr><td class="nm">${r}</td>${Array.from({length:12},(_,c)=>ec('kgx'+i+'_'+c)).join('')}</tr>`).join('')+'</tbody>';
     document.getElementById('kgT').style.opacity=g1?'1':'.45';
   }
   // 2.(គ២) ជនជាតិដើមភាគតិច
