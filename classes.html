@@ -43,7 +43,7 @@ let USER=null;try{USER=JSON.parse(localStorage.getItem('krou_supabase_user')||'n
 const IS_ADMIN=String(USER&&USER.role||'').toLowerCase().trim()==='admin';
 function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(toast._t);toast._t=setTimeout(()=>t.style.display='none',2200)}
-function go(page){try{parent.postMessage({type:'NAVIGATE',page:page},'*')}catch(e){}if(window.parent===window)location.href=page+'.html'}
+function go(page){try{sessionStorage.setItem('krou_back_to','classes')}catch(e){}try{parent.postMessage({type:'NAVIGATE',page:page},'*')}catch(e){}if(window.parent===window)location.href=page+'.html'}
 /* [id, ពណ៌, icon, ចំណងជើង, ពិពណ៌នា, page ឬ null=ឆាប់ៗ] */
 const CARDS=[
  ['cls','#0ea5e9','🏫','ថ្នាក់របស់ខ្ញុំ','បង្កើត និងកែថ្នាក់រៀន','my_classes'],
@@ -52,6 +52,7 @@ const CARDS=[
  ['bmi','#0284c7','⚖️','ទម្ងន់ និងកម្ពស់','វាស់តាមខែ ឬត្រីមាស · BMI · សន្ទិដ្ឋាន · បោះពុម្ពតារាង','bmi'],
  ['cur','#8b5cf6','📚','បំណែងចែកកម្មវិធីសិក្សា','បញ្ជីមេរៀនតាមជំពូក · ខែ · សប្តាហ៍ · ទំព័រ · កែផ្ទាល់ ឬ Excel','curriculum'],
  ['seat','#0ea5e9','🪑','ប្លង់តុសិស្ស','រៀបតុដោយដៃ ឬតាមក្បួន (កម្ពស់ · ភ្នែក · ប្រុសស្រី · អត្ថក្រុម) · បោះពុម្ពប្លង់','seating'],
+ ['sch','#0d9488','🗓️','កាលវិភាគសិក្សា','រៀបម៉ោងសិក្សាប្រចាំសប្តាហ៍ · ពេលព្រឹក/រសៀល · បោះពុម្ពកាលវិភាគ','schedule'],
  ['grp','#10b981','🎲','បង្វិលឈ្មោះ · បែងចែកក្រុម','ជ្រើសសិស្សម្នាក់ដោយចៃដន្យ ឬចែកសិស្សជាក្រុម','group'],
  ['com','#8b5cf6','👥','បញ្ជីប្រជុំ និងគណៈកម្មការថ្នាក់','បញ្ជីឈ្មោះប្រជុំ · គណៈកម្មការថ្នាក់ · បោះពុម្ព','committee_meeting'],
  ['adm','#f59e0b','📒','សៀវភៅរដ្ឋបាល','អធិការកិច្ច · ប្រជុំបច្ចេកទេស · សម្ភារៈ · ជូនដំណឹងមាតាបិតា · ផែនការប្រចាំខែ ...','book']
