@@ -335,6 +335,7 @@ table.kv .csb,table.kv .edu-b{font-size:13px;font-weight:600;color:#0b1220}
 .tip{font-size:12.5px}
 #kgT .ed[data-ex^=kgv]:empty:before{color:#64748b;font-weight:700}
 #kgT thead th{color:#1b2a7a!important}
+.vt .gl,#kgT .gl{border-left:2.5px solid #27348b!important}
 .sec h3 small{font-weight:500;font-size:11px;display:block;opacity:.9}
 .hide{display:none!important}
 #blkRest .cols{align-items:start}
@@ -1084,13 +1085,16 @@ function render(){
   const isRep=s=>FLAGS.has(fk(s.student_id||s.id,'repeat'))&&!repLocked(s);
   const vh=cols.map(c=>`<th colspan="2">${esc(c.n)}</th>`).join('');
   const tot='<th colspan="2" style="background:#d9e1fb">សរុប</th>';
+  const vhg=cols.map((c,i)=>`<th colspan="2"${i===0?' class="gl"':''}>${esc(c.n)}</th>`).join('');
+  const gc=i=>(i===0||i===2*V+2||i===4*V+4)?'c gl':'c';
+  const pairs=Array.from({length:2*V+3},(_,q)=>`<th${(q===0||q===V+1||q===2*V+2)?' class="gl"':''}>សរុប</th><th>ស្រី</th>`).join('');
   let h=`<table class="vt"><thead>
     <tr><th rowspan="3" style="width:8%">អាយុ<br>(ឆ្នាំ)</th>
-      <th colspan="${2*V+2}">សិស្សថ្មី</th>
-      <th colspan="${2*V+2}" class="clk" onclick="openModal('repeat')">សិស្សត្រួតថ្នាក់</th>
-      <th colspan="2" rowspan="2">សិស្សសរុប</th></tr>
-    <tr>${vh}${tot}${vh}${tot}</tr>
-    <tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(2*V+3)}</tr></thead><tbody>`;
+      <th colspan="${2*V+2}" class="gl">សិស្សថ្មី</th>
+      <th colspan="${2*V+2}" class="clk gl" onclick="openModal('repeat')">សិស្សត្រួតថ្នាក់</th>
+      <th colspan="2" rowspan="2" class="gl">សិស្សសរុប</th></tr>
+    <tr>${vhg}${tot}${vhg}${tot}</tr>
+    <tr>${pairs}</tr></thead><tbody>`;
   const sum=new Array(4*V+6).fill(0);
   ages.forEach(a=>{
     const inAge=s=>{const x=ageOf(s);return x!==null&&(a===15?x>=15:x===a)};
@@ -1103,9 +1107,9 @@ function render(){
     const all=count(inAge),rpT=count(s=>inAge(s)&&isRep(s)),newT=[all[0]-rpT[0],all[1]-rpT[1]];
     const row=[...newC,...newT,...repC,...rpT,...all];
     row.forEach((v,i)=>sum[i]+=v);
-    h+=`<tr><td class="c">${a===15?'១៥+':toKh(a)}</td>${row.map(v=>`<td class="c">${n(v)}</td>`).join('')}</tr>`;
+    h+=`<tr><td class="c">${a===15?'១៥+':toKh(a)}</td>${row.map((v,i)=>`<td class="${gc(i)}">${n(v)}</td>`).join('')}</tr>`;
   });
-  h+=`<tr class="t"><td class="c">សរុប</td>${sum.map(v=>`<td class="c">${n(v)}</td>`).join('')}</tr></tbody></table>`;
+  h+=`<tr class="t"><td class="c">សរុប</td>${sum.map((v,i)=>`<td class="${gc(i)}">${n(v)}</td>`).join('')}</tr></tbody></table>`;
   document.getElementById('vilGrid').innerHTML=h;
   const noDob=act.filter(s=>ageOf(s)===null).length,out=act.filter(s=>{const x=ageOf(s);return x!==null&&x<aLo}).length;
   document.getElementById('ageWarn').innerHTML=(!act.length?'<div>⚠️ មិនមានសិស្សក្នុងថ្នាក់នេះទេ</div>':'')+(noDob?`<div>⚠️ សិស្ស ${toKh(noDob)} នាក់ គ្មានថ្ងៃខែឆ្នាំកំណើតត្រឹមត្រូវ (មិនរាប់ក្នុងតារាងអាយុ)</div>`:'')+(noV?`<div>⚠️ សិស្ស ${toKh(noV)} នាក់ មិនទាន់មានភូមិក្នុងព័ត៌មានសិស្ស (ដាក់ក្នុង «មិនបញ្ជាក់»)</div>`:'')+(out?`<div>ℹ️ សិស្ស ${toKh(out)} នាក់ អាយុក្រោមតារាង (មិនរាប់)</div>`:'');
@@ -1116,10 +1120,11 @@ function render(){
     const ec=(k)=>`<td class="ec"><span class="ed" contenteditable data-ex="${k}" data-ph="">${esc(INFO['ex_'+k]||'')}</span></td>`;
     const vn=v=>`<th colspan="2"><span class="ed" contenteditable data-ex="kgv${v}" data-ph="ភូមិ ${toKh(v+1)}" style="min-width:0;display:block;border-bottom:1px dotted #94a3b8;font-weight:700">${esc(INFO['ex_kgv'+v]||'')}</span></th>`;
     const vg=[0,1,2].map(vn).join('')+'<th colspan="2" style="background:#d9e1fb">សរុប</th>';
+    const vgS=vg.replace('<th colspan="2">','<th colspan="2" class="gl">');
     const kgs=(i,c)=>{const g=c>=8?1:0,k=(c-g*8)-6;return [0,1,2].reduce((t,v)=>t+num(INFO['ex_kgx'+i+'_'+(g*8+v*2+k)]),0)};
     const kgc=(i,c)=>(c%8)<6?ec('kgx'+i+'_'+c):`<td class="c" id="kgS${i}_${c}" style="font-weight:700;background:#e5e9fb;height:26px;padding:2px 0">${n(kgs(i,c))}</td>`;
-    document.getElementById('kgT').innerHTML=`<thead><tr><th rowspan="4" style="width:16%">ប្រភេទ</th><th colspan="16">ថ្នាក់ទី១ (សិស្សម្នាក់អាចរាប់បានតែមួយដង)</th></tr><tr><th colspan="8">សិស្សថ្មី</th><th colspan="8">សិស្សត្រួត</th></tr><tr>${vg}${vg}</tr><tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(8)}</tr></thead><tbody>`+
-      rows.map((r,i)=>`<tr><td class="nm">${r}</td>${Array.from({length:16},(_,c)=>kgc(i,c)).join('')}</tr>`).join('')+'</tbody>';
+    document.getElementById('kgT').innerHTML=`<thead><tr><th rowspan="4" style="width:16%">ប្រភេទ</th><th colspan="16">ថ្នាក់ទី១ (សិស្សម្នាក់អាចរាប់បានតែមួយដង)</th></tr><tr><th colspan="8" class="gl">សិស្សថ្មី</th><th colspan="8" class="gl">សិស្សត្រួត</th></tr><tr>${vgS}${vgS}</tr><tr>${Array.from({length:8},(_,q)=>`<th${(q===0||q===4)?' class="gl"':''}>សរុប</th><th>ស្រី</th>`).join('')}</tr></thead><tbody>`+
+      rows.map((r,i)=>`<tr><td class="nm">${r}</td>${Array.from({length:16},(_,c)=>c%8===0?kgc(i,c).replace('<td class="','<td class="gl '):kgc(i,c)).join('')}</tr>`).join('')+'</tbody>';
     document.getElementById('kgT').style.opacity='1';
   }
   // 2.(គ២) ជនជាតិដើមភាគតិច
