@@ -1779,6 +1779,7 @@ async function reload(){
   loadG();initSelectors();await initClasses();enhanceAll($('ed'));
   if(!CLASSES.length){CLASSES=['—'];$('selClass').innerHTML='<option value="—">—</option>'}
   await reload();loadUsers();loadSignAssets();
+  try{const v=new URLSearchParams(location.search).get('view');if(['list','letter','minutes','chart'].includes(v))openPv(v)}catch(e){}
 })();
 
 </script>
