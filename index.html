@@ -996,6 +996,12 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
 body.solo{--mnav-reserve:0px}
 body.solo .sidebar,body.solo .mobile-bottom-nav,body.solo #mobileBackdrop,body.solo #mnavPeek,body.solo #moreSheet,body.solo #moreBackdrop{display:none!important}
 body.solo .iframe-container{bottom:0!important}
+.solo-bar{display:none;position:fixed;top:8px;right:10px;z-index:9999;gap:6px}
+body.solo .solo-bar{display:flex}
+.solo-bar button{height:36px;padding:0 14px;border-radius:12px;border:1px solid var(--border);background:var(--surface-card);color:var(--text);font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.solo-bar button.pri{background:#059669;color:#fff;border-color:#059669}
+@media print{.solo-bar{display:none!important}}
+
 
 /* ===== សារស្វាគមន៍ មួយបន្ទាត់ ===== */
 .login-welcome{container-type:inline-size;container-name:lw}
@@ -1120,9 +1126,6 @@ function qrStampLogo(box){
       <div class="nav-link-btn" data-page="classes" onclick="navigate('classes', this)"><span class="nav-icon-box">🏫</span><span class="nav-text">ថ្នាក់ និងសិស្ស</span></div>
       <div class="nav-link-btn" data-page="attendance" onclick="navigate('attendance', this)"><span class="nav-icon-box">📅</span><span class="nav-text">វត្តមានសិស្ស</span></div>
       <div class="nav-link-btn" data-page="score" onclick="navigate('score', this)"><span class="nav-icon-box">📊</span><span class="nav-text">ស្រង់ពិន្ទុ</span></div>
-      <div class="nav-link-btn" data-page="card" onclick="navigate('card', this)"><span class="nav-icon-box">🪪</span><span class="nav-text">កាតសិស្ស (ID Card)</span></div>
-      <div class="nav-link-btn" data-page="schedule" onclick="navigate('schedule', this)"><span class="nav-icon-box">🗓️</span><span class="nav-text">កាលវិភាគសិក្សា</span></div>
-      <div class="nav-link-btn" data-page="book" onclick="navigate('book', this)"><span class="nav-icon-box">📖</span><span class="nav-text">ការខ្ចី-សងសៀវភៅ</span></div>
       <div class="nav-link-btn" data-page="chat" onclick="navigate('chat', this)"><span class="nav-icon-box">💬</span><span class="nav-text">សារសន្ទនា</span><span class="nav-badge" data-chat-badge></span></div>
       <div class="nav-link-btn" data-page="reportsHub" onclick="navigate('reportsHub', this)"><span class="nav-icon-box">📄</span><span class="nav-text">របាយការណ៍</span></div>
       <div class="nav-link-btn" id="studentAccNav" data-page="student_accounts" onclick="navigate('student_accounts', this)"><span class="nav-icon-box">🎓</span><span class="nav-text">គណនីសិស្ស និងបណ្ណាល័យ</span></div>
@@ -1276,6 +1279,7 @@ function qrStampLogo(box){
         </div>
       </div>
 
+      <div class="solo-bar" id="soloBar"><button type="button" id="soloOpt" onclick="soloToggle()">⚙️ ជម្រើស</button><button type="button" class="pri" onclick="soloPrint()">🖨️ បោះពុម្ព</button></div>
       <div class="view-panel" id="iframeView">
         <div class="iframe-container">
           <div class="loading-glass-overlay" id="loadingOverlay"><div class="spinner-ring"></div><div style="font-size:12.5px; font-weight:600; color:var(--text-muted);">កំពុងផ្ទុក...</div></div>
@@ -3537,7 +3541,39 @@ function navigate(page, el) {
   }, 60);
 }
 
+
+/* ===== 🖨️ tab របាយការណ៍: បង្ហាញតែទម្រង់បោះពុម្ព (ប្រើ style @media print លើអេក្រង់) ===== */
+const SOLO_SKIP = ['attendance','score'];   /* ទំព័រទាំងនេះមាន view=report ផ្ទាល់ខ្លួន */
+let soloOpts = false;
+function soloFrame(){ return document.getElementById('pageFrame'); }
+function soloApply(){
+  if (!SOLO) return;
+  const fr = soloFrame(); let doc;
+  try { doc = fr.contentDocument; } catch(e) { return; }
+  if (!doc || !doc.styleSheets) return;
+  const page = (function(){ try { return (fr.contentWindow.location.pathname.match(/\/([^\/]+)\.html/)||[])[1] || ''; } catch(e){ return ''; } })();
+  const on = !soloOpts && !SOLO_SKIP.includes(page);
+  const walk = rules => { for (const r of rules) {
+    if (r.media && r.cssRules) {
+      if (r._po === undefined && /print/i.test(r.media.mediaText) && !/not\s+print/i.test(r.media.mediaText)) r._po = r.media.mediaText;
+      if (r._po !== undefined) { try { r.media.mediaText = on ? 'all' : r._po; } catch(e) {} }
+      walk(r.cssRules);
+    } } };
+  for (const ss of doc.styleSheets) { try { walk(ss.cssRules); } catch(e) {} }
+  const b = document.getElementById('soloOpt'); if (b) b.style.display = SOLO_SKIP.includes(page) ? 'none' : '';
+  if (b) b.textContent = soloOpts ? '📄 ទម្រង់បោះពុម្ព' : '⚙️ ជម្រើស';
+}
+function soloToggle(){ soloOpts = !soloOpts; soloApply(); }
+function soloPrint(){
+  const w = soloFrame().contentWindow;
+  try { w.focus(); } catch(e) {}
+  for (const f of ['printWhenFontsReady','doPrint','printReport','printNow']) {
+    if (typeof w[f] === 'function') { try { w[f](); return; } catch(e) {} }
+  }
+  try { w.print(); } catch(e) { window.print(); }
+}
 document.getElementById('pageFrame').addEventListener('load', function() {
+  if (SOLO) { soloOpts = false; soloApply(); [600,1800,4000].forEach(t => setTimeout(soloApply, t)); }
   document.getElementById('loadingOverlay').classList.remove('show');
   syncThemeToIframe(document.documentElement.getAttribute('data-theme') || 'dark');
   try {
@@ -3578,11 +3614,8 @@ function toggleSidebarCollapse() { document.getElementById('sidebar').classList.
 /* ===== 📱 MORE SHEET ===== */
 const MORE_ITEMS = [
   { page: 'chat', t: 'សារសន្ទនា', d: 'អាណាព្យាបាល · គ្រូក្នុងសាលា · គ្រូទាំងអស់', i: 'chat', badge: true },
-  { page: 'card', t: 'កាតសិស្ស (ID Card)', d: 'បង្កើត និងបោះពុម្ពកាតសិស្ស', i: 'idcard' },
   { page: 'group', t: 'បែងចែកជាក្រុម', d: 'ចែកសិស្សជាក្រុមសិក្សា', i: 'group' },
   { page: 'seating', t: 'ប្លង់តុសិស្ស', d: 'រៀបចំកៅអីសិស្ស · ស្រង់វត្តមានតាមប្លង់តុ', i: 'seating' },
-  { page: 'schedule', t: 'កាលវិភាគសិក្សា', d: 'តារាងម៉ោងសិក្សាប្រចាំសប្តាហ៍របស់ថ្នាក់', i: 'schedule' },
-  { page: 'book', t: 'ការខ្ចី-សងសៀវភៅ', d: 'តាមដានការខ្ចី និងសងសៀវភៅ', i: 'book' },
   { page: 'reportsHub', t: 'របាយការណ៍', d: 'បញ្ជីឈ្មោះ · តារាងចំណាត់ថ្នាក់ · ព្រឹត្តិបត្រ · ឯកសារ', i: 'report' },
   { page: 'student_accounts', t: 'គណនីសិស្ស និងបណ្ណាល័យ', d: 'បង្កើតគណនីសិស្ស · ឯកសារ · សារថ្នាក់', i: 'student' },
   { page: 'teacher', t: 'គ្រប់គ្រងគ្រូ', d: 'គ្រប់គ្រងគណនីគ្រូបង្រៀន', i: 'teacher', admin: true }
