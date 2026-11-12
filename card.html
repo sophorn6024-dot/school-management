@@ -2163,7 +2163,7 @@ function refreshDisplay() { renderCards(); }
 
 function doPrintCards() {
   if (!allStudents || allStudents.length === 0) {
-    alert('⚠️ សូមរង់ចាំឱ្យទិន្នន័យកាតបង្ហាញសិន ទើបអាចបោះពុម្ពបាន!');
+    uiAlert('⚠️ សូមរង់ចាំឱ្យទិន្នន័យកាតបង្ហាញសិន ទើបអាចបោះពុម្ពបាន!');
     return;
   }
   window.focus();
@@ -2455,7 +2455,7 @@ async function qrLoadTokens(cls) {
   for (let tries = 0; tries < 3; tries++) {
     if (!QR_PW) { QR_PW = await qrAsk(msg); if (!QR_PW) return false; }
     const { data, error } = await sb.rpc('staff_list_student_accounts', { p_u: CURRENT_USER && (CURRENT_USER.username || CURRENT_USER.teacher_id), p_p: QR_PW, p_class: cls });
-    if (error) { alert('❌ ' + (error.message || error)); QR_PW = null; return false; }
+    if (error) { uiAlert('❌ ' + (error.message || error)); QR_PW = null; return false; }
     if (data === null) { QR_PW = null; try{localStorage.removeItem('krou_pw')}catch(e){} msg = 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ ឬគ្មានសិទ្ធិ'; continue; }
     const map = {};
     const meta = {};
@@ -2597,7 +2597,7 @@ async function qrCreateMissing(cls) {
   const meta = QR_META[cls] || {};
   const miss = allStudents.filter(s => { const m = meta['pk' + s.pk]; return m && !m.has; });
   if (!miss.length) return false;
-  if (!confirm('សិស្ស ' + miss.length + ' នាក់ មិនទាន់មានគណនីចូលប្រព័ន្ធ (ត្រូវការសម្រាប់ QR)។\nបង្កើតគណនីឥឡូវនេះ? (ឈ្មោះគណនី = ឈ្មោះសិស្សជាអក្សរអង់គ្លេស សិស្សចូលតាម QR ដោយមិនបាច់ពាក្យសម្ងាត់)')) return false;
+  if (!(await uiConfirm('សិស្ស ' + miss.length + ' នាក់ មិនទាន់មានគណនីចូលប្រព័ន្ធ (ត្រូវការសម្រាប់ QR)។\nបង្កើតគណនីឥឡូវនេះ? (ឈ្មោះគណនី = ឈ្មោះសិស្សជាអក្សរអង់គ្លេស សិស្សចូលតាម QR ដោយមិនបាច់ពាក្យសម្ងាត់)'))) return false;
   const used = new Set(); Object.values(meta).forEach(m => m.un && used.add(String(m.un).toLowerCase()));
   const items = miss.map(s => {
     let b = usernameFromName(s.name) || String(s.id).toLowerCase().replace(/[^a-z0-9._-]/g, '') || ('s' + meta['pk' + s.pk].pk);
@@ -2605,7 +2605,7 @@ async function qrCreateMissing(cls) {
     return { pk: meta['pk' + s.pk].pk, password: qrPw8(), username: u };
   });
   const { data, error } = await sb.rpc('staff_set_student_accounts', { p_u: CURRENT_USER && (CURRENT_USER.username || CURRENT_USER.teacher_id), p_p: QR_PW, p_items: items });
-  if (error || !data || data.error) { alert('❌ ' + ((error && error.message) || (data && data.error) || 'មិនអាចបង្កើតគណនីបាន')); return false; }
+  if (error || !data || data.error) { uiAlert('❌ ' + ((error && error.message) || (data && data.error) || 'មិនអាចបង្កើតគណនីបាន')); return false; }
   toastQr('✅ បានបង្កើតគណនី ' + (data.ok || 0) + ' នាក់');
   return true;
 }
@@ -2875,6 +2875,36 @@ function goBackToReports(){
   try{if(window.parent&&window.parent!==window){window.parent.postMessage({type:'NAVIGATE',page:'reportsHub'},'*');return}}catch(e){}
   location.href='index.html#reportsHub';
 }
+</script>
+<style id="uiDlgStyle">
+.ui-dlg-back{position:fixed;inset:0;z-index:2147483100;background:rgba(15,23,42,.55);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+.ui-dlg{background:var(--card-panel-bg,#fff);color:var(--text-main,#0f172a);border:1px solid var(--tb-border,#e2e8f0);border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.4);width:100%;max-width:420px;padding:22px 22px 16px;font-family:'Battambang','Siemreap',sans-serif}
+.ui-dlg h3{margin:0 0 8px;font-size:16px;font-weight:800;font-family:'Battambang','Siemreap',sans-serif}
+.ui-dlg p{margin:0;font-size:14px;line-height:1.7;white-space:pre-line;color:var(--text-muted,#64748b);font-family:'Battambang','Siemreap',sans-serif}
+.ui-dlg .ui-act{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.ui-dlg button{height:38px;padding:0 18px;border-radius:12px;border:1px solid var(--input-border,#cbd5e1);background:var(--ctrl-group-bg,#f1f5f9);color:var(--text-main,#0f172a);font-size:13.5px;font-weight:700;cursor:pointer;font-family:'Battambang','Siemreap',sans-serif}
+.ui-dlg button.ok{background:linear-gradient(135deg,#0284c7,#2563eb);color:#fff;border-color:transparent}
+</style>
+<script>
+/* 💬 ប្រអប់សារ (alert/confirm) ជា font Battambang ជំនួសប្រអប់របស់ browser */
+function uiDialog(msg, withCancel) {
+  return new Promise(function (resolve) {
+    var b = document.createElement('div'); b.className = 'ui-dlg-back';
+    var d = document.createElement('div'); d.className = 'ui-dlg';
+    var h = document.createElement('h3'); h.textContent = withCancel ? 'សូមបញ្ជាក់' : 'ដំណឹង';
+    var p = document.createElement('p'); p.textContent = msg;
+    var a = document.createElement('div'); a.className = 'ui-act';
+    function done(v) { b.remove(); document.removeEventListener('keydown', key); resolve(v); }
+    function key(e) { if (e.key === 'Escape') done(false); else if (e.key === 'Enter') done(true); }
+    if (withCancel) { var c = document.createElement('button'); c.textContent = 'បដិសេធ'; c.onclick = function () { done(false); }; a.appendChild(c); }
+    var o = document.createElement('button'); o.className = 'ok'; o.textContent = 'យល់ព្រម'; o.onclick = function () { done(true); }; a.appendChild(o);
+    d.appendChild(h); d.appendChild(p); d.appendChild(a); b.appendChild(d); document.body.appendChild(b);
+    b.addEventListener('click', function (e) { if (e.target === b) done(false); });
+    document.addEventListener('keydown', key); o.focus();
+  });
+}
+function uiConfirm(m) { return uiDialog(m, true); }
+function uiAlert(m) { return uiDialog(m, false); }
 </script>
 </body>
 </html>
