@@ -197,8 +197,7 @@
       .daily-sidebar-card { padding: 18px 20px; }
     }
     @media(min-width: 560px) and (max-width: 899px) {
-      .status-counter-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .counter-card { height: 66px; padding: 10px 12px; }
+      .status-counter-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
       .daily-list-card { padding: 14px; }
     }
     .daily-sidebar-card, .daily-list-card, .report-launcher-card {
@@ -206,19 +205,19 @@
     }
     .gender-summary-box { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
     .gender-chip {
-      background: var(--surface-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 8px 4px; text-align: center;
+      background: var(--surface-elevated); border: 1px solid var(--border); border-radius: 12px; padding: 5px 4px; text-align: center;
     }
     .gender-chip span { display: block; font-size: 11px; color: var(--text-muted); font-weight: 500; }
-    .gender-chip strong { display: block; font-size: 16px; font-weight: 700; color: var(--text); margin-top: 2px; }
+    .gender-chip strong { display: block; font-size: 14px; font-weight: 700; color: var(--text); margin-top: 0; }
 
-    .status-counter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 14px 0; }
-    .counter-card { border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; justify-content: space-between; height: 74px; }
+    .status-counter-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 10px 0; }
+    .counter-card { border-radius: 12px; padding: 6px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; height: 52px; text-align: center; }
     .counter-card.present    { background: var(--p-bg); border: 1px solid var(--p-bd); color: var(--p-txt); }
     .counter-card.absent     { background: var(--a-bg); border: 1px solid var(--a-bd); color: var(--a-txt); }
     .counter-card.late       { background: var(--l-bg); border: 1px solid var(--l-bd); color: var(--l-txt); }
     .counter-card.permission { background: var(--c-bg); border: 1px solid var(--c-bd); color: var(--c-txt); }
-    .counter-card .c-label { font-size: 11.5px; font-weight: 600; }
-    .counter-card .c-val { font-size: 22px; font-weight: 800; }
+    .counter-card .c-label { font-size: 10.5px; font-weight: 600; white-space: nowrap; }
+    .counter-card .c-val { font-size: 17px; font-weight: 800; line-height: 1.2; }
 
     .search-pill-wrap {
       display: flex; align-items: center; gap: 8px; background: var(--surface-elevated); border: 1px solid var(--border); border-radius: 14px; padding: 8px 14px; margin-bottom: 12px;
