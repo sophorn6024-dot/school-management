@@ -2262,6 +2262,14 @@ exports.default = {
       loadSignAssets();
       initPageSetupValues();
       await initClassSelection();
+      /* 📄 ?view=preview : បើករបាយការណ៍បោះពុម្ពភ្លាម (ពីប៊ូតុង «បើក» ក្នុងទំព័ររបាយការណ៍) */
+      try {
+        if (new URLSearchParams(location.search).get('view') === 'preview') {
+          window.__solo = true;
+          for (let i = 0; i < 40 && !(typeof rawStudentsList !== 'undefined' && rawStudentsList.length); i++) await new Promise(r => setTimeout(r, 100));
+          openPrintPreview();
+        }
+      } catch (e) {}
     });
 
     /* =========================================================
@@ -3128,6 +3136,11 @@ exports.default = {
     }
 
     function closePrintPreview() {
+      if (window.__solo) {
+        try { window.top.close(); } catch (e) {}
+        setTimeout(function () { try { window.top.location.href = 'index.html#reportsHub'; } catch (e) { location.href = 'index.html#reportsHub'; } }, 250);
+        return;
+      }
       document.getElementById('printPreviewModal').style.display = 'none';
     }
 
