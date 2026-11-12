@@ -2375,6 +2375,7 @@ async function onClassChange() {
       })
       .map(s => ({
         id: s.student_id || s.id,
+        realId: String(s.student_id || '').trim(),
         pk: s.id,
         name: s.student_name || 'គ្មានឈ្មោះ',
         sex: s.gender || 'ប្រុស',
@@ -2632,7 +2633,7 @@ function renderCards() {
 
     for (let i = 0; i < pageStudents.length; i++) {
       const s = pageStudents[i];
-      const khmerId = toKhmerNum(s.id);
+      const khmerId = s.realId ? toKhmerNum(s.realId) : '..............';
       const dobFormatted = toKhmerNum(s.dob || '');
       const addressText = s.address || s.pob || 'ស្វាយជ្រុំ កំពង់ល្ពៅ សំឡូត បាត់ដំបង';
       const cleanGradeStr = cleanGrade(s.grade);
