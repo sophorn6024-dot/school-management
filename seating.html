@@ -1812,6 +1812,14 @@ async function loadKit(done){
 <script id="seatRptJs">
 var SEAT_SD={teacher:null,principal:null},seatDateRole='teacher';
 try{var _sd=JSON.parse(localStorage.getItem('seatSignDates_v1')||'null');if(_sd)SEAT_SD=_sd}catch(e){}
+var SEAT_TN={};
+async function loadSeatTeacher(){
+  if(!curClass||SEAT_TN[curClass]!==undefined)return;
+  SEAT_TN[curClass]='';
+  try{var r=await sb.from('users').select('teacher_name').eq('assigned_classes',curClass).maybeSingle();
+    if(r&&r.data&&r.data.teacher_name)SEAT_TN[curClass]=r.data.teacher_name;
+    else if(!IS_ADMIN&&USER&&USER.teacher_name)SEAT_TN[curClass]=USER.teacher_name}catch(e){}
+}
 var SEAT_DOW=['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
 var SEAT_LM={0:'មិគសិរ',1:'បុស្ស',2:'មាឃ',3:'ផល្គុន',4:'ចេត្រ',5:'ពិសាខ',6:'ជេស្ឋ',7:'អាសាឍ',8:'ស្រាពណ៍',9:'ភទ្របទ',10:'អស្សុជ',11:'កត្តិក',12:'បឋមាសាឍ',13:'ទុតិយាសាឍ'};
 var SEAT_MON=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
@@ -1831,7 +1839,7 @@ function pickSeatDate(role){
 }
 function seatYear(){var t=new Date(),y=t.getFullYear(),m=t.getMonth()+1;return m>=10?[y,y+1]:[y-1,y]}
 function buildSeatSheet(){
-  var head=kitHasProf()?schoolHeadLines(PROF):['រដ្ឋបាលស្រុកសំឡូត','កម្រងសាលារៀន អូររំដួល',((PROF&&PROF.school_name)||'').trim()||'សាលាបឋមសិក្សាកំពង់ល្ពៅ'];
+  var head=kitHasProf()?schoolHeadLines(PROF):['សាលាបឋមសិក្សាកំពង់ល្ពៅ'];
   var y=seatYear(),pm=placedMap(),boys=0,girls=0,empty=0;
   students.forEach(function(s){if(pm[s.id]){isF(s)?girls++:boys++}});
   var g='';
@@ -1844,16 +1852,16 @@ function buildSeatSheet(){
     }
     g+='</div>';
   }
-  var tn=(USER&&(USER.teacher_name||USER.username))||'';
-  var dir=STAMP_META?kitStamp():'';
+  var tn=SEAT_TN[curClass]||(USER&&USER.teacher_name)||'';
+  var dir=kitStamp(),dTitle=((PROF&&PROF.director_title)||'').trim()||'នាយកសាលា';
   document.getElementById('sheetSeat').innerHTML=
     '<div class="kg"><div class="a moul">ព្រះរាជាណាចក្រកម្ពុជា</div><div class="b moul">ជាតិ សាសនា ព្រះមហាក្សត្រ</div><div style="font-size:9pt">───── ✧ ─────</div></div>'
-   +'<div class="sch moul" style="font-size:9.5pt">'+head.map(esc).join('<br>')+'<br>ថ្នាក់ទី'+skn(cleanGrade(curClass))+'</div>'
+   +'<div class="sch" style="font-size:10pt;font-weight:700;line-height:1.5">'+head.map(esc).join('<br>')+'<br>ថ្នាក់ទី '+__kc(curClass)+'</div>'
    +'<div class="ttl"><div class="t moul">ប្លង់តុសិស្ស</div><div class="s">ឆ្នាំសិក្សា '+skn(y[0])+'-'+skn(y[1])+'</div></div>'
    +'<div class="fr">'+(L.teacher==='left'?'<div class="td">តុគ្រូ</div>':'<div class="td off"></div>')+'<div class="bd moul">ក្តារខៀន</div>'+(L.teacher==='right'?'<div class="td">តុគ្រូ</div>':'<div class="td off"></div>')+'</div>'
    +'<div class="grid">'+g+'</div>'
    +'<div class="sum"><span>សិស្សសរុប '+skn(boys+girls)+' នាក់ ស្រី '+skn(girls)+' នាក់ · មានកន្លែងអង្គុយ '+skn(empty)+' កន្លែង</span><span>ជួរ '+skn(L.rows)+' · តុក្នុងជួរ '+skn(L.cols)+' · '+skn(L.per)+' នាក់ក្នុងតុ</span></div>'
-   +'<div class="sg"><div class="col">'+seatDateHtml('principal',false)+'<div style="font-weight:700">បានឃើញនិងឯកភាព</div><div class="moul" style="font-size:10pt">នាយកសាលា</div><div class="sp tall">'+dir+'</div><div style="font-weight:700">'+esc(STAMP_META?'':kitDirName())+'</div></div>'
+   +'<div class="sg"><div class="col">'+seatDateHtml('principal',false)+'<div style="font-weight:700">បានឃើញនិងឯកភាព</div><div style="font-weight:700">'+esc(dTitle)+'</div>'+dir+'<div style="font-weight:700;margin-top:1mm">'+esc(kitDirName())+'</div></div>'
    +'<div class="col">'+seatDateHtml('teacher',true)+'<div class="moul" style="font-size:10pt">គ្រូទទួលបន្ទុកថ្នាក់</div><div class="sp">'+kitSig()+'</div><div style="font-weight:700">'+esc(tn)+'</div></div></div>';
   document.getElementById('bdT').textContent=seatBadge('teacher');document.getElementById('bdP').textContent=seatBadge('principal');
   fitSeatSheet();
@@ -1869,6 +1877,7 @@ function openSeatRpt(){
   if(!curClass){toast('សូមជ្រើសថ្នាក់ជាមុន');return}
   document.body.classList.add('rpt-open');document.getElementById('seatRpt').classList.add('show');
   buildSeatSheet();setTimeout(fitSeatSheet,60);
+  loadSeatTeacher().then(function(){buildSeatSheet()});
   if(!window.__seatKit){window.__seatKit=1;loadKit(function(){buildSeatSheet()})}
 }
 function closeSeatRpt(){document.body.classList.remove('rpt-open');document.getElementById('seatRpt').classList.remove('show')}
@@ -1921,7 +1930,7 @@ window.addEventListener('resize',function(){if(document.getElementById('seatRpt'
 #sheetSeat .sg{display:flex;justify-content:space-between;margin-top:3mm;font-size:10pt;line-height:1.7;text-align:center;page-break-inside:avoid}
 #sheetSeat .sg .col{min-width:75mm}
 #sheetSeat .sg .sp{height:17mm;display:flex;align-items:center;justify-content:center}
-#sheetSeat .kit-stamp{display:flex;justify-content:center;margin-top:-2mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}
+#sheetSeat .kit-stamp{display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}
 #sheetSeat .sg .sp.tall{height:17mm}
 @media print{
   body.rpt-open>*:not(#seatRpt):not(script):not(style){display:none!important}
