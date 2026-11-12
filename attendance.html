@@ -2506,10 +2506,15 @@ exports.default = {
         </div>`;
 
       try {
-        let { data: stList, error: stErr } = await sb
-          .from('students')
-          .select('id, student_id, student_name, gender, grade, dropout_semester')
-          .order('id', { ascending: true });
+        let stList = null, stErr = null;
+        try {
+          const _r = await stRpc('staff_student_list', {});
+          if (_r && _r.error) stErr = _r.error;
+          else if (_r && _r.data && Array.isArray(_r.data.rows)) stList = _r.data.rows;
+          else if (_r && Array.isArray(_r.rows)) stList = _r.rows;
+          else if (Array.isArray(_r)) stList = _r;
+          else stErr = { message: 'staff_student_list: ទម្រង់ឆ្លើយតបមិនត្រឹមត្រូវ' };
+        } catch (e) { stErr = e; }
 
         if (stErr) throw stErr; stList=(stList||[]).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km'));
 
