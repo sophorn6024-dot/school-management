@@ -1862,7 +1862,7 @@ function buildSeatSheet(){
    +'<div class="grid">'+g+'</div>'
    +'<div class="sum"><span>សិស្សសរុប '+skn(boys+girls)+' នាក់ ស្រី '+skn(girls)+' នាក់ · មានកន្លែងអង្គុយ '+skn(empty)+' កន្លែង</span><span>ជួរ '+skn(L.rows)+' · តុក្នុងជួរ '+skn(L.cols)+' · '+skn(L.per)+' នាក់ក្នុងតុ</span></div>'
    +'<div class="sg"><div class="col">'+seatDateHtml('principal',false)+'<div style="font-weight:700">បានឃើញនិងឯកភាព</div><div style="font-weight:700">'+esc(dTitle)+'</div>'+dir+'<div style="font-weight:700;margin-top:1mm">'+esc(kitDirName())+'</div></div>'
-   +'<div class="col">'+seatDateHtml('teacher',true)+'<div class="moul" style="font-size:10pt">គ្រូទទួលបន្ទុកថ្នាក់</div><div class="sp">'+kitSig()+'</div><div style="font-weight:700">'+esc(tn)+'</div></div></div>';
+   +'<div class="col">'+seatDateHtml('teacher',true)+'<div class="moul" style="font-size:10pt">គ្រូទទួលបន្ទុកថ្នាក់</div><div class="sp">'+kitSig()+'</div><div style="font-weight:700;margin-top:2px;padding-left:70px">'+esc(tn)+'</div></div></div>';
   document.getElementById('bdT').textContent=seatBadge('teacher');document.getElementById('bdP').textContent=seatBadge('principal');
   fitSeatSheet();
 }
@@ -1928,7 +1928,7 @@ window.addEventListener('resize',function(){if(document.getElementById('seatRpt'
 #sheetSeat .st.g{background:#fde8ee;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 #sheetSeat .sum{display:flex;justify-content:space-between;font-size:9pt;margin-top:2mm}
 #sheetSeat .sg{display:flex;justify-content:space-between;margin-top:3mm;font-size:10pt;line-height:1.7;text-align:center;page-break-inside:avoid}
-#sheetSeat .sg .col{min-width:75mm}
+#sheetSeat .sg .col{min-width:75mm}#sheetSeat .sg .col+.col{min-width:370px}
 #sheetSeat .sg .sp{height:17mm;display:flex;align-items:center;justify-content:center}
 #sheetSeat .kit-stamp{display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}
 #sheetSeat .sg .sp.tall{height:17mm}
