@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Moul&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script>window.__kc=function(s){return String(s==null?'':s).replace(/[0-9]/g,function(d){return '០១២៣៤៥៦៧៨៩'[d]})};</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root,[data-theme="light"]{
@@ -196,6 +197,12 @@ i.fa-solid,i.fa-regular,.fa-solid,.fa-regular{font-family:'Font Awesome 6 Free'!
   .side-head h3{font-size:13.5px}.cnt{font-size:11.5px;padding:2px 10px}
   .infoline{font-size:12px;margin-bottom:8px}
 }
+
+/* 📱 ទូរស័ព្ទ/ថេប្លេត៖ ដាក់បញ្ជីឈ្មោះសិស្សនៅក្រោមប្លង់តុ */
+@media screen and (max-width:900px){
+  .layout{grid-template-columns:minmax(0,1fr) !important;gap:12px}
+  .ulist{max-height:none !important;display:grid !important;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+}
 </style>
 </head>
 <body>
@@ -373,7 +380,7 @@ function render(){
   document.getElementById('seatInfo').firstChild.textContent=`កៅអី ${total} · អង្គុយ ${Object.keys(pm).length} / ${students.length} នាក់ `;
   const lack=students.length-total;
   document.getElementById('warnNote').textContent=lack>0?`⚠️ កៅអីខ្វះ ${lack}`:'';
-  document.getElementById('printSub').textContent=`ថ្នាក់ទី ${curClass}${USER&&(USER.teacher_name||USER.username)?' · គ្រូ '+(USER.teacher_name||USER.username):''}`;
+  document.getElementById('printSub').textContent=`ថ្នាក់ទី ${__kc(curClass)}${USER&&(USER.teacher_name||USER.username)?' · គ្រូ '+(USER.teacher_name||USER.username):''}`;
 }
 function chip(s,seat){
   const sel=picked&&((seat&&picked.seat===seat)||(!seat&&picked.id===s.id&&!picked.seat));
@@ -560,6 +567,100 @@ function fitNames(){
 (function(){let t;const r=document.getElementById('room');if(!r)return;
   new MutationObserver(()=>{clearTimeout(t);t=setTimeout(fitNames,30)}).observe(r,{childList:true,subtree:true});
   addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(fitNames,60)});
+})();
+</script>
+<!-- 🔤 AUTO-SELECT : ប្តូរ <select> ធម្មតា ទៅជាបញ្ជីជ្រើសរើស font Battambang (បញ្ជីរបស់ browser មិនប្រើ font ទំព័រ) -->
+<style id="asStyle">
+.as-wrap{position:relative;display:inline-block;vertical-align:middle;max-width:100%;min-width:0}
+.as-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;cursor:pointer;text-align:left;box-sizing:border-box;font-family:'Khmer OS Battambang','Battambang',sans-serif !important;appearance:none;-webkit-appearance:none}
+.as-btn .as-lb{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Khmer OS Battambang','Battambang',sans-serif !important}
+.as-btn .as-ch{flex:none;width:0;height:0;border-left:4.5px solid transparent;border-right:4.5px solid transparent;border-top:6px solid currentColor;opacity:.65;transition:transform .15s}
+.as-btn.open .as-ch{transform:rotate(180deg)}
+.as-btn:disabled{opacity:.55;cursor:not-allowed}
+.as-pop{display:none;position:fixed;z-index:2147483000;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 14px 35px rgba(0,0,0,.35);padding:6px;overflow-y:auto;max-height:300px;box-sizing:border-box}
+.as-pop.show{display:block;animation:asIn .14s ease-out}
+@keyframes asIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.as-it{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:700;color:#1e293b;cursor:pointer;font-family:'Khmer OS Battambang','Battambang',sans-serif !important;line-height:1.35}
+.as-it:hover{background:#f1f5f9}
+.as-it.on{background:#e0f2fe;color:#0284c7}
+.as-it.on::after{content:'✓';font-size:13px}
+.as-it.dis{opacity:.4;pointer-events:none}
+@media print{.as-pop{display:none !important}}
+</style>
+<script id="asScript">
+(function(){
+  var COPY=['width','minWidth','maxWidth','height','minHeight','margin','flex','flexGrow','flexShrink','flexBasis','alignSelf','justifySelf','gridColumn','gridRow','order'];
+  var STY=['padding','border','borderRadius','background','backgroundColor','color','fontSize','fontWeight','lineHeight','boxShadow','textAlign'];
+  var pops=[],openPop=null;
+  function closeAll(){pops.forEach(function(p){p.classList.remove('show')});document.querySelectorAll('.as-btn.open').forEach(function(b){b.classList.remove('open')});openPop=null}
+  function skip(sel){
+    if(sel._as||sel.multiple||sel.size>1||sel.hasAttribute('data-native')||sel._enh)return true;
+    if(sel.closest('.cs-wrap,.as-wrap'))return true;
+    return false;
+  }
+  function visible(sel){var cs=getComputedStyle(sel);return cs.display!=='none'&&cs.visibility!=='hidden'}
+  function enhance(sel){
+    var cs=getComputedStyle(sel);
+    sel._as=true;
+    var wrap=document.createElement('span');wrap.className='as-wrap';
+    var disp=cs.display;if(disp==='block'||disp==='flex')wrap.style.display=disp==='flex'?'flex':'block';
+    COPY.forEach(function(k){var v=cs[k];if(v&&v!=='auto'&&v!=='normal'&&v!=='none'&&!(k==='margin'&&v==='0px'))wrap.style[k]=v});
+    if(cs.position==='absolute'||cs.position==='fixed'){wrap.style.position=cs.position;['top','left','right','bottom'].forEach(function(k){wrap.style[k]=cs[k]})}
+    if(cs.width&&/px$/.test(cs.width)&&sel.style.width)wrap.style.width=sel.style.width;
+    var btn=document.createElement('button');btn.type='button';btn.className='as-btn';
+    STY.forEach(function(k){btn.style[k]=cs[k]});
+    if(cs.height&&/px$/.test(cs.height))btn.style.height=cs.height;
+    btn.innerHTML='<span class="as-lb"></span><span class="as-ch"></span>';
+    sel.parentNode.insertBefore(wrap,sel);wrap.appendChild(btn);wrap.appendChild(sel);
+    sel.style.display='none';
+    var lb=btn.querySelector('.as-lb');
+    var pop=document.createElement('div');pop.className='as-pop';document.body.appendChild(pop);pops.push(pop);
+    var dV=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value'),dI=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'selectedIndex');
+    function sync(){var o=sel.options[sel.selectedIndex];lb.textContent=o?o.textContent:'';btn.disabled=!!sel.disabled;
+      wrap.style.display=wrap.style.display; }
+    try{
+      Object.defineProperty(sel,'value',{configurable:true,get:function(){return dV.get.call(sel)},set:function(v){dV.set.call(sel,v);sync()}});
+      Object.defineProperty(sel,'selectedIndex',{configurable:true,get:function(){return dI.get.call(sel)},set:function(v){dI.set.call(sel,v);sync()}});
+    }catch(e){}
+    new MutationObserver(sync).observe(sel,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['disabled','selected']});
+    sel.addEventListener('change',sync);
+    sync();
+    function render(){
+      pop.innerHTML='';
+      Array.prototype.forEach.call(sel.options,function(o,i){
+        if(o.hidden)return;
+        var it=document.createElement('div');it.className='as-it'+(i===sel.selectedIndex?' on':'')+(o.disabled?' dis':'');
+        var sp=document.createElement('span');sp.textContent=o.textContent;it.appendChild(sp);
+        it.addEventListener('click',function(e){e.stopPropagation();var ch=(i!==sel.selectedIndex);dI.set.call(sel,i);sync();closeAll();if(ch){sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}))}});
+        pop.appendChild(it);
+      });
+    }
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();e.preventDefault();
+      if(pop.classList.contains('show')){closeAll();return}
+      closeAll();render();
+      var r=btn.getBoundingClientRect(),vh=window.innerHeight,vw=window.innerWidth;
+      pop.style.minWidth=Math.max(r.width,150)+'px';
+      pop.classList.add('show');
+      var ph=Math.min(pop.scrollHeight+12,300),below=vh-r.bottom-8,above=r.top-8;
+      var top=(below>=ph||below>=above)?r.bottom+4:Math.max(8,r.top-ph-4);
+      pop.style.maxHeight=Math.min(300,Math.max(120,(below>=ph||below>=above)?below:above))+'px';
+      pop.style.top=top+'px';
+      var left=Math.min(Math.max(8,r.left),vw-pop.offsetWidth-8);pop.style.left=left+'px';
+      btn.classList.add('open');openPop=pop;
+      var on=pop.querySelector('.as-it.on');if(on)pop.scrollTop=on.offsetTop-pop.clientHeight/2+on.offsetHeight/2;
+    });
+  }
+  function scan(){
+    var list=document.querySelectorAll('select');
+    for(var i=0;i<list.length;i++){var s=list[i];if(skip(s))continue;if(!visible(s))continue;try{enhance(s)}catch(e){console.warn('as',e)}}
+  }
+  document.addEventListener('click',function(e){if(!e.target.closest||!e.target.closest('.as-pop'))closeAll()});
+  window.addEventListener('resize',closeAll);window.addEventListener('scroll',function(e){if(openPop&&!(e.target&&e.target.closest&&e.target.closest('.as-pop')))closeAll()},true);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll()});
+  function boot(){scan();setInterval(scan,1200)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+  window.__autoSelectScan=scan;
 })();
 </script>
 </body>
