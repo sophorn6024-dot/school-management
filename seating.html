@@ -1793,8 +1793,8 @@ function kitDirName(){return STAMP_META?'':(((PROF&&PROF.director_name)||'').tri
 async function loadKit(done){
   try{
     let pw='';try{pw=localStorage.getItem('krou_pw')||''}catch(e){}
-    if(!sb||!CURRENT_USER||!CURRENT_USER.username||!pw)return;
-    const a={p_u:CURRENT_USER.username,p_p:pw};
+    if(!sb||!USER||!USER.username||!pw)return;
+    const a={p_u:USER.username,p_p:pw};
     const [pr,sc]=await Promise.all([sb.rpc('staff_my_profile_get',a),sb.rpc('staff_school_get',a)]);
     PROFILE_SIG=(pr.data&&pr.data.signature_url)||'';
     const sd=sc.data;
