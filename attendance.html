@@ -2820,7 +2820,10 @@ exports.default = {
       }
       var lay = seatLayouts[cls];
       if (!lay || !lay.seats || !Object.keys(lay.seats).length) {
-        container.innerHTML = '<div class="sv-empty">🪑 ថ្នាក់ទី ' + escapeHtml(cls) + ' មិនទាន់មានប្លង់តុទេ។<br>សូមរៀបចំប្លង់តុជាមុន រួចត្រឡប់មកស្រង់វត្តមានតាមប្លង់។<br><button type="button" class="sv-edit" onclick="openSeatEditor()"><i class="fa-solid fa-pen-ruler"></i> រៀបចំប្លង់តុ</button></div>';
+        var q0 = (document.getElementById('searchBox').value || '').trim().toLowerCase();
+        container.innerHTML = '<div class="sv-empty" style="padding:14px;border:1px dashed #d4b45a;border-radius:12px;background:rgba(250,204,21,.10);margin-bottom:14px;text-align:left">ថ្នាក់នេះមិនទាន់មានប្លង់តុទេ ។ <a href="#" onclick="openSeatEditor();return false" style="font-weight:800;text-decoration:underline;color:inherit">រៀបប្លង់តុសិន</a> រួចត្រឡប់មកចុះវត្តមានតាមតុ ។</div>'
+          + '<div class="sv-un"><h4>សិស្សទាំងអស់ · ' + rawStudentsData.length + ' នាក់</h4><div class="sv-un-list" style="grid-template-columns:repeat(auto-fill,minmax(210px,1fr))">'
+          + rawStudentsData.map(function (s) { return '<div style="position:relative">' + seatChipHtml(s, q0) + '</div>'; }).join('') + '</div></div>';
         return;
       }
       var rows = Math.max(1, +lay.rows || 1), cols = Math.max(1, +lay.cols || 1), per = Math.max(1, +lay.per || 1);
