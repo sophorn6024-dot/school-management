@@ -427,6 +427,12 @@
     .tp-sign .sign-col .sign-title{font-size:calc(var(--fs)*.95)}
     .tp-sign .sign-name{font-weight:700}
     .tp-sign .col-l{margin-top:7mm}
+    .tp-cert{--fs:var(--fsc,17px);--lh:2.1}
+    .tp-cert .tp-in{padding-top:12mm;padding-bottom:12mm}
+    .tp-cert .tp-body{flex:1;display:flex;flex-direction:column;justify-content:space-evenly}
+    .tp-cert .tp-sign{margin-top:6mm}
+    .tp-cert .sd-box div{font-size:.84em;white-space:nowrap}
+    .tp-cert .tp-sign .sign-col:last-child .sign-name{padding-left:70px}
     .tp-sign .sign-space{height:26mm;display:flex;align-items:center;justify-content:center}
     .tp-sign .sign-space.tall{height:auto;min-height:18mm}
     @media print{
@@ -459,6 +465,27 @@
     .dd-search input{flex:1;height:40px;border:1.5px solid #38bdf8;border-radius:10px;padding:0 10px;font-size:13.5px;outline:none;color:#0f172a;background:#fff;font-family:'Khmer OS Battambang','Battambang',sans-serif !important}
     .dd-search i{position:absolute;left:22px;color:#64748b;font-size:13px}
     .dd-search input{padding-left:32px}
+</style>
+<style id="mTb">
+@media (max-width:720px){
+  .top-toolbar{position:static !important;display:grid !important;grid-template-columns:1fr 1fr !important;gap:8px !important;margin:0 0 10px !important;padding:10px !important;border-radius:16px;border:1px solid var(--border)}
+  .top-toolbar>*{min-width:0 !important;width:100% !important}
+  .top-toolbar .tb-btn,.top-toolbar .tb-inp{height:44px !important;justify-content:center;text-align:center;font-size:13.5px !important;box-sizing:border-box}
+  .top-toolbar .tb-btn{display:flex !important;align-items:center;gap:6px;padding:0 10px !important}
+  .top-toolbar .dd-wrap{grid-column:1/-1}
+  .top-toolbar .dd-wrap .tb-btn{justify-content:space-between}
+  #classDdWrap{grid-column:auto !important}
+  .top-toolbar .tb-grp{grid-column:1/-1;display:flex !important;align-items:center;gap:8px;width:100%}
+  .top-toolbar .tb-grp .tb-lbl2{flex:none;font-size:12.5px}
+  .top-toolbar .tb-grp .dd-wrap{flex:1;grid-column:auto}
+  .top-toolbar .tb-seg{display:flex !important;flex:1;gap:6px;width:100%}
+  .top-toolbar .tb-seg .seg-btn{flex:1;height:44px;padding:0 6px;font-size:13px;white-space:normal;line-height:1.25}
+  #segType{flex:1}
+  #inpDest{grid-column:1/-1}
+  #inpYear{width:100% !important}
+  .top-toolbar .tb-btn:last-child,.top-toolbar .tb-btn.pri,.top-toolbar .tb-btn.primary{grid-column:1/-1}
+  .top-toolbar .tb-btn #teacherDateBadge,.top-toolbar .tb-btn #principalDateBadge{padding:2px 6px !important;font-size:12px}
+}
 </style>
 </head>
 
@@ -2122,7 +2149,7 @@ exports.default = {
         + headBlock()
         + '<div class="tp-title f-moul" style="margin-bottom:1mm">វិញ្ញាបនបត្របញ្ជាក់ការសិក្សា</div>'
         + '<div class="tp-sub">នាយក' + esc(d.school) + '</div>'
-        + '<div>សូមបញ្ជាក់ថា សិស្សឈ្មោះ ' + V(d.name, 20) + ' ភេទ ' + V(d.gender, 6) + ' អត្តលេខ ' + V('', 12) + '</div>'
+        + '<div class="tp-body"><div>សូមបញ្ជាក់ថា សិស្សឈ្មោះ ' + V(d.name, 20) + ' ភេទ ' + V(d.gender, 6) + ' អត្តលេខ ' + V('', 12) + '</div>'
         + '<div>ថ្ងៃ/ខែ/ឆ្នាំ/កំណើត ' + (d.dob ? '<span class="v">' + d.dob + '</span>' : V('', 16)) + '</div>'
         + '<div>ទីកន្លែងកំណើត ភូមិ/មណ្ឌល ' + V(d.pob.village, 12) + ' ឃុំ/សង្កាត់ ' + V(d.pob.commune, 12) + '</div>'
         + '<div class="tp-ind">ស្រុក/ខណ្ឌ ' + V(d.pob.district, 12) + ' ខេត្ត/រាជធានី ' + V(d.pob.province, 12) + '</div>'
@@ -2131,7 +2158,7 @@ exports.default = {
         + '<div>ទីលំនៅបច្ចុប្បន្ន ភូមិ/មណ្ឌល ' + V(d.addr.village, 12) + ' ឃុំ/សង្កាត់ ' + V(d.addr.commune, 12) + '</div>'
         + '<div class="tp-ind">ស្រុក/ខណ្ឌ ' + V(d.addr.district, 12) + ' ខេត្ត/រាជធានី ' + V(d.addr.province, 12) + '</div>'
         + '<p class="tp-p" style="margin-top:1mm">រៀននៅថ្នាក់ទី ' + V(d.grade, 3) + ' នៃ' + V(d.school) + ' ក្នុងឆ្នាំសិក្សា ' + V(d.year, 10)
-        + ' ពិតប្រាកដមែន។ វិញ្ញាបនបត្រនេះចេញឲ្យសាម៉ីខ្លួនយកទៅប្រើប្រាស់សម្រាប់ក្នុងករណីអាចប្រើបាន។</p>'
+        + ' ពិតប្រាកដមែន។ វិញ្ញាបនបត្រនេះចេញឲ្យសាម៉ីខ្លួនយកទៅប្រើប្រាស់សម្រាប់ក្នុងករណីអាចប្រើបាន។</p></div>'
         + '<div class="tp-sign">' + dirBlock('បានឃើញនិងឯកភាព')
         + '<div class="sign-col"><div class="sd-box js-teacherDate"></div><div class="f-moul sign-title" style="margin-top:2px">ហត្ថលេខាគ្រូប្រចាំថ្នាក់</div>'
         + '<div class="sign-space" style="height:15mm">' + kitSig() + '</div><div class="sign-name">' + esc(TEACH_NAME) + '</div></div>'
@@ -2348,6 +2375,7 @@ exports.default = {
       if (!pst) { pst = document.createElement('style'); pst.id = 'psPageStyle'; document.head.appendChild(pst); }
       pst.textContent = `@page { size: ${w}mm ${h}mm; margin: 0; } @media print { .tp-sheet { width: ${w}mm !important; height: ${h - 1}mm !important; } }`;
       stack.style.setProperty('--fs', `${(14.5 * PS.font) / 100}px`);
+      stack.style.setProperty('--fsc', `${(17 * PS.font) / 100}px`);
       stack.style.setProperty('--lh', PS.rowH ? `${PS.rowH}mm` : '1.95');
       stack.querySelectorAll('.tp-sheet').forEach(sh => {
         sh.style.width = `${w}mm`;
