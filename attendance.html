@@ -985,7 +985,7 @@
               </div>
             </div>
 
-            <input type="text" id="holidayReasonInput" placeholder="មូលហេតុ (ឧ. គ្រូសុំច្បាប់)" style="flex:1; min-width:180px; padding:8px 12px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); outline:none; font-size:12.5px;">
+            <input type="text" id="holidayReasonInput" placeholder="មូលហេតុ (ឧ. បុណ្យភ្ជុំបិណ្ឌ)" style="flex:1; min-width:180px; padding:8px 12px; border-radius:12px; border:1px solid var(--border); background:var(--surface); color:var(--text); outline:none; font-size:12.5px;">
             <button onclick="addHolidayForCurrentMonth()" class="btn-open-report" style="background:#059669;"><i class="fa-solid fa-plus"></i> បន្ថែម</button>
           </div>
           <div id="holidayTagsContainer" style="display:flex; flex-wrap:wrap; gap:4px; margin-top:6px;"></div>
@@ -2498,7 +2498,7 @@ exports.default = {
       container.innerHTML = `
         <div style="text-align:center; padding:35px; color:var(--text-muted);">
           <i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--primary);"></i>
-          <p style="margin-top:10px; font-weight:600;">កំពុងទាញយកទិន្នន័យសិស្ស</p>
+          <p style="margin-top:10px; font-weight:600;">កំពុងទាញយកទិន្នន័យសិស្សពី Supabase...</p>
         </div>`;
 
       try {
@@ -2702,6 +2702,15 @@ exports.default = {
         updateStatsCounters();
         return;
       }
+      var hol = selectedHoliday();
+      if (hol) {
+        container.innerHTML = '<div style="text-align:center;padding:38px 16px;border:1.5px dashed #ef4444;border-radius:16px;background:rgba(239,68,68,.08);color:#ef4444;">'
+          + '<div style="font-size:34px;margin-bottom:6px;">🚫</div>'
+          + '<div style="font-size:16px;font-weight:800;">ថ្ងៃឈប់សម្រាក' + (hol.reason ? ' · ' + escapeHtml(hol.reason) : '') + '</div>'
+          + '<div style="font-size:12.5px;margin-top:6px;color:var(--text-muted);">មិនអនុញ្ញាតឱ្យស្រង់វត្តមានសិស្សក្នុងថ្ងៃនេះទេ</div></div>';
+        updateStatsCounters();
+        return;
+      }
       if (dailyViewMode === 'seat') { renderSeatView(container); return; }
       var q = (document.getElementById('searchBox').value || '').trim().toLowerCase();
       var list = rawStudentsData.filter(s => (s.name||'').toLowerCase().includes(q) || (s.id||'').toLowerCase().includes(q));
@@ -2850,7 +2859,24 @@ exports.default = {
       container.innerHTML = html;
     }
 
+    /* 🚫 ថ្ងៃឈប់សម្រាក៖ មិនអនុញ្ញាតឱ្យស្រង់វត្តមាន */
+    function selectedHoliday() {
+      try {
+        var list = holidaysFor(KHMER_MONTHS[selectedDate.getMonth()], selectedDate.getFullYear()) || [];
+        var d = selectedDate.getDate();
+        for (var i = 0; i < list.length; i++) if (Number(list[i].day) === d) return list[i];
+      } catch (e) {}
+      return null;
+    }
+    function holidayBlocked() {
+      var h = selectedHoliday();
+      if (!h) return false;
+      try { hintFlash('ថ្ងៃឈប់សម្រាក (' + (h.reason || 'ថ្ងៃឈប់') + ') មិនអាចស្រង់វត្តមានបានទេ', 2500); } catch (e) {}
+      return true;
+    }
+
     function setStudentDirectStatus(sid, code) {
+      if (holidayBlocked()) return;
       dailyAttendanceState[sid] = code;
       renderDailyList();
       updateStatsCounters();
@@ -2864,6 +2890,7 @@ exports.default = {
     }
 
     function selectActionStatus(code) {
+      if (holidayBlocked()) { closeStatusActionSheet(); return; }
       if (activeActionSheetSid) {
         dailyAttendanceState[activeActionSheetSid] = code;
         renderDailyList();
@@ -2874,6 +2901,7 @@ exports.default = {
     }
 
     function setBulkDailyStatus(code) {
+      if (holidayBlocked()) return;
       rawStudentsData.forEach(function(s) { dailyAttendanceState[s.id] = code; });
       renderDailyList();
       updateStatsCounters();
@@ -2881,6 +2909,7 @@ exports.default = {
     }
 
     function openStatusActionSheet(sid, name) {
+      if (holidayBlocked()) return;
       activeActionSheetSid = sid;
       if (!name) {
         var f = rawStudentsData.find(function(x) { return x.id === sid; });
@@ -2905,6 +2934,7 @@ exports.default = {
         if (isF) female++; else male++;
 
         var st = dailyAttendanceState[s.id] || 'P';
+        if (selectedHoliday()) return;
         if (st === 'P') p++; else if (st === 'A') a++; else if (st === 'L') l++; else if (st === 'C') c++;
       });
       document.getElementById('countMale').textContent = male;
@@ -2918,6 +2948,7 @@ exports.default = {
     }
 
     function triggerDebouncedSave() {
+      if (selectedHoliday()) return;
       hintFlash('ប្រព័ន្ធរក្សាទុកស្វ័យប្រវត្តិ', 0);
       clearTimeout(saveDebounceTimer);
       saveDebounceTimer = setTimeout(saveDailyAttendance, 400);
@@ -2925,6 +2956,7 @@ exports.default = {
 
     /* រក្សាទុកវត្តមានទៅ Table: attendance */
     async function saveDailyAttendance() {
+      if (selectedHoliday()) return;
       var y = selectedDate.getFullYear();
       var m = selectedDate.getMonth();
       var d = selectedDate.getDate();
@@ -3277,6 +3309,7 @@ exports.default = {
     }
 
     function renderHolidayTagsList() {
+      try { if (rawStudentsData && rawStudentsData.length) { renderDailyList(); updateStatsCounters(); } } catch (e) {}
       var mName = document.getElementById('rptMonthSelect').value;
       var container = document.getElementById('holidayTagsContainer');
       var list = holidaysFor(mName, selectedDate.getFullYear());
