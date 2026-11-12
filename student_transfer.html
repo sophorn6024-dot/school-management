@@ -209,7 +209,7 @@
     .sign-col .sign-name { font-weight: 700; font-size: 14px; }
 
     .kit-stamp{display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}.kit-sig{max-height:100%;max-width:60%;object-fit:contain}
-    .sign-col .kit-stamp{margin-top:-2mm}
+    .sign-col .kit-stamp{margin-top:-11mm;margin-bottom:-14mm !important}
     .sign-col .sd-box div{white-space:nowrap}
     .principal-col {
       margin-top: 65px !important;
@@ -428,9 +428,9 @@
     .tp-sign .sign-name{font-weight:700}
     .tp-sign .col-l{margin-top:7mm}
     .tp-cert .tp-in{padding-top:9mm;padding-bottom:6mm}
-    .tp-cert .tp-body>div{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:nowrap;white-space:nowrap;gap:0 6px}
-    .tp-cert .tp-body>.tp-ind{margin-left:0}
-    .tp-cert .tp-body .v{display:inline-block;text-align:left;text-align-last:left}
+    .tp-cert .tp-body{display:block;text-align:justify;text-indent:12mm}
+    .tp-cert .tp-body>div,.tp-cert .tp-body>p{display:inline;margin:0;text-indent:0}
+    .tp-cert .tp-body .v{display:inline}
     .tp-cert .tp-sign{margin-top:6mm}
     .tp-cert .tp-sign .sign-col:last-child .sign-name{padding-left:70px}
     .tp-cert .sd-box div{font-size:.84em;white-space:nowrap}
@@ -2151,12 +2151,12 @@ exports.default = {
         + headBlock()
         + '<div class="tp-title f-moul" style="margin-bottom:1mm">វិញ្ញាបនបត្របញ្ជាក់ការសិក្សា</div>'
         + '<div class="tp-sub">នាយក' + esc(d.school) + '</div>'
-        + '<div class="tp-body"><div>សូមបញ្ជាក់ថា សិស្សឈ្មោះ ' + V(d.name, 20) + ' ភេទ ' + V(d.gender, 6) + ' អត្តលេខ ' + V('', 12) + '</div>'
-        + '<div>ថ្ងៃ/ខែ/ឆ្នាំ/កំណើត ' + (d.dob ? '<span class="v">' + d.dob + '</span>' : V('', 16)) + '</div>'
-        + '<div>ទីកន្លែងកំណើត ភូមិ/មណ្ឌល ' + V(d.pob.village, 12) + ' ឃុំ/សង្កាត់ ' + V(d.pob.commune, 12) + ' ស្រុក/ខណ្ឌ ' + V(d.pob.district, 12) + ' ខេត្ត/រាជធានី ' + V(d.pob.province, 12) + '</div>'
-        + '<div>ឪពុកឈ្មោះ ' + V(d.father.name, 20) + ' មុខរបរសព្វថ្ងៃ ' + V(d.father.job, 14) + '</div>'
-        + '<div>ម្ដាយឈ្មោះ ' + V(d.mother.name, 20) + ' មុខរបរសព្វថ្ងៃ ' + V(d.mother.job, 14) + '</div>'
-        + '<div>ទីលំនៅបច្ចុប្បន្ន ភូមិ/មណ្ឌល ' + V(d.addr.village, 12) + ' ឃុំ/សង្កាត់ ' + V(d.addr.commune, 12) + ' ស្រុក/ខណ្ឌ ' + V(d.addr.district, 12) + ' ខេត្ត/រាជធានី ' + V(d.addr.province, 12) + '</div>'
+        + '<div class="tp-body"><div>សូមបញ្ជាក់ថា សិស្សឈ្មោះ ' + V(d.name, 20) + ' ភេទ ' + V(d.gender, 6) + ' អត្តលេខ ' + V('', 12) + ' </div>'
+        + '<div>ថ្ងៃ/ខែ/ឆ្នាំ/កំណើត ' + (d.dob ? '<span class="v">' + d.dob + '</span>' : V('', 16)) + ' </div>'
+        + '<div>ទីកន្លែងកំណើត ភូមិ/មណ្ឌល ' + V(d.pob.village, 12) + ' ឃុំ/សង្កាត់ ' + V(d.pob.commune, 12) + ' ស្រុក/ខណ្ឌ ' + V(d.pob.district, 12) + ' ខេត្ត/រាជធានី ' + V(d.pob.province, 12) + ' </div>'
+        + '<div>ឪពុកឈ្មោះ ' + V(d.father.name, 20) + ' មុខរបរសព្វថ្ងៃ ' + V(d.father.job, 14) + ' </div>'
+        + '<div>ម្ដាយឈ្មោះ ' + V(d.mother.name, 20) + ' មុខរបរសព្វថ្ងៃ ' + V(d.mother.job, 14) + ' </div>'
+        + '<div>ទីលំនៅបច្ចុប្បន្ន ភូមិ/មណ្ឌល ' + V(d.addr.village, 12) + ' ឃុំ/សង្កាត់ ' + V(d.addr.commune, 12) + ' ស្រុក/ខណ្ឌ ' + V(d.addr.district, 12) + ' ខេត្ត/រាជធានី ' + V(d.addr.province, 12) + ' </div>'
         + '<p class="tp-p" style="margin-top:1mm">រៀននៅថ្នាក់ទី ' + V(d.grade, 3) + ' នៃ' + V(d.school) + ' ក្នុងឆ្នាំសិក្សា ' + V(d.year, 10)
         + ' ពិតប្រាកដមែន។ វិញ្ញាបនបត្រនេះចេញឲ្យសាម៉ីខ្លួនយកទៅប្រើប្រាស់សម្រាប់ក្នុងករណីអាចប្រើបាន។</p></div>'
         + '<div class="tp-sign">' + dirBlock('បានឃើញនិងឯកភាព')
@@ -2391,7 +2391,7 @@ exports.default = {
       setTimeout(fitCertRows, 60);
     }
     function fitCertRows() {
-      document.querySelectorAll('.tp-cert .tp-body > div').forEach(r => {
+      [].forEach.call([], r => {
         r.style.fontSize = '';
         let fs = parseFloat(getComputedStyle(r).fontSize) || 14, n = 0;
         while (r.scrollWidth > r.clientWidth + 1 && fs > 8 && n++ < 60) { fs -= 0.25; r.style.fontSize = fs + 'px'; }
