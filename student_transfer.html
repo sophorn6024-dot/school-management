@@ -514,7 +514,10 @@
 
       <!-- 👨‍👩‍👧 អាណាព្យាបាល -->
       <div class="tb-grp" id="guardWrap"><span class="tb-lbl2">អាណាព្យាបាល៖</span>
-        <select class="tb-sel" id="selGuard" onchange="setGuard(this.value)"></select></div>
+        <div class="dd-wrap">
+          <button type="button" class="tb-btn" onclick="toggleDropdown('ddGuard')"><span id="txtGuard"></span><i class="fa-solid fa-chevron-down" style="font-size:11px; opacity:.7;"></i></button>
+          <div class="dd-popup" id="ddGuard" style="min-width:150px;"></div>
+        </div></div>
 
       <input type="text" class="tb-inp" id="inpDest" placeholder="ផ្ទេរទៅសាលា..." oninput="fieldChanged()" autocomplete="off">
       <input type="text" class="tb-inp" id="inpReason" placeholder="មូលហេតុ..." oninput="fieldChanged()" autocomplete="off">
@@ -1999,15 +2002,18 @@ exports.default = {
     function buildTypeGuardMenus() {
       document.getElementById('segType').innerHTML = TYPES.map(x =>
         `<button type="button" class="seg-btn ${x.k === TP.type ? 'active' : ''}" onclick="setType('${x.k}')">${x.t}</button>`).join('');
-      document.getElementById('selGuard').innerHTML = GUARDS.map(x =>
-        `<option value="${x.k}" ${x.k === TP.guard ? 'selected' : ''}>${x.t.replace(/ \(.*\)/, '')}</option>`).join('');
+      document.getElementById('ddGuard').innerHTML = GUARDS.map(x => `
+        <div class="dd-item ${x.k === TP.guard ? 'active' : ''}" onclick="setGuard('${x.k}')">
+          <span class="dd-item-left">${x.t}</span>
+          <i class="fa-solid fa-check" style="${x.k === TP.guard ? '' : 'display:none;'}"></i></div>`).join('');
+      document.getElementById('txtGuard').textContent = GUARDS.find(x => x.k === TP.guard).t.replace(/ \(.*\)/, '');
       const tr = TP.type === 'TRANSFER';
       document.getElementById('guardWrap').style.display = tr ? '' : 'none';
       document.getElementById('inpDest').style.display = tr ? '' : 'none';
       document.getElementById('inpReason').style.display = tr ? '' : 'none';
     }
     function setType(k) { TP.type = k; saveTp(); buildTypeGuardMenus(); renderDoc(); }
-    function setGuard(k) { TP.guard = k; saveTp(); renderDoc(); }
+    function setGuard(k) { TP.guard = k; saveTp(); buildTypeGuardMenus(); closeAllDropdowns(); renderDoc(); }
 
     async function selectClass(cls) {
       currentSelectedClass = cleanGrade(cls);
