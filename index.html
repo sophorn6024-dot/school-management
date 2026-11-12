@@ -1003,6 +1003,20 @@ body.solo .iframe-container{bottom:0!important}
 .login-welcome .lw-t{white-space:nowrap;font-size:clamp(14px,4.7cqw,28px);line-height:1.7}
 @media (max-height:620px) and (min-width:900px){ .login-welcome .lw-t{font-size:clamp(14px,4.7cqw,24px)} }
 .mascot{display:none!important}
+
+.dx-totals{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.dx-tot{background:var(--surface-card);border:1px solid var(--border);border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:var(--card-shadow)}
+.dx-tot .ic{width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;background:rgba(37,99,235,.12);flex:none}
+.dx-tot.s .ic{background:rgba(16,185,129,.14)}
+.dx-tot small{display:block;font-size:12px;color:var(--text-muted)}
+.dx-tot b{display:block;font-size:26px;font-weight:800;line-height:1.2;color:var(--text)}
+.dx-hol{background:var(--surface-card);border:1px solid var(--border);border-radius:20px;padding:16px 18px;box-shadow:var(--card-shadow)}
+.dx-hol-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:8px;margin-top:10px}
+.dx-h{display:flex;gap:10px;align-items:center;border:1px solid var(--border);border-radius:12px;padding:8px 10px;font-size:13px}
+.dx-h .dt{flex:none;min-width:74px;font-weight:800;color:#dc2626}
+.dx-h .rs{color:var(--text);line-height:1.35}
+.dx-h.past{opacity:.5}
+.dx-h.next{border-color:#f59e0b;background:rgba(245,158,11,.10)}
 </style>
 <script>
 /* ដាក់ logo សាលាចំកណ្ដាល QR (ត្រូវប្រើ correctLevel H ដើម្បីនៅតែស្កេនបាន) */
@@ -1024,6 +1038,7 @@ function qrStampLogo(box){
     if(!cv.__logo)QR_LOGO.addEventListener('load',function(){paint();sync()});
   }catch(e){}
 }
+
 </script>
 </head>
 <body>
@@ -1194,6 +1209,12 @@ function qrStampLogo(box){
             <div class="shortcut-pill-btn" onclick="showMyQr()"><span>📱</span><span>QR ចូលប្រព័ន្ធ</span></div>
             <div class="shortcut-pill-btn" onclick="openStudentProfileViewer()"><span>🕒</span><span>ប្រវត្តិរូបសិស្ស</span></div>
           </div>
+
+          <div class="dx-totals" id="dxTotals">
+            <div class="dx-tot"><div class="ic">👩‍🏫</div><div><small>គ្រូសរុប</small><b id="dxTeachers">…</b></div></div>
+            <div class="dx-tot s"><div class="ic">🏫</div><div><small>សាលាសរុប</small><b id="dxSchools">…</b></div></div>
+          </div>
+          <div class="dx-hol" id="dxHol"></div>
 
           <div class="admin-classes-panel" id="adminClassesPanel">
             <div class="section-headline-group"><div class="section-cyan-title" style="font-size:15px;">🏫 ស្ថិតិសិស្សតាមថ្នាក់ទាំងអស់ (Admin Overview)</div><div class="section-slate-sub">ចុចលើថ្នាក់ណាមួយដើម្បីពិនិត្យទិន្នន័យ</div></div>
@@ -4450,6 +4471,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
     return null;
   }
+  window.dcHolidaysOf=holidays;
   window.dcOpen=function(){var m=document.getElementById('dcModal');if(!m)return;m.classList.add('show');document.body.classList.add('dc-lock');dcRender()};
   window.dcClose=function(){var m=document.getElementById('dcModal');if(m)m.classList.remove('show');document.body.classList.remove('dc-lock')};
   window.dcShift=function(n){var m=view.m+n,y=view.y;while(m<0){m+=12;y--}while(m>11){m-=12;y++}view={y:y,m:m};dcRender()};
@@ -4938,6 +4960,62 @@ applyIcons();
   }
   tryLoad('login_hero', 0, 0);
   for (var n = 1; n <= 5; n++) tryLoad('login_hero_' + n, n - 1, 0);
+})();
+/* ===== 🎊 ថ្ងៃឈប់សម្រាកប្រចាំឆ្នាំ + 👩‍🏫🏫 សរុបសម្រាប់ admin ===== */
+(function(){
+  var GMN=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+  function kn(n){return String(n).replace(/\d/g,function(d){return '០១២៣៤៥៦៧៨៩'[d]})}
+  function esc(t){return String(t).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  window.dxHolidays=function(y){
+    if(typeof window.dcHolidaysOf!=='function')return [];
+    var days=[];
+    for(var m=0;m<12;m++){var H=window.dcHolidaysOf(y,m);Object.keys(H).forEach(function(d){days.push({y:y,m:m,d:+d,r:H[d]})})}
+    days.sort(function(a,b){return a.m-b.m||a.d-b.d});
+    var out=[];
+    days.forEach(function(x){
+      var l=out[out.length-1];
+      if(l&&l.r===x.r&&l.m===x.m&&x.d===l.d2+1){l.d2=x.d}else out.push({m:x.m,d:x.d,d2:x.d,r:x.r,y:y});
+    });
+    return out;
+  };
+  window.dxRenderHol=function(){
+    var host=document.getElementById('dxHol');if(!host)return;
+    var now=new Date(),y=now.getFullYear(),L=window.dxHolidays(y);
+    if(!L.length){host.style.display='none';return}
+    host.style.display='';
+    var today=new Date(y,now.getMonth(),now.getDate()),nextI=-1;
+    L.forEach(function(h,i){if(nextI<0&&new Date(y,h.m,h.d2)>=today)nextI=i});
+    var total=0;L.forEach(function(h){total+=h.d2-h.d+1});
+    host.innerHTML='<div class="section-headline-group"><div class="section-cyan-title" style="font-size:15px;">🎊 ថ្ងៃឈប់សម្រាកប្រចាំឆ្នាំ '+kn(y)+'</div><div class="section-slate-sub">សរុប '+kn(total)+' ថ្ងៃ</div></div>'
+      +'<div class="dx-hol-list">'+L.map(function(h,i){
+        var past=new Date(y,h.m,h.d2)<today,dt=h.d===h.d2?kn(h.d)+' '+GMN[h.m]:kn(h.d)+'–'+kn(h.d2)+' '+GMN[h.m];
+        return '<div class="dx-h'+(past?' past':'')+(i===nextI?' next':'')+'"><span class="dt">'+dt+'</span><span class="rs">'+esc(h.r)+(i===nextI?' · <b>បន្ទាប់</b>':'')+'</span></div>';
+      }).join('')+'</div>';
+  };
+  window.dxRenderTotals=async function(){
+    var box=document.getElementById('dxTotals');if(!box)return;
+    if(!IS_ADMIN){box.style.display='none';return}
+    box.style.display='grid';
+    var t=document.getElementById('dxTeachers'),sc=document.getElementById('dxSchools'),got=false;
+    try{
+      var pw='';try{pw=localStorage.getItem('krou_pw')||''}catch(e){}
+      if(pw&&CURRENT_USER){
+        var r=await sb.rpc('admin_dash_counts',{p_u:CURRENT_USER.username,p_p:pw});
+        if(r.data&&r.data.ok){t.textContent=kn(r.data.teachers);sc.textContent=kn(r.data.schools);got=true}
+      }
+    }catch(e){}
+    if(!got){
+      try{
+        var u=await sb.from('users').select('id,role,is_active');
+        if(!u.error&&u.data)t.textContent=kn(u.data.filter(function(x){return String(x.role||'').toLowerCase()!=='admin'&&x.is_active!==false}).length);
+        else t.textContent='—';
+      }catch(e){t.textContent='—'}
+      sc.textContent='—';
+    }
+  };
+  var _rs=window.refreshStats||refreshStats;
+  refreshStats=async function(){var r=await _rs.apply(this,arguments);try{dxRenderHol();dxRenderTotals()}catch(e){console.warn(e)}return r};
+  document.addEventListener('DOMContentLoaded',function(){setTimeout(function(){try{dxRenderHol()}catch(e){}},600)});
 })();
 </script>
 <button type="button" id="pwaBtn" class="pwa-btn" onclick="pwaInstall()" style="display:none"><span>📲</span><b>តម្លើង App</b><i onclick="event.stopPropagation();pwaHide()" aria-label="បិទ">✕</i></button>
