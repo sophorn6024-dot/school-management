@@ -27,6 +27,20 @@ async function stRows(grades){
   return{data:rows,error:null};
 }
 </script>
+<script>
+/* ថ្ងៃខែឆ្នាំកំណើត → «១៥ ខែមីនា ឆ្នាំ២០១៥» (បើទម្រង់មិនស្គាល់ បង្ហាញដើម) */
+function fmtDobKh(v){
+  if(!v)return '';
+  var K='០១២៣៤៥៦៧៨៩',s=String(v).trim().replace(/[០-៩]/g,function(c){return K.indexOf(c)}),m,y,mo,d;
+  if(m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/)){y=+m[1];mo=+m[2];d=+m[3]}
+  else if(m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/)){d=+m[1];mo=+m[2];y=+m[3]}
+  else return String(v);
+  if(mo<1||mo>12||d<1||d>31)return String(v);
+  var M=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+  var kh=function(n){return String(n).replace(/\d/g,function(c){return K[c]})};
+  return kh(d)+' ខែ'+M[mo-1]+' ឆ្នាំ'+kh(y);
+}
+</script>
 <script>(function(){try{var t=localStorage.getItem('krou_theme_manual');if(localStorage.getItem('krou_theme_auto')==='1'){var hh=new Date().getHours();t=(hh>=6&&hh<18)?'light':'dark'}if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);var m=document.getElementById('metaThemeColor');if(m)m.content=t==='dark'?'#090e17':'#f8fafc'}}catch(e){}})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1370,8 +1384,8 @@ function qrStampLogo(box){
   <div class="profile-viewer-box">
     <div class="pv-top-bar">
       <div class="pv-selector-group">
-        <select class="pv-dropdown-select" id="pvClassSelect" style="max-width:130px;" onchange="onPvClassChange()"><option value="">គ្រប់ថ្នាក់</option></select>
-        <select class="pv-dropdown-select" id="pvStudentSelect" onchange="onPvStudentSelect(this.value)"><option value="">កំពុងទាញបញ្ជីឈ្មោះ...</option></select>
+        <select class="pv-dropdown-select" id="pvClassSelect" data-native style="max-width:130px;" onchange="onPvClassChange()"><option value="">គ្រប់ថ្នាក់</option></select>
+        <select class="pv-dropdown-select" data-native id="pvStudentSelect" onchange="onPvStudentSelect(this.value)"><option value="">កំពុងទាញបញ្ជីឈ្មោះ...</option></select>
         <button class="pv-nav-arrow-btn" onclick="prevStudentProfile()" title="សិស្សមុន">‹</button>
         <button class="pv-nav-arrow-btn" onclick="nextStudentProfile()" title="សិស្សបន្ទាប់">›</button>
       </div>
@@ -4042,7 +4056,7 @@ function renderSelectedStudentProfile(idx) {
   const photo = s.photo_url || s.photoUrl;
   if (photo && String(photo).trim() !== "") avatarBox.innerHTML = `<img src="${photo}" alt="photo" onerror="this.outerHTML='<span>${name.charAt(0)}</span>'">`;
   else avatarBox.innerHTML = `<span>${name.trim().charAt(0) || 'ស'}</span>`;
-  document.getElementById('pvDob').innerText = s.dob || '-';
+  document.getElementById('pvDob').innerText = fmtDobKh(s.dob) || '-';
   document.getElementById('pvAge').innerText = calculateAge(s.dob) || '-';
   document.getElementById('pvPhone').innerText = s.phone || '-';
   document.getElementById('pvPob').innerText = s.pob || '-';
