@@ -978,6 +978,20 @@
     .tr-foot button.pri{background:#0284c7;border-color:#0284c7;color:#fff}
     .tr-foot button:disabled{opacity:.5;cursor:not-allowed}
 </style>
+<script id="stRowsJs">
+/* 🔒 អានសិស្សតាមមុខងារ staff_student_list (គ្រូឃើញតែថ្នាក់ខ្លួន ក្នុងសាលាខ្លួន · Admin ឃើញទាំងអស់) */
+async function stRows(grades){
+  var u=null,pw='';try{u=JSON.parse(localStorage.getItem('krou_supabase_user')||'null');pw=localStorage.getItem('krou_pw')||''}catch(e){}
+  if(!u||!u.username||!pw)return{data:null,error:{message:'សូមចូលប្រព័ន្ធឡើងវិញ'}};
+  var c=(typeof sb!=='undefined')?sb:SB;
+  var r=await c.rpc('staff_student_list',{p_u:u.username,p_p:pw});
+  if(r.error)return{data:null,error:r.error};
+  if(r.data&&r.data.error){if(r.data.error==='auth'){try{localStorage.removeItem('krou_pw')}catch(e){}}return{data:null,error:{message:String(r.data.error)}}}
+  var rows=(r.data&&r.data.rows)||[];
+  if(grades&&grades.length)rows=rows.filter(function(s){return grades.indexOf(s.grade)>-1});
+  return{data:rows,error:null};
+}
+</script>
 <script>
 (function(){let t='dark';try{const u=new URLSearchParams(location.search).get('theme');let p=null;try{if(window.parent&&window.parent!==window)p=window.parent.document.documentElement.getAttribute('data-theme')}catch(e){}
 t=u||p||localStorage.getItem('krou_theme_manual')||'dark'}catch(e){}document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');
@@ -3578,7 +3592,7 @@ async function trLoadOptions() {
   try {
     let from = 0; const step = 1000;
     while (true) {
-      const { data: g, error: ge } = await sb.from('students').select('grade').range(from, from + step - 1);
+      const { data: g, error: ge } = (from === 0 ? await stRows() : { data: [], error: null });
       if (ge || !g || !g.length) break;
       g.forEach(r => { const k = normGrade(r.grade); if (k && !used.has(k)) { used.add(k); opts.push({ cls: k, label: '(មិនទាន់មានគ្រូ) — ថ្នាក់ទី ' + k }); } });
       if (g.length < step) break;
@@ -3619,7 +3633,7 @@ async function trLoadStudents() {
   box.innerHTML = '<div class="tr-empty">កំពុងផ្ទុក...</div>';
   try {
     const grades = ['ថ្នាក់ទី' + cls, 'ថ្នាក់ទី ' + cls, cls];
-    const { data, error } = await sb.from('students').select('id, student_id, student_name, gender, grade').in('grade', grades).order('id', { ascending: true });
+    const { data, error } = await stRows(grades);
     if (error) throw error;
     TR_STUDENTS = (data || []).filter(s => IS_ADMIN || !TR_PRE || TR_PRE.includes(s.id)).map(s => ({ id: s.id, sid: s.student_id, name: s.student_name || 'គ្មានឈ្មោះ', sex: s.gender || '', on: !!(TR_PRE && TR_PRE.includes(s.id)) }));
   } catch (e) { box.innerHTML = '<div class="tr-empty">❌ ផ្ទុកមិនបាន៖ ' + esc(e.message || e) + '</div>'; trUpdateState(); return; }
@@ -3692,6 +3706,7 @@ async function trSubmit() {
   function skip(sel){
     if(sel._as||sel.multiple||sel.size>1||sel.hasAttribute('data-native')||sel._enh)return true;
     if(sel.closest('.cs-wrap,.as-wrap'))return true;
+    if(sel.id&&document.getElementById(sel.id+'Btn'))return true; /* __asBtnFix: ទំព័រមាន custom dropdown ផ្ទាល់ខ្លួន */
     return false;
   }
   function visible(sel){var cs=getComputedStyle(sel);return cs.display!=='none'&&cs.visibility!=='hidden'}
@@ -3710,7 +3725,7 @@ async function trSubmit() {
     sel.parentNode.insertBefore(wrap,sel);wrap.appendChild(btn);wrap.appendChild(sel);
     sel.style.display='none';
     var lb=btn.querySelector('.as-lb');
-    var pop=document.createElement('div');pop.className='as-pop';document.body.appendChild(pop);pops.push(pop);
+    var pop=document.createElement('div');pop.className='as-pop';document.body.appendChild(pop);pops.push(pop);sel._asWrap=wrap;sel._asPop=pop;
     var dV=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value'),dI=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'selectedIndex');
     function sync(){var o=sel.options[sel.selectedIndex];lb.textContent=o?o.textContent:'';btn.disabled=!!sel.disabled;
       wrap.style.display=wrap.style.display; }
@@ -3747,15 +3762,32 @@ async function trSubmit() {
       var on=pop.querySelector('.as-it.on');if(on)pop.scrollTop=on.offsetTop-pop.clientHeight/2+on.offsetHeight/2;
     });
   }
+  /* ទំព័រមាន dropdown ផ្ទាល់ខ្លួន (id+'Btn', .custom-dd-btn, .cs-btn) → លុបកំណែស្វ័យប្រវត្តិ កុំឱ្យស្ទួន */
+  function hasOther(sel){var w=sel._asWrap,r=w&&w.parentNode;if(!r)return false;
+    if(sel.id&&document.getElementById(sel.id+'Btn'))return true;
+    return !!r.querySelector('.custom-dd-btn,.cs-btn,.cs-wrap')}
+  function dropAs(sel){var w=sel._asWrap;if(w){var b=w.querySelector('.as-btn');if(b)b.remove()}
+    if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    try{delete sel.value;delete sel.selectedIndex}catch(e){}
+    sel._as=false;sel._enh=true;sel._asPop=null;sel.style.display='none'}
   function scan(){
+    document.querySelectorAll('select').forEach(function(x){if(x._as&&x.id&&document.getElementById(x.id+'Btn')){unwrapAs(x);x.style.display='none'}});
     var list=document.querySelectorAll('select');
-    for(var i=0;i<list.length;i++){var s=list[i];if(skip(s))continue;if(!visible(s))continue;try{enhance(s)}catch(e){console.warn('as',e)}}
+    for(var i=0;i<list.length;i++){var s=list[i];
+      if(s._as&&s._asWrap&&hasOther(s)){try{dropAs(s)}catch(e){}continue}
+      if(skip(s))continue;if(!visible(s))continue;try{enhance(s)}catch(e){console.warn('as',e)}}
   }
   document.addEventListener('click',function(e){if(!e.target.closest||!e.target.closest('.as-pop'))closeAll()});
   window.addEventListener('resize',closeAll);window.addEventListener('scroll',function(e){if(openPop&&!(e.target&&e.target.closest&&e.target.closest('.as-pop')))closeAll()},true);
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll()});
   function boot(){scan();setInterval(scan,1200)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+  /* __asHook: ទំព័រដែលមាន enhanceSelect ផ្ទាល់ខ្លួន → ដកកំណែស្វ័យប្រវត្តិចេញ កុំឱ្យមានប្រអប់ស្ទួន */
+  function unwrapAs(sel){try{var w=sel._asWrap;if(w&&w.parentNode){w.parentNode.insertBefore(sel,w);w.remove()}if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    delete sel.value;delete sel.selectedIndex;sel.style.display='';sel._as=false;sel._asWrap=null;sel._asPop=null}catch(e){}}
+  try{if(typeof window.enhanceSelect==='function'&&!window.enhanceSelect.__asHooked){var _orig=window.enhanceSelect;
+    window.enhanceSelect=function(a){var el=typeof a==='string'?document.getElementById(a):a;if(el&&el._as)unwrapAs(el);return _orig.apply(this,arguments)};
+    window.enhanceSelect.__asHooked=true}}catch(e){}
   window.__autoSelectScan=scan;
 })();
 </script>

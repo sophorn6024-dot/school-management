@@ -30,7 +30,7 @@ body{background:var(--bg);color:var(--text);font-family:'Battambang','Kantumruy 
 .banner{display:none;margin:10px 14px 0;padding:12px 14px;border-radius:14px;background:#fef3c7;color:#92400e;font-size:13px;line-height:1.7;border:1px solid #fcd34d}
 .banner button{margin-left:8px;background:#f59e0b;color:#fff;border:0;border-radius:9px;padding:4px 12px;font:700 12px 'Kantumruy Pro',sans-serif;cursor:pointer}
 .stage{padding:16px;display:flex;justify-content:center;overflow-x:auto}
-.page{width:297mm;min-height:210mm;background:#fff;color:#0f172a;padding:9mm 9mm 12mm;box-shadow:0 12px 44px rgba(15,23,42,.18);position:relative;flex-shrink:0;border-radius:4px}
+.page{width:210mm;min-height:297mm;background:#fff;color:#0f172a;padding:9mm 9mm 12mm;box-shadow:0 12px 44px rgba(15,23,42,.18);position:relative;flex-shrink:0;border-radius:4px}
 .logo{position:absolute;right:9mm;top:6mm;width:56px;height:56px;border:2.5px solid #3730a3;border-radius:50%;display:flex;align-items:center;justify-content:center;font:italic 700 20px Georgia,serif;color:#3730a3}
 .ttl{font-family:'Moul',serif;text-align:center;font-size:21px;color:#1e3a8a;line-height:1.8;padding:0 60px}
 .sub{font-family:'Moul',serif;text-align:center;font-size:15px;color:#1e3a8a}
@@ -87,7 +87,6 @@ table.kv td{padding:6px 10px;text-align:center}
 .md .list{overflow:auto;padding:0 12px 12px;display:flex;flex-direction:column;gap:6px}
 .it{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:13px;border:1.5px solid var(--line);background:var(--in);cursor:pointer;transition:all .15s;user-select:none}
 .it:hover{border-color:var(--ac)}
-.it.lock{opacity:.45;cursor:not-allowed}
 .it.on{background:var(--oks);border-color:var(--ok)}
 .it .ck{width:22px;height:22px;border-radius:7px;border:2px solid var(--inl);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;flex-shrink:0}
 .it.on .ck{background:var(--ok);border-color:var(--ok)}
@@ -95,14 +94,13 @@ table.kv td{padding:6px 10px;text-align:center}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0f172a;color:#fff;padding:10px 18px;border-radius:14px;font-size:13px;font-weight:700;z-index:300;display:none}
 .auth{display:none;min-height:70vh;align-items:center;justify-content:center;text-align:center;padding:24px}
 .auth div{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:34px 26px;max-width:380px}
-@media(max-width:1200px){.stage{padding:8px}.page{zoom:.7}}
-@media(max-width:860px){.page{zoom:.52}}
-@media(max-width:600px){.page{zoom:.34}}
+@media(max-width:860px){.stage{padding:8px}.page{zoom:.46}}
+@media(max-width:600px){.page{zoom:.42}}
 @media print{
-  @page{size:297mm 210mm;margin:0}
+  @page{size:210mm 297mm;margin:0}
   body{background:#fff;padding:0}.tb,.banner,.tip,.ov,.toast{display:none!important}
   html,body{height:auto;overflow:visible}
-  .stage{padding:0;display:block;overflow:visible}.page{box-shadow:none;border-radius:0;margin:0 auto;min-height:0!important;height:210mm;overflow:hidden;padding:8mm 8mm 6mm;page-break-after:avoid;break-after:avoid}
+  .stage{padding:0;display:block;overflow:visible}.page{box-shadow:none;border-radius:0;margin:0 auto;min-height:0!important;height:297mm;overflow:hidden;padding:8mm 8mm 6mm;page-break-after:avoid;break-after:avoid}
   .ed{border-bottom:0}.ed:empty:before{content:''}
   td.nm.lk:after{display:none}th.clk{text-decoration:none}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -211,7 +209,7 @@ table.kv td{padding:6px 10px;text-align:center}
       margin-top: 40px;
     }
 
-    @page { size: A4 landscape; margin: 0; }
+    @page { size: A4 portrait; margin: 0; }
 
     @media print {
       * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -300,64 +298,9 @@ select option{font-size:14px;font-weight:400}
 @media print{.csb .ca{display:none}.edu-b.empty .cl{color:transparent}.edu-b:hover{background:none}#csPop{display:none!important}}
 
 .pgs{display:flex;flex-direction:column;gap:18px;align-items:center}
-/* ===== ២.(ក២): តារាងតែមួយ មានភូមិជាជួរតូចៗ ===== */
-.vgrid{display:block}
-.vt{font-size:10.5px;table-layout:fixed;width:100%}
-.vt thead th{padding:3px 1px;font-size:10px;line-height:1.35;word-break:break-word;overflow-wrap:anywhere}
-.vt td.c{height:24px;padding:2px 1px}
-#kgT{font-size:10px;table-layout:fixed}#kgT thead th{padding:3px 1px;font-size:10px;line-height:1.35}#kgT td.nm{font-size:10.5px;padding:3px 4px}#kgT td.ec .ed{padding:2px 0;font-size:10.5px}
-/* ===== ១.(ក) ព័ត៌មានគ្រូ: តូចសមល្មម ===== */
-.page>.cols{grid-template-columns:minmax(0,.6fr) minmax(0,1.4fr);align-items:stretch}
-.page>.cols .col:first-child .sec>h3{font-size:12px;padding:6px 8px}
-.page>.cols .col:first-child .sec>.body{flex:1;padding:5px}
-.page>.cols .col:first-child table.kv{font-size:11px;flex:1;height:100%}
-table.kv th{padding:3px 7px;width:42%;font-size:10.5px}
-table.kv td{padding:3px 6px}
-table.kv .ed{min-width:60px!important}
-table.kv .csb,table.kv .edu-b{font-size:11px;min-height:20px;padding:1px 4px}
-/* ===== អក្សរឱ្យច្បាស់ ===== */
-.page table{font-size:13px}
-.page td{color:#0b1220}
-.page thead th{color:#1b2a7a;font-weight:700}
-.page td.c{font-weight:600}
-.vt{font-size:12.5px}
-.vt thead th{font-size:12px;padding:4px 1px}
-.vt td.c{height:27px;font-size:13px;font-weight:600}
-#kgT,#kgT thead th{font-size:12px}
-#kgT td.nm{font-size:12.5px;font-weight:600;color:#0b1220}
-#kgT td.ec .ed{font-size:13px;font-weight:700;color:#0b1220}
-.page>.cols .col:first-child .sec>h3{font-size:13.5px}
-table.kv{font-size:13px}
-table.kv th{font-size:12.5px;color:#334155;font-weight:700}
-table.kv td,table.kv .ed{font-size:13px;font-weight:600;color:#0b1220}
-table.kv .csb,table.kv .edu-b{font-size:13px;font-weight:600;color:#0b1220}
-.sec>h3{font-size:14px}
-.tip{font-size:12.5px}
-#kgT .ed[data-ex^=kgv]:empty:before{color:#64748b;font-weight:700}
-#kgT thead th{color:#1b2a7a!important}
-.vt .gl,#kgT .gl{border-left:1.5px solid #4a5ab8!important}
-/* ===== អក្សរធំល្មម + បន្ទាត់ពេលព្រីន ===== */
-.page table{font-size:14px}
-.vt{font-size:13.5px}
-.vt thead th{font-size:13px;padding:5px 1px}
-.vt td.c{height:30px;font-size:14.5px}
-#kgT,#kgT thead th{font-size:13px}
-#kgT td.nm{font-size:13.5px}
-#kgT td.ec .ed{font-size:14px}
-table.kv{font-size:14px}
-table.kv th{font-size:13.5px}
-table.kv td,table.kv .ed,table.kv .csb,table.kv .edu-b{font-size:14px}
-.sec>h3{font-size:15px}
-.page>.cols .col:first-child .sec>h3{font-size:14.5px}
-.tip{font-size:13px}
-@media print{
-  .page th,.page td{border:1px solid #64748b!important}
-  .page .vt .gl,.page #kgT .gl{border-left:1.8px solid #1e2a78!important}
-  .page .sec{border:1px solid #64748b!important;box-shadow:none!important}
-  .page .vb h4{border-color:#64748b!important}
-  .page td.ec .ed,.page table.kv .ed{border-bottom:0!important}
-  .page #kgT .ed[data-ex^=kgv]{border-bottom:0!important}
-}
+.vgrid{display:flex;flex-direction:column;gap:8px}
+.vb h4{margin:0 0 3px;font-size:12.5px;color:#27348b;font-weight:800;text-align:center;background:#eef2ff;border:1px solid #dbe3f3;border-radius:8px;padding:3px 6px}
+.vb table{font-size:10.5px}.vb td.c{height:17px;padding:0 1px}.vb thead th{padding:2px 1px;font-size:10px}.vb th.vn{background:#eef2ff;color:#27348b;font-size:10.5px;white-space:normal;line-height:1.25}.vb .tot{background:#f1f5f9;font-weight:700}
 .sec h3 small{font-weight:500;font-size:11px;display:block;opacity:.9}
 .hide{display:none!important}
 #blkRest .cols{align-items:start}
@@ -367,8 +310,22 @@ td.ec{padding:0;height:26px}
 td.ec .ed{display:block;min-height:22px;text-align:center;border:0;padding:3px;min-width:0}
 .pg2h{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#475569;margin-bottom:8px}
 .btn.on{background:#4f46e5;color:#fff}
-@media print{.page{page-break-after:always;break-after:page}.page:last-of-type,.page.last{page-break-after:avoid;break-after:avoid}}
+@media print{.page{page-break-after:always;break-after:page}.page:last-of-type,.page.last{page-break-after:avoid;break-after:avoid}.vb h4{background:#eef2ff!important}}
 </style>
+<script id="stRowsJs">
+/* 🔒 អានសិស្សតាមមុខងារ staff_student_list (គ្រូឃើញតែថ្នាក់ខ្លួន ក្នុងសាលាខ្លួន · Admin ឃើញទាំងអស់) */
+async function stRows(grades){
+  var u=null,pw='';try{u=JSON.parse(localStorage.getItem('krou_supabase_user')||'null');pw=localStorage.getItem('krou_pw')||''}catch(e){}
+  if(!u||!u.username||!pw)return{data:null,error:{message:'សូមចូលប្រព័ន្ធឡើងវិញ'}};
+  var c=(typeof sb!=='undefined')?sb:SB;
+  var r=await c.rpc('staff_student_list',{p_u:u.username,p_p:pw});
+  if(r.error)return{data:null,error:r.error};
+  if(r.data&&r.data.error){if(r.data.error==='auth'){try{localStorage.removeItem('krou_pw')}catch(e){}}return{data:null,error:{message:String(r.data.error)}}}
+  var rows=(r.data&&r.data.rows)||[];
+  if(grades&&grades.length)rows=rows.filter(function(s){return grades.indexOf(s.grade)>-1});
+  return{data:rows,error:null};
+}
+</script>
 <script>
 (function(){const R=document.documentElement;let t='dark';try{const u=new URLSearchParams(location.search).get('theme');let p=null;try{if(window.parent&&window.parent!==window)p=window.parent.document.documentElement.getAttribute('data-theme')}catch(e){}
 t=u||p||localStorage.getItem('krou_theme_manual')||R.getAttribute('data-theme')||'dark'}catch(e){}R.setAttribute('data-theme',t==='light'?'light':'dark');
@@ -1027,8 +984,6 @@ function isF(g){const s=String(g||'').trim();return s==='ស'||s.includes('ស�
 function refDate(){const v=document.getElementById('asOf').value;const [y,m,d]=v.split('-').map(Number);return new Date(y,m-1,d)}
 function activeStu(){return STU.filter(s=>!String(s.dropout_semester||'').trim())}
 function ageOf(s){const d=parseDob(s.dob);return d?ageAt(d,refDate()):null}
-/* សិស្សអាយុ ៦ឆ្នាំ (ឬក្រោម) មិនអាចត្រួតថ្នាក់បានទេ */
-function repLocked(s){const a=ageOf(s);return a!==null&&a<=6}
 
 /* ===== DB ===== */
 function lsKey(){return 'ageTbl_v1:'+CUR.year+':'+CUR.cls}
@@ -1077,8 +1032,6 @@ function layoutSheets(){
 }
 function toggleSheet2(){INFO.sheet2=!sheet2On();saveInfo();layoutSheets();toast(sheet2On()?'២.(ខ២) និងហត្ថលេខា ត្រូវបានរុញទៅសន្លឹកទី ២':'ដាក់ក្នុងសន្លឹកតែមួយ (បោះពុម្ពនឹងបង្រួមឱ្យស្រួល)')}
 document.addEventListener('input',e=>{const t=e.target;if(t.dataset&&t.dataset.ex){INFO['ex_'+t.dataset.ex]=t.textContent;saveInfo();
-  if(/^kgx/.test(t.dataset.ex)){const m=t.dataset.ex.match(/^kgx(\d+)_(\d+)$/);if(m){const i=+m[1],g=+m[2]>=8?1:0;[0,1].forEach(k=>{let v=0;for(let q=0;q<3;q++)v+=num(INFO['ex_kgx'+i+'_'+(g*8+q*2+k)]);const el=document.getElementById('kgS'+i+'_'+(g*8+6+k));if(el)el.textContent=v?toKh(v):''})}}
-  if(/^kgv/.test(t.dataset.ex))document.querySelectorAll('[data-ex="'+t.dataset.ex+'"]').forEach(o=>{if(o!==t)o.textContent=t.textContent});
   if(/^eth/.test(t.dataset.ex)){[0,1].forEach(c=>{const v=['eth0_'+c,'eth1_'+c].reduce((a,k)=>a+num(INFO['ex_'+k]),0);const el=document.getElementById('ethS'+c);if(el)el.textContent=v?toKh(v):''})}}});
 function count(fn){let t=0,f=0;activeStu().forEach(s=>{if(fn(s)){t++;if(isF(s.gender))f++}});return [t,f]}
 function render(){
@@ -1089,7 +1042,7 @@ function render(){
     ?`<tr><th>${l}</th><td><select class="edu" data-edu="1" required><option value="">— ជ្រើសរើស —</option>${EDU.map(e=>`<option value="${e}" ${kvVal('edu')===e?'selected':''}>${e}</option>`).join('')}</select></td></tr>`
     :`<tr><th>${l}</th><td><span class="ed" contenteditable data-kv="${k}" data-ph="" style="min-width:90px;border-bottom:0">${esc(kvVal(k))}</span></td></tr>`).join('');
   enhanceAll();renderSign();document.getElementById('asOfBtn').lastChild.textContent=dLabel(document.getElementById('asOf').value);
-  // 2.(ក២) តាមភូមិ — តារាងតែមួយ ភូមិជាជួរតូចៗក្រោម «សិស្សថ្មី» និង «សិស្សត្រួតថ្នាក់»
+  // 2.(ក២) តាមភូមិ
   const n=v=>v?toKh(v):'';
   const act=activeStu();
   const cnt={};act.forEach(s=>{const v=villOf(s);if(v)cnt[v]=(cnt[v]||0)+1});
@@ -1097,57 +1050,44 @@ function render(){
   const MAXB=6,extra=names.slice(MAXB),main=names.slice(0,MAXB);
   const noV=act.filter(s=>!villOf(s)).length;
   const cols=main.map(x=>({n:x,m:v=>v===x}));
-  if(extra.length)cols.push({n:'ផ្សេងៗ',m:v=>extra.includes(v)});
+  if(extra.length)cols.push({n:'ភូមិផ្សេងៗ',m:v=>extra.includes(v)});
   if(noV)cols.push({n:'មិនបញ្ជាក់',m:v=>!v});
-  if(!cols.length)cols.push({n:'—',m:()=>true});
-  const V=cols.length;
   const real=act.map(ageOf).filter(x=>x!==null&&x>=0&&x<100);
   const aLo=Math.min(6,real.length?Math.min(...real):6);
   const ages=[];for(let a=aLo;a<=15;a++)ages.push(a);
-  const isRep=s=>FLAGS.has(fk(s.student_id||s.id,'repeat'))&&!repLocked(s);
-  const vh=cols.map(c=>`<th colspan="2">${esc(c.n)}</th>`).join('');
-  const tot='<th colspan="2" style="background:#d9e1fb">សរុប</th>';
-  const vhg=cols.map((c,i)=>`<th colspan="2"${i===0?' class="gl"':''}>${esc(c.n)}</th>`).join('');
-  const gc=i=>(i===0||i===2*V+2||i===4*V+4)?'c gl':'c';
-  const pairs=Array.from({length:2*V+3},(_,q)=>`<th${(q===0||q===V+1||q===2*V+2)?' class="gl"':''}>សរុប</th><th>ស្រី</th>`).join('');
-  let h=`<table class="vt"><thead>
-    <tr><th rowspan="3" style="width:8%">អាយុ<br>(ឆ្នាំ)</th>
-      <th colspan="${2*V+2}" class="gl">សិស្សថ្មី</th>
-      <th colspan="${2*V+2}" class="clk gl" onclick="openModal('repeat')">សិស្សត្រួតថ្នាក់</th>
-      <th colspan="2" rowspan="2" class="gl">សិស្សសរុប</th></tr>
-    <tr>${vhg}${tot}${vhg}${tot}</tr>
-    <tr>${pairs}</tr></thead><tbody>`;
-  const sum=new Array(4*V+6).fill(0);
-  ages.forEach(a=>{
-    const inAge=s=>{const x=ageOf(s);return x!==null&&(a===15?x>=15:x===a)};
-    const newC=[],repC=[];
-    cols.forEach(c=>{
-      const tt=count(s=>inAge(s)&&c.m(villOf(s)));
-      const rp=count(s=>inAge(s)&&c.m(villOf(s))&&isRep(s));
-      newC.push(tt[0]-rp[0],tt[1]-rp[1]);repC.push(rp[0],rp[1]);
+  const isRep=s=>FLAGS.has(fk(s.student_id||s.id,'repeat'));
+  const kinds=[
+    {t:'សិស្សថ្មី',f:s=>!isRep(s)},
+    {t:'សិស្សត្រួតថ្នាក់',f:s=>isRep(s),clk:true},
+    {t:'សិស្សសរុប',f:()=>true}
+  ];
+  const tblHtml=k=>{
+    const cg=cols.length+1; // + សរុប
+    let h=`<table class="vt"><thead><tr><th rowspan="3" style="width:9%">អាយុ<br>(ឆ្នាំ)</th><th colspan="${cg*2}"${k.clk?' class="clk" onclick="openModal(\'repeat\')"':''}>${k.t}${k.clk?' <small>(ចុចជ្រើសឈ្មោះ)</small>':''}</th></tr>
+    <tr>${cols.map(c=>`<th colspan="2" class="vn">${esc(c.n)}</th>`).join('')}<th colspan="2" class="vn tot">សរុប</th></tr>
+    <tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(cg)}</tr></thead><tbody>`;
+    const sum=new Array(cg*2).fill(0);
+    ages.forEach(a=>{
+      const row=[];
+      cols.forEach(c=>{const r=count(s=>{const x=ageOf(s);return x!==null&&(a===15?x>=15:x===a)&&c.m(villOf(s))&&k.f(s)});row.push(r[0],r[1])});
+      const r=count(s=>{const x=ageOf(s);return x!==null&&(a===15?x>=15:x===a)&&k.f(s)});row.push(r[0],r[1]);
+      row.forEach((v,i)=>sum[i]+=v);
+      h+=`<tr><td class="c">${a===15?'១៥+':toKh(a)}</td>${row.map((v,i)=>`<td class="c${i>=cg*2-2?' tot':''}">${n(v)}</td>`).join('')}</tr>`;
     });
-    const all=count(inAge),rpT=count(s=>inAge(s)&&isRep(s)),newT=[all[0]-rpT[0],all[1]-rpT[1]];
-    const row=[...newC,...newT,...repC,...rpT,...all];
-    row.forEach((v,i)=>sum[i]+=v);
-    h+=`<tr><td class="c">${a===15?'១៥+':toKh(a)}</td>${row.map((v,i)=>`<td class="${gc(i)}">${n(v)}</td>`).join('')}</tr>`;
-  });
-  h+=`<tr class="t"><td class="c">សរុប</td>${sum.map((v,i)=>`<td class="${gc(i)}">${n(v)}</td>`).join('')}</tr></tbody></table>`;
-  document.getElementById('vilGrid').innerHTML=h;
+    h+=`<tr class="t"><td class="c">សរុប</td>${sum.map(v=>`<td class="c">${n(v)}</td>`).join('')}</tr></tbody></table>`;
+    return `<div class="vb">${h}</div>`;
+  };
+  document.getElementById('vilGrid').innerHTML=kinds.map(tblHtml).join('');
   const noDob=act.filter(s=>ageOf(s)===null).length,out=act.filter(s=>{const x=ageOf(s);return x!==null&&x<aLo}).length;
-  document.getElementById('ageWarn').innerHTML=(!act.length?'<div>⚠️ មិនមានសិស្សក្នុងថ្នាក់នេះទេ</div>':'')+(noDob?`<div>⚠️ សិស្ស ${toKh(noDob)} នាក់ គ្មានថ្ងៃខែឆ្នាំកំណើតត្រឹមត្រូវ (មិនរាប់ក្នុងតារាងអាយុ)</div>`:'')+(noV?`<div>⚠️ សិស្ស ${toKh(noV)} នាក់ មិនទាន់មានភូមិក្នុងព័ត៌មានសិស្ស (ដាក់ក្នុង «មិនបញ្ជាក់»)</div>`:'')+(out?`<div>ℹ️ សិស្ស ${toKh(out)} នាក់ អាយុក្រោមតារាង (មិនរាប់)</div>`:'');
+  document.getElementById('ageWarn').innerHTML=(!act.length?'<div>⚠️ មិនមានសិស្សក្នុងថ្នាក់នេះទេ</div>':'')+(noDob?`<div>⚠️ សិស្ស ${toKh(noDob)} នាក់ គ្មានថ្ងៃខែឆ្នាំកំណើតត្រឹមត្រូវ (មិនរាប់ក្នុងតារាងអាយុ)</div>`:'')+(noV?`<div>⚠️ សិស្ស ${toKh(noV)} នាក់ មិនទាន់មានភូមិក្នុងព័ត៌មានសិស្ស (ដាក់ក្នុង «មិនបញ្ជាក់ភូមិ»)</div>`:'')+(out?`<div>ℹ️ សិស្ស ${toKh(out)} នាក់ អាយុក្រោមតារាង (មិនរាប់)</div>`:'');
   // 2.(ខ) កុមារតូច (ថ្នាក់ទី១ ប៉ុណ្ណោះ)
   {
     const g1=gradeNo(CUR.cls)===1;
     const rows=['មត្តេយ្យរដ្ឋ','មត្តេយ្យឯកជន','មត្តេយ្យសហគមន៍','ការអប់រំតាមផ្ទះ/តាមខ្លួន'];
     const ec=(k)=>`<td class="ec"><span class="ed" contenteditable data-ex="${k}" data-ph="">${esc(INFO['ex_'+k]||'')}</span></td>`;
-    const vn=v=>`<th colspan="2"><span class="ed" contenteditable data-ex="kgv${v}" data-ph="ភូមិ ${toKh(v+1)}" style="min-width:0;display:block;border-bottom:1px dotted #94a3b8;font-weight:700">${esc(INFO['ex_kgv'+v]||'')}</span></th>`;
-    const vg=[0,1,2].map(vn).join('')+'<th colspan="2" style="background:#d9e1fb">សរុប</th>';
-    const vgS=vg.replace('<th colspan="2">','<th colspan="2" class="gl">');
-    const kgs=(i,c)=>{const g=c>=8?1:0,k=(c-g*8)-6;return [0,1,2].reduce((t,v)=>t+num(INFO['ex_kgx'+i+'_'+(g*8+v*2+k)]),0)};
-    const kgc=(i,c)=>(c%8)<6?ec('kgx'+i+'_'+c):`<td class="c" id="kgS${i}_${c}" style="font-weight:700;background:#e5e9fb;height:26px;padding:2px 0">${n(kgs(i,c))}</td>`;
-    document.getElementById('kgT').innerHTML=`<thead><tr><th rowspan="4" style="width:16%">ប្រភេទ</th><th colspan="16">ថ្នាក់ទី១ (សិស្សម្នាក់អាចរាប់បានតែមួយដង)</th></tr><tr><th colspan="8" class="gl">សិស្សថ្មី</th><th colspan="8" class="gl">សិស្សត្រួត</th></tr><tr>${vgS}${vgS}</tr><tr>${Array.from({length:8},(_,q)=>`<th${(q===0||q===4)?' class="gl"':''}>សរុប</th><th>ស្រី</th>`).join('')}</tr></thead><tbody>`+
-      rows.map((r,i)=>`<tr><td class="nm">${r}</td>${Array.from({length:16},(_,c)=>c%8===0?kgc(i,c).replace('<td class="','<td class="gl '):kgc(i,c)).join('')}</tr>`).join('')+'</tbody>';
-    document.getElementById('kgT').style.opacity='1';
+    document.getElementById('kgT').innerHTML=`<thead><tr><th rowspan="3">ប្រភេទ</th><th colspan="4">ថ្នាក់ទី១ (សិស្សម្នាក់អាចរាប់បានតែមួយដង)</th></tr><tr><th colspan="2">សិស្សថ្មី</th><th colspan="2">សិស្សត្រួត</th></tr><tr>${'<th>សរុប</th><th>ស្រី</th>'.repeat(2)}</tr></thead><tbody>`+
+      rows.map((r,i)=>`<tr><td class="nm">${r}</td>${[0,1,2,3].map(c=>ec('kg'+i+'_'+c)).join('')}</tr>`).join('')+'</tbody>';
+    document.getElementById('kgT').style.opacity=g1?'1':'.45';
   }
   // 2.(គ២) ជនជាតិដើមភាគតិច
   {
@@ -1329,11 +1269,11 @@ function closeModal(){document.getElementById('mdQ').parentNode.style.display=''
 function renderModal(){
   if(!MD)return;const q=document.getElementById('mdQ').value.trim();
   const list=activeStu().filter(s=>!q||String(s.student_name||'').includes(q));
-  document.getElementById('mdC').textContent='បានជ្រើស '+toKh([...activeStu()].filter(s=>FLAGS.has(fk(s.student_id||s.id,MD))&&!(MD==='repeat'&&repLocked(s))).length)+' នាក់ ក្នុងចំណោម '+toKh(activeStu().length)+' នាក់ · ចុចលើឈ្មោះដើម្បីជ្រើស/ដក';
-  document.getElementById('mdL').innerHTML=list.map(s=>{const sid=s.student_id||s.id,a=ageOf(s),lock=MD==='repeat'&&repLocked(s),on=!lock&&FLAGS.has(fk(sid,MD));
-    return `<div class="it ${on?'on':''}${lock?' lock':''}" onclick="toggleStu('${esc(String(sid)).replace(/'/g,'')}')"><span class="ck">${on?'✓':''}</span><span class="n">${esc(s.student_name||'')}<div class="m">${isF(s.gender)?'ស្រី':'ប្រុស'}${a!==null?' · អាយុ '+toKh(a)+' ឆ្នាំ':''}${lock?' · មិនអាចត្រួតថ្នាក់បាន':''}</div></span></div>`}).join('')||'<div style="text-align:center;color:var(--muted);padding:20px">មិនមានសិស្ស</div>';
+  document.getElementById('mdC').textContent='បានជ្រើស '+toKh([...activeStu()].filter(s=>FLAGS.has(fk(s.student_id||s.id,MD))).length)+' នាក់ ក្នុងចំណោម '+toKh(activeStu().length)+' នាក់ · ចុចលើឈ្មោះដើម្បីជ្រើស/ដក';
+  document.getElementById('mdL').innerHTML=list.map(s=>{const sid=s.student_id||s.id,on=FLAGS.has(fk(sid,MD)),a=ageOf(s);
+    return `<div class="it ${on?'on':''}" onclick="toggleStu('${esc(String(sid)).replace(/'/g,'')}')"><span class="ck">${on?'✓':''}</span><span class="n">${esc(s.student_name||'')}<div class="m">${isF(s.gender)?'ស្រី':'ប្រុស'}${a!==null?' · អាយុ '+toKh(a)+' ឆ្នាំ':''}</div></span></div>`}).join('')||'<div style="text-align:center;color:var(--muted);padding:20px">មិនមានសិស្ស</div>';
 }
-async function toggleStu(sid){if(MD==='repeat'){const st=STU.find(x=>String(x.student_id||x.id).replace(/'/g,'')===String(sid));if(st&&repLocked(st)){toast('សិស្សអាយុ ៦ឆ្នាំ មិនអាចត្រួតថ្នាក់បានទេ');return}}const on=!FLAGS.has(fk(sid,MD));const ok=await setFlag(sid,MD,on);if(ok){renderModal();render()}}
+async function toggleStu(sid){const on=!FLAGS.has(fk(sid,MD));const ok=await setFlag(sid,MD,on);if(ok){renderModal();render()}}
 
 /* ===== load ===== */
 function initSelectors(){
@@ -1348,7 +1288,7 @@ async function initClasses(){
   const mine=String(USER.assigned_classes||USER.assigned_class||'').split(/[,;،\/]+/).map(cleanGrade).filter(Boolean);
   let list=mine;
   if(IS_ADMIN||!mine.length){
-    const {data}=await sb.from('students').select('grade');
+    const {data}=await stRows();
     const set=new Set((data||[]).map(s=>cleanGrade(s.grade)).filter(Boolean));
     list=[...set].sort((a,b)=>a.localeCompare(b,'km'));
   }
@@ -1381,9 +1321,7 @@ async function reload(keepAsOf){
   setSt('busy','កំពុងទាញទិន្នន័យ...');
   try{
     const base='id, student_id, student_name, gender, dob, grade, dropout_semester';
-    let {data,error}=await sb.from('students').select(base+', addr_village, address').order('id',{ascending:true});
-    if(error)({data,error}=await sb.from('students').select(base+', address').order('id',{ascending:true}));
-    if(error)({data,error}=await sb.from('students').select(base).order('id',{ascending:true}));
+    let {data,error}=await stRows();
     if(error)throw error;
     STU=(data||[]).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km')).filter(s=>cleanGrade(s.grade)===CUR.cls);
     STU=await yearData(STU);
@@ -1395,13 +1333,13 @@ async function reload(keepAsOf){
   first=false;
 }
 
-/* ===== បោះពុម្ពឱ្យចូលតែ ១ សន្លឹក A4 (ផ្ដេក) ===== */
+/* ===== បោះពុម្ពឱ្យចូលតែ ១ សន្លឹក A4 ===== */
 function visPages(){return [...document.querySelectorAll('.page')].filter(p=>!p.classList.contains('hide'))}
 function fitOnePage(){
-  const target=210/25.4*96-4;let zs=[];
+  const target=297/25.4*96-4;let zs=[];
   visPages().forEach(el=>{
     el.style.zoom='';el.style.width='';el.style.minHeight='0';el.style.height='auto';let z=1;
-    for(let i=0;i<8;i++){el.style.zoom=z;el.style.width=(297/z)+'mm';const h=el.scrollHeight*z;if(h<=target)break;z*=target/h*0.99}
+    for(let i=0;i<8;i++){el.style.zoom=z;el.style.width=(210/z)+'mm';const h=el.scrollHeight*z;if(h<=target)break;z*=target/h*0.99}
     zs.push(z);
   });
   return Math.min(...zs,1);
@@ -1533,12 +1471,12 @@ async function doPdf(){
   const pages=visPages(),zs=pages.map(p=>p.style.zoom);pages.forEach(p=>p.style.zoom='1');
   try{
     if(document.fonts&&document.fonts.ready)await document.fonts.ready;
-    const {jsPDF}=window.jspdf;const pdf=new jsPDF('l','mm','a4');
+    const {jsPDF}=window.jspdf;const pdf=new jsPDF('p','mm','a4');
     for(let i=0;i<pages.length;i++){
       const c=await html2canvas(pages[i],{scale:3,backgroundColor:'#fff',useCORS:true});
-      let ih=c.height*297/c.width,iw=297;if(ih>210){iw=297*210/ih;ih=210}
+      let ih=c.height*210/c.width,iw=210;if(ih>297){iw=210*297/ih;ih=297}
       if(i)pdf.addPage();
-      pdf.addImage(c.toDataURL('image/png'),'PNG',(297-iw)/2,0,iw,ih,undefined,'FAST');
+      pdf.addImage(c.toDataURL('image/png'),'PNG',(210-iw)/2,0,iw,ih,undefined,'FAST');
     }
     pdf.save('តារាងចំនួនសិស្សតាមថ្នាក់_'+CUR.cls+'.pdf');
   }catch(err){toast('❌ PDF៖ '+err.message)}
@@ -1549,6 +1487,118 @@ async function doPdf(){
   document.getElementById('app').style.display='block';
   initSelectors();await initClasses();enhanceAll();await reload(true);
   loadKit(applyKit);
+})();
+</script>
+<!-- 🔤 AUTO-SELECT : ប្តូរ <select> ធម្មតា ទៅជាបញ្ជីជ្រើសរើស font Battambang (បញ្ជីរបស់ browser មិនប្រើ font ទំព័រ) -->
+<style id="asStyle">
+.as-wrap{position:relative;display:inline-block;vertical-align:middle;max-width:100%;min-width:0}
+.as-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;cursor:pointer;text-align:left;box-sizing:border-box;font-family:'Khmer OS Battambang','Battambang',sans-serif !important;appearance:none;-webkit-appearance:none}
+.as-btn .as-lb{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Khmer OS Battambang','Battambang',sans-serif !important}
+.as-btn .as-ch{flex:none;width:0;height:0;border-left:4.5px solid transparent;border-right:4.5px solid transparent;border-top:6px solid currentColor;opacity:.65;transition:transform .15s}
+.as-btn.open .as-ch{transform:rotate(180deg)}
+.as-btn:disabled{opacity:.55;cursor:not-allowed}
+.as-pop{display:none;position:fixed;z-index:2147483000;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 14px 35px rgba(0,0,0,.35);padding:6px;overflow-y:auto;max-height:300px;box-sizing:border-box}
+.as-pop.show{display:block;animation:asIn .14s ease-out}
+@keyframes asIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.as-it{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:700;color:#1e293b;cursor:pointer;font-family:'Khmer OS Battambang','Battambang',sans-serif !important;line-height:1.35}
+.as-it:hover{background:#f1f5f9}
+.as-it.on{background:#e0f2fe;color:#0284c7}
+.as-it.on::after{content:'✓';font-size:13px}
+.as-it.dis{opacity:.4;pointer-events:none}
+@media print{.as-pop{display:none !important}}
+</style>
+<script id="asScript">
+(function(){
+  var COPY=['width','minWidth','maxWidth','height','minHeight','margin','flex','flexGrow','flexShrink','flexBasis','alignSelf','justifySelf','gridColumn','gridRow','order'];
+  var STY=['padding','border','borderRadius','background','backgroundColor','color','fontSize','fontWeight','lineHeight','boxShadow','textAlign'];
+  var pops=[],openPop=null;
+  function closeAll(){pops.forEach(function(p){p.classList.remove('show')});document.querySelectorAll('.as-btn.open').forEach(function(b){b.classList.remove('open')});openPop=null}
+  function skip(sel){
+    if(sel._as||sel.multiple||sel.size>1||sel.hasAttribute('data-native')||sel._enh)return true;
+    if(sel.closest('.cs-wrap,.as-wrap'))return true;
+    if(sel.id&&document.getElementById(sel.id+'Btn'))return true; /* __asBtnFix: ទំព័រមាន custom dropdown ផ្ទាល់ខ្លួន */
+    return false;
+  }
+  function visible(sel){var cs=getComputedStyle(sel);return cs.display!=='none'&&cs.visibility!=='hidden'}
+  function enhance(sel){
+    var cs=getComputedStyle(sel);
+    sel._as=true;
+    var wrap=document.createElement('span');wrap.className='as-wrap';
+    var disp=cs.display;if(disp==='block'||disp==='flex')wrap.style.display=disp==='flex'?'flex':'block';
+    COPY.forEach(function(k){var v=cs[k];if(v&&v!=='auto'&&v!=='normal'&&v!=='none'&&!(k==='margin'&&v==='0px'))wrap.style[k]=v});
+    if(cs.position==='absolute'||cs.position==='fixed'){wrap.style.position=cs.position;['top','left','right','bottom'].forEach(function(k){wrap.style[k]=cs[k]})}
+    if(cs.width&&/px$/.test(cs.width)&&sel.style.width)wrap.style.width=sel.style.width;
+    var btn=document.createElement('button');btn.type='button';btn.className='as-btn';
+    STY.forEach(function(k){btn.style[k]=cs[k]});
+    if(cs.height&&/px$/.test(cs.height))btn.style.height=cs.height;
+    btn.innerHTML='<span class="as-lb"></span><span class="as-ch"></span>';
+    sel.parentNode.insertBefore(wrap,sel);wrap.appendChild(btn);wrap.appendChild(sel);
+    sel.style.display='none';
+    var lb=btn.querySelector('.as-lb');
+    var pop=document.createElement('div');pop.className='as-pop';document.body.appendChild(pop);pops.push(pop);sel._asWrap=wrap;sel._asPop=pop;
+    var dV=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value'),dI=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'selectedIndex');
+    function sync(){var o=sel.options[sel.selectedIndex];lb.textContent=o?o.textContent:'';btn.disabled=!!sel.disabled;
+      wrap.style.display=wrap.style.display; }
+    try{
+      Object.defineProperty(sel,'value',{configurable:true,get:function(){return dV.get.call(sel)},set:function(v){dV.set.call(sel,v);sync()}});
+      Object.defineProperty(sel,'selectedIndex',{configurable:true,get:function(){return dI.get.call(sel)},set:function(v){dI.set.call(sel,v);sync()}});
+    }catch(e){}
+    new MutationObserver(sync).observe(sel,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['disabled','selected']});
+    sel.addEventListener('change',sync);
+    sync();
+    function render(){
+      pop.innerHTML='';
+      Array.prototype.forEach.call(sel.options,function(o,i){
+        if(o.hidden)return;
+        var it=document.createElement('div');it.className='as-it'+(i===sel.selectedIndex?' on':'')+(o.disabled?' dis':'');
+        var sp=document.createElement('span');sp.textContent=o.textContent;it.appendChild(sp);
+        it.addEventListener('click',function(e){e.stopPropagation();var ch=(i!==sel.selectedIndex);dI.set.call(sel,i);sync();closeAll();if(ch){sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}))}});
+        pop.appendChild(it);
+      });
+    }
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();e.preventDefault();
+      if(pop.classList.contains('show')){closeAll();return}
+      closeAll();render();
+      var r=btn.getBoundingClientRect(),vh=window.innerHeight,vw=window.innerWidth;
+      pop.style.minWidth=Math.max(r.width,150)+'px';
+      pop.classList.add('show');
+      var ph=Math.min(pop.scrollHeight+12,300),below=vh-r.bottom-8,above=r.top-8;
+      var top=(below>=ph||below>=above)?r.bottom+4:Math.max(8,r.top-ph-4);
+      pop.style.maxHeight=Math.min(300,Math.max(120,(below>=ph||below>=above)?below:above))+'px';
+      pop.style.top=top+'px';
+      var left=Math.min(Math.max(8,r.left),vw-pop.offsetWidth-8);pop.style.left=left+'px';
+      btn.classList.add('open');openPop=pop;
+      var on=pop.querySelector('.as-it.on');if(on)pop.scrollTop=on.offsetTop-pop.clientHeight/2+on.offsetHeight/2;
+    });
+  }
+  /* ទំព័រមាន dropdown ផ្ទាល់ខ្លួន (id+'Btn', .custom-dd-btn, .cs-btn) → លុបកំណែស្វ័យប្រវត្តិ កុំឱ្យស្ទួន */
+  function hasOther(sel){var w=sel._asWrap,r=w&&w.parentNode;if(!r)return false;
+    if(sel.id&&document.getElementById(sel.id+'Btn'))return true;
+    return !!r.querySelector('.custom-dd-btn,.cs-btn,.cs-wrap')}
+  function dropAs(sel){var w=sel._asWrap;if(w){var b=w.querySelector('.as-btn');if(b)b.remove()}
+    if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    try{delete sel.value;delete sel.selectedIndex}catch(e){}
+    sel._as=false;sel._enh=true;sel._asPop=null;sel.style.display='none'}
+  function scan(){
+    document.querySelectorAll('select').forEach(function(x){if(x._as&&x.id&&document.getElementById(x.id+'Btn')){unwrapAs(x);x.style.display='none'}});
+    var list=document.querySelectorAll('select');
+    for(var i=0;i<list.length;i++){var s=list[i];
+      if(s._as&&s._asWrap&&hasOther(s)){try{dropAs(s)}catch(e){}continue}
+      if(skip(s))continue;if(!visible(s))continue;try{enhance(s)}catch(e){console.warn('as',e)}}
+  }
+  document.addEventListener('click',function(e){if(!e.target.closest||!e.target.closest('.as-pop'))closeAll()});
+  window.addEventListener('resize',closeAll);window.addEventListener('scroll',function(e){if(openPop&&!(e.target&&e.target.closest&&e.target.closest('.as-pop')))closeAll()},true);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll()});
+  function boot(){scan();setInterval(scan,1200)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+  /* __asHook: ទំព័រដែលមាន enhanceSelect ផ្ទាល់ខ្លួន → ដកកំណែស្វ័យប្រវត្តិចេញ កុំឱ្យមានប្រអប់ស្ទួន */
+  function unwrapAs(sel){try{var w=sel._asWrap;if(w&&w.parentNode){w.parentNode.insertBefore(sel,w);w.remove()}if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    delete sel.value;delete sel.selectedIndex;sel.style.display='';sel._as=false;sel._asWrap=null;sel._asPop=null}catch(e){}}
+  try{if(typeof window.enhanceSelect==='function'&&!window.enhanceSelect.__asHooked){var _orig=window.enhanceSelect;
+    window.enhanceSelect=function(a){var el=typeof a==='string'?document.getElementById(a):a;if(el&&el._as)unwrapAs(el);return _orig.apply(this,arguments)};
+    window.enhanceSelect.__asHooked=true}}catch(e){}
+  window.__autoSelectScan=scan;
 })();
 </script>
 </body>
