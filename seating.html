@@ -9,6 +9,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Moul&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script id="stRowsJs">
+/* 🔒 អានសិស្សតាមមុខងារ staff_student_list (គ្រូឃើញតែថ្នាក់ខ្លួន ក្នុងសាលាខ្លួន · Admin ឃើញទាំងអស់) */
+async function stRows(){
+  var u=null,pw='';try{u=JSON.parse(localStorage.getItem('krou_supabase_user')||'null');pw=localStorage.getItem('krou_pw')||''}catch(e){}
+  if(!u||!u.username||!pw)return{data:null,error:{message:'សូមចូលប្រព័ន្ធឡើងវិញ'}};
+  var r=await sb.rpc('staff_student_list',{p_u:u.username,p_p:pw});
+  if(r.error)return{data:null,error:r.error};
+  if(r.data&&r.data.error){if(r.data.error==='auth'){try{localStorage.removeItem('krou_pw')}catch(e){}}return{data:null,error:{message:String(r.data.error)}}}
+  return{data:(r.data&&r.data.rows)||[],error:null};
+}
+</script>
 <script>window.__kc=function(s){return String(s==null?'':s).replace(/[0-9]/g,function(d){return '០១២៣៤៥៦៧៨៩'[d]})};</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -488,7 +499,7 @@ async function initClasses(){
   }
   sel.style.display='inline-block';
   try{
-    const{data}=await sb.from('students').select('grade');
+    const{data}=await stRows();
     const cls=[...new Set((data||[]).map(d=>cleanGrade(d.grade)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'km'));
     sel.innerHTML=cls.map(c=>`<option value="${esc(c)}">ថ្នាក់ទី ${esc(c)}</option>`).join('')||'<option value="">គ្មានថ្នាក់</option>';
     if(mine&&cls.includes(mine))sel.value=mine;
@@ -503,7 +514,7 @@ async function loadClass(){
   const my=++loadSeq;picked=null;setDirty(false);students=[];L=defLayout();render();
   if(!curClass)return;
   try{
-    const{data,error}=await sb.from('students').select('id,student_id,student_name,gender,grade,dropout_semester').order('id',{ascending:true});
+    const{data,error}=await stRows();
     if(error)throw error;
     if(my!==loadSeq)return;
     students=(data||[]).filter(s=>cleanGrade(s.grade)===curClass).filter(s=>{const d=String(s.dropout_semester||'').trim();return!(d.includes('ឆមាស១')||d.includes('ឆមាសទី១')||d==='១')})
@@ -1985,7 +1996,7 @@ window.addEventListener('resize',function(){if(document.getElementById('seatRpt'
     sel.parentNode.insertBefore(wrap,sel);wrap.appendChild(btn);wrap.appendChild(sel);
     sel.style.display='none';
     var lb=btn.querySelector('.as-lb');
-    var pop=document.createElement('div');pop.className='as-pop';document.body.appendChild(pop);pops.push(pop);
+    var pop=document.createElement('div');pop.className='as-pop';document.body.appendChild(pop);pops.push(pop);sel._asWrap=wrap;sel._asPop=pop;
     var dV=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value'),dI=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'selectedIndex');
     function sync(){var o=sel.options[sel.selectedIndex];lb.textContent=o?o.textContent:'';btn.disabled=!!sel.disabled;
       wrap.style.display=wrap.style.display; }
@@ -2031,6 +2042,12 @@ window.addEventListener('resize',function(){if(document.getElementById('seatRpt'
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll()});
   function boot(){scan();setInterval(scan,1200)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+  /* __asHook: ទំព័រដែលមាន enhanceSelect ផ្ទាល់ខ្លួន → ដកកំណែស្វ័យប្រវត្តិចេញ កុំឱ្យមានប្រអប់ស្ទួន */
+  function unwrapAs(sel){try{var w=sel._asWrap;if(w&&w.parentNode){w.parentNode.insertBefore(sel,w);w.remove()}if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    delete sel.value;delete sel.selectedIndex;sel.style.display='';sel._as=false;sel._asWrap=null;sel._asPop=null}catch(e){}}
+  try{if(typeof window.enhanceSelect==='function'&&!window.enhanceSelect.__asHooked){var _orig=window.enhanceSelect;
+    window.enhanceSelect=function(a){var el=typeof a==='string'?document.getElementById(a):a;if(el&&el._as)unwrapAs(el);return _orig.apply(this,arguments)};
+    window.enhanceSelect.__asHooked=true}}catch(e){}
   window.__autoSelectScan=scan;
 })();
 </script>

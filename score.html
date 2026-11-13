@@ -9,6 +9,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;900&family=Moul&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script id="stRowsJs">
+/* 🔒 អានសិស្សតាមមុខងារ staff_student_list (គ្រូឃើញតែថ្នាក់ខ្លួន ក្នុងសាលាខ្លួន · Admin ឃើញទាំងអស់) */
+async function stRows(){
+  var u=null,pw='';try{u=JSON.parse(localStorage.getItem('krou_supabase_user')||'null');pw=localStorage.getItem('krou_pw')||''}catch(e){}
+  if(!u||!u.username||!pw)return{data:null,error:{message:'សូមចូលប្រព័ន្ធឡើងវិញ'}};
+  var r=await sb.rpc('staff_student_list',{p_u:u.username,p_p:pw});
+  if(r.error)return{data:null,error:r.error};
+  if(r.data&&r.data.error){if(r.data.error==='auth'){try{localStorage.removeItem('krou_pw')}catch(e){}}return{data:null,error:{message:String(r.data.error)}}}
+  return{data:(r.data&&r.data.rows)||[],error:null};
+}
+</script>
 <script>window.__kc=function(s){return String(s==null?'':s).replace(/[0-9]/g,function(d){return '០១២៣៤៥៦៧៨៩'[d]})};</script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -2201,7 +2212,7 @@ async function loadClassList(){
   const cleanUserClass=cleanGrade(USER_CLASS);
   sel.innerHTML='<option value="">កំពុងទាញយកថ្នាក់...</option>';
   try{
-    const {data,error}=await sb.from('students').select('grade').limit(5000);
+    const {data,error}=await stRows();
     if(error)throw error;
     let rawClasses=[];
     if(data&&data.length>0){
@@ -2235,9 +2246,7 @@ async function loadStudents(){
   document.getElementById('tableArea').innerHTML='<div style="text-align:center;padding:50px;color:var(--text-muted);"><i class="fa-solid fa-spinner fa-spin fa-2x"></i><p style="margin-top:10px;">កំពុងទាញយកទិន្នន័យ...</p></div>';
   try{
     await loadDynamicSubjects(curPure);
-    let {data:stList,error:stErr}=await sb.from('students')
-      .select('id, student_id, student_name, gender, grade, dropout_semester')
-      .order('id',{ascending:true});
+    let {data:stList,error:stErr}=await stRows();
     if(stErr)throw stErr; stList=(stList||[]).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km'));
 
     const isSem2=(period==='ឆមាសទី២'||SEMESTER_2_MONTHS.includes(period));
