@@ -1590,6 +1590,7 @@ async function doPdf(){
   function skip(sel){
     if(sel._as||sel.multiple||sel.size>1||sel.hasAttribute('data-native')||sel._enh)return true;
     if(sel.closest('.cs-wrap,.as-wrap'))return true;
+    if(sel._cs||sel._enh||sel._cdd||sel._custom)return true; /* __asOwn2 */
     if(sel.id&&document.getElementById(sel.id+'Btn'))return true; /* __asBtnFix: ទំព័រមាន custom dropdown ផ្ទាល់ខ្លួន */
     return false;
   }
@@ -1655,7 +1656,7 @@ async function doPdf(){
     try{delete sel.value;delete sel.selectedIndex}catch(e){}
     sel._as=false;sel._enh=true;sel._asPop=null;sel.style.display='none'}
   function scan(){
-    document.querySelectorAll('select').forEach(function(x){if(x._as&&x.id&&document.getElementById(x.id+'Btn')){unwrapAs(x);x.style.display='none'}});
+    document.querySelectorAll('select').forEach(function(x){if(x._as&&((x.id&&document.getElementById(x.id+'Btn'))||x._cs||x._enh||x._cdd||x._custom)){unwrapAs(x);x.style.display='none'}});
     var list=document.querySelectorAll('select');
     for(var i=0;i<list.length;i++){var s=list[i];
       if(s._as&&s._asWrap&&hasOther(s)){try{dropAs(s)}catch(e){}continue}
