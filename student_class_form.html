@@ -1668,8 +1668,8 @@ async function doPdf(){
   function boot(){scan();setInterval(scan,1200)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
   /* __asHook: ទំព័រដែលមាន enhanceSelect ផ្ទាល់ខ្លួន → ដកកំណែស្វ័យប្រវត្តិចេញ កុំឱ្យមានប្រអប់ស្ទួន */
-  function unwrapAs(sel){try{var w=sel._asWrap;if(w&&w.parentNode){w.parentNode.insertBefore(sel,w);w.remove()}if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
-    delete sel.value;delete sel.selectedIndex;sel.style.display='';sel._as=false;sel._asWrap=null;sel._asPop=null}catch(e){}}
+  function unwrapAs(sel){try{var w=sel._asWrap;if(w&&w.parentNode){var par=w.parentNode;par.insertBefore(sel,w);var ref=w;Array.prototype.slice.call(w.children).forEach(function(c){if(c===sel||c.classList.contains('as-btn'))return;par.insertBefore(c,w)});w.remove()}if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    sel.style.display='';sel._as=false;sel._asWrap=null;sel._asPop=null;try{if(typeof csSync==='function')csSync(sel)}catch(e){}}catch(e){}}
   try{if(typeof window.enhanceSelect==='function'&&!window.enhanceSelect.__asHooked){var _orig=window.enhanceSelect;
     window.enhanceSelect=function(a){var el=typeof a==='string'?document.getElementById(a):a;if(el&&el._as)unwrapAs(el);return _orig.apply(this,arguments)};
     window.enhanceSelect.__asHooked=true}}catch(e){}
