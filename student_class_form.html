@@ -420,6 +420,7 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
     <button class="btn" id="btnSheet2" onclick="toggleSheet2()" title="រុញ ២.(ខ២) និងហត្ថលេខា ទៅសន្លឹកទី ២">📄 ២.(ខ២) សន្លឹកបន្ទាប់</button>
     <button class="btn" onclick="doPrint()">🖨️ បោះពុម្ព</button>
   <button class="btn ok" onclick="doPdf()">⬇ PDF</button>
+  <button class="btn" id="btnWord" onclick="doWord()" style="background:#dbeafe;color:#1d4ed8">⬇ Word</button>
 </div>
 
 
@@ -1555,6 +1556,175 @@ async function doPdf(){
     pdf.save('តារាងចំនួនសិស្សតាមថ្នាក់_'+CUR.cls+'.pdf');
   }catch(err){toast('❌ PDF៖ '+err.message)}
   pages.forEach((p,i)=>p.style.zoom=zs[i]);
+}
+
+/* ===== ទាញយក Word (.docx ពិតប្រាកដ — សរសេរ XML + ZIP ដោយខ្លួនឯង គ្មាន library) ===== */
+const WD={px:15, /* 1px = 15 twips */ font:'Khmer OS Battambang'};
+function wxe(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function wxHex(c){const m=String(c||'').match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);if(!m)return null;if(m[4]!==undefined&&parseFloat(m[4])===0)return null;return [m[1],m[2],m[3]].map(n=>('0'+(+n).toString(16)).slice(-2)).join('').toUpperCase()}
+function wxRun(text,el,extra){
+  if(!text)return '';const cs=getComputedStyle(el);
+  const sz=Math.max(12,Math.round(parseFloat(cs.fontSize)*1.5));
+  const col=wxHex(cs.color)||'000000';
+  let rp='<w:rFonts w:ascii="'+WD.font+'" w:hAnsi="'+WD.font+'" w:cs="'+WD.font+'" w:eastAsia="'+WD.font+'"/>';
+  if(parseInt(cs.fontWeight)>=600)rp+='<w:b/><w:bCs/>';
+  if(cs.fontStyle==='italic')rp+='<w:i/><w:iCs/>';
+  rp+='<w:color w:val="'+col+'"/><w:sz w:val="'+sz+'"/><w:szCs w:val="'+sz+'"/>';
+  if((cs.textDecorationLine||'').includes('underline'))rp+='<w:u w:val="single"/>';
+  const t=String(text).replace(/\s+/g,' ');
+  return '<w:r><w:rPr>'+rp+'</w:rPr><w:t xml:space="preserve">'+wxe(t)+'</w:t></w:r>';
+}
+const WDIMG=[];
+function wxImg(im){
+  const r=im.getBoundingClientRect();if(!r.width||!r.height)return '';
+  const url=im.currentSrc||im.src;const id=WDIMG.length+1;WDIMG.push({url,id,im});
+  const cx=Math.round(r.width*9525),cy=Math.round(r.height*9525);
+  return '<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="'+cx+'" cy="'+cy+'"/><wp:docPr id="'+id+'" name="Picture '+id+'"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="'+id+'" name="img'+id+'"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdImg'+id+'"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="'+cx+'" cy="'+cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>';
+}
+function wxVisible(el){const cs=getComputedStyle(el);return cs.display!=='none'&&cs.visibility!=='hidden'}
+const WX_BLOCK=new Set(['DIV','H1','H2','H3','H4','P','TABLE','UL','OL','SECTION','HEADER','FOOTER']);
+function wxInlineRuns(el){
+  let out='';
+  for(const n of el.childNodes){
+    if(n.nodeType===3){out+=wxRun(n.textContent,el);continue}
+    if(n.nodeType!==1||!wxVisible(n))continue;
+    const t=n.tagName;
+    if(['SCRIPT','STYLE','BUTTON','SELECT','INPUT'].includes(t))continue;
+    if(t==='IMG'){out+=wxImg(n);continue}
+    if(t==='BR'){out+='<w:r><w:br/></w:r>';continue}
+    if(n.classList.contains('logo'))continue;
+    if(n.classList.contains('ed')&&!n.textContent.trim()){if(n.closest('.info,table.kv'))out+=wxRun('...............',n);continue}
+    out+=wxInlineRuns(n);
+  }
+  return out;
+}
+function wxHasBlock(el){return [...el.children].some(c=>wxVisible(c)&&(WX_BLOCK.has(c.tagName)||['block','flex','grid','table'].includes(getComputedStyle(c).display)&&c.tagName!=='SPAN'&&c.tagName!=='B'&&c.tagName!=='SMALL'&&c.tagName!=='LABEL'&&c.tagName!=='I'&&c.tagName!=='IMG'&&c.tagName!=='BR'))}
+function wxPara(el,opt){
+  opt=opt||{};const cs=getComputedStyle(el);
+  const al={center:'center',right:'right',end:'right',justify:'both'}[cs.textAlign]||'left';
+  let pp='<w:spacing w:before="'+(opt.before||0)+'" w:after="'+(opt.after===undefined?40:opt.after)+'" w:line="'+(opt.line||276)+'" w:lineRule="auto"/><w:jc w:val="'+(opt.jc||al)+'"/>';
+  const bg=opt.shade||null;if(bg)pp='<w:shd w:val="clear" w:color="auto" w:fill="'+bg+'"/>'+pp;
+  const runs=wxInlineRuns(el);
+  return '<w:p><w:pPr>'+pp+'</w:pPr>'+runs+'</w:p>';
+}
+function wxCellBorders(cs,force){
+  let b='';['Top','Left','Bottom','Right'].forEach(d=>{const w=parseFloat(cs['border'+d+'Width']);const on=w>0&&cs['border'+d+'Style']!=='none';
+    b+='<w:'+d.toLowerCase().replace('left','left').replace('right','right')+' w:val="'+(on?'single':'nil')+'" w:sz="'+(on?Math.max(4,Math.round(w*6)):0)+'" w:space="0" w:color="'+(on?(wxHex(cs['border'+d+'Color'])||'64748B'):'auto')+'"/>'});
+  return '<w:tcBorders>'+b+'</w:tcBorders>';
+}
+function wxTable(tb){
+  const rows=[...tb.rows].filter(r=>wxVisible(r));if(!rows.length)return '';
+  /* ក្រឡាចត្រង្គ */
+  const occ=[];let maxC=0;const info=[];
+  rows.forEach((r,ri)=>{occ[ri]=occ[ri]||[];let ci=0;info[ri]=[];
+    [...r.cells].forEach(c=>{if(!wxVisible(c))return;while(occ[ri][ci])ci++;const cspan=c.colSpan||1,rspan=c.rowSpan||1;
+      for(let y=0;y<rspan;y++){occ[ri+y]=occ[ri+y]||[];for(let x=0;x<cspan;x++)occ[ri+y][ci+x]=true}
+      info[ri].push({c,col:ci,cspan,rspan});ci+=cspan;maxC=Math.max(maxC,ci)})});
+  const widths=new Array(maxC).fill(0);
+  info.forEach(r=>r.forEach(o=>{if(o.cspan===1){const w=o.c.getBoundingClientRect().width;if(w>widths[o.col])widths[o.col]=w}}));
+  const known=widths.filter(w=>w>0);const totalW=tb.getBoundingClientRect().width||600;
+  const used=known.reduce((a,b)=>a+b,0),unk=widths.filter(w=>!w).length;
+  for(let i=0;i<maxC;i++)if(!widths[i])widths[i]=Math.max(20,(totalW-used)/Math.max(1,unk));
+  const tw=widths.reduce((a,b)=>a+b,0);const maxTw=WD.maxW||1030;const k=tw>maxTw?maxTw/tw:1;
+  const tw20=widths.map(w=>Math.round(w*k*WD.px));
+  let x='<w:tbl><w:tblPr><w:tblW w:w="'+tw20.reduce((a,b)=>a+b,0)+'" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblCellMar><w:left w:w="40" w:type="dxa"/><w:right w:w="40" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>'+tw20.map(w=>'<w:gridCol w:w="'+w+'"/>').join('')+'</w:tblGrid>';
+  rows.forEach((r,ri)=>{
+    x+='<w:tr><w:trPr><w:cantSplit/></w:trPr>';
+    let cur=0;const cells=info[ri].slice().sort((a,b)=>a.col-b.col);
+    const covered=[];/* vMerge ត្រូវបំពេញពីជួរខាងលើ */
+    for(let y=0;y<ri;y++)info[y].forEach(o=>{if(o.rspan>1&&y+o.rspan>ri)covered.push({col:o.col,cspan:o.cspan,o})});
+    const seq=cells.map(o=>({...o,kind:'cell'})).concat(covered.map(o=>({col:o.col,cspan:o.cspan,kind:'cont'}))).sort((a,b)=>a.col-b.col);
+    seq.forEach(o=>{
+      const w=tw20.slice(o.col,o.col+o.cspan).reduce((a,b)=>a+b,0);
+      if(o.kind==='cont'){x+='<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/>'+(o.cspan>1?'<w:gridSpan w:val="'+o.cspan+'"/>':'')+'<w:vMerge/></w:tcPr><w:p/></w:tc>';return}
+      const c=o.c,cs=getComputedStyle(c);const bg=wxHex(cs.backgroundColor);
+      x+='<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/>'+(o.cspan>1?'<w:gridSpan w:val="'+o.cspan+'"/>':'')+(o.rspan>1?'<w:vMerge w:val="restart"/>':'')+wxCellBorders(cs)+(bg&&bg!=='FFFFFF'?'<w:shd w:val="clear" w:color="auto" w:fill="'+bg+'"/>':'')+'<w:vAlign w:val="center"/></w:tcPr>'+(wxBlocks(c,{cell:true})||'<w:p/>')+'</w:tc>';
+    });
+    x+='</w:tr>';
+  });
+  return x+'</w:tbl><w:p><w:pPr><w:spacing w:before="0" w:after="60"/></w:pPr></w:p>';
+}
+function wxRowLayout(el,kids){
+  const w=kids.map(k=>k.getBoundingClientRect().width);const tot=w.reduce((a,b)=>a+b,0)||1;
+  const full=Math.min(WD.maxW||1030,el.getBoundingClientRect().width||1030);
+  const tw=w.map(v=>Math.round(v/tot*full*WD.px));
+  let x='<w:tbl><w:tblPr><w:tblW w:w="'+tw.reduce((a,b)=>a+b,0)+'" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders></w:tblPr><w:tblGrid>'+tw.map(v=>'<w:gridCol w:w="'+v+'"/>').join('')+'</w:tblGrid><w:tr>';
+  kids.forEach((k,i)=>{x+='<w:tc><w:tcPr><w:tcW w:w="'+tw[i]+'" w:type="dxa"/><w:tcBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/></w:tcBorders></w:tcPr>'+(wxBlocks(k,{cell:true,self:true})||'<w:p/>')+'</w:tc>'});
+  return x+'</w:tr></w:tbl><w:p><w:pPr><w:spacing w:before="0" w:after="40"/></w:pPr></w:p>';
+}
+function wxBlocks(el,opt){
+  opt=opt||{};let out='';
+  if(!wxVisible(el))return '';
+  const cs=getComputedStyle(el);
+  if(el.tagName==='TABLE')return wxTable(el);
+  const vis=[...el.children].filter(wxVisible);
+  const isRow=(cs.display==='grid'||(cs.display==='flex'&&!/column/.test(cs.flexDirection)))&&vis.length>1&&!el.classList.contains('r')&&!el.classList.contains('stage');
+  if(isRow&&!opt.noRow)return wxRowLayout(el,vis);
+  if(!wxHasBlock(el)||el.classList.contains('r')||(cs.display==='flex'&&el.classList.contains('r'))){
+    const isHead=/^H[1-6]$/.test(el.tagName)||(wxHex(cs.backgroundColor)==null&&/gradient/.test(cs.backgroundImage)&&wxHex(cs.color)==='FFFFFF');
+    const shade=wxHex(cs.backgroundColor)||(/gradient/.test(cs.backgroundImage)?'3B4CB8':null);
+    const hasContent=el.textContent.trim()||el.querySelector('img');
+    if(!hasContent&&!el.querySelector('.ed'))return '';
+    return wxPara(el,{shade:shade&&shade!=='FFFFFF'?shade:null,after:isHead?60:60,jc:isHead?'center':null});
+  }
+  /* បន្ទាប់បន្សំ: អក្សរដោយឡែកនៅក្នុងធាតុដែលមានទាំង text និង block */
+  let pend='';
+  const flush=()=>{if(/<w:t[^>]*>[^<]*\S[^<]*<\/w:t>|<w:drawing/.test(pend)){out+='<w:p><w:pPr><w:spacing w:before="0" w:after="40"/></w:pPr>'+pend+'</w:p>'}pend=''};
+  for(const n of el.childNodes){
+    if(n.nodeType===3){pend+=wxRun(n.textContent,el);continue}
+    if(n.nodeType!==1||!wxVisible(n))continue;
+    if(['SCRIPT','STYLE','BUTTON','SELECT','INPUT'].includes(n.tagName)||n.classList.contains('logo'))continue;
+    const ncs=getComputedStyle(n);
+    const isBlk=WX_BLOCK.has(n.tagName)||['block','flex','grid','table'].includes(ncs.display);
+    if(isBlk){flush();out+=wxBlocks(n,{cell:opt.cell})}else pend+=wxInlineRuns({childNodes:[n],__el:n})||''
+  }
+  flush();return out;
+}
+/* ===== ZIP (store) ===== */
+const WZ_CRC=(()=>{const t=[];for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function wzCrc(u){let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=WZ_CRC[(c^u[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
+function wzZip(files){
+  const enc=new TextEncoder(),chunks=[],cen=[];let off=0;
+  const u16=n=>[n&255,(n>>8)&255],u32=n=>[n&255,(n>>8)&255,(n>>16)&255,(n>>>24)&255];
+  files.forEach(f=>{const nm=enc.encode(f.name),d=f.data instanceof Uint8Array?f.data:enc.encode(f.data),crc=wzCrc(d);
+    const h=new Uint8Array([0x50,0x4b,3,4,20,0,0,8,0,0,0,0,0,33,...u32(crc),...u32(d.length),...u32(d.length),...u16(nm.length),0,0]);
+    chunks.push(h,nm,d);
+    cen.push({nm,crc,len:d.length,off});off+=h.length+nm.length+d.length});
+  let cs=0;const cd=[];
+  cen.forEach(c=>{const h=new Uint8Array([0x50,0x4b,1,2,20,0,20,0,0,8,0,0,0,0,0,33,...u32(c.crc),...u32(c.len),...u32(c.len),...u16(c.nm.length),0,0,0,0,0,0,0,0,0,0,0,0,...u32(c.off)]);cd.push(h,c.nm);cs+=h.length+c.nm.length});
+  const end=new Uint8Array([0x50,0x4b,5,6,0,0,0,0,...u16(cen.length),...u16(cen.length),...u32(cs),...u32(off),0,0]);
+  return new Blob([...chunks,...cd,end],{type:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+}
+async function wzImgData(im){
+  try{const url=im.currentSrc||im.src;let blob;
+    if(url.startsWith('data:')){const r=await fetch(url);blob=await r.blob()}else{const r=await fetch(url);blob=await r.blob()}
+    /* បម្លែងទៅ PNG តាម canvas ដើម្បីឱ្យ Word ទទួលស្គាល់ជានិច្ច */
+    const bmp=await createImageBitmap(blob);const c=document.createElement('canvas');c.width=bmp.width;c.height=bmp.height;c.getContext('2d').drawImage(bmp,0,0);
+    const png=await new Promise(res=>c.toBlob(res,'image/png'));return new Uint8Array(await png.arrayBuffer());
+  }catch(e){return null}
+}
+async function doWord(){
+  try{
+    const pages=visPages();if(!pages.length)return;
+    const zs=pages.map(p=>p.style.zoom);pages.forEach(p=>p.style.zoom='1');
+    if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+    WDIMG.length=0;let body='';
+    pages.forEach((pg,i)=>{WD.maxW=Math.min(1030,pg.getBoundingClientRect().width-70);body+=wxBlocks(pg);if(i<pages.length-1)body+='<w:p><w:r><w:br w:type="page"/></w:r></w:p>'});
+    const files=[];const rels=[];
+    for(const m of WDIMG){const d=await wzImgData(m.im);if(!d){body=body.replace(new RegExp('<w:r><w:drawing>(?:(?!</w:drawing>).)*?r:embed="rIdImg'+m.id+'".*?</w:drawing></w:r>','s'),'');continue}
+      files.push({name:'word/media/image'+m.id+'.png',data:d});rels.push('<Relationship Id="rIdImg'+m.id+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image'+m.id+'.png"/>')}
+    pages.forEach((p,i)=>p.style.zoom=zs[i]);
+    const doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><w:body>'+body
+      +'<w:sectPr><w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/><w:pgMar w:top="567" w:right="567" w:bottom="567" w:left="567" w:header="283" w:footer="283" w:gutter="0"/></w:sectPr></w:body></w:document>';
+    files.unshift(
+      {name:'[Content_Types].xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'},
+      {name:'_rels/.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
+      {name:'word/document.xml',data:doc},
+      {name:'word/_rels/document.xml.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+rels.join('')+'</Relationships>'});
+    const blob=wzZip(files);
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='តារាងចំនួនសិស្សតាមថ្នាក់_'+((CUR&&CUR.cls)||'')+'.docx';
+    document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
+  }catch(err){toast('❌ Word៖ '+(err.message||err));console.error(err)}
 }
 (async function boot(){
   if(!USER||!USER.username){document.getElementById('auth').style.display='flex';return}
