@@ -13,7 +13,38 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <!-- 📊 Excel & PDF Libraries -->
-  <script id="stRowsJs">
+  <script id="tbqJs">
+/* 🔒 អាន scores/attendance តាមមុខងារ staff_rows (គ្រូឃើញតែសិស្សសាលា/ថ្នាក់ខ្លួន · Admin ឃើញទាំងអស់) — ប្រើដូច sb.from() */
+(function(){
+  var cache={};
+  function Q(t){this.t=t;this.c=null;this.f=[];this.o=[];this.r=null}
+  Q.prototype.select=function(c){this.c=c||null;return this};
+  Q.prototype.eq=function(c,v){this.f.push({c:c,op:'eq',v:v});return this};
+  Q.prototype.in=function(c,a){this.f.push({c:c,op:'in',v:(a||[]).map(String)});return this};
+  Q.prototype.gte=function(c,v){this.f.push({c:c,op:'gte',v:v});return this};
+  Q.prototype.lte=function(c,v){this.f.push({c:c,op:'lte',v:v});return this};
+  Q.prototype.order=function(c,o){this.o.push({c:c,asc:!(o&&o.ascending===false)});return this};
+  Q.prototype.range=function(a,b){this.r=[a,b];return this};
+  Q.prototype.limit=function(n){this.r=[0,n-1];return this};
+  Q.prototype.then=function(ok,bad){return this.run().then(ok,bad)};
+  Q.prototype.run=function(){
+    var self=this,u=null,pw='';try{u=JSON.parse(localStorage.getItem('krou_supabase_user')||'null');pw=localStorage.getItem('krou_pw')||''}catch(e){}
+    if(!u||!u.username||!pw)return Promise.resolve({data:null,error:{message:'សូមចូលប្រព័ន្ធឡើងវិញ'}});
+    var c=(typeof sb!=='undefined')?sb:SB;
+    var args={p_u:u.username,p_p:pw,p_table:self.t,p_f:self.f,p_cols:self.c,p_order:self.o};
+    var key=JSON.stringify(args),now=Date.now(),hit=cache[key];
+    if(!hit||now-hit.at>4000){hit=cache[key]={at:now,p:Promise.resolve(c.rpc('staff_rows',args)).then(function(r){
+      if(r.error)return{data:null,error:r.error};
+      if(r.data&&r.data.error){if(r.data.error==='auth'){try{localStorage.removeItem('krou_pw')}catch(e){}}return{data:null,error:{message:String(r.data.error)}}}
+      return{data:(r.data&&r.data.rows)||[],error:null}})}}
+    return hit.p.then(function(r){
+      if(r.error||!self.r)return r;
+      return{data:r.data.slice(self.r[0],self.r[1]+1),error:null}});
+  };
+  window.tbq=function(t){return new Q(t)};
+})();
+</script>
+<script id="stRowsJs">
 /* 🔒 អានសិស្សតាមមុខងារ staff_student_list (គ្រូឃើញតែថ្នាក់ខ្លួន ក្នុងសាលាខ្លួន · Admin ឃើញទាំងអស់) */
 async function stRows(){
   var u=null,pw='';try{u=JSON.parse(localStorage.getItem('krou_supabase_user')||'null');pw=localStorage.getItem('krou_pw')||''}catch(e){}
@@ -2051,8 +2082,7 @@ async function stRows(){
         /* ទាញតាមលេខសម្គាល់សិស្ស (មិនពឹងលើឈ្មោះថ្នាក់ ដែលអាចរក្សាទុកខុសទម្រង់) */
         const stIds = [];
         stData.forEach(s => { [s.student_id, s.id].forEach(v => { if (v !== null && v !== undefined && v !== '') stIds.push(String(v).trim()); }); });
-        const { data: scData, error: scErr } = await __all(() => sb
-          .from('scores')
+        const { data: scData, error: scErr } = await __all(() => tbq('scores')
           .select('*')
           .in('student_id', [...new Set(stIds)])
           .eq('score_type', dataType));
@@ -2085,8 +2115,7 @@ async function stRows(){
         window.__noScoreNote = '';
 
         // ៤. ទាញយកអវត្តមាន
-        const { data: attData } = await __all(() => sb
-          .from('attendance')
+        const { data: attData } = await __all(() => tbq('attendance')
           .select('student_id, status')
           .in('student_id', [...new Set(stIds)]));
 
@@ -2902,6 +2931,8 @@ async function loadKit(done){
   function skip(sel){
     if(sel._as||sel.multiple||sel.size>1||sel.hasAttribute('data-native')||sel._enh)return true;
     if(sel.closest('.cs-wrap,.as-wrap'))return true;
+    if(sel._cs||sel._enh||sel._cdd||sel._custom)return true; /* __asOwn2 */
+    if(sel.id&&document.getElementById(sel.id+'Btn'))return true; /* __asBtnFix: ទំព័រមាន custom dropdown ផ្ទាល់ខ្លួន */
     return false;
   }
   function visible(sel){var cs=getComputedStyle(sel);return cs.display!=='none'&&cs.visibility!=='hidden'}
@@ -2957,9 +2988,20 @@ async function loadKit(done){
       var on=pop.querySelector('.as-it.on');if(on)pop.scrollTop=on.offsetTop-pop.clientHeight/2+on.offsetHeight/2;
     });
   }
+  /* ទំព័រមាន dropdown ផ្ទាល់ខ្លួន (id+'Btn', .custom-dd-btn, .cs-btn) → លុបកំណែស្វ័យប្រវត្តិ កុំឱ្យស្ទួន */
+  function hasOther(sel){var w=sel._asWrap,r=w&&w.parentNode;if(!r)return false;
+    if(sel.id&&document.getElementById(sel.id+'Btn'))return true;
+    return !!r.querySelector('.custom-dd-btn,.cs-btn,.cs-wrap')}
+  function dropAs(sel){var w=sel._asWrap;if(w){var b=w.querySelector('.as-btn');if(b)b.remove()}
+    if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    try{delete sel.value;delete sel.selectedIndex}catch(e){}
+    sel._as=false;sel._enh=true;sel._asPop=null;sel.style.display='none'}
   function scan(){
+    document.querySelectorAll('select').forEach(function(x){if(x._as&&((x.id&&document.getElementById(x.id+'Btn'))||x._cs||x._enh||x._cdd||x._custom)){unwrapAs(x);x.style.display='none'}});
     var list=document.querySelectorAll('select');
-    for(var i=0;i<list.length;i++){var s=list[i];if(skip(s))continue;if(!visible(s))continue;try{enhance(s)}catch(e){console.warn('as',e)}}
+    for(var i=0;i<list.length;i++){var s=list[i];
+      if(s._as&&s._asWrap&&hasOther(s)){try{dropAs(s)}catch(e){}continue}
+      if(skip(s))continue;if(!visible(s))continue;try{enhance(s)}catch(e){console.warn('as',e)}}
   }
   document.addEventListener('click',function(e){if(!e.target.closest||!e.target.closest('.as-pop'))closeAll()});
   window.addEventListener('resize',closeAll);window.addEventListener('scroll',function(e){if(openPop&&!(e.target&&e.target.closest&&e.target.closest('.as-pop')))closeAll()},true);
@@ -2967,8 +3009,8 @@ async function loadKit(done){
   function boot(){scan();setInterval(scan,1200)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
   /* __asHook: ទំព័រដែលមាន enhanceSelect ផ្ទាល់ខ្លួន → ដកកំណែស្វ័យប្រវត្តិចេញ កុំឱ្យមានប្រអប់ស្ទួន */
-  function unwrapAs(sel){try{var w=sel._asWrap;if(w&&w.parentNode){w.parentNode.insertBefore(sel,w);w.remove()}if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
-    delete sel.value;delete sel.selectedIndex;sel.style.display='';sel._as=false;sel._asWrap=null;sel._asPop=null}catch(e){}}
+  function unwrapAs(sel){try{var w=sel._asWrap;if(w&&w.parentNode){var par=w.parentNode;par.insertBefore(sel,w);var ref=w;Array.prototype.slice.call(w.children).forEach(function(c){if(c===sel||c.classList.contains('as-btn'))return;par.insertBefore(c,w)});w.remove()}if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    sel.style.display='';sel._as=false;sel._asWrap=null;sel._asPop=null;try{if(typeof csSync==='function')csSync(sel)}catch(e){}}catch(e){}}
   try{if(typeof window.enhanceSelect==='function'&&!window.enhanceSelect.__asHooked){var _orig=window.enhanceSelect;
     window.enhanceSelect=function(a){var el=typeof a==='string'?document.getElementById(a):a;if(el&&el._as)unwrapAs(el);return _orig.apply(this,arguments)};
     window.enhanceSelect.__asHooked=true}}catch(e){}

@@ -13,6 +13,37 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>ប្រព័ន្ធគ្រប់គ្រងសិស្ស និងគ្រូបង្រៀន</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js" defer></script>
+<script id="tbqJs">
+/* 🔒 អាន scores/attendance តាមមុខងារ staff_rows (គ្រូឃើញតែសិស្សសាលា/ថ្នាក់ខ្លួន · Admin ឃើញទាំងអស់) — ប្រើដូច sb.from() */
+(function(){
+  var cache={};
+  function Q(t){this.t=t;this.c=null;this.f=[];this.o=[];this.r=null}
+  Q.prototype.select=function(c){this.c=c||null;return this};
+  Q.prototype.eq=function(c,v){this.f.push({c:c,op:'eq',v:v});return this};
+  Q.prototype.in=function(c,a){this.f.push({c:c,op:'in',v:(a||[]).map(String)});return this};
+  Q.prototype.gte=function(c,v){this.f.push({c:c,op:'gte',v:v});return this};
+  Q.prototype.lte=function(c,v){this.f.push({c:c,op:'lte',v:v});return this};
+  Q.prototype.order=function(c,o){this.o.push({c:c,asc:!(o&&o.ascending===false)});return this};
+  Q.prototype.range=function(a,b){this.r=[a,b];return this};
+  Q.prototype.limit=function(n){this.r=[0,n-1];return this};
+  Q.prototype.then=function(ok,bad){return this.run().then(ok,bad)};
+  Q.prototype.run=function(){
+    var self=this,u=null,pw='';try{u=JSON.parse(localStorage.getItem('krou_supabase_user')||'null');pw=localStorage.getItem('krou_pw')||''}catch(e){}
+    if(!u||!u.username||!pw)return Promise.resolve({data:null,error:{message:'សូមចូលប្រព័ន្ធឡើងវិញ'}});
+    var c=(typeof sb!=='undefined')?sb:SB;
+    var args={p_u:u.username,p_p:pw,p_table:self.t,p_f:self.f,p_cols:self.c,p_order:self.o};
+    var key=JSON.stringify(args),now=Date.now(),hit=cache[key];
+    if(!hit||now-hit.at>4000){hit=cache[key]={at:now,p:Promise.resolve(c.rpc('staff_rows',args)).then(function(r){
+      if(r.error)return{data:null,error:r.error};
+      if(r.data&&r.data.error){if(r.data.error==='auth'){try{localStorage.removeItem('krou_pw')}catch(e){}}return{data:null,error:{message:String(r.data.error)}}}
+      return{data:(r.data&&r.data.rows)||[],error:null}})}}
+    return hit.p.then(function(r){
+      if(r.error||!self.r)return r;
+      return{data:r.data.slice(self.r[0],self.r[1]+1),error:null}});
+  };
+  window.tbq=function(t){return new Q(t)};
+})();
+</script>
 <script id="stRowsJs">
 /* 🔒 អានសិស្សតាមមុខងារ staff_student_list (គ្រូឃើញតែថ្នាក់ខ្លួន ក្នុងសាលាខ្លួន · Admin ឃើញទាំងអស់) */
 async function stRows(grades){
@@ -3940,7 +3971,7 @@ async function checkDashboardTasks(targetCls, currentMonth, todayDay, totalClass
     document.getElementById('taskCalDay').innerText = todayDay;
     const curPure = cleanGrade(targetCls);
     const todayIso = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-    let attQuery = sb.from('attendance').select('id, status').eq('attendance_date', todayIso);
+    let attQuery = tbq('attendance').select('id, status').eq('attendance_date', todayIso);
     if (curPure && !IS_ADMIN) attQuery = attQuery.eq('assigned_class', curPure);
     const { data: todayAtt } = await attQuery;
     const isAttRecordedToday = Boolean(todayAtt && todayAtt.length > 0);
@@ -3956,7 +3987,7 @@ async function checkDashboardTasks(targetCls, currentMonth, todayDay, totalClass
       if (todayStatusEl) { todayStatusEl.style.color = ""; todayStatusEl.innerText = "រង់ចាំ"; }
       if (todaySubEl) { todaySubEl.style.color = ""; todaySubEl.innerText = "ត្រូវកត់វត្តមាន"; }
     }
-    let scoreQuery = sb.from('scores').select('student_id, total, average').eq('score_type', 'monthly').eq('period', currentMonth);
+    let scoreQuery = tbq('scores').select('student_id, total, average').eq('score_type', 'monthly').eq('period', currentMonth);
     if (curPure && !IS_ADMIN) scoreQuery = scoreQuery.eq('assigned_class', curPure);
     const { data: scoreData } = await scoreQuery;
     const _ids = window.__myStudentIds;
