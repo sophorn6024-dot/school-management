@@ -3036,10 +3036,10 @@ async function loadKit(done){
 
         const sSelect = document.getElementById('studentSelect');
         sSelect.innerHTML = '<option value="ALL">🏫 ទាំងថ្នាក់</option>';
-        students.forEach(s => {
+        students.forEach((s, i) => {
           const opt = document.createElement('option');
           opt.value = s.id;
-          opt.textContent = `${s.id} - ${s.name}`;
+          opt.textContent = `${i + 1} - ${s.name}`;
           sSelect.appendChild(opt);
         });
         updateSpLabel();
