@@ -10,6 +10,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Moul&family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script>window.__kc=function(s){return String(s==null?'':s).replace(/[0-9]/g,function(d){return '០១២៣៤៥៦៧៨៩'[d]})};</script>
+<script id="stRowsJs">
+/* 🔒 អានសិស្សតាមមុខងារ staff_student_list (គ្រូឃើញតែថ្នាក់ខ្លួន ក្នុងសាលាខ្លួន · Admin ឃើញទាំងអស់) */
+async function stRows(grades){
+  var u=null,pw='';try{u=JSON.parse(localStorage.getItem('krou_supabase_user')||'null');pw=localStorage.getItem('krou_pw')||''}catch(e){}
+  if(!u||!u.username||!pw)return{data:null,error:{message:'សូមចូលប្រព័ន្ធឡើងវិញ'}};
+  var c=(typeof sb!=='undefined')?sb:SB;
+  var r=await c.rpc('staff_student_list',{p_u:u.username,p_p:pw});
+  if(r.error)return{data:null,error:r.error};
+  if(r.data&&r.data.error){if(r.data.error==='auth'){try{localStorage.removeItem('krou_pw')}catch(e){}}return{data:null,error:{message:String(r.data.error)}}}
+  var rows=(r.data&&r.data.rows)||[];
+  if(grades&&grades.length)rows=rows.filter(function(s){return grades.indexOf(s.grade)>-1});
+  return{data:rows,error:null};
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1663,7 +1677,7 @@ async function initClasses(){
   }
   box.style.display='inline-flex';
   try{
-    const {data}=await sb.from('students').select('grade');
+    const {data}=await stRows();
     let cls=[...new Set((data||[]).map(d=>cleanGrade(d.grade)).filter(Boolean))].sort();
     if(!cls.length)cls=['១','២','៣','៤','៥','៦'];
     sel.innerHTML='<option value="ALL">គ្រប់ថ្នាក់ (ទាំងសាលា)</option>'+cls.map(c=>`<option value="${esc(c)}">ថ្នាក់ទី ${esc(c)}</option>`).join('');
@@ -1678,7 +1692,7 @@ async function loadData(){
   if(!CUR_CLASS)return;
   showMsg('<i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយកទិន្នន័យ...');
   try{
-    const {data,error}=await sb.from('students').select('id, student_id, student_name, gender, dob, grade, dropout_semester').order('id',{ascending:true});
+    const {data,error}=await stRows();
     if(error)throw error;
     STUDENTS=(data||[]).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km')).filter(s=>CUR_CLASS==='ALL'||cleanGrade(s.grade)===CUR_CLASS);
     TEACHER=CUR_CLASS==='ALL'?'':await fetchTeacher(CUR_CLASS);
@@ -2052,6 +2066,8 @@ window.addEventListener('DOMContentLoaded',async()=>{
   function skip(sel){
     if(sel._as||sel.multiple||sel.size>1||sel.hasAttribute('data-native')||sel._enh)return true;
     if(sel.closest('.cs-wrap,.as-wrap'))return true;
+    if(sel._cs||sel._enh||sel._cdd||sel._custom)return true; /* __asOwn2 */
+    if(sel.id&&document.getElementById(sel.id+'Btn'))return true; /* __asBtnFix: ទំព័រមាន custom dropdown ផ្ទាល់ខ្លួន */
     return false;
   }
   function visible(sel){var cs=getComputedStyle(sel);return cs.display!=='none'&&cs.visibility!=='hidden'}
@@ -2107,9 +2123,20 @@ window.addEventListener('DOMContentLoaded',async()=>{
       var on=pop.querySelector('.as-it.on');if(on)pop.scrollTop=on.offsetTop-pop.clientHeight/2+on.offsetHeight/2;
     });
   }
+  /* ទំព័រមាន dropdown ផ្ទាល់ខ្លួន (id+'Btn', .custom-dd-btn, .cs-btn) → លុបកំណែស្វ័យប្រវត្តិ កុំឱ្យស្ទួន */
+  function hasOther(sel){var w=sel._asWrap,r=w&&w.parentNode;if(!r)return false;
+    if(sel.id&&document.getElementById(sel.id+'Btn'))return true;
+    return !!r.querySelector('.custom-dd-btn,.cs-btn,.cs-wrap')}
+  function dropAs(sel){var w=sel._asWrap;if(w){var b=w.querySelector('.as-btn');if(b)b.remove()}
+    if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    try{delete sel.value;delete sel.selectedIndex}catch(e){}
+    sel._as=false;sel._enh=true;sel._asPop=null;sel.style.display='none'}
   function scan(){
+    document.querySelectorAll('select').forEach(function(x){if(x._as&&((x.id&&document.getElementById(x.id+'Btn'))||x._cs||x._enh||x._cdd||x._custom)){unwrapAs(x);x.style.display='none'}});
     var list=document.querySelectorAll('select');
-    for(var i=0;i<list.length;i++){var s=list[i];if(skip(s))continue;if(!visible(s))continue;try{enhance(s)}catch(e){console.warn('as',e)}}
+    for(var i=0;i<list.length;i++){var s=list[i];
+      if(s._as&&s._asWrap&&hasOther(s)){try{dropAs(s)}catch(e){}continue}
+      if(skip(s))continue;if(!visible(s))continue;try{enhance(s)}catch(e){console.warn('as',e)}}
   }
   document.addEventListener('click',function(e){if(!e.target.closest||!e.target.closest('.as-pop'))closeAll()});
   window.addEventListener('resize',closeAll);window.addEventListener('scroll',function(e){if(openPop&&!(e.target&&e.target.closest&&e.target.closest('.as-pop')))closeAll()},true);
@@ -2117,8 +2144,8 @@ window.addEventListener('DOMContentLoaded',async()=>{
   function boot(){scan();setInterval(scan,1200)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
   /* __asHook: ទំព័រដែលមាន enhanceSelect ផ្ទាល់ខ្លួន → ដកកំណែស្វ័យប្រវត្តិចេញ កុំឱ្យមានប្រអប់ស្ទួន */
-  function unwrapAs(sel){try{var w=sel._asWrap;if(w&&w.parentNode){w.parentNode.insertBefore(sel,w);w.remove()}if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
-    delete sel.value;delete sel.selectedIndex;sel.style.display='';sel._as=false;sel._asWrap=null;sel._asPop=null}catch(e){}}
+  function unwrapAs(sel){try{var w=sel._asWrap;if(w&&w.parentNode){var par=w.parentNode;par.insertBefore(sel,w);var ref=w;Array.prototype.slice.call(w.children).forEach(function(c){if(c===sel||c.classList.contains('as-btn'))return;par.insertBefore(c,w)});w.remove()}if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    sel.style.display='';sel._as=false;sel._asWrap=null;sel._asPop=null;try{if(typeof csSync==='function')csSync(sel)}catch(e){}}catch(e){}}
   try{if(typeof window.enhanceSelect==='function'&&!window.enhanceSelect.__asHooked){var _orig=window.enhanceSelect;
     window.enhanceSelect=function(a){var el=typeof a==='string'?document.getElementById(a):a;if(el&&el._as)unwrapAs(el);return _orig.apply(this,arguments)};
     window.enhanceSelect.__asHooked=true}}catch(e){}

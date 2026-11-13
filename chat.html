@@ -8,6 +8,20 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;900&family=Moul&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script id="stRowsJs">
+/* 🔒 អានសិស្សតាមមុខងារ staff_student_list (គ្រូឃើញតែថ្នាក់ខ្លួន ក្នុងសាលាខ្លួន · Admin ឃើញទាំងអស់) */
+async function stRows(grades){
+  var u=null,pw='';try{u=JSON.parse(localStorage.getItem('krou_supabase_user')||'null');pw=localStorage.getItem('krou_pw')||''}catch(e){}
+  if(!u||!u.username||!pw)return{data:null,error:{message:'សូមចូលប្រព័ន្ធឡើងវិញ'}};
+  var c=(typeof sb!=='undefined')?sb:SB;
+  var r=await c.rpc('staff_student_list',{p_u:u.username,p_p:pw});
+  if(r.error)return{data:null,error:r.error};
+  if(r.data&&r.data.error){if(r.data.error==='auth'){try{localStorage.removeItem('krou_pw')}catch(e){}}return{data:null,error:{message:String(r.data.error)}}}
+  var rows=(r.data&&r.data.rows)||[];
+  if(grades&&grades.length)rows=rows.filter(function(s){return grades.indexOf(s.grade)>-1});
+  return{data:rows,error:null};
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 html{font-size:clamp(14px,calc(12px + .3vw),16px)}
@@ -637,7 +651,7 @@ async function openMembers(){
   try{
     const[ur,sr]=await Promise.all([
       sb.from('users').select('id, teacher_id, teacher_name, username, role, assigned_classes, photo_url, gender, phone').order('id',{ascending:true}),
-      cls?sb.from('students').select('id, student_id, student_name, gender, grade, photo_url').ilike('grade','%'+cls+'%').order('id',{ascending:true}):Promise.resolve({data:[]})]);
+      cls?stRows().then(function(r){return{data:(r.data||[]).filter(function(s){return String(s.grade||'').indexOf(cls)>-1}),error:r.error}}):Promise.resolve({data:[]})]);
     const st=(sr.data||[]).filter(x=>cleanCls(x.grade)===cls).map(x=>({id:'s'+x.id,teacher_name:x.student_name,username:'stu_'+x.id,_code:String(x.student_id||'').toLowerCase(),photo_url:x.photo_url,_stu:1}));
     if(ur.data)drawMembers(ur.data.filter(fit).concat(st));
   }catch(e){}
@@ -748,7 +762,7 @@ let REAL_CLASSES=[];try{REAL_CLASSES=JSON.parse(localStorage.getItem('krou_real_
 async function loadRealClasses(){
   try{
     const set=new Set();let from=0;
-    for(;;){const r=await sb.from('students').select('grade').range(from,from+999);if(r.error)throw r.error;const d=r.data||[];d.forEach(x=>{const g=cleanCls(x.grade);if(g)set.add(g)});if(d.length<1000)break;from+=1000}
+    {const r=await stRows();if(r.error)throw r.error;(r.data||[]).forEach(x=>{const g=cleanCls(x.grade);if(g)set.add(g)})}
     Object.values(users||{}).forEach(u=>{if(u&&u.assigned_classes)String(u.assigned_classes).split(/[,;،]+/).map(cleanCls).filter(Boolean).forEach(g=>set.add(g))});
     const arr=[...set].sort((a,b)=>a.localeCompare(b,'km'));
     if(arr.length){REAL_CLASSES=arr;try{localStorage.setItem('krou_real_classes',JSON.stringify(arr))}catch(e){}}

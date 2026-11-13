@@ -12,7 +12,21 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- ⚡ Supabase JS & html2pdf -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script id="stRowsJs">
+/* 🔒 អានសិស្សតាមមុខងារ staff_student_list (គ្រូឃើញតែថ្នាក់ខ្លួន ក្នុងសាលាខ្លួន · Admin ឃើញទាំងអស់) */
+async function stRows(grades){
+  var u=null,pw='';try{u=JSON.parse(localStorage.getItem('krou_supabase_user')||'null');pw=localStorage.getItem('krou_pw')||''}catch(e){}
+  if(!u||!u.username||!pw)return{data:null,error:{message:'សូមចូលប្រព័ន្ធឡើងវិញ'}};
+  var c=(typeof sb!=='undefined')?sb:SB;
+  var r=await c.rpc('staff_student_list',{p_u:u.username,p_p:pw});
+  if(r.error)return{data:null,error:r.error};
+  if(r.data&&r.data.error){if(r.data.error==='auth'){try{localStorage.removeItem('krou_pw')}catch(e){}}return{data:null,error:{message:String(r.data.error)}}}
+  var rows=(r.data&&r.data.rows)||[];
+  if(grades&&grades.length)rows=rows.filter(function(s){return grades.indexOf(s.grade)>-1});
+  return{data:rows,error:null};
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
   <style>
@@ -1960,7 +1974,7 @@ exports.default = {
       if (!IS_ADMIN) { await selectClass(currentSelectedClass); return; }
       
       try {
-        const { data: stList } = await sb.from('students').select('grade');
+        const { data: stList } = await stRows();
         let classes = [...new Set((stList || []).map(s => cleanGrade(s.grade)).filter(Boolean))];
         
         if (!classes.length) {
@@ -2065,7 +2079,7 @@ exports.default = {
     async function loadStudents() {
       STUDENTS = []; curStu = null;
       try {
-        const { data, error } = await sb.from('students').select('*').ilike('grade', '%' + currentSelectedClass + '%').order('id', { ascending: true });
+        const { data, error } = await stRows().then(r=>({data:(r.data||[]).filter(s=>String(s.grade||'').indexOf(currentSelectedClass)>-1),error:r.error}));
         if (!error) STUDENTS = (data || []).filter(s => cleanGrade(s.grade) === currentSelectedClass);
       } catch (e) {}
       document.getElementById('stuList').innerHTML = STUDENTS.length ? STUDENTS.map((s, i) => `

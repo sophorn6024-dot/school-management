@@ -6,6 +6,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>គណៈកម្មការគ្រប់គ្រងថ្នាក់ និងកំណត់ហេតុប្រជុំ</title>
 <link href="https://fonts.googleapis.com/css2?family=Moul&family=Battambang:wght@400;700&family=Kantumruy+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script id="stRowsJs">
+/* 🔒 អានសិស្សតាមមុខងារ staff_student_list (គ្រូឃើញតែថ្នាក់ខ្លួន ក្នុងសាលាខ្លួន · Admin ឃើញទាំងអស់) */
+async function stRows(grades){
+  var u=null,pw='';try{u=JSON.parse(localStorage.getItem('krou_supabase_user')||'null');pw=localStorage.getItem('krou_pw')||''}catch(e){}
+  if(!u||!u.username||!pw)return{data:null,error:{message:'សូមចូលប្រព័ន្ធឡើងវិញ'}};
+  var c=(typeof sb!=='undefined')?sb:SB;
+  var r=await c.rpc('staff_student_list',{p_u:u.username,p_p:pw});
+  if(r.error)return{data:null,error:r.error};
+  if(r.data&&r.data.error){if(r.data.error==='auth'){try{localStorage.removeItem('krou_pw')}catch(e){}}return{data:null,error:{message:String(r.data.error)}}}
+  var rows=(r.data&&r.data.rows)||[];
+  if(grades&&grades.length)rows=rows.filter(function(s){return grades.indexOf(s.grade)>-1});
+  return{data:rows,error:null};
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1382,7 +1396,7 @@ async function openParents(){
   $('md').className='md';$('md').innerHTML=`<header><h4>ជ្រើសឪពុកម្តាយសិស្ស · ថ្នាក់ទី ${esc(toKh(CUR.cls))}</h4><button class="x" onclick="closeMd()">✕</button></header><div class="bd2"><div class="hint" id="parCnt">កំពុងទាញទិន្នន័យ...</div><div id="parL" style="display:flex;flex-direction:column;gap:6px"></div></div><div class="ft"><button class="btn gh" onclick="closeMd()">បិទ</button><button class="btn pri" onclick="addParents()">បន្ថែមដែលបានជ្រើស</button></div>`;
   $('ov').classList.add('show');
   try{
-    const {data,error}=await sb.from('students').select('student_name,father_name,mother_name,phone,grade,dropout_semester').order('id',{ascending:true});
+    const {data,error}=await stRows();
     if(error)throw error;
     const have=new Set(D.members.map(m=>m.name.trim()));
     PAR=[];
@@ -1755,7 +1769,7 @@ async function initClasses(){
   const mine=String(USER.assigned_classes||USER.assigned_class||'').split(/[,;،\/]+/).map(cleanGrade).filter(Boolean);
   let list=mine;
   if((IS_ADMIN||!mine.length)&&sb){
-    try{const {data}=await sb.from('students').select('grade');list=[...new Set((data||[]).map(s=>cleanGrade(s.grade)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'km'))}catch(e){}
+    try{const {data}=await stRows();list=[...new Set((data||[]).map(s=>cleanGrade(s.grade)).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'km'))}catch(e){}
   }
   CLASSES=list;
   cs.innerHTML=list.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join('');
@@ -1782,6 +1796,119 @@ async function reload(){
   try{const v=new URLSearchParams(location.search).get('view');if(['list','letter','minutes','chart'].includes(v)){window.__direct=true;openPv(v)}}catch(e){}
 })();
 
+</script>
+<!-- 🔤 AUTO-SELECT : ប្តូរ <select> ធម្មតា ទៅជាបញ្ជីជ្រើសរើស font Battambang (បញ្ជីរបស់ browser មិនប្រើ font ទំព័រ) -->
+<style id="asStyle">
+.as-wrap{position:relative;display:inline-block;vertical-align:middle;max-width:100%;min-width:0}
+.as-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;cursor:pointer;text-align:left;box-sizing:border-box;font-family:'Khmer OS Battambang','Battambang',sans-serif !important;appearance:none;-webkit-appearance:none}
+.as-btn .as-lb{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Khmer OS Battambang','Battambang',sans-serif !important}
+.as-btn .as-ch{flex:none;width:0;height:0;border-left:4.5px solid transparent;border-right:4.5px solid transparent;border-top:6px solid currentColor;opacity:.65;transition:transform .15s}
+.as-btn.open .as-ch{transform:rotate(180deg)}
+.as-btn:disabled{opacity:.55;cursor:not-allowed}
+.as-pop{display:none;position:fixed;z-index:2147483000;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 14px 35px rgba(0,0,0,.35);padding:6px;overflow-y:auto;max-height:300px;box-sizing:border-box}
+.as-pop.show{display:block;animation:asIn .14s ease-out}
+@keyframes asIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.as-it{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:700;color:#1e293b;cursor:pointer;font-family:'Khmer OS Battambang','Battambang',sans-serif !important;line-height:1.35}
+.as-it:hover{background:#f1f5f9}
+.as-it.on{background:#e0f2fe;color:#0284c7}
+.as-it.on::after{content:'✓';font-size:13px}
+.as-it.dis{opacity:.4;pointer-events:none}
+@media print{.as-pop{display:none !important}}
+</style>
+<script id="asScript">
+(function(){
+  var COPY=['width','minWidth','maxWidth','height','minHeight','margin','flex','flexGrow','flexShrink','flexBasis','alignSelf','justifySelf','gridColumn','gridRow','order'];
+  var STY=['padding','border','borderRadius','background','backgroundColor','color','fontSize','fontWeight','lineHeight','boxShadow','textAlign'];
+  var pops=[],openPop=null;
+  function closeAll(){pops.forEach(function(p){p.classList.remove('show')});document.querySelectorAll('.as-btn.open').forEach(function(b){b.classList.remove('open')});openPop=null}
+  function skip(sel){
+    if(sel._as||sel.multiple||sel.size>1||sel.hasAttribute('data-native')||sel._enh)return true;
+    if(sel.closest('.cs-wrap,.as-wrap'))return true;
+    if(sel._cs||sel._enh||sel._cdd||sel._custom)return true; /* __asOwn2 */
+    if(sel.id&&document.getElementById(sel.id+'Btn'))return true; /* __asBtnFix: ទំព័រមាន custom dropdown ផ្ទាល់ខ្លួន */
+    return false;
+  }
+  function visible(sel){var cs=getComputedStyle(sel);return cs.display!=='none'&&cs.visibility!=='hidden'}
+  function enhance(sel){
+    var cs=getComputedStyle(sel);
+    sel._as=true;
+    var wrap=document.createElement('span');wrap.className='as-wrap';
+    var disp=cs.display;if(disp==='block'||disp==='flex')wrap.style.display=disp==='flex'?'flex':'block';
+    COPY.forEach(function(k){var v=cs[k];if(v&&v!=='auto'&&v!=='normal'&&v!=='none'&&!(k==='margin'&&v==='0px'))wrap.style[k]=v});
+    if(cs.position==='absolute'||cs.position==='fixed'){wrap.style.position=cs.position;['top','left','right','bottom'].forEach(function(k){wrap.style[k]=cs[k]})}
+    if(cs.width&&/px$/.test(cs.width)&&sel.style.width)wrap.style.width=sel.style.width;
+    var btn=document.createElement('button');btn.type='button';btn.className='as-btn';
+    STY.forEach(function(k){btn.style[k]=cs[k]});
+    if(cs.height&&/px$/.test(cs.height))btn.style.height=cs.height;
+    btn.innerHTML='<span class="as-lb"></span><span class="as-ch"></span>';
+    sel.parentNode.insertBefore(wrap,sel);wrap.appendChild(btn);wrap.appendChild(sel);
+    sel.style.display='none';
+    var lb=btn.querySelector('.as-lb');
+    var pop=document.createElement('div');pop.className='as-pop';document.body.appendChild(pop);pops.push(pop);sel._asWrap=wrap;sel._asPop=pop;
+    var dV=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value'),dI=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'selectedIndex');
+    function sync(){var o=sel.options[sel.selectedIndex];lb.textContent=o?o.textContent:'';btn.disabled=!!sel.disabled;
+      wrap.style.display=wrap.style.display; }
+    try{
+      Object.defineProperty(sel,'value',{configurable:true,get:function(){return dV.get.call(sel)},set:function(v){dV.set.call(sel,v);sync()}});
+      Object.defineProperty(sel,'selectedIndex',{configurable:true,get:function(){return dI.get.call(sel)},set:function(v){dI.set.call(sel,v);sync()}});
+    }catch(e){}
+    new MutationObserver(sync).observe(sel,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['disabled','selected']});
+    sel.addEventListener('change',sync);
+    sync();
+    function render(){
+      pop.innerHTML='';
+      Array.prototype.forEach.call(sel.options,function(o,i){
+        if(o.hidden)return;
+        var it=document.createElement('div');it.className='as-it'+(i===sel.selectedIndex?' on':'')+(o.disabled?' dis':'');
+        var sp=document.createElement('span');sp.textContent=o.textContent;it.appendChild(sp);
+        it.addEventListener('click',function(e){e.stopPropagation();var ch=(i!==sel.selectedIndex);dI.set.call(sel,i);sync();closeAll();if(ch){sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}))}});
+        pop.appendChild(it);
+      });
+    }
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();e.preventDefault();
+      if(pop.classList.contains('show')){closeAll();return}
+      closeAll();render();
+      var r=btn.getBoundingClientRect(),vh=window.innerHeight,vw=window.innerWidth;
+      pop.style.minWidth=Math.max(r.width,150)+'px';
+      pop.classList.add('show');
+      var ph=Math.min(pop.scrollHeight+12,300),below=vh-r.bottom-8,above=r.top-8;
+      var top=(below>=ph||below>=above)?r.bottom+4:Math.max(8,r.top-ph-4);
+      pop.style.maxHeight=Math.min(300,Math.max(120,(below>=ph||below>=above)?below:above))+'px';
+      pop.style.top=top+'px';
+      var left=Math.min(Math.max(8,r.left),vw-pop.offsetWidth-8);pop.style.left=left+'px';
+      btn.classList.add('open');openPop=pop;
+      var on=pop.querySelector('.as-it.on');if(on)pop.scrollTop=on.offsetTop-pop.clientHeight/2+on.offsetHeight/2;
+    });
+  }
+  /* ទំព័រមាន dropdown ផ្ទាល់ខ្លួន (id+'Btn', .custom-dd-btn, .cs-btn) → លុបកំណែស្វ័យប្រវត្តិ កុំឱ្យស្ទួន */
+  function hasOther(sel){var w=sel._asWrap,r=w&&w.parentNode;if(!r)return false;
+    if(sel.id&&document.getElementById(sel.id+'Btn'))return true;
+    return !!r.querySelector('.custom-dd-btn,.cs-btn,.cs-wrap')}
+  function dropAs(sel){var w=sel._asWrap;if(w){var b=w.querySelector('.as-btn');if(b)b.remove()}
+    if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    try{delete sel.value;delete sel.selectedIndex}catch(e){}
+    sel._as=false;sel._enh=true;sel._asPop=null;sel.style.display='none'}
+  function scan(){
+    document.querySelectorAll('select').forEach(function(x){if(x._as&&((x.id&&document.getElementById(x.id+'Btn'))||x._cs||x._enh||x._cdd||x._custom)){unwrapAs(x);x.style.display='none'}});
+    var list=document.querySelectorAll('select');
+    for(var i=0;i<list.length;i++){var s=list[i];
+      if(s._as&&s._asWrap&&hasOther(s)){try{dropAs(s)}catch(e){}continue}
+      if(skip(s))continue;if(!visible(s))continue;try{enhance(s)}catch(e){console.warn('as',e)}}
+  }
+  document.addEventListener('click',function(e){if(!e.target.closest||!e.target.closest('.as-pop'))closeAll()});
+  window.addEventListener('resize',closeAll);window.addEventListener('scroll',function(e){if(openPop&&!(e.target&&e.target.closest&&e.target.closest('.as-pop')))closeAll()},true);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll()});
+  function boot(){scan();setInterval(scan,1200)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+  /* __asHook: ទំព័រដែលមាន enhanceSelect ផ្ទាល់ខ្លួន → ដកកំណែស្វ័យប្រវត្តិចេញ កុំឱ្យមានប្រអប់ស្ទួន */
+  function unwrapAs(sel){try{var w=sel._asWrap;if(w&&w.parentNode){var par=w.parentNode;par.insertBefore(sel,w);var ref=w;Array.prototype.slice.call(w.children).forEach(function(c){if(c===sel||c.classList.contains('as-btn'))return;par.insertBefore(c,w)});w.remove()}if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    sel.style.display='';sel._as=false;sel._asWrap=null;sel._asPop=null;try{if(typeof csSync==='function')csSync(sel)}catch(e){}}catch(e){}}
+  try{if(typeof window.enhanceSelect==='function'&&!window.enhanceSelect.__asHooked){var _orig=window.enhanceSelect;
+    window.enhanceSelect=function(a){var el=typeof a==='string'?document.getElementById(a):a;if(el&&el._as)unwrapAs(el);return _orig.apply(this,arguments)};
+    window.enhanceSelect.__asHooked=true}}catch(e){}
+  window.__autoSelectScan=scan;
+})();
 </script>
 </body>
 </html>
