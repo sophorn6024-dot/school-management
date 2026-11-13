@@ -980,6 +980,15 @@
 </style>
 <script id="stRowsJs">
 /* 🔒 អានសិស្សតាមមុខងារ staff_student_list (គ្រូឃើញតែថ្នាក់ខ្លួន ក្នុងសាលាខ្លួន · Admin ឃើញទាំងអស់) */
+async function stTaken(ids, excludePk){
+  var u=null,pw='';try{u=JSON.parse(localStorage.getItem('krou_supabase_user')||'null');pw=localStorage.getItem('krou_pw')||''}catch(e){}
+  if(!u||!u.username||!pw)return{data:null,error:{message:'សូមចូលប្រព័ន្ធឡើងវិញ'}};
+  var c=(typeof sb!=='undefined')?sb:SB;
+  var r=await c.rpc('staff_student_ids_taken',{p_u:u.username,p_p:pw,p_ids:(ids||[]).map(String),p_exclude:excludePk||null});
+  if(r.error)return{data:null,error:r.error};
+  if(r.data&&r.data.error)return{data:null,error:{message:String(r.data.error)}};
+  return{data:((r.data&&r.data.taken)||[]).map(function(x){return{student_id:x}}),error:null};
+}
 async function stRows(grades){
   var u=null,pw='';try{u=JSON.parse(localStorage.getItem('krou_supabase_user')||'null');pw=localStorage.getItem('krou_pw')||''}catch(e){}
   if(!u||!u.username||!pw)return{data:null,error:{message:'សូមចូលប្រព័ន្ធឡើងវិញ'}};
@@ -1767,9 +1776,7 @@ body{background:var(--bg)}
       if (localDup) return true;
 
       try {
-        let q = sb.from(STUDENTS_TABLE).select('id').eq('student_id', cleanId);
-        if (excludeDbId) q = q.neq('id', excludeDbId);
-        const { data, error } = await q.limit(1);
+        const { data, error } = await stTaken([cleanId], excludeDbId);
         if (!error && data && data.length > 0) return true;
       } catch (err) {
         console.error('Error checking duplicate ID:', err);
@@ -1870,14 +1877,13 @@ body{background:var(--bg)}
         const step = 1000;
         let from = 0;
         while (true) {
-          const { data, error } = await sb.from(STUDENTS_TABLE).select('grade').range(from, from + step - 1);
+          const { data, error } = await stRows();
           if (error) throw error;
           (data || []).forEach(r => {
             const g = normGrade(r.grade);
             if (g) counts[g] = (counts[g] || 0) + 1;
           });
-          if (!data || data.length < step) break;
-          from += step;
+          break;
         }
         /* ថ្នាក់ដែលបានបង្កើតរួច តែមិនទាន់មានសិស្ស (teacher_classes) */
         try {
@@ -1990,24 +1996,8 @@ body{background:var(--bg)}
       }
 
       try {
-        const mkQ = () => {
-          let q = sb.from(STUDENTS_TABLE).select('*');
-          if (currentSelectedClass) {
-            q = q.in('grade', [
-              currentSelectedClass,
-              `ថ្នាក់ទី${currentSelectedClass}`,
-              `ថ្នាក់ទី ${currentSelectedClass}`
-            ]);
-          }
-          return q;
-        };
-
         await probeAddrCols();
-        let { data, error } = await mkQ().order('name_sort', { ascending: true });
-        if (error) {
-          /* មិនទាន់រត់ student_name_sort.sql → ប្រើ id ហើយតម្រៀបក្នុងកម្មវិធី */
-          ({ data, error } = await mkQ().order('id', { ascending: true }));
-        }
+        let { data, error } = await stRows(currentSelectedClass ? [currentSelectedClass, `ថ្នាក់ទី${currentSelectedClass}`, `ថ្នាក់ទី ${currentSelectedClass}`] : null);
         if (error) throw error;
 
         studentsList = (data || []).slice().sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km')).map(row => ({
@@ -2296,7 +2286,7 @@ body{background:var(--bg)}
     }
     async function probeAddrCols() {
       if (HAS_ADDR_COLS !== null) return;
-      try { const { error } = await sb.from(STUDENTS_TABLE).select('pob_village').limit(1); HAS_ADDR_COLS = !error; } catch (e) { HAS_ADDR_COLS = false; }
+      try { const r = await stRows(); HAS_ADDR_COLS = !r.error && (!(r.data||[]).length || ('pob_village' in r.data[0])); } catch (e) { HAS_ADDR_COLS = false; }
     }
     function fillAddrP(pref, parts) {
       ADDR_KEYS.forEach(k => { const el = document.getElementById(pref + '_' + k); if (el) el.value = (parts && parts[k]) || ''; });
@@ -2968,10 +2958,7 @@ body{background:var(--bg)}
 
       if (importIds.length > 0) {
         try {
-          const { data: existing, error: checkErr } = await sb
-            .from(STUDENTS_TABLE)
-            .select('student_id')
-            .in('student_id', importIds);
+          const { data: existing, error: checkErr } = await stTaken(importIds);
 
           if (!checkErr && existing && existing.length > 0) {
             const dupList = existing.map(e => e.student_id).join(', ');
@@ -3211,7 +3198,7 @@ body{background:var(--bg)}
       if (dupInFile.length) { uiAlert(`⚠️ ក្នុង File Excel មានអត្តលេខស្ទួនគ្នា៖\n${[...new Set(dupInFile)].join(', ')}`); return; }
       try {
         if (ids.length) {
-          const { data: existing, error: checkErr } = await sb.from(STUDENTS_TABLE).select('student_id').in('student_id', ids);
+          const { data: existing, error: checkErr } = await stTaken(ids);
           if (!checkErr && existing && existing.length) { uiAlert(`⚠️ មិនអាចនាំចូលបានទេ ព្រោះអត្តលេខទាំងនេះមានក្នុងប្រព័ន្ធរួចហើយ៖\n${existing.map(x => x.student_id).join(', ')}`); return; }
         }
         if (skipped || note) {
@@ -3706,6 +3693,7 @@ async function trSubmit() {
   function skip(sel){
     if(sel._as||sel.multiple||sel.size>1||sel.hasAttribute('data-native')||sel._enh)return true;
     if(sel.closest('.cs-wrap,.as-wrap'))return true;
+    if(sel._cs||sel._enh||sel._cdd||sel._custom)return true; /* __asOwn2 */
     if(sel.id&&document.getElementById(sel.id+'Btn'))return true; /* __asBtnFix: ទំព័រមាន custom dropdown ផ្ទាល់ខ្លួន */
     return false;
   }
@@ -3771,7 +3759,7 @@ async function trSubmit() {
     try{delete sel.value;delete sel.selectedIndex}catch(e){}
     sel._as=false;sel._enh=true;sel._asPop=null;sel.style.display='none'}
   function scan(){
-    document.querySelectorAll('select').forEach(function(x){if(x._as&&x.id&&document.getElementById(x.id+'Btn')){unwrapAs(x);x.style.display='none'}});
+    document.querySelectorAll('select').forEach(function(x){if(x._as&&((x.id&&document.getElementById(x.id+'Btn'))||x._cs||x._enh||x._cdd||x._custom)){unwrapAs(x);x.style.display='none'}});
     var list=document.querySelectorAll('select');
     for(var i=0;i<list.length;i++){var s=list[i];
       if(s._as&&s._asWrap&&hasOther(s)){try{dropAs(s)}catch(e){}continue}
@@ -3783,8 +3771,8 @@ async function trSubmit() {
   function boot(){scan();setInterval(scan,1200)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
   /* __asHook: ទំព័រដែលមាន enhanceSelect ផ្ទាល់ខ្លួន → ដកកំណែស្វ័យប្រវត្តិចេញ កុំឱ្យមានប្រអប់ស្ទួន */
-  function unwrapAs(sel){try{var w=sel._asWrap;if(w&&w.parentNode){w.parentNode.insertBefore(sel,w);w.remove()}if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
-    delete sel.value;delete sel.selectedIndex;sel.style.display='';sel._as=false;sel._asWrap=null;sel._asPop=null}catch(e){}}
+  function unwrapAs(sel){try{var w=sel._asWrap;if(w&&w.parentNode){var par=w.parentNode;par.insertBefore(sel,w);var ref=w;Array.prototype.slice.call(w.children).forEach(function(c){if(c===sel||c.classList.contains('as-btn'))return;par.insertBefore(c,w)});w.remove()}if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    sel.style.display='';sel._as=false;sel._asWrap=null;sel._asPop=null;try{if(typeof csSync==='function')csSync(sel)}catch(e){}}catch(e){}}
   try{if(typeof window.enhanceSelect==='function'&&!window.enhanceSelect.__asHooked){var _orig=window.enhanceSelect;
     window.enhanceSelect=function(a){var el=typeof a==='string'?document.getElementById(a):a;if(el&&el._as)unwrapAs(el);return _orig.apply(this,arguments)};
     window.enhanceSelect.__asHooked=true}}catch(e){}
