@@ -27,6 +27,20 @@ async function stRows(grades){
   return{data:rows,error:null};
 }
 </script>
+<script>
+/* ថ្ងៃខែឆ្នាំកំណើត → «១៥ ខែមីនា ឆ្នាំ២០១៥» (បើទម្រង់មិនស្គាល់ បង្ហាញដើម) */
+function fmtDobKh(v){
+  if(!v)return '';
+  var K='០១២៣៤៥៦៧៨៩',s=String(v).trim().replace(/[០-៩]/g,function(c){return K.indexOf(c)}),m,y,mo,d;
+  if(m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/)){y=+m[1];mo=+m[2];d=+m[3]}
+  else if(m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/)){d=+m[1];mo=+m[2];y=+m[3]}
+  else return String(v);
+  if(mo<1||mo>12||d<1||d>31)return String(v);
+  var M=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+  var kh=function(n){return String(n).replace(/\d/g,function(c){return K[c]})};
+  return kh(d)+' ខែ'+M[mo-1]+' ឆ្នាំ'+kh(y);
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
@@ -2833,7 +2847,7 @@ async function loadKit(done){
                   <span class="info-label">អត្តលេខ:</span>
                   <span class="info-dots" style="max-width: 80px;">${student.id || ''}</span>
                   <span class="info-label" style="margin-left: 10px;">ថ្ងៃ ខែ ឆ្នាំកំណើត:</span>
-                  <span class="info-dots">${student.dob || ''}</span>
+                  <span class="info-dots">${fmtDobKh(student.dob)}</span>
                 </div>
 
                 <div class="info-row">
