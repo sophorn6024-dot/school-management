@@ -645,6 +645,8 @@ async function stRows(grades){
     .dlg .acts button.pri { background: var(--primary); border-color: var(--primary); color: #fff; }
     .dlg .acts button.pri:focus-visible { box-shadow: 0 0 0 3px var(--primary-soft); }
     .dlg.err .acts button.pri, .dlg.danger .acts button.pri { background: var(--color-lost); border-color: var(--color-lost); }
+.hero-back-btn{flex:0 0 auto;width:44px;height:44px;border-radius:14px;border:1.5px solid var(--border);background:var(--surface-card);color:var(--text);display:inline-flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;margin-right:2px}
+.hero-back-btn:active{transform:scale(.94)}
 </style>
 </head>
 <body>
@@ -671,6 +673,7 @@ async function stRows(grades){
     <!-- Top Hero Card -->
     <div class="top-hero-card">
       <div class="hero-left">
+        <button type="button" class="hero-back-btn" onclick="goHubBack()" title="ត្រឡប់" aria-label="ត្រឡប់"><i class="fa-solid fa-arrow-left"></i></button>
         <div class="hero-icon-box"><i class="fa-solid fa-book-open"></i></div>
         <div>
           <h2 class="hero-title">ការខ្ចី-សងសៀវភៅសិក្សា</h2>
@@ -683,9 +686,6 @@ async function stRows(grades){
           <select id="classSelect" style="display:none;" onchange="onClassChange()"></select>
         </div>
 
-        <button type="button" class="tab-pill-btn" onclick="goHubBack()" title="ត្រឡប់" aria-label="ត្រឡប់">
-          <i class="fa-solid fa-arrow-left"></i> <span>ត្រឡប់</span>
-        </button>
         <button type="button" class="btn-save-main" onclick="saveLoanData()">
           <i class="fa-solid fa-circle-check"></i> <span>រក្សាទុក</span>
         </button>
