@@ -3547,7 +3547,7 @@ body{background:var(--bg)}
       </div>
       <div class="tr-body">
         <div class="tr-row">
-          <div><label class="tr-l">ពីគ្រូ / ថ្នាក់</label><select id="trFrom" onchange="trLoadStudents()"></select></div>
+          <div><label class="tr-l">ពីគ្រូ / ថ្នាក់</label><select id="trFrom" onchange="trFromChanged()"></select></div>
           <div><label class="tr-l">ទៅគ្រូ / ថ្នាក់</label><select id="trTo" onchange="trUpdateState()"></select></div>
         </div>
         <div class="tr-bar"><span id="trCount">—</span><button type="button" onclick="trToggleAll()">ជ្រើស/ដកទាំងអស់</button></div>
@@ -3566,34 +3566,38 @@ body{background:var(--bg)}
 /* 🔁 ផ្ទេរសិស្សពីគ្រូមួយទៅគ្រូមួយទៀត (Admin) */
 let TR_STUDENTS = [], TR_OPTS = [];
 function trCls(t) { return String(t || '').trim(); }
+function trParse(v) { const s = String(v || ''), i = s.indexOf('@'); return i < 0 ? { cls: s, sk: '' } : { cls: s.slice(0, i), sk: s.slice(i + 1) }; }
 async function trLoadOptions() {
-  const { data } = await sb.from('users').select('teacher_name, assigned_classes, role');
+  let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+  const r = await sb.rpc('staff_transfer_options', { p_u: CURRENT_USER.username, p_p: pw });
+  const data = (r.data && r.data.ok) ? r.data.rows : [];
   const used = new Set(), opts = [];
   (data || []).forEach(u => {
     String(u.assigned_classes || '').split(/[,;،]+/).map(trCls).filter(Boolean).forEach(c => {
-      const k = normGrade(c); used.add(k);
-      opts.push({ cls: k, label: (u.teacher_name || 'គ្មានឈ្មោះ') + ' — ថ្នាក់ទី ' + k });
+      const k = normGrade(c); used.add(k + '@' + (u.sk || ''));
+      opts.push({ cls: k, sk: u.sk || '', val: k + '@' + (u.sk || ''), label: (u.teacher_name || 'គ្មានឈ្មោះ') + ' — ថ្នាក់ទី ' + k });
     });
   });
   /* ថ្នាក់ពិតប្រាកដដែលមានសិស្ស ប៉ុន្តែគ្មានគ្រូទទួលបន្ទុក */
   try {
-    let from = 0; const step = 1000;
-    while (true) {
-      const { data: g, error: ge } = (from === 0 ? await stRows() : { data: [], error: null });
-      if (ge || !g || !g.length) break;
-      g.forEach(r => { const k = normGrade(r.grade); if (k && !used.has(k)) { used.add(k); opts.push({ cls: k, label: '(មិនទាន់មានគ្រូ) — ថ្នាក់ទី ' + k }); } });
-      if (g.length < step) break;
-      from += step;
-    }
+    const { data: g, error: ge } = await stRows();
+    if (!ge && g) g.forEach(r2 => { const k = normGrade(r2.grade), sk = r2.school_key || '', v = k + '@' + sk; if (k && !used.has(v)) { used.add(v); opts.push({ cls: k, sk, val: v, label: '(មិនទាន់មានគ្រូ) — ថ្នាក់ទី ' + k }); } });
   } catch (e) {}
   opts.sort((a, b) => classSortKey(a.cls) - classSortKey(b.cls) || a.label.localeCompare(b.label));
   TR_OPTS = opts;
 }
 function trFillSelects() {
-  const mk = (ph) => '<option value="">' + ph + '</option>' + TR_OPTS.map(o => '<option value="' + esc(o.cls) + '">' + esc(o.label) + '</option>').join('');
-  document.getElementById('trFrom').innerHTML = mk('— ជ្រើសគ្រូ/ថ្នាក់ប្រភព —');
-  document.getElementById('trTo').innerHTML = mk('— ជ្រើសគ្រូ/ថ្នាក់ទិសដៅ —');
+  const mk = (ph, list) => '<option value="">' + ph + '</option>' + list.map(o => '<option value="' + esc(o.val) + '">' + esc(o.label) + '</option>').join('');
+  document.getElementById('trFrom').innerHTML = mk('— ជ្រើសគ្រូ/ថ្នាក់ប្រភព —', TR_OPTS);
+  trFillTo();
 }
+/* ទិសដៅ៖ បង្ហាញតែគ្រូ/ថ្នាក់ក្នុងសាលាតែមួយនឹងប្រភព (មិនអនុញ្ញាតឆ្លងសាលា) */
+function trFillTo() {
+  const src = trParse(document.getElementById('trFrom').value), sel = document.getElementById('trTo');
+  const list = src.cls ? TR_OPTS.filter(o => o.sk === src.sk) : [];
+  sel.innerHTML = '<option value="">' + (src.cls ? '— ជ្រើសគ្រូ/ថ្នាក់ទិសដៅ (សាលាតែមួយ) —' : '— ជ្រើសប្រភពជាមុនសិន —') + '</option>' + list.map(o => '<option value="' + esc(o.val) + '">' + esc(o.label) + '</option>').join('');
+}
+function trFromChanged() { trFillTo(); trLoadStudents(); }
 let TR_PRE = null;
 async function openTransferModal(preIds, fromCls) {
   if (!IS_ADMIN && !Array.isArray(preIds)) return;
@@ -3606,15 +3610,16 @@ async function openTransferModal(preIds, fromCls) {
   TR_STUDENTS = []; trUpdateState();
   if (TR_PRE && fromCls) {
     const f = document.getElementById('trFrom');
-    if (![...f.options].some(o => o.value === fromCls)) { const op = document.createElement('option'); op.value = fromCls; op.textContent = 'ថ្នាក់ទី ' + fromCls; f.appendChild(op); }
-    f.value = fromCls; await trLoadStudents();
+    let po = [...f.options].find(o => trParse(o.value).cls === fromCls);
+    if (!po) { po = document.createElement('option'); po.value = fromCls + '@'; po.textContent = 'ថ្នាក់ទី ' + fromCls; f.appendChild(po); TR_OPTS.push({ cls: fromCls, sk: '', val: po.value, label: po.textContent }); }
+    f.value = po.value; trFillTo(); await trLoadStudents();
     f.disabled = !IS_ADMIN;   /* គ្រូ៖ ប្រភពជាថ្នាក់ខ្លួន មិនអាចប្តូរ */
   } else { document.getElementById('trFrom').disabled = false;
   }
 }
 function closeTransferModal() { document.getElementById('trBg').style.display = 'none'; }
 async function trLoadStudents() {
-  const cls = document.getElementById('trFrom').value, box = document.getElementById('trList');
+  const fromP = trParse(document.getElementById('trFrom').value), cls = fromP.cls, box = document.getElementById('trList');
   TR_STUDENTS = []; trClearSearch(true);
   if (!cls) { box.innerHTML = '<div class="tr-empty">សូមជ្រើសគ្រូ/ថ្នាក់ប្រភព</div>'; trUpdateState(); return; }
   box.innerHTML = '<div class="tr-empty">កំពុងផ្ទុក...</div>';
@@ -3622,7 +3627,7 @@ async function trLoadStudents() {
     const grades = ['ថ្នាក់ទី' + cls, 'ថ្នាក់ទី ' + cls, cls];
     const { data, error } = await stRows(grades);
     if (error) throw error;
-    TR_STUDENTS = (data || []).filter(s => IS_ADMIN || !TR_PRE || TR_PRE.includes(s.id)).map(s => ({ id: s.id, sid: s.student_id, name: s.student_name || 'គ្មានឈ្មោះ', sex: s.gender || '', on: !!(TR_PRE && TR_PRE.includes(s.id)) }));
+    TR_STUDENTS = (data || []).filter(s => !fromP.sk || (s.school_key || '') === fromP.sk).filter(s => IS_ADMIN || !TR_PRE || TR_PRE.includes(s.id)).map(s => ({ id: s.id, sid: s.student_id, name: s.student_name || 'គ្មានឈ្មោះ', sex: s.gender || '', on: !!(TR_PRE && TR_PRE.includes(s.id)) }));
   } catch (e) { box.innerHTML = '<div class="tr-empty">❌ ផ្ទុកមិនបាន៖ ' + esc(e.message || e) + '</div>'; trUpdateState(); return; }
   trRender();
 }
@@ -3645,9 +3650,9 @@ function trUpdateState() {
   document.getElementById('trGo').disabled = !(n > 0 && to && to !== from);
 }
 async function trSubmit() {
-  const ids = TR_STUDENTS.filter(s => s.on).map(s => s.id), from = document.getElementById('trFrom').value, to = document.getElementById('trTo').value;
+  const ids = TR_STUDENTS.filter(s => s.on).map(s => s.id), from = document.getElementById('trFrom').value, to = document.getElementById('trTo').value, toCls = trParse(to).cls, fromCls2 = trParse(from).cls;
   if (!ids.length || !to || to === from) return;
-  const fromL = (TR_OPTS.find(o => o.cls === from) || {}).label || from, toL = (TR_OPTS.find(o => o.cls === to) || {}).label || to;
+  const fromL = (TR_OPTS.find(o => o.val === from) || {}).label || fromCls2, toL = (TR_OPTS.find(o => o.val === to) || {}).label || toCls;
   const move = document.getElementById('trMoveRecords').checked;
   const ok = await uiConfirm('ផ្ទេរសិស្ស ' + ids.length + ' នាក់\nពី៖ ' + fromL + '\nទៅ៖ ' + toL + (move ? '\n(រួមទាំងវត្តមាន ពិន្ទុ និងសៀវភៅខ្ចី-សង)' : '\n(ទិន្នន័យវត្តមាន/ពិន្ទុចាស់ទុកក្នុងថ្នាក់ចាស់)'), { okText: 'ផ្ទេរសិស្ស', title: 'បញ្ជាក់ការផ្ទេរសិស្ស' });
   if (!ok) return;
@@ -3655,9 +3660,9 @@ async function trSubmit() {
   try {
     let pw = ''; try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
     if (!pw) throw new Error('សូមចាកចេញ រួចចូលប្រព័ន្ធឡើងវិញ');
-    const { data, error } = await sb.rpc('staff_students_transfer', { p_u: CURRENT_USER.username, p_p: pw, p_ids: ids, p_to: to, p_move_records: move });
+    const { data, error } = await sb.rpc('staff_students_transfer', { p_u: CURRENT_USER.username, p_p: pw, p_ids: ids, p_to: toCls, p_move_records: move });
     if (error) throw error;
-    if (!data || data.error) throw new Error(data && data.error === 'forbidden' ? 'មានតែ Admin ទេដែលអាចផ្ទេរសិស្ស' : (data && data.error === 'auth' ? 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ សូមចូលប្រព័ន្ធឡើងវិញ' : 'ផ្ទេរមិនបាន'));
+    if (!data || data.error) throw new Error(data && data.error === 'cross_school' ? 'មិនអាចផ្ទេរសិស្សឆ្លងសាលាបានទេ' : data && data.error === 'forbidden' ? 'មានតែ Admin ទេដែលអាចផ្ទេរសិស្ស' : (data && data.error === 'auth' ? 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ សូមចូលប្រព័ន្ធឡើងវិញ' : 'ផ្ទេរមិនបាន'));
     showToast('✅ បានផ្ទេរសិស្ស ' + data.ok + ' នាក់ទៅ ' + toL);
     closeTransferModal();
     try { await loadStudentsFromSupabase(); } catch (e) {}
