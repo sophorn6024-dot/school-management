@@ -3992,7 +3992,7 @@ async function checkDashboardTasks(targetCls, currentMonth, todayDay, totalClass
     const { data: scoreData } = await scoreQuery;
     const _ids = window.__myStudentIds;
     const _seen = new Set();
-    (scoreData || []).forEach(r => { const k = String(r.student_id); if (!_ids || _ids.has(k)) _seen.add(k); });
+    (scoreData || []).forEach(r => { if (!(Number(r.total) > 0 || Number(r.average) > 0)) return; const k = String(r.student_id); if (!_ids || _ids.has(k)) _seen.add(k); });
     let scoredCount = _seen.size;
     const totalStudentsCount = totalClassStudents || 0;
     if (!totalStudentsCount) scoredCount = 0;
