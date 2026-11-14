@@ -683,6 +683,9 @@ async function stRows(grades){
           <select id="classSelect" style="display:none;" onchange="onClassChange()"></select>
         </div>
 
+        <button type="button" class="tab-pill-btn" onclick="goHubBack()" title="ត្រឡប់" aria-label="ត្រឡប់">
+          <i class="fa-solid fa-arrow-left"></i> <span>ត្រឡប់</span>
+        </button>
         <button type="button" class="btn-save-main" onclick="saveLoanData()">
           <i class="fa-solid fa-circle-check"></i> <span>រក្សាទុក</span>
         </button>
@@ -2811,8 +2814,8 @@ exports.default = {
         rawStudentsList.forEach(s => {
           const sid = String(s.student_id || s.id);
           bookRecordsMap[sid] = {
-            borrow: { kh: true, math: true, sci: true, soc: true, pe: false, for: false },
-            returnStatus: { kh: 'returned', math: 'returned', sci: 'returned', soc: 'returned', pe: 'none', for: 'none' },
+            borrow: { kh: false, math: false, sci: false, soc: false, pe: false, for: false },
+            returnStatus: { kh: 'none', math: 'none', sci: 'none', soc: 'none', pe: 'none', for: 'none' },
             note: ''
           };
         });
@@ -2827,8 +2830,8 @@ exports.default = {
           bookLoans.forEach(row => {
             const sid = String(row.student_id);
             bookRecordsMap[sid] = {
-              borrow: row.borrow_data || { kh: true, math: true, sci: true, soc: true, pe: false, for: false },
-              returnStatus: row.return_data || { kh: 'returned', math: 'returned', sci: 'returned', soc: 'returned', pe: 'none', for: 'none' },
+              borrow: row.borrow_data || { kh: false, math: false, sci: false, soc: false, pe: false, for: false },
+              returnStatus: row.return_data || { kh: 'none', math: 'none', sci: 'none', soc: 'none', pe: 'none', for: 'none' },
               note: row.note || ''
             };
           });
@@ -2954,6 +2957,11 @@ exports.default = {
       }
       renderTable();
       showToast('🎉 បានអនុវត្តទាំងថ្នាក់ជោគជ័យ!');
+    }
+
+    function goHubBack() {
+      try { if (window.parent && window.parent !== window) { window.parent.postMessage({ type: 'NAVIGATE', page: 'classes' }, '*'); return; } } catch (e) {}
+      location.href = 'index.html#classes';
     }
 
     function toggleSubjectColumn(key) { applySubjectVisibility(); }
