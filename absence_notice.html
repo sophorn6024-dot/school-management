@@ -843,7 +843,7 @@ async function stRows(grades){
 
     function formatGradeLabel(g) {
       const pure = String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').trim();
-      return `ថ្នាក់ទី ${pure}`;
+      return `ថ្នាក់ទី ${toKhmerNum(pure)}`;
     }
 
     /* 📅 គណនាកាលបរិច្ឆេទចន្ទគតិ-សូរិយគតិ */
