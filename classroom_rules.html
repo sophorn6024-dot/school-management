@@ -223,7 +223,7 @@ async function stRows(grades){
     .sign-col .sign-name { font-weight: 700; font-size: 14px; }
 
     .kit-stamp{display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}.kit-sig{max-height:100%;max-width:60%;object-fit:contain}
-    .sign-col .kit-stamp{margin-top:-2mm}
+    .sign-col .kit-stamp{margin-top:-11mm;margin-bottom:-14mm !important}
     .sign-col .sd-box div{white-space:nowrap}
     .principal-col {
       margin-top: 65px !important;
@@ -2048,7 +2048,7 @@ exports.default = {
 
         dd.innerHTML = classes.map(c => `
           <div class="dd-item ${c === currentSelectedClass ? 'active' : ''}" data-class="${c}" onclick="selectClass('${c}')">
-            <span class="dd-item-left"><i class="fa-solid fa-school" style="color:var(--primary);"></i> ថ្នាក់ទី ${c}</span>
+            <span class="dd-item-left"><i class="fa-solid fa-school" style="color:var(--primary);"></i> ថ្នាក់ទី ${toKhmerNum(c)}</span>
             <i class="fa-solid fa-check" style="${c === currentSelectedClass ? '' : 'display:none;'}"></i>
           </div>
         `).join('');
@@ -2075,8 +2075,8 @@ exports.default = {
 
     async function selectClass(cls) {
       currentSelectedClass = cleanGrade(cls);
-      document.getElementById('txtClassSelect').innerText = `ថ្នាក់ទី ${currentSelectedClass}`;
-      document.getElementById('lblDisplayClass').innerText = `ថ្នាក់ទី ${currentSelectedClass}`;
+      document.getElementById('txtClassSelect').innerText = `ថ្នាក់ទី ${toKhmerNum(currentSelectedClass)}`;
+      document.getElementById('lblDisplayClass').innerText = `ថ្នាក់ទី ${toKhmerNum(currentSelectedClass)}`;
 
       document.querySelectorAll('#ddClassSelect .dd-item').forEach(el => {
         const itemClass = el.getAttribute('data-class');
