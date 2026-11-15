@@ -96,7 +96,7 @@ table.pt tr.tot td{font-weight:700}
   <button class="btn" onclick="doXlsx()">📊 Excel</button>
 </div>
 <div class="bar2">
-  <label>ថ្នាក់ <select class="sel" id="clsSel" onchange="onCtx()"></select></label>
+  <label id="clsLbl">ថ្នាក់ <select class="sel" id="clsSel" onchange="onCtx()"></select></label>
   <label>ខែ <select class="sel" id="mSel" onchange="onCtx()"></select></label>
   <label>ឆ្នាំ <select class="sel" id="ySel" onchange="onCtx()"></select></label>
   <label>១ហ៊ុន = <input class="num" id="unitIn" style="width:92px;text-align:center" inputmode="numeric" onchange="onUnit()"> រៀល</label>
@@ -206,7 +206,7 @@ async function init(){
   sel.innerHTML=cls.map(([k,v])=>`<option value="${esc(v)}" data-k="${esc(k)}">ថ្នាក់ទី ${esc(kh(v))}</option>`).join('')||'<option value="">គ្មានថ្នាក់</option>';
   const mine=cleanGrade((USER&&(USER.assigned_classes||USER.assigned_class))||'');
   if(mine){const o=[...sel.options].find(o=>o.dataset.k===gKey(mine));if(o)sel.value=o.value}
-  if(!IS_ADMIN&&cls.length<=1)sel.disabled=true;
+  if(!IS_ADMIN&&cls.length<=1)document.getElementById('clsLbl').style.display='none';
   loadKit();
   await onCtx(true);
 }

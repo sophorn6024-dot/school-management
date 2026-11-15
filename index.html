@@ -3668,6 +3668,7 @@ const MORE_ITEMS = [
   { page: 'group', t: 'បែងចែកជាក្រុម', d: 'ចែកសិស្សជាក្រុមសិក្សា', i: 'group' },
   { page: 'seating', t: 'ប្លង់តុសិស្ស', d: 'រៀបចំកៅអីសិស្ស · ស្រង់វត្តមានតាមប្លង់តុ', i: 'seating' },
   { page: 'reportsHub', t: 'របាយការណ៍', d: 'បញ្ជីឈ្មោះ · តារាងចំណាត់ថ្នាក់ · ព្រឹត្តិបត្រ · ឯកសារ', i: 'report' },
+  { page: 'savings', fn: 'openSavings()', t: 'ការសន្សំប្រាក់', d: 'តារាងសន្សំប្រាក់សិស្សតាមហ៊ុន · Print · PDF · Excel', i: 'report' },
   { page: 'student_accounts', t: 'គណនីសិស្ស និងបណ្ណាល័យ', d: 'បង្កើតគណនីសិស្ស · ឯកសារ · សារថ្នាក់', i: 'student' },
   { page: 'teacher', t: 'គ្រប់គ្រងគ្រូ', d: 'គ្រប់គ្រងគណនីគ្រូបង្រៀន', i: 'teacher', admin: true }
 ];
@@ -3680,7 +3681,7 @@ function buildMoreSheet() {
   const av = document.getElementById('sidebarAvatar'), msAv = document.getElementById('msAvatar');
   if (av && msAv) msAv.innerHTML = av.innerHTML;
   document.getElementById('msList').innerHTML = MORE_ITEMS.filter(x => !x.admin || IS_ADMIN).map(x =>
-    `<div class="ms-item" style="--a0:${(TILE3D[x.i]||[])[0]};--a1:${(TILE3D[x.i]||[])[1]};--a2:${(TILE3D[x.i]||[])[2]}" onclick="navigate('${x.page}', null)"><div class="ms-ico">${ico3d(x.i)}</div><div class="ms-grow"><div class="ms-t">${x.t}</div><div class="ms-d">${x.d}</div></div>${x.badge ? '<span class="nav-badge" data-chat-badge style="position:static;margin:0"></span>' : ''}<span class="ms-arrow">›</span></div>`
+    `<div class="ms-item" style="--a0:${(TILE3D[x.i]||[])[0]};--a1:${(TILE3D[x.i]||[])[1]};--a2:${(TILE3D[x.i]||[])[2]}" onclick="${x.fn ? x.fn : `navigate('${x.page}', null)`}"><div class="ms-ico">${ico3d(x.i)}</div><div class="ms-grow"><div class="ms-t">${x.t}</div><div class="ms-d">${x.d}</div></div>${x.badge ? '<span class="nav-badge" data-chat-badge style="position:static;margin:0"></span>' : ''}<span class="ms-arrow">›</span></div>`
   ).join('') + `<div class="ms-item danger" onclick="doLogout()"><div class="ms-ico">${ico3d('logout')}</div><div class="ms-grow"><div class="ms-t">ចាកចេញ</div></div></div>`;
   refreshMoreThemeBtn(); refreshAutoThemeUI();
   if (typeof setChatUnread === 'function') setChatUnread(chatUnread);
