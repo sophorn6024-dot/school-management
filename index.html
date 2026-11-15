@@ -1197,6 +1197,7 @@ function qrStampLogo(box){
       <div class="nav-link-btn" data-page="score" onclick="navigate('score', this)"><span class="nav-icon-box">📊</span><span class="nav-text">ស្រង់ពិន្ទុ</span></div>
       <div class="nav-link-btn" data-page="chat" onclick="navigate('chat', this)"><span class="nav-icon-box">💬</span><span class="nav-text">សារសន្ទនា</span><span class="nav-badge" data-chat-badge></span></div>
       <div class="nav-link-btn" data-page="reportsHub" onclick="navigate('reportsHub', this)"><span class="nav-icon-box">📄</span><span class="nav-text">របាយការណ៍</span></div>
+      <div class="nav-link-btn" id="savingsNav" onclick="openSavings()"><span class="nav-icon-box">💰</span><span class="nav-text">ការសន្សំប្រាក់</span></div>
       <div class="nav-link-btn" id="studentAccNav" data-page="student_accounts" onclick="navigate('student_accounts', this)"><span class="nav-icon-box">🎓</span><span class="nav-text">គណនីសិស្ស និងបណ្ណាល័យ</span></div>
       <div class="nav-link-btn" id="teacherAdminNav" data-page="teacher" onclick="navigate('teacher', this)" style="display:none;"><span class="nav-icon-box">👨‍🏫</span><span class="nav-text">គ្រប់គ្រងគ្រូ</span></div>
     </nav>
@@ -3542,6 +3543,12 @@ function updateMobileNavIndicator() {
   ind.classList.add('on');
 }
 
+/* 💰 ការសន្សំប្រាក់ — បើកក្នុងផ្ទាំង (tab) ថ្មី */
+function openSavings(){
+  try{ const w = window.open('savings.html', '_blank'); if (!w) location.href = 'savings.html'; }
+  catch(e){ location.href = 'savings.html'; }
+  try { if (typeof closeMobileMenu === 'function') closeMobileMenu(); } catch(e){}
+}
 function navigate(page, el) {
   if (!page) return;
   if (SOLO && (page === 'dashboard' || page === 'reportsHub')) {          // tab របាយការណ៍ មិនមានទំព័រដើម → បិទ tab
@@ -3557,7 +3564,7 @@ function navigate(page, el) {
   try { history.replaceState(null, '', '#' + page); } catch(e) {}
 
   document.querySelectorAll('.nav-link-btn').forEach(n => n.classList.remove('active'));
-  const HUB_CHILDREN = ['addStudent', 'group', 'seating', 'bmi', 'curriculum', 'schedule', 'my_classes', 'committee_meeting'];
+  const HUB_CHILDREN = ['addStudent', 'group', 'seating', 'bmi', 'curriculum', 'schedule', 'my_classes', 'committee_meeting', 'book'];
   const isReportChild = ['roster', 'roster2', 'rank', 'honor', 'certificate', 'report', 'remesterrecord'].includes(page);
   let target = el || document.querySelector(`[data-page="${page}"]`);
   if (!target && isReportChild) target = document.querySelector('[data-page="reportsHub"]');
@@ -3566,7 +3573,7 @@ function navigate(page, el) {
   if (target) target.classList.add('active');
 
   document.querySelectorAll('.m-nav-item').forEach(m => m.classList.remove('active'));
-  const mMap = { dashboard: 'mNavDash', classes: 'mNavStu', addStudent: 'mNavStu', group: 'mNavStu', seating: 'mNavStu', bmi: 'mNavStu', curriculum: 'mNavStu', schedule: 'mNavStu', my_classes: 'mNavStu', committee_meeting: 'mNavStu', attendance: 'mNavAtt', score: 'mNavScores', subject: 'mNavScores' };
+  const mMap = { dashboard: 'mNavDash', classes: 'mNavStu', addStudent: 'mNavStu', group: 'mNavStu', seating: 'mNavStu', bmi: 'mNavStu', curriculum: 'mNavStu', schedule: 'mNavStu', my_classes: 'mNavStu', committee_meeting: 'mNavStu', book: 'mNavStu', attendance: 'mNavAtt', score: 'mNavScores', subject: 'mNavScores' };
   if (mMap[page]) document.getElementById(mMap[page])?.classList.add('active');
   updateMobileNavIndicator();
 
@@ -3632,7 +3639,7 @@ document.getElementById('pageFrame').addEventListener('load', function() {
         document.querySelectorAll('.nav-link-btn').forEach(n => n.classList.remove('active'));
         let t = document.querySelector(`[data-page="${detectedPage}"]`);
         if (!t && detectedPage === 'subject') t = document.querySelector('[data-page="score"]');
-        if (!t && ['addStudent', 'group', 'seating', 'bmi', 'curriculum', 'schedule', 'my_classes', 'committee_meeting'].includes(detectedPage)) t = document.querySelector('[data-page="classes"]');
+        if (!t && ['addStudent', 'group', 'seating', 'bmi', 'curriculum', 'schedule', 'my_classes', 'committee_meeting', 'book'].includes(detectedPage)) t = document.querySelector('[data-page="classes"]');
         if (t) t.classList.add('active');
       }
     }
@@ -3690,7 +3697,7 @@ function closeMoreSheet() {
   const sh = document.getElementById('moreSheet');
   if (!sh || !sh.classList.contains('open')) return;
   sh.classList.remove('open'); sh.setAttribute('aria-hidden', 'true');
-  const mMap = { dashboard: 'mNavDash', classes: 'mNavStu', addStudent: 'mNavStu', group: 'mNavStu', seating: 'mNavStu', bmi: 'mNavStu', curriculum: 'mNavStu', schedule: 'mNavStu', my_classes: 'mNavStu', committee_meeting: 'mNavStu', attendance: 'mNavAtt', score: 'mNavScores', subject: 'mNavScores' };
+  const mMap = { dashboard: 'mNavDash', classes: 'mNavStu', addStudent: 'mNavStu', group: 'mNavStu', seating: 'mNavStu', bmi: 'mNavStu', curriculum: 'mNavStu', schedule: 'mNavStu', my_classes: 'mNavStu', committee_meeting: 'mNavStu', book: 'mNavStu', attendance: 'mNavAtt', score: 'mNavScores', subject: 'mNavScores' };
   document.querySelectorAll('.m-nav-item').forEach(m => m.classList.remove('active'));
   if (mMap[currentPage]) document.getElementById(mMap[currentPage])?.classList.add('active');
   updateMobileNavIndicator();
@@ -3992,7 +3999,7 @@ async function checkDashboardTasks(targetCls, currentMonth, todayDay, totalClass
     const { data: scoreData } = await scoreQuery;
     const _ids = window.__myStudentIds;
     const _seen = new Set();
-    (scoreData || []).forEach(r => { if (!(Number(r.total) > 0 || Number(r.average) > 0)) return; const k = String(r.student_id); if (!_ids || _ids.has(k)) _seen.add(k); });
+    (scoreData || []).forEach(r => { if (!(Number(r.total) > 0 || Number(r.average) > 0)) return; /* រាប់តែសិស្សដែលមានពិន្ទុពិត (ជួរទទេ total=0 មិនរាប់) */ const k = String(r.student_id); if (!_ids || _ids.has(k)) _seen.add(k); });
     let scoredCount = _seen.size;
     const totalStudentsCount = totalClassStudents || 0;
     if (!totalStudentsCount) scoredCount = 0;
