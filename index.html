@@ -3668,7 +3668,7 @@ const MORE_ITEMS = [
   { page: 'group', t: 'បែងចែកជាក្រុម', d: 'ចែកសិស្សជាក្រុមសិក្សា', i: 'group' },
   { page: 'seating', t: 'ប្លង់តុសិស្ស', d: 'រៀបចំកៅអីសិស្ស · ស្រង់វត្តមានតាមប្លង់តុ', i: 'seating' },
   { page: 'reportsHub', t: 'របាយការណ៍', d: 'បញ្ជីឈ្មោះ · តារាងចំណាត់ថ្នាក់ · ព្រឹត្តិបត្រ · ឯកសារ', i: 'report' },
-  { page: 'savings', fn: 'openSavings()', t: 'ការសន្សំប្រាក់', d: 'តារាងសន្សំប្រាក់សិស្សតាមហ៊ុន · Print · PDF · Excel', i: 'report' },
+  { page: 'savings', fn: 'openSavings()', t: 'ការសន្សំប្រាក់', d: 'តារាងសន្សំប្រាក់សិស្សតាមហ៊ុន · Print · PDF · Excel', i: 'savings' },
   { page: 'student_accounts', t: 'គណនីសិស្ស និងបណ្ណាល័យ', d: 'បង្កើតគណនីសិស្ស · ឯកសារ · សារថ្នាក់', i: 'student' },
   { page: 'teacher', t: 'គ្រប់គ្រងគ្រូ', d: 'គ្រប់គ្រងគណនីគ្រូបង្រៀន', i: 'teacher', admin: true }
 ];
@@ -4665,6 +4665,7 @@ refreshAutoThemeUI();
 
 /* ===== 🎨 ICON LIBRARY (SVG line icons) ===== */
 const ICONS = {
+  savings:'<svg class="ico" viewBox="0 0 24 24"><ellipse cx="12" cy="6.5" rx="7" ry="3"/><path d="M5 6.5v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/><path d="M5 11.5v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/></svg>',
   school:'<svg class="ico" viewBox="0 0 24 24"><path class="flag" d="M12 2.8V6.2l3.2-1.3L12 3.6" fill="rgba(255,255,255,.35)"/><path d="M12 6v1.6"/><path d="M3.5 21V11.2L12 7.6l8.5 3.6V21"/><path d="M2.5 21h19"/><path d="M9.6 21v-4.2a2.4 2.4 0 0 1 4.8 0V21"/><circle cx="12" cy="11.6" r="1.1"/><path d="M6 14.2h.01M18 14.2h.01"/></svg>',
   dashboard:'<svg class="ico" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="9" rx="2"/><rect x="13.5" y="3.5" width="7" height="5" rx="2"/><rect x="13.5" y="11.5" width="7" height="9" rx="2"/><rect x="3.5" y="15.5" width="7" height="5" rx="2"/></svg>',
   student:'<svg class="ico" viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.4"/><path d="M3.5 20c0-3.5 2.9-6 6.5-6 1.2 0 2.3.3 3.2.8"/><path d="M15.5 20.5l.5-2.6 4.1-4.1a1.4 1.4 0 0 1 2 2l-4.1 4.1z"/></svg>',
@@ -4689,6 +4690,7 @@ let _g3 = 0;
 const TILE3D = {
   dashboard:['#dbeafe','#93c5fd','#1d4ed8'], student:['#ffedd5','#fdba74','#c2410c'], idcard:['#ccfbf1','#5eead4','#0f766e'], group:['#ede9fe','#c4b5fd','#6d28d9'], seating:['#ecfccb','#bef264','#4d7c0f'], schedule:['#cffafe','#67e8f9','#0e7490'],
   book:['#dcfce7','#86efac','#15803d'], attendance:['#ffe4e6','#fda4af','#be123c'], score:['#fef3c7','#fcd34d','#b45309'], chat:['#e0f2fe','#7dd3fc','#0369a1'],
+  savings:['#fef3c7','#fcd34d','#b45309'],
   report:['#e0e7ff','#a5b4fc','#4338ca'], teacher:['#fce7f3','#f9a8d4','#be185d'], history:['#cffafe','#67e8f9','#0e7490'], rank:['#fef9c3','#fde047','#a16207'],
   logout:['#fee2e2','#fca5a5','#b91c1c'], users:['#d1fae5','#6ee7b7','#047857'], menu:['#f1f5f9','#cbd5e1','#475569']
 };
@@ -4851,6 +4853,7 @@ function applyIcons() {
   set('.chip.g', 'users'); set('.chip.a', 'clock'); set('.dc-ico', 'calendar');
   const navMap = { dashboard: 'dashboard', addStudent: 'student', card: 'idcard', group: 'group', seating: 'seating', schedule: 'schedule', book: 'book', attendance: 'attendance', score: 'score', chat: 'chat', reportsHub: 'report', teacher: 'teacher' };
   document.querySelectorAll('.nav-link-btn[data-page]').forEach(b => { const k = navMap[b.dataset.page]; const box = b.querySelector('.nav-icon-box'); if (k && box) { box.innerHTML = ico3d(k); setAccent(b, k); } });
+  { const sn = document.getElementById('savingsNav'); const sb2 = sn && sn.querySelector('.nav-icon-box'); if (sb2) { sb2.innerHTML = ico3d('savings'); setAccent(sn, 'savings'); } }
   const sc = { "navigate('score', null)": 'score', "navigate('attendance', null)": 'attendance', "navigate('rank', null)": 'rank', "navigate('addStudent', null)": 'student', 'openStudentProfileViewer()': 'history' };
   document.querySelectorAll('.shortcut-pill-btn').forEach(b => { const k = sc[b.getAttribute('onclick')]; const sp = b.querySelector('span'); if (k && sp) { sp.innerHTML = ico3d(k); setAccent(b, k); } });
   document.querySelectorAll('.task-icon-purple').forEach(el => { el.innerHTML = ico3d('score'); });
