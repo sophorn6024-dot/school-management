@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ការសន្សំប្រាក់</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Moul&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"></script>
+<style>
+:root,[data-theme="light"]{--bg:#eef5f1;--surface:#fff;--elev:#f1f5f9;--border:#cfdcd5;--text:#0f172a;--muted:#5b6b80;--primary:#15803d;--primary-d:#166534;--soft:rgba(21,128,61,.1);--warn:#d97706;--danger:#dc2626;--inp:#fff;--hd:#e7f3ec}
+[data-theme="dark"]{--bg:#0b1411;--surface:#13201a;--elev:#192a22;--border:#27413a;--text:#e6f2ec;--muted:#93aaa0;--primary:#34d399;--primary-d:#10b981;--soft:rgba(52,211,153,.12);--warn:#fbbf24;--danger:#f87171;--inp:#0f1b16;--hd:#1b3128}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font-family:'Battambang','Khmer OS Battambang',sans-serif;font-size:14px;min-height:100vh}
+button,input,select{font-family:inherit;font-size:inherit;color:inherit}
+.top{position:sticky;top:0;z-index:30;background:var(--surface);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.top h1{font-size:17px;margin:0 8px 0 0;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.btn{border:1px solid var(--border);background:var(--elev);border-radius:10px;padding:8px 12px;cursor:pointer;font-weight:700;display:inline-flex;gap:6px;align-items:center;white-space:nowrap}
+.btn:hover{border-color:var(--primary)}
+.btn.pri{background:var(--primary);color:#fff;border-color:var(--primary)}
+.btn.pri.dirty{box-shadow:0 0 0 3px rgba(217,119,6,.45);background:var(--warn);border-color:var(--warn);color:#fff}
+.btn.sm{padding:4px 8px;font-size:12px;border-radius:8px}
+.btn.dng{color:var(--danger)}
+.sel,.num{border:1px solid var(--border);background:var(--inp);border-radius:10px;padding:8px 10px;min-height:38px}
+.spacer{flex:1}
+.bar2{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px}
+.bar2 label{color:var(--muted);font-size:12.5px;display:flex;align-items:center;gap:6px}
+.wrap{padding:0 14px 40px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:auto;max-height:calc(100vh - 170px)}
+table.ed{border-collapse:separate;border-spacing:0;min-width:100%;font-size:13.5px}
+table.ed th,table.ed td{border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:0;text-align:center;background:var(--surface)}
+table.ed thead th{position:sticky;background:var(--hd);font-weight:700;padding:5px 4px;z-index:5;white-space:nowrap}
+table.ed thead tr.h1 th{top:0}
+table.ed thead tr.h2 th{top:var(--h1h,34px)}
+table.ed td.l,table.ed th.l{text-align:left}
+table.ed td.k1,table.ed th.k1{position:sticky;left:0;z-index:4;min-width:42px;width:42px}
+table.ed td.k2,table.ed th.k2{position:sticky;left:42px;z-index:4;min-width:150px;text-align:left;padding:0 8px;white-space:nowrap}
+table.ed thead th.k1,table.ed thead th.k2{z-index:8}
+table.ed td.k2{background:var(--surface)}
+table.ed tbody tr:hover td{background:var(--soft)}
+table.ed input.c{width:100%;min-width:62px;border:0;background:transparent;text-align:center;padding:9px 4px;outline:0}
+table.ed input.c:focus{background:var(--soft);box-shadow:inset 0 0 0 2px var(--primary)}
+table.ed input.c.w{min-width:50px}
+table.ed td.calc{background:var(--elev);font-weight:700;padding:0 8px;white-space:nowrap}
+table.ed td.calc.b{color:var(--primary)}
+table.ed tr.tot td{background:var(--hd);font-weight:700;padding:8px}
+.dt{border:1px solid var(--border);background:var(--inp);border-radius:6px;padding:2px 3px;width:112px;font-size:12px}
+.wk{display:flex;gap:6px;justify-content:center;align-items:center;flex-wrap:wrap}
+.x{border:0;background:transparent;color:var(--danger);cursor:pointer;font-weight:700;padding:0 4px}
+.empty{padding:50px 20px;text-align:center;color:var(--muted)}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(30px);background:#111827;color:#fff;padding:10px 18px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;z-index:99;max-width:90vw}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.dlg-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:100;padding:16px}
+.dlg{background:var(--surface);border-radius:16px;padding:20px;max-width:380px;width:100%;text-align:center;border:1px solid var(--border)}
+.dlg h3{margin:6px 0}.dlg p{color:var(--muted);margin:6px 0 14px}
+.dlg .acts{display:flex;gap:8px;justify-content:center}
+.hint{color:var(--muted);font-size:12px;padding:0 14px 10px}
+#printArea{position:fixed;left:-20000px;top:0;background:#fff}
+/* ===== តារាងសម្រាប់បោះពុម្ព ===== */
+.pg{width:297mm;height:209mm;padding:10mm;background:#fff;color:#000;font-family:'Battambang','Khmer OS Battambang',serif;overflow:hidden;position:relative}
+.pg{page-break-after:always;break-after:page}.pg:last-child{page-break-after:auto;break-after:auto}
+.pg .hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2mm;min-height:20mm}
+.pg .hl{font-size:10.5pt;line-height:1.7;width:75mm}
+.pg .hc{text-align:center;font-family:'Moul','Battambang',serif;font-size:11pt;line-height:1.7}
+.pg .hr{width:75mm;text-align:right;font-family:'Moul','Battambang',serif;font-size:11pt}
+.pg .tt{text-align:center;font-family:'Moul','Battambang',serif;font-size:11.5pt;text-decoration:underline;margin:1mm 0 3mm}
+table.pt{border-collapse:collapse;width:100%;table-layout:fixed;font-size:9pt}
+table.pt th,table.pt td{border:.25mm solid #000;padding:0 1mm;text-align:center;height:7.2mm;line-height:1.1;overflow:hidden;white-space:nowrap}
+table.pt thead th{font-weight:400;height:6mm;font-size:8.5pt;white-space:normal}
+table.pt td.nm{text-align:left;padding-left:1.5mm}
+table.pt td.sx{text-align:left;padding-left:1mm}
+table.pt tr.tot td{font-weight:700}
+@media print{
+  @page{size:A4 landscape;margin:0}
+  html,body{background:#fff!important}
+  body>*:not(#printArea){display:none!important}
+  #printArea{position:static!important;left:0!important}
+  .pg{page-break-after:always;break-after:page}
+  .pg:last-child{page-break-after:auto;break-after:auto}
+}
+@media(max-width:700px){.top h1{font-size:15px}.btn{padding:7px 9px}}
+</style>
+</head>
+<body>
+<div class="top">
+  <button class="btn" onclick="goBack()">← ត្រឡប់</button>
+  <h1>💰 ការសន្សំប្រាក់</h1>
+  <div class="spacer"></div>
+  <button class="btn pri" id="saveBtn" onclick="save()">💾 រក្សាទុក</button>
+  <button class="btn" onclick="doPrint()">🖨️ បោះពុម្ព</button>
+  <button class="btn" onclick="doPdf()">📄 PDF</button>
+  <button class="btn" onclick="doXlsx()">📊 Excel</button>
+</div>
+<div class="bar2">
+  <label>ថ្នាក់ <select class="sel" id="clsSel" onchange="onCtx()"></select></label>
+  <label>ខែ <select class="sel" id="mSel" onchange="onCtx()"></select></label>
+  <label>ឆ្នាំ <select class="sel" id="ySel" onchange="onCtx()"></select></label>
+  <label>១ហ៊ុន = <input class="num" id="unitIn" style="width:92px;text-align:center" inputmode="numeric" onchange="onUnit()"> រៀល</label>
+  <label>ឈ្មោះតារាង <input class="num" id="tblIn" style="width:110px" onchange="onTbl()"></label>
+  <label>🔍 <input class="num" id="srch" placeholder="ស្វែងរកសិស្ស…" style="width:170px" oninput="applySearch()"><button class="btn sm" onclick="document.getElementById('srch').value='';applySearch()">✕</button></label>
+  <button class="btn sm" onclick="pullPrev(true)">⬇️ ទាញចំនួនដើមគ្រាពីខែមុន</button>
+  <button class="btn sm" onclick="addWeek()">➕ សប្តាហ៍</button>
+</div>
+<div class="hint">ចំនួនហ៊ុន = ថវិកាសរុប ÷ ១ហ៊ុន (ចំនួនគត់) · ថវិកានៅសល់ = សល់ដែលមិនគ្រប់១ហ៊ុន · ខែបន្ទាប់ចំនួនដើមគ្រាត្រូវបានទាញពីខែមុនដោយស្វ័យប្រវត្តិ។ ចុច Enter ដើម្បីចុះក្រោម។</div>
+<div class="wrap"><div class="card" id="card"><div class="empty">កំពុងផ្ទុក…</div></div></div>
+<div class="toast" id="toast"></div>
+<div id="printArea"></div>
+
+<script>
+/* ───────── SUPABASE + AUTH ───────── */
+const SUPABASE_URL="https://nggnuobnrxiqjtcwlvwk.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+function readSession(){try{return JSON.parse(localStorage.getItem('krou_supabase_user')||'null')}catch(e){return null}}
+const USER=readSession();
+const IS_ADMIN=String((USER&&USER.role)||'').toLowerCase().trim()==='admin';
+function pwd(){try{return localStorage.getItem('krou_pw')||''}catch(e){return ''}}
+async function rpc(fn,args){
+  if(!USER||!USER.username||!pwd())return{data:null,error:{message:'សូមចូលប្រព័ន្ធឡើងវិញ'}};
+  const r=await sb.rpc(fn,Object.assign({p_u:USER.username,p_p:pwd()},args||{}));
+  if(r.error)return{data:null,error:r.error};
+  if(r.data&&r.data.error){
+    if(r.data.error==='auth'){try{localStorage.removeItem('krou_pw')}catch(e){}}
+    const m={auth:'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ សូមចូលប្រព័ន្ធឡើងវិញ',class:'គ្មានសិទ្ធិលើថ្នាក់នេះ'};
+    return{data:null,error:{message:m[r.data.error]||r.data.error}};
+  }
+  return{data:r.data,error:null};
+}
+async function stRows(){
+  const r=await rpc('staff_student_list');
+  if(r.error)return{data:null,error:r.error};
+  return{data:(r.data&&r.data.rows)||[],error:null};
+}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2600)}
+function uiConfirm(msg,{okText='យល់ព្រម',title='សូមបញ្ជាក់'}={}){
+  return new Promise(res=>{
+    const bg=document.createElement('div');bg.className='dlg-bg';
+    bg.innerHTML=`<div class="dlg"><div style="font-size:30px">❓</div><h3>${esc(title)}</h3><p>${esc(msg)}</p><div class="acts"><button class="btn" data-v="0">បដិសេធ</button><button class="btn pri" data-v="1">${esc(okText)}</button></div></div>`;
+    const done=v=>{bg.remove();res(v)};
+    bg.querySelectorAll('button').forEach(b=>b.onclick=()=>done(b.dataset.v==='1'));
+    document.body.appendChild(bg);
+  });
+}
+(function theme(){let t='light';try{t=new URLSearchParams(location.search).get('theme')||localStorage.getItem('krou_theme_manual')||'light'}catch(e){}document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light')})();
+function goBack(){if(dirty){uiConfirm('មានទិន្នន័យមិនទាន់រក្សាទុក។ ចាកចេញ?',{okText:'ចាកចេញ'}).then(v=>{if(v)leave()})}else leave()}
+function leave(){dirty=false;try{window.close()}catch(e){}setTimeout(()=>{location.href='index.html'},150)}
+window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});
+
+/* ───────── ឧបករណ៍ ───────── */
+const KD='០១២៣៤៥៦៧៨៩';
+const kh=s=>String(s==null?'':s).replace(/[0-9]/g,d=>KD[d]);
+const lat=s=>String(s==null?'':s).replace(/[០-៩]/g,d=>KD.indexOf(d));
+const MONTHS=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+function cleanGrade(g){return String(g||'').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/,'').trim()}
+function gKey(g){return lat(cleanGrade(g)).replace(/[\s«»()]/g,'').toLowerCase()}
+function gradeTitle(g){const c=lat(cleanGrade(g)).replace(/[«»()]/g,'').trim();const m=c.match(/^(\d+)\s*(.*)$/);return m?kh(m[1])+(m[2]?'('+m[2]+')':''):cleanGrade(g)}
+function num(v){const s=lat(v).replace(/[^\d.]/g,'');const n=parseFloat(s);return isFinite(n)?n:0}
+function fmt(n){return n?String(Math.round(n)):'0'}
+function ddmm(d){const m=String(d||'').match(/^\d{4}-(\d\d)-(\d\d)$/);return m?m[2]+'/'+m[1]:''}
+function isF(s){return /ស្រី|^f|female|girl/i.test(String(s.gender||''))}
+
+/* ───────── ស្ថានភាព ───────── */
+let STU=[];            // សិស្សថ្នាក់បច្ចុប្បន្ន
+let ALL=[];            // សិស្សទាំងអស់ដែលមានសិទ្ធិ
+let COLS=[];           // [{id,w,d}]
+let ROWS={};           // {stuId:{sh,rc,mo,a:{colId:v}}}
+let META={unit:10000,tbl:'តារាង (ខ)'};
+let PROF=null,dirty=false,cur={cls:'',ym:''},loadSeq=0;
+const uid=()=>'c'+Math.random().toString(36).slice(2,8);
+function setDirty(v){dirty=v;document.getElementById('saveBtn').classList.toggle('dirty',v)}
+function curYm(){return document.getElementById('ySel').value+'-'+String(+document.getElementById('mSel').value+1).padStart(2,'0')}
+function prevYm(ym){let[y,m]=ym.split('-').map(Number);m--;if(m<1){m=12;y--}return y+'-'+String(m).padStart(2,'0')}
+function ymParts(ym){const[y,m]=ym.split('-').map(Number);return{y,m}}
+function defCols(){const c=[];for(let w=1;w<=4;w++){c.push({id:uid(),w,d:''},{id:uid(),w,d:''})}return c}
+function R(id){return ROWS[id]||(ROWS[id]={sh:'',rc:'',mo:'',a:{}})}
+function calc(id){
+  const r=ROWS[id]||{a:{}};const unit=META.unit||10000;
+  let dep=0;COLS.forEach(c=>{dep+=num((r.a||{})[c.id])});
+  const total=num(r.mo)+dep;
+  const sh=Math.floor(total/unit+1e-9);
+  const left=total-sh*unit;
+  return{total,sh,left,tsh:num(r.sh)+sh,dep};
+}
+
+/* ───────── ចាប់ផ្តើម ───────── */
+async function init(){
+  const mS=document.getElementById('mSel'),yS=document.getElementById('ySel');
+  mS.innerHTML=MONTHS.map((m,i)=>`<option value="${i}">${m}</option>`).join('');
+  const now=new Date(),y0=now.getFullYear();
+  yS.innerHTML=[y0-2,y0-1,y0,y0+1].map(y=>`<option value="${y}">${kh(y)}</option>`).join('');
+  mS.value=now.getMonth();yS.value=y0;
+  document.getElementById('unitIn').value=META.unit;document.getElementById('tblIn').value=META.tbl;
+  if(!USER||!USER.username||!pwd()){document.getElementById('card').innerHTML='<div class="empty">⚠️ សូមចូលប្រព័ន្ធឡើងវិញ (ចូលតាមទំព័រដើម) រួចបើកទំព័រនេះម្តងទៀត។</div>';return}
+  const r=await stRows();
+  if(r.error){document.getElementById('card').innerHTML='<div class="empty">⚠️ '+esc(r.error.message||'កំហុស')+'</div>';return}
+  ALL=r.data||[];
+  const map=new Map();
+  ALL.forEach(s=>{const k=gKey(s.grade);if(k&&!map.has(k))map.set(k,cleanGrade(s.grade))});
+  let cls=[...map.entries()].sort((a,b)=>a[1].localeCompare(b[1],'km'));
+  const sel=document.getElementById('clsSel');
+  sel.innerHTML=cls.map(([k,v])=>`<option value="${esc(v)}" data-k="${esc(k)}">ថ្នាក់ទី ${esc(kh(v))}</option>`).join('')||'<option value="">គ្មានថ្នាក់</option>';
+  const mine=cleanGrade((USER&&(USER.assigned_classes||USER.assigned_class))||'');
+  if(mine){const o=[...sel.options].find(o=>o.dataset.k===gKey(mine));if(o)sel.value=o.value}
+  if(!IS_ADMIN&&cls.length<=1)sel.disabled=true;
+  loadKit();
+  await onCtx(true);
+}
+async function loadKit(){try{const r=await rpc('staff_school_get');if(r.data&&r.data.ok)PROF=r.data.data||{}}catch(e){}}
+async function onCtx(first){
+  if(!first&&dirty&&!await uiConfirm('ទិន្នន័យមិនទាន់រក្សាទុក។ ប្តូរ ហើយបោះបង់ការកែ?',{okText:'ប្តូរ'})){restoreCtx();return}
+  await loadSheet();
+}
+function restoreCtx(){
+  const sel=document.getElementById('clsSel');sel.value=cur.cls;
+  const{y,m}=ymParts(cur.ym);document.getElementById('mSel').value=m-1;document.getElementById('ySel').value=y;
+}
+async function fetchSheet(cls,ym){return rpc('staff_savings_get',{p_grade:cls,p_ym:ym})}
+async function loadSheet(){
+  const cls=document.getElementById('clsSel').value,ym=curYm(),seq=++loadSeq;
+  const card=document.getElementById('card');
+  if(!cls){card.innerHTML='<div class="empty">គ្មានថ្នាក់ទទួលបន្ទុក។ សូមទាក់ទង Admin។</div>';return}
+  card.innerHTML='<div class="empty">កំពុងផ្ទុក…</div>';
+  STU=ALL.filter(s=>gKey(s.grade)===gKey(cls)).sort((a,b)=>(+a.id||0)-(+b.id||0));
+  const r=await fetchSheet(cls,ym);
+  if(seq!==loadSeq)return;
+  if(r.error){card.innerHTML='<div class="empty">⚠️ '+esc(r.error.message)+'<br><small>(បើជាលើកដំបូង សូម Run savings_setup.sql ក្នុង Supabase)</small></div>';return}
+  cur={cls,ym};
+  const d=r.data;
+  if(d&&d.found){
+    COLS=Array.isArray(d.cols)&&d.cols.length?d.cols:defCols();
+    ROWS=(d.rows&&typeof d.rows==='object')?d.rows:{};
+    const m=ROWS._m||{};delete ROWS._m;
+    META={unit:+m.unit||10000,tbl:m.tbl||'តារាង (ខ)'};
+    setDirty(false);
+  }else{
+    COLS=defCols();ROWS={};META={unit:META.unit||10000,tbl:META.tbl||'តារាង (ខ)'};
+    const n=await pullPrev(false,seq);
+    if(seq!==loadSeq)return;
+    setDirty(n>0);
+  }
+  document.getElementById('unitIn').value=META.unit;document.getElementById('tblIn').value=META.tbl;
+  render();
+}
+/* ទាញចំនួនដើមគ្រាពីខែមុន (ចំនួនហ៊ុនសរុប + ថវិកានៅសល់) */
+async function pullPrev(manual,seq){
+  const py=prevYm(cur.ym||curYm());
+  const cls=cur.cls||document.getElementById('clsSel').value;
+  if(manual&&!await uiConfirm('ជំនួសចំនួនហ៊ុនដើមគ្រា និងលុយដើមគ្រា ដោយតម្លៃនៅចុងខែមុន?',{okText:'ទាញ'}))return 0;
+  const r=await fetchSheet(cls,py);
+  if(seq&&seq!==loadSeq)return 0;
+  if(r.error||!r.data||!r.data.found){if(manual)toast('មិនមានទិន្នន័យខែមុនទេ');return 0}
+  const pc=r.data.cols||[],pr=r.data.rows||{},pm=pr._m||{},unit=+pm.unit||10000;
+  let n=0;
+  STU.forEach(s=>{
+    const p=pr[String(s.id)];if(!p)return;
+    let dep=0;pc.forEach(c=>{dep+=num((p.a||{})[c.id])});
+    const total=num(p.mo)+dep,sh=Math.floor(total/unit+1e-9),left=total-sh*unit,tsh=num(p.sh)+sh;
+    const row=R(String(s.id));
+    row.sh=tsh?String(tsh):'';row.mo=left?String(Math.round(left)):'';n++;
+  });
+  if(manual){setDirty(true);render();toast('បានទាញពីខែមុន '+n+' នាក់')}
+  return n;
+}
+function onUnit(){const v=num(document.getElementById('unitIn').value);if(v>0){META.unit=v;setDirty(true);renderCalc()}else document.getElementById('unitIn').value=META.unit}
+function onTbl(){META.tbl=document.getElementById('tblIn').value;setDirty(true)}
+
+/* ───────── បង្ហាញតារាងកែ ───────── */
+function weeks(){const w=[...new Set(COLS.map(c=>c.w))].sort((a,b)=>a-b);return w}
+function render(){
+  const card=document.getElementById('card');
+  if(!STU.length){card.innerHTML='<div class="empty">ថ្នាក់នេះមិនទាន់មានសិស្សទេ</div>';return}
+  const ws=weeks();
+  let h1='<tr class="h1"><th class="k1" rowspan="2">ល.រ</th><th class="k2" rowspan="2">គោត្តនាម និងនាម</th><th rowspan="2">ភេទ</th><th rowspan="2">ហ៊ុន<br>ដើមគ្រា</th><th rowspan="2">ល.ប័ណ្ណ</th><th rowspan="2">លុយ<br>ដើមគ្រា</th>';
+  ws.forEach((w,i)=>{const n=COLS.filter(c=>c.w===w).length;h1+=`<th colspan="${n}"><div class="wk">សប្តាហ៍ទី${kh(i+1)} <button class="btn sm" onclick="addCol(${w})" title="បន្ថែមថ្ងៃ">➕ ថ្ងៃ</button></div></th>`});
+  h1+='<th rowspan="2">ថវិកាសរុប</th><th rowspan="2">ចំនួនហ៊ុន</th><th rowspan="2">ថវិកានៅសល់</th><th rowspan="2">ចំនួនហ៊ុនសរុប</th></tr>';
+  let h2='<tr class="h2">';
+  ws.forEach(w=>COLS.filter(c=>c.w===w).forEach(c=>{h2+=`<th><input class="dt" type="date" value="${esc(c.d)}" onchange="setDate('${c.id}',this.value)"><button class="x" onclick="delCol('${c.id}')" title="លុបជួរថ្ងៃ">✕</button></th>`}));
+  h2+='</tr>';
+  let b='';
+  STU.forEach((s,i)=>{
+    const id=String(s.id),r=ROWS[id]||{a:{}};
+    b+=`<tr data-id="${esc(id)}"><td class="k1">${i+1}</td><td class="k2">${esc(s.student_name||'')}</td><td>${isF(s)?'ស':'ប'}</td>`+
+      `<td><input class="c w" data-f="sh" value="${esc(r.sh||'')}" inputmode="numeric"></td>`+
+      `<td><input class="c w" data-f="rc" value="${esc(r.rc||'')}"></td>`+
+      `<td><input class="c" data-f="mo" value="${esc(r.mo||'')}" inputmode="numeric"></td>`;
+    ws.forEach(w=>COLS.filter(c=>c.w===w).forEach(c=>{b+=`<td><input class="c" data-f="a" data-c="${c.id}" value="${esc((r.a||{})[c.id]||'')}" inputmode="numeric"></td>`}));
+    b+='<td class="calc" data-k="total"></td><td class="calc" data-k="sh"></td><td class="calc" data-k="left"></td><td class="calc b" data-k="tsh"></td></tr>';
+  });
+  const nc=COLS.length;
+  b+=`<tr class="tot"><td class="k1"></td><td class="k2">ផលបូក</td><td></td><td data-t="sh0"></td><td></td><td data-t="mo"></td>`+COLS.map(c=>`<td data-t="a:${c.id}"></td>`).join('')+'<td data-t="total"></td><td data-t="shn"></td><td data-t="left"></td><td data-t="tsh"></td></tr>';
+  card.innerHTML=`<table class="ed"><thead>${h1}${h2}</thead><tbody>${b}</tbody></table>`;
+  const t=card.querySelector('table');
+  const h1h=t.querySelector('tr.h1').offsetHeight;t.style.setProperty('--h1h',h1h+'px');
+  t.addEventListener('input',onInput);
+  t.addEventListener('keydown',onKey);
+  renderCalc();applySearch();
+}
+function applySearch(){
+  const q=(document.getElementById('srch').value||'').trim().toLowerCase();
+  document.querySelectorAll('#card tbody tr[data-id]').forEach(tr=>{const n=(tr.querySelector('.k2').textContent||'').toLowerCase();const no=tr.querySelector('.k1').textContent;tr.style.display=(!q||n.includes(q)||no===q)?'':'none'});
+}
+function onInput(e){
+  const el=e.target;if(!el.classList.contains('c'))return;
+  const tr=el.closest('tr'),id=tr.dataset.id,f=el.dataset.f;
+  let v=lat(el.value);
+  if(f!=='rc'&&/[^\d]/.test(v)){v=v.replace(/[^\d]/g,'');el.value=v}
+  const r=R(id);
+  if(f==='a'){if(v==='')delete r.a[el.dataset.c];else r.a[el.dataset.c]=v}else r[f]=v;
+  setDirty(true);renderCalc(tr);
+}
+function onKey(e){
+  const el=e.target;if(!el.classList||!el.classList.contains('c'))return;
+  const k=e.key;if(!['Enter','ArrowDown','ArrowUp'].includes(k))return;
+  e.preventDefault();
+  const tr=el.closest('tr'),idx=[...tr.children].indexOf(el.closest('td'));
+  const nx=(k==='ArrowUp')?tr.previousElementSibling:tr.nextElementSibling;
+  const nt=nx&&nx.children[idx]&&nx.children[idx].querySelector('input.c');
+  if(nt){nt.focus();nt.select()}
+}
+function renderCalc(only){
+  const card=document.getElementById('card');
+  const rows=only?[only]:card.querySelectorAll('tbody tr[data-id]');
+  rows.forEach(tr=>{
+    const c=calc(tr.dataset.id);
+    tr.querySelector('[data-k=total]').textContent=fmt(c.total);
+    tr.querySelector('[data-k=sh]').textContent=c.sh+' ហ៊ុន';
+    tr.querySelector('[data-k=left]').textContent=fmt(c.left);
+    tr.querySelector('[data-k=tsh]').textContent=c.tsh?c.tsh+' ហ៊ុន':'-';
+  });
+  const T=totals();
+  const set=(k,v)=>{const e=card.querySelector(`[data-t="${k}"]`);if(e)e.textContent=v};
+  set('sh0',T.sh0||'');set('mo',T.mo||'');set('total',fmt(T.total));set('shn',T.shn+' ហ៊ុន');set('left',fmt(T.left));set('tsh',T.tsh+' ហ៊ុន');
+  COLS.forEach(c=>set('a:'+c.id,T.a[c.id]||''));
+}
+function totals(){
+  const T={sh0:0,mo:0,total:0,shn:0,left:0,tsh:0,a:{}};
+  STU.forEach(s=>{
+    const id=String(s.id),r=ROWS[id]||{a:{}},c=calc(id);
+    T.sh0+=num(r.sh);T.mo+=num(r.mo);T.total+=c.total;T.shn+=c.sh;T.left+=c.left;T.tsh+=c.tsh;
+    COLS.forEach(k=>{T.a[k.id]=(T.a[k.id]||0)+num((r.a||{})[k.id])});
+  });
+  return T;
+}
+
+/* ───────── កែជួរថ្ងៃ/សប្តាហ៍ ───────── */
+function setDate(id,v){const c=COLS.find(x=>x.id===id);if(c){c.d=v;setDirty(true)}}
+function addCol(w){
+  const last=COLS.map((c,i)=>c.w===w?i:-1).filter(i=>i>=0).pop();
+  COLS.splice(last+1,0,{id:uid(),w,d:''});setDirty(true);render();
+}
+function addWeek(){const ws=weeks(),w=(ws.length?Math.max(...ws):0)+1;COLS.push({id:uid(),w,d:''},{id:uid(),w,d:''});setDirty(true);render();toast('បានបន្ថែមសប្តាហ៍ថ្មី')}
+async function delCol(id){
+  const has=Object.values(ROWS).some(r=>r.a&&r.a[id]);
+  if(has&&!await uiConfirm('ជួរនេះមានទិន្នន័យ។ លុបជួរនេះ និងទិន្នន័យក្នុងជួរ?',{okText:'លុប'}))return;
+  COLS=COLS.filter(c=>c.id!==id);Object.values(ROWS).forEach(r=>{if(r.a)delete r.a[id]});
+  if(!COLS.length)COLS=[{id:uid(),w:1,d:''}];
+  setDirty(true);render();
+}
+
+/* ───────── រក្សាទុក ───────── */
+async function save(){
+  if(!cur.cls){toast('សូមជ្រើសថ្នាក់');return}
+  const rows={};
+  Object.keys(ROWS).forEach(id=>{const r=ROWS[id];const a={};Object.keys(r.a||{}).forEach(k=>{if(COLS.some(c=>c.id===k)&&r.a[k]!=='')a[k]=r.a[k]});if(r.sh||r.rc||r.mo||Object.keys(a).length)rows[id]={sh:r.sh||'',rc:r.rc||'',mo:r.mo||'',a}});
+  rows._m={unit:META.unit,tbl:META.tbl};
+  const r=await rpc('staff_savings_save',{p_grade:cur.cls,p_ym:cur.ym,p_cols:COLS,p_rows:rows});
+  if(r.error){toast('❌ '+r.error.message);return}
+  setDirty(false);toast('✅ បានរក្សាទុក');
+}
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();save()}});
+
+/* ───────── ក្បាលតារាង (ឈ្មោះសាលា) ───────── */
+function headLeft(){
+  const d=PROF||{},school=(d.school_name||'').trim()||'សាលាបឋមសិក្សា',t=d.head_type||'oc';
+  const L=[];
+  if(t==='doc'&&(d.dept||'').trim())L.push(d.dept.trim());
+  if(t!=='s'&&(d.office||'').trim())L.push(d.office.trim());
+  if((t==='oc'||t==='doc')&&(d.cluster||'').trim())L.push(d.cluster.trim());
+  L.push(school);return L;
+}
+function titleText(){
+  const{y,m}=ymParts(cur.ym);
+  return `បញ្ជីសិស្សថ្នាក់ទី${gradeTitle(cur.cls)} ខែ${MONTHS[m-1]} ឆ្នាំ${kh(y)}`;
+}
+
+/* ───────── បោះពុម្ព / PDF (បែងទំព័រដោយខ្លួនឯង → ក្បាលតារាងចេញគ្រប់ទំព័រ) ───────── */
+function buildPrint(){
+  const ws=weeks();
+  const N=COLS.length;
+  const fixed=[8,40,8,12,13,17],tail=[19,15,19,17];
+  const fsum=fixed.reduce((a,b)=>a+b,0)+tail.reduce((a,b)=>a+b,0);
+  const dw=Math.max(7,Math.min(16,(277-fsum)/Math.max(1,N)));
+  const widths=fixed.concat(COLS.map(()=>dw),tail);
+  const scale=(277)/widths.reduce((a,b)=>a+b,0);
+  const cg='<colgroup>'+widths.map(w=>`<col style="width:${(w*scale).toFixed(2)}mm">`).join('')+'</colgroup>';
+  let th1='<tr><th rowspan="2">ល.រ</th><th rowspan="2">គោត្តនាម និងនាម</th><th rowspan="2">ភេទ</th><th rowspan="2">ហ៊ុន<br>ដើមគ្រា</th><th rowspan="2">ល.ប័ណ្ណ</th><th rowspan="2">លុយដើមគ្រា</th>';
+  ws.forEach((w,i)=>{th1+=`<th colspan="${COLS.filter(c=>c.w===w).length}">សប្តាហ៍ទី${kh(i+1)}</th>`});
+  th1+='<th rowspan="2">ថវិកាសរុប</th><th rowspan="2">ចំនួនហ៊ុន</th><th rowspan="2">ថវិកានៅសល់</th><th rowspan="2">ចំនួនហ៊ុន<br>សរុប</th></tr><tr>';
+  ws.forEach(w=>COLS.filter(c=>c.w===w).forEach(c=>{th1+=`<th>${esc(ddmm(c.d))}</th>`}));
+  th1+='</tr>';
+  const T=totals();
+  const items=STU.map((s,i)=>{
+    const id=String(s.id),r=ROWS[id]||{a:{}},c=calc(id);
+    let t=`<tr><td>${i+1}</td><td class="nm">${esc(s.student_name||'')}</td><td>${isF(s)?'ស':'ប'}</td><td>${esc(r.sh||'')}</td><td>${esc(r.rc||'')}</td><td>${r.mo!==''&&r.mo!=null?esc(r.mo):''}</td>`;
+    COLS.forEach(k=>{t+=`<td>${esc((r.a||{})[k.id]||'')}</td>`});
+    t+=`<td>${fmt(c.total)}</td><td>${c.sh} ហ៊ុន</td><td>${fmt(c.left)}</td><td>${c.tsh?c.tsh+' ហ៊ុន':'-'}</td></tr>`;return t;
+  });
+  let tt=`<tr class="tot"><td colspan="3">ផលបូក</td><td>${T.sh0||''}</td><td></td><td>${T.mo||''}</td>`;
+  COLS.forEach(k=>{tt+=`<td>${T.a[k.id]||''}</td>`});
+  tt+=`<td>${fmt(T.total)}</td><td>${T.shn} ហ៊ុន</td><td>${fmt(T.left)}</td><td>${T.tsh} ហ៊ុន</td></tr>`;
+  items.push(tt);
+  const P1=19,P2=24;
+  const pages=[];let i=0;
+  while(i<items.length){const cap=pages.length?P2:P1;pages.push(items.slice(i,i+cap));i+=cap}
+  const hl=headLeft().map(esc).join('<br>');
+  const head=`<div class="hd"><div class="hl">${hl}</div><div class="hc">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ<br>❖</div><div class="hr">${esc(META.tbl||'')}</div></div><div class="tt">${esc(titleText())}</div>`;
+  return pages.map((p,k)=>`<section class="pg">${k===0?head:''}<table class="pt">${cg}<thead>${th1}</thead><tbody>${p.join('')}</tbody></table></section>`).join('');
+}
+function printReady(){
+  if(!cur.cls||!STU.length){toast('គ្មានទិន្នន័យ');return false}
+  document.getElementById('printArea').innerHTML=buildPrint();return true;
+}
+function doPrint(){if(!printReady())return;setTimeout(()=>window.print(),80)}
+async function doPdf(){
+  if(!printReady())return;
+  if(typeof html2pdf==='undefined'){toast('កំពុងផ្ទុក PDF… សូមព្យាយាមម្តងទៀត');return}
+  toast('កំពុងបង្កើត PDF…');
+  try{await document.fonts.ready}catch(e){}
+  const el=document.getElementById('printArea');
+  const pa=el.style.cssText;el.style.cssText='position:absolute;left:0;top:0;z-index:-1';
+  try{
+    await html2pdf().set({margin:0,filename:'ការសន្សំប្រាក់-'+cur.cls+'-'+cur.ym+'.pdf',image:{type:'jpeg',quality:.98},html2canvas:{scale:2,useCORS:true,scrollX:0,scrollY:0},jsPDF:{unit:'mm',format:'a4',orientation:'landscape'},pagebreak:{mode:['css']}}).from(el).save();
+  }catch(e){toast('❌ PDF កំហុស')}
+  el.style.cssText=pa;
+}
+
+/* ───────── Excel (.xlsx មានរូបមន្តពិត) ───────── */
+function colL(n){let s='';while(n>0){const m=(n-1)%26;s=String.fromCharCode(65+m)+s;n=Math.floor((n-1)/26)}return s}
+async function doXlsx(){
+  if(!cur.cls||!STU.length){toast('គ្មានទិន្នន័យ');return}
+  if(typeof ExcelJS==='undefined'){toast('កំពុងផ្ទុក Excel… សូមព្យាយាមម្តងទៀត');return}
+  const wb=new ExcelJS.Workbook();
+  const ws=wb.addWorksheet('ការសន្សំប្រាក់',{pageSetup:{paperSize:9,orientation:'landscape',fitToPage:true,fitToWidth:1,fitToHeight:0,margins:{left:.4,right:.4,top:.4,bottom:.4,header:.2,footer:.2}}});
+  const wk=weeks(),N=COLS.length;
+  const cD=7,cT=cD+N;               // ជួរថ្ងៃដំបូង · ជួរ ថវិកាសរុប
+  const cSh=cT+1,cLeft=cT+2,cTsh=cT+3,last=cTsh;
+  const FONT='Khmer OS Battambang';
+  const bd={top:{style:'thin'},left:{style:'thin'},bottom:{style:'thin'},right:{style:'thin'}};
+  const ctr={horizontal:'center',vertical:'middle',wrapText:true};
+  // ក្បាល
+  const hl=headLeft();
+  hl.forEach((t,i)=>{const c=ws.getCell(1+i,1);c.value=t;c.font={name:FONT,size:11}});
+  ws.mergeCells(1,4,1,Math.max(5,last-3));ws.getCell(1,4).value='ព្រះរាជាណាចក្រកម្ពុជា';
+  ws.mergeCells(2,4,2,Math.max(5,last-3));ws.getCell(2,4).value='ជាតិ សាសនា ព្រះមហាក្សត្រ';
+  [1,2].forEach(r=>{const c=ws.getCell(r,4);c.alignment=ctr;c.font={name:FONT,size:12,bold:true}});
+  ws.getCell(1,last-2).value=META.tbl||'';ws.getCell(1,last-2).font={name:FONT,size:11,bold:true};
+  ws.mergeCells(1,last-2,1,last);ws.getCell(1,last-2).alignment={horizontal:'right'};
+  // ១ហ៊ុន = ?
+  ws.getCell(2,last-3).value='១ហ៊ុន =';ws.getCell(2,last-3).font={name:FONT,size:10};ws.getCell(2,last-3).alignment={horizontal:'right'};
+  const unitCell=ws.getCell(2,last-2);unitCell.value=META.unit;unitCell.font={name:FONT,size:10,bold:true};unitCell.alignment={horizontal:'center'};
+  ws.getCell(2,last-1).value='រៀល';ws.getCell(2,last-1).font={name:FONT,size:10};
+  const U='$'+colL(last-2)+'$2';
+  ws.mergeCells(4,1,4,last);const tc=ws.getCell(4,1);tc.value=titleText();tc.alignment=ctr;tc.font={name:FONT,size:13,bold:true,underline:true};
+  // ក្បាលតារាង (ជួរ 5-6)
+  const H1=5,H2=6;
+  const heads=['ល.រ','គោត្តនាម និងនាម','ភេទ','ហ៊ុន\nដើមគ្រា','ល.ប័ណ្ណ','លុយ\nដើមគ្រា'];
+  heads.forEach((t,i)=>{ws.mergeCells(H1,i+1,H2,i+1);ws.getCell(H1,i+1).value=t});
+  let cc=cD;
+  wk.forEach((w,i)=>{
+    const cs=COLS.filter(c=>c.w===w);
+    if(cs.length>1)ws.mergeCells(H1,cc,H1,cc+cs.length-1);
+    ws.getCell(H1,cc).value='សប្តាហ៍ទី'+kh(i+1);
+    cs.forEach((c,j)=>{ws.getCell(H2,cc+j).value=ddmm(c.d)});
+    cc+=cs.length;
+  });
+  [[cT,'ថវិកាសរុប'],[cSh,'ចំនួនហ៊ុន'],[cLeft,'ថវិកានៅសល់'],[cTsh,'ចំនួនហ៊ុន\nសរុប']].forEach(([c,t])=>{ws.mergeCells(H1,c,H2,c);ws.getCell(H1,c).value=t});
+  for(let r=H1;r<=H2;r++)for(let c=1;c<=last;c++){const x=ws.getCell(r,c);x.alignment=ctr;x.border=bd;x.font={name:FONT,size:10};x.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFE7F3EC'}}}
+  ws.getRow(H1).height=22;ws.getRow(H2).height=18;
+  // ទិន្នន័យ
+  const r0=H2+1;
+  const dL=colL(cD),dR=colL(cT-1);
+  STU.forEach((s,i)=>{
+    const r=r0+i,id=String(s.id),row=ROWS[id]||{a:{}},c=calc(id);
+    const v=(x)=>{const n=num(x);return(x===''||x==null)?null:n};
+    ws.getCell(r,1).value=i+1;ws.getCell(r,2).value=s.student_name||'';ws.getCell(r,3).value=isF(s)?'ស':'ប';
+    ws.getCell(r,4).value=v(row.sh);ws.getCell(r,5).value=row.rc||null;ws.getCell(r,6).value=v(row.mo);
+    COLS.forEach((k,j)=>{ws.getCell(r,cD+j).value=v((row.a||{})[k.id])});
+    ws.getCell(r,cT).value={formula:`F${r}+SUM(${dL}${r}:${dR}${r})`,result:c.total};
+    ws.getCell(r,cSh).value={formula:`INT(${colL(cT)}${r}/${U})`,result:c.sh};
+    ws.getCell(r,cLeft).value={formula:`${colL(cT)}${r}-${colL(cSh)}${r}*${U}`,result:c.left};
+    ws.getCell(r,cTsh).value={formula:`D${r}+${colL(cSh)}${r}`,result:c.tsh};
+    for(let k=1;k<=last;k++){const x=ws.getCell(r,k);x.border=bd;x.font={name:FONT,size:10};x.alignment={horizontal:k===2?'left':'center',vertical:'middle'}}
+    ws.getCell(r,cSh).numFmt='0" ហ៊ុន"';ws.getCell(r,cTsh).numFmt='[=0]"-";0" ហ៊ុន"';
+    ws.getCell(r,cT).numFmt='0';ws.getCell(r,cLeft).numFmt='0';
+    ws.getRow(r).height=19;
+  });
+  // ផលបូក
+  const rt=r0+STU.length,rl=rt-1,T=totals();
+  ws.mergeCells(rt,1,rt,3);ws.getCell(rt,1).value='ផលបូក';
+  for(let k=4;k<=last;k++){
+    if(k===5)continue;
+    const L=colL(k);
+    const res=k===4?T.sh0:k===6?T.mo:k===cT?T.total:k===cSh?T.shn:k===cLeft?T.left:k===cTsh?T.tsh:(T.a[COLS[k-cD]&&COLS[k-cD].id]||0);
+    ws.getCell(rt,k).value={formula:`SUM(${L}${r0}:${L}${rl})`,result:res};
+  }
+  for(let k=1;k<=last;k++){const x=ws.getCell(rt,k);x.border=bd;x.font={name:FONT,size:10,bold:true};x.alignment={horizontal:'center',vertical:'middle'};x.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFE7F3EC'}}}
+  ws.getCell(rt,cSh).numFmt='0" ហ៊ុន"';ws.getCell(rt,cTsh).numFmt='0" ហ៊ុន"';
+  ws.getRow(rt).height=20;
+  // ទទឹង
+  const wd=[5,26,5,9,9,11];wd.forEach((w,i)=>ws.getColumn(i+1).width=w);
+  for(let k=cD;k<cT;k++)ws.getColumn(k).width=9;
+  [12,11,12,12].forEach((w,i)=>ws.getColumn(cT+i).width=w);
+  ws.pageSetup.printTitlesRow=`${H1}:${H2}`;
+  ws.views=[{state:'frozen',xSplit:2,ySplit:H2}];
+  const buf=await wb.xlsx.writeBuffer();
+  const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ការសន្សំប្រាក់-'+cur.cls+'-'+cur.ym+'.xlsx';
+  document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
+  toast('✅ បានទាញយក Excel');
+}
+init();
+</script>
+</body>
+</html>
