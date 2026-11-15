@@ -47,6 +47,18 @@ nav svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;st
 aside{height:100vh;height:100dvh;overflow:hidden}
 aside nav{flex:0 1 auto;min-height:0;overflow-y:auto;scrollbar-width:none}aside nav::-webkit-scrollbar{display:none}
 .side-foot{flex-shrink:0;padding-top:8px}
+.dlg-bg{position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:18px;animation:dlgF .18s ease}
+.dlg-box{background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:22px;width:100%;max-width:340px;padding:24px 20px 18px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.35);animation:dlgP .22s cubic-bezier(.2,.9,.3,1.2)}
+.dlg-ic{width:60px;height:60px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;background:var(--warns);color:var(--warn)}
+.dlg-box.dng .dlg-ic{background:var(--bads);color:var(--bad)}
+.dlg-t{font-weight:700;font-size:17px;margin-bottom:6px}
+.dlg-m{color:var(--muted);font-size:14.5px;line-height:1.6;margin-bottom:18px;white-space:pre-line}
+.dlg-b{display:flex;gap:10px}
+.dlg-b button{flex:1;border:0;border-radius:13px;padding:12px 8px;cursor:pointer;font-family:inherit;font-size:15px;font-weight:700}
+.dlg-b .no{background:var(--in);color:var(--text);border:1px solid var(--line)}
+.dlg-b .ok{background:var(--ac);color:#fff}
+.dlg-box.dng .dlg-b .ok{background:var(--bad)}
+@keyframes dlgF{from{opacity:0}to{opacity:1}}@keyframes dlgP{from{opacity:0;transform:scale(.88) translateY(10px)}to{opacity:1;transform:none}}
 @media(max-height:820px){nav button{padding:9px 12px}.who{padding-bottom:10px;margin-bottom:6px}}
 @media(max-height:640px){nav button{padding:7px 10px}}
 .side-foot button{flex:1;background:rgba(255,255,255,.1);border:0;color:#fff;border-radius:10px;padding:9px;cursor:pointer}
@@ -492,6 +504,27 @@ async function vAtt0(){
 
 
 
+
+/* 🪟 popup ស្អាត (ជំនួស confirm/alert របស់ browser) */
+function uiAsk(msg,o){o=o||{};
+  return new Promise(res=>{
+    const bg=document.createElement('div');bg.className='dlg-bg';
+    bg.innerHTML=`<div class="dlg-box${o.danger?' dng':''}" role="alertdialog"><div class="dlg-ic">${o.icon||(o.danger?'🗑️':'❓')}</div><div class="dlg-t">${esc(o.title||'សូមបញ្ជាក់')}</div><div class="dlg-m">${esc(msg)}</div><div class="dlg-b"><button class="no">${esc(o.no||'បដិសេធ')}</button><button class="ok">${esc(o.ok||'យល់ព្រម')}</button></div></div>`;
+    const done=v=>{document.removeEventListener('keydown',kd);bg.remove();res(v)};
+    const kd=e=>{if(e.key==='Escape')done(false)};document.addEventListener('keydown',kd);
+    bg.querySelector('.no').onclick=()=>done(false);bg.querySelector('.ok').onclick=()=>done(true);
+    bg.onclick=e=>{if(e.target===bg)done(false)};
+    document.body.appendChild(bg);bg.querySelector('.ok').focus();
+  });
+}
+function uiAlert(msg){
+  const bg=document.createElement('div');bg.className='dlg-bg';
+  const bad=/^❌/.test(msg);
+  bg.innerHTML=`<div class="dlg-box${bad?' dng':''}" role="alertdialog"><div class="dlg-ic">${bad?'⚠️':'ℹ️'}</div><div class="dlg-m" style="margin-top:4px">${esc(String(msg).replace(/^❌\s*/,''))}</div><div class="dlg-b"><button class="ok">យល់ព្រម</button></div></div>`;
+  const done=()=>bg.remove();bg.querySelector('.ok').onclick=done;bg.onclick=e=>{if(e.target===bg)done()};
+  document.body.appendChild(bg);bg.querySelector('.ok').focus();
+}
+window.alert=uiAlert;
 /* ── ស្នើសុំច្បាប់ (បន្ថែមលើទំព័រវត្តមានខ្ញុំ) ── */
 async function vAtt(){
   await vAtt0();
@@ -529,7 +562,7 @@ async function lvSend(){
     if(d&&d.error){e.textContent=LV_ERR[d.error]||d.error;return}
     lvOpen=false;drawLeave()}catch(x){e.textContent=x.message||'កំហុស'}
 }
-async function lvCancel(id){if(!confirm('បោះបង់ពាក្យសុំនេះ?'))return;try{await tk('student_leave_cancel',{p_id:id})}catch(e){}drawLeave()}
+async function lvCancel(id){if(!await uiAsk('តើអ្នកពិតជាចង់បោះបង់ពាក្យសុំច្បាប់នេះមែនទេ?',{title:'បោះបង់ពាក្យសុំ',ok:'បោះបង់ពាក្យសុំ',no:'ទេ',danger:true}))return;try{await tk('student_leave_cancel',{p_id:id})}catch(e){}drawLeave()}
 /* ── ប្រាក់សន្សំខ្ញុំ ── */
 async function vSav(){
   load();
