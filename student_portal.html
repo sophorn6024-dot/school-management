@@ -44,6 +44,11 @@ nav button.on{background:linear-gradient(90deg,var(--ac),color-mix(in srgb,var(-
 nav svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 .sp{flex:1}
 .side-foot{display:flex;gap:8px}
+aside{height:100vh;height:100dvh;overflow:hidden}
+aside nav{flex:0 1 auto;min-height:0;overflow-y:auto;scrollbar-width:none}aside nav::-webkit-scrollbar{display:none}
+.side-foot{flex-shrink:0;padding-top:8px}
+@media(max-height:820px){nav button{padding:9px 12px}.who{padding-bottom:10px;margin-bottom:6px}}
+@media(max-height:640px){nav button{padding:7px 10px}}
 .side-foot button{flex:1;background:rgba(255,255,255,.1);border:0;color:#fff;border-radius:10px;padding:9px;cursor:pointer}
 main{padding:22px;min-width:0}
 .top{display:none}
