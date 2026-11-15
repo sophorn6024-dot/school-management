@@ -465,7 +465,7 @@ function drawScore(){
 
 /* ── វត្តមានខ្ញុំ ── */
 let aM=new Date().getMonth(),aY=new Date().getFullYear();
-async function vAtt(){
+async function vAtt0(){
   saveState();
   const p=n=>String(n).padStart(2,'0'),last=new Date(aY,aM+1,0).getDate();
   const from=`${aY}-${p(aM+1)}-01`,to=`${aY}-${p(aM+1)}-${p(last)}`;
@@ -486,6 +486,45 @@ async function vAtt(){
 }
 
 
+
+/* ── ស្នើសុំច្បាប់ (បន្ថែមលើទំព័រវត្តមានខ្ញុំ) ── */
+async function vAtt(){
+  await vAtt0();
+  if(!$('view')||view!=='att')return;
+  $('view').insertAdjacentHTML('afterbegin','<div id="leaveBox"></div>');
+  drawLeave();
+}
+const LV_ERR={bad_date:'កាលបរិច្ឆេទមិនត្រឹមត្រូវ',too_long:'សុំបានអតិបរមា ៣០ ថ្ងៃ',too_old:'មិនអាចសុំច្បាប់ថ្ងៃកន្លងផុត ៧ ថ្ងៃទៅហើយ',no_reason:'សូមសរសេរមូលហេតុ',overlap:'មានពាក្យសុំត្រួតលើកាលបរិច្ឆេទនេះរួចហើយ'};
+const LV_ST={pending:['⏳ រង់ចាំ','var(--warn)'],approved:['✅ បានអនុម័ត','var(--ok)'],rejected:['❌ បដិសេធ','var(--bad)']};
+let lvOpen=false;
+async function drawLeave(){
+  const box=$('leaveBox');if(!box)return;
+  let rows=[];try{rows=await tk('student_leave_list')||[]}catch(e){box.innerHTML='';return}
+  if(!$('leaveBox'))return;
+  const fd=d=>{const q=String(d||'').match(/^(\d{4})-(\d\d)-(\d\d)$/);return q?q[3]+'/'+q[2]+'/'+q[1]:'—'};
+  const today=new Date(),iso=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
+  const list=rows.filter(r=>r.status!=='cancelled').map(r=>{const st=LV_ST[r.status]||['',''];
+    return `<div class="doc" style="align-items:flex-start"><span class="di">📝</span><div style="flex:1"><b>${fd(r.from)}${r.to!==r.from?' → '+fd(r.to):''}</b>
+    <span style="float:right;color:${st[1]};font-weight:700;font-size:13px">${st[0]}</span><br><small style="color:var(--mut)">${esc(r.reason||'')}</small>
+    ${r.note?`<br><small>💬 គ្រូ៖ ${esc(r.note)}</small>`:''}
+    ${r.status==='pending'?`<br><button class="btn" style="margin-top:6px;padding:4px 10px;font-size:12px" onclick="lvCancel(${r.id})">បោះបង់ពាក្យសុំ</button>`:''}</div></div>`}).join('');
+  $('leaveBox').innerHTML=`<div class="card"><div class="row" style="justify-content:space-between"><b>📝 ស្នើសុំច្បាប់</b>
+    <button class="btn" onclick="lvOpen=!lvOpen;drawLeave()">${lvOpen?'បិទ':'➕ ស្នើសុំថ្មី'}</button></div>
+    ${lvOpen?`<div style="margin-top:12px"><label class="f">ចាប់ពីថ្ងៃ</label><input type="date" id="lvF" class="in" value="${iso}">
+    <label class="f">ដល់ថ្ងៃ</label><input type="date" id="lvT" class="in" value="${iso}">
+    <label class="f">មូលហេតុ</label><input id="lvR" class="in" maxlength="200" placeholder="ឧ. ឈឺ / ធុរៈក្នុងគ្រួសារ">
+    <button class="btn" style="margin-top:10px" onclick="lvSend()">ផ្ញើពាក្យសុំ</button><div class="err" id="lvE"></div></div>`:''}
+    ${list?`<div style="margin-top:12px">${list}</div>`:(lvOpen?'':'<div style="margin-top:10px;color:var(--mut);font-size:13px">មិនទាន់មានពាក្យសុំទេ។ គ្រូនឹងឃើញពាក្យសុំរបស់អ្នក ហើយអនុម័ត។</div>')}</div>`;
+}
+async function lvSend(){
+  const f=$('lvF').value,t=$('lvT').value,r=$('lvR').value.trim(),e=$('lvE');
+  e.style.display='block';e.style.background='var(--bads)';e.style.color='var(--bad)';
+  if(!f||!t){e.textContent='សូមជ្រើសថ្ងៃ';return}
+  try{const d=await tk('student_leave_create',{p_from:f,p_to:t,p_reason:r});
+    if(d&&d.error){e.textContent=LV_ERR[d.error]||d.error;return}
+    lvOpen=false;drawLeave()}catch(x){e.textContent=x.message||'កំហុស'}
+}
+async function lvCancel(id){if(!confirm('បោះបង់ពាក្យសុំនេះ?'))return;try{await tk('student_leave_cancel',{p_id:id})}catch(e){}drawLeave()}
 /* ── ប្រាក់សន្សំខ្ញុំ ── */
 async function vSav(){
   load();
