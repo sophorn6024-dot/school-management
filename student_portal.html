@@ -315,11 +315,12 @@ const ICONS={
  dash:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
  score:'<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/>',
  att:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4M3 10h18M9 15l2 2 4-4"/>',
+ sav:'<ellipse cx="12" cy="6.5" rx="7" ry="3"/><path d="M5 6.5v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5M5 11.5v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/>',
  lib:'<path d="M4 4v16M9 4v16M14 6l5 14M14 6l3-1"/>',
  chat:'<path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z"/>',
  me:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.5A6.5 6.5 0 0 1 21.5 20"/>'
 };
-const NAV=[['dash','ផ្ទាំងខ្ញុំ'],['score','ពិន្ទុខ្ញុំ'],['att','វត្តមានខ្ញុំ'],['lib','បណ្ណាល័យឯកសារ'],['chat','សារសន្ទនា'],['me','ព័ត៌មានផ្ទាល់ខ្លួន']];
+const NAV=[['dash','ផ្ទាំងខ្ញុំ'],['score','ពិន្ទុខ្ញុំ'],['att','វត្តមានខ្ញុំ'],['sav','ប្រាក់សន្សំខ្ញុំ'],['lib','បណ្ណាល័យឯកសារ'],['chat','សារសន្ទនា'],['me','ព័ត៌មានផ្ទាល់ខ្លួន']];
 function start(){
   $('app').classList.remove('hide');
   const av=ME.photo_url?`<img src="${esc(ME.photo_url)}" alt="">`:esc((ME.student_name||'?').trim().charAt(0));
@@ -334,7 +335,7 @@ function go(k){document.body.classList.remove('inroom');
   document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));
   $('ttl').textContent=(NAV.find(n=>n[0]===k)||[])[1]||'';
   side.classList.remove('open');
-  ({dash:vDash,score:vScore,att:vAtt,lib:vLib,chat:vChat,me:vMe})[k]();
+  ({dash:vDash,score:vScore,att:vAtt,sav:vSav,lib:vLib,chat:vChat,me:vMe})[k]();
 }
 const load=m=>{$('view').innerHTML=`<div class="empty">⏳ ${m||'កំពុងទាញយក...'}</div>`};
 const R2=x=>Number(Number(x).toFixed(2));
@@ -484,6 +485,33 @@ async function vAtt(){
   <div class="card"><b>កំណត់ត្រាប្រចាំថ្ងៃ</b>${tot?`<div style="overflow:auto"><table><tr><th>ថ្ងៃ</th><th>ស្ថានភាព</th><th>កំណត់ចំណាំ</th></tr>${rows.map(r=>{const d=new Date(r.date+'T00:00:00');return `<tr><td>${d.getDate()} ${MONTHS[d.getMonth()]} ${d.getFullYear()}</td><td><span class="pill p${esc(r.status)}">${esc(L[r.status]||r.status)}</span></td><td>${esc(r.note||'—')}</td></tr>`}).join('')}</table></div>`:'<div class="empty" style="margin-top:10px">មិនទាន់មានកំណត់ត្រាវត្តមានក្នុងខែនេះ។</div>'}</div>`;
 }
 
+
+/* ── ប្រាក់សន្សំខ្ញុំ ── */
+async function vSav(){
+  load();
+  let d;try{d=await tk('student_savings')}catch(e){$('view').innerHTML=`<div class="empty">${esc(e.message)}</div>`;return}
+  if(!d||!d.length){$('view').innerHTML=`<div class="card"><b>💰 ប្រាក់សន្សំខ្ញុំ</b><div class="empty" style="margin-top:12px">មិនទាន់មានកំណត់ត្រាសន្សំប្រាក់នៅឡើយទេ។</div></div>`;return}
+  const n=v=>{const x=parseFloat(String(v==null?'':v).replace(/[^\d.]/g,''));return isFinite(x)?x:0};
+  const fm=v=>Math.round(v).toLocaleString('en-US');
+  const calc=m=>{const r=m.row||{},a=r.a||{},unit=n(m.unit)||10000;let dep=0;(m.cols||[]).forEach(c=>{dep+=n(a[c.id])});
+    const total=n(r.mo)+dep,sh=Math.floor(total/unit+1e-9);return{r,a,unit,dep,total,sh,left:total-sh*unit,tsh:n(r.sh)+sh}};
+  const L=calc(d[0]);
+  const ddmm=x=>{const q=String(x||'').match(/^\d{4}-(\d\d)-(\d\d)$/);return q?q[2]+'/'+q[1]:'—'};
+  const mon=ym=>{const[y,m]=ym.split('-').map(Number);return MONTHS[m-1]+' '+y};
+  const cards=d.map(m=>{const c=calc(m);
+    const dep=(m.cols||[]).filter(k=>n(c.a[k.id])>0).map(k=>`<tr><td>${esc(ddmm(k.d))}</td><td style="text-align:right">${fm(n(c.a[k.id]))} ៛</td></tr>`).join('');
+    return `<div class="card"><b>📅 ខែ${esc(mon(m.ym))}</b>
+    <div style="margin:10px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;font-size:14px">
+     <div>ហ៊ុនដើមគ្រា៖ <b>${fm(n(c.r.sh))} ហ៊ុន</b></div><div>លុយដើមគ្រា៖ <b>${fm(n(c.r.mo))} ៛</b></div>
+     <div>សន្សំក្នុងខែ៖ <b>${fm(c.dep)} ៛</b></div><div>ថវិកាសរុប៖ <b>${fm(c.total)} ៛</b></div>
+     <div>ហ៊ុនបានថែម៖ <b>${c.sh} ហ៊ុន</b></div><div>ថវិកានៅសល់៖ <b>${fm(c.left)} ៛</b></div>
+     <div style="color:var(--ok)">ហ៊ុនសរុប៖ <b>${c.tsh} ហ៊ុន</b></div></div>
+    ${dep?`<div style="overflow:auto"><table><tr><th>ថ្ងៃ</th><th style="text-align:right">ចំនួនបានសន្សំ</th></tr>${dep}</table></div>`:'<small style="color:var(--mut)">មិនមានការសន្សំក្នុងខែនេះ</small>'}</div>`}).join('');
+  $('view').innerHTML=`<div class="cnt" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
+   <div class="st"><span class="h">💰 ចំនួនហ៊ុនសរុប</span><span class="v" style="color:var(--ok)">${L.tsh}</span><span class="s" style="width:100%">១ហ៊ុន = ${fm(L.unit)} ៛</span></div>
+   <div class="st"><span class="h">🪙 ថវិកានៅសល់</span><span class="v">${fm(L.left)}</span><span class="s" style="width:100%">រៀល (មិនទាន់គ្រប់ ១ហ៊ុន)</span></div>
+   <div class="st"><span class="h">🏦 តម្លៃសរុប</span><span class="v">${fm(L.tsh*L.unit+L.left)}</span><span class="s" style="width:100%">រៀល · ដល់ខែ${esc(mon(d[0].ym))}</span></div></div>${cards}`;
+}
 /* ── បណ្ណាល័យឯកសារ ── */
 function docIcon(u){
   try{
@@ -763,6 +791,119 @@ async function changePw2(){
     ME.must_change=false;acMsg(e,'✅ ផ្លាស់ប្តូរពាក្យសម្ងាត់ជោគជ័យ',true);['ao','an','ac'].forEach(i=>$(i).value='');
   }catch(x){acMsg(e,'❌ '+(x.message||x))}
 }
+</script>
+<!-- 🔤 AUTO-SELECT : ប្តូរ <select> ធម្មតា ទៅជាបញ្ជីជ្រើសរើស font Battambang (បញ្ជីរបស់ browser មិនប្រើ font ទំព័រ) -->
+<style id="asStyle">
+.as-wrap{position:relative;display:inline-block;vertical-align:middle;max-width:100%;min-width:0}
+.as-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;cursor:pointer;text-align:left;box-sizing:border-box;font-family:'Khmer OS Battambang','Battambang',sans-serif !important;appearance:none;-webkit-appearance:none}
+.as-btn .as-lb{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Khmer OS Battambang','Battambang',sans-serif !important}
+.as-btn .as-ch{flex:none;width:0;height:0;border-left:4.5px solid transparent;border-right:4.5px solid transparent;border-top:6px solid currentColor;opacity:.65;transition:transform .15s}
+.as-btn.open .as-ch{transform:rotate(180deg)}
+.as-btn:disabled{opacity:.55;cursor:not-allowed}
+.as-pop{display:none;position:fixed;z-index:2147483000;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 14px 35px rgba(0,0,0,.35);padding:6px;overflow-y:auto;max-height:300px;box-sizing:border-box}
+.as-pop.show{display:block;animation:asIn .14s ease-out}
+@keyframes asIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.as-it{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:700;color:#1e293b;cursor:pointer;font-family:'Khmer OS Battambang','Battambang',sans-serif !important;line-height:1.35}
+.as-it:hover{background:#f1f5f9}
+.as-it.on{background:#e0f2fe;color:#0284c7}
+.as-it.on::after{content:'✓';font-size:13px}
+.as-it.dis{opacity:.4;pointer-events:none}
+@media print{.as-pop{display:none !important}}
+</style>
+<script id="asScript">
+(function(){
+  var COPY=['width','minWidth','maxWidth','height','minHeight','margin','flex','flexGrow','flexShrink','flexBasis','alignSelf','justifySelf','gridColumn','gridRow','order'];
+  var STY=['padding','border','borderRadius','background','backgroundColor','color','fontSize','fontWeight','lineHeight','boxShadow','textAlign'];
+  var pops=[],openPop=null;
+  function closeAll(){pops.forEach(function(p){p.classList.remove('show')});document.querySelectorAll('.as-btn.open').forEach(function(b){b.classList.remove('open')});openPop=null}
+  function skip(sel){
+    if(sel._as||sel.multiple||sel.size>1||sel.hasAttribute('data-native')||sel._enh)return true;
+    if(sel.closest('.cs-wrap,.as-wrap'))return true;
+    if(sel._cs||sel._enh||sel._cdd||sel._custom)return true; /* __asOwn2 */
+    if(sel.id&&document.getElementById(sel.id+'Btn'))return true; /* __asBtnFix: ទំព័រមាន custom dropdown ផ្ទាល់ខ្លួន */
+    return false;
+  }
+  function visible(sel){var cs=getComputedStyle(sel);return cs.display!=='none'&&cs.visibility!=='hidden'}
+  function enhance(sel){
+    var cs=getComputedStyle(sel);
+    sel._as=true;
+    var wrap=document.createElement('span');wrap.className='as-wrap';
+    var disp=cs.display;if(disp==='block'||disp==='flex')wrap.style.display=disp==='flex'?'flex':'block';
+    COPY.forEach(function(k){var v=cs[k];if(v&&v!=='auto'&&v!=='normal'&&v!=='none'&&!(k==='margin'&&v==='0px'))wrap.style[k]=v});
+    if(cs.position==='absolute'||cs.position==='fixed'){wrap.style.position=cs.position;['top','left','right','bottom'].forEach(function(k){wrap.style[k]=cs[k]})}
+    if(cs.width&&/px$/.test(cs.width)&&sel.style.width)wrap.style.width=sel.style.width;
+    var btn=document.createElement('button');btn.type='button';btn.className='as-btn';
+    STY.forEach(function(k){btn.style[k]=cs[k]});
+    if(cs.height&&/px$/.test(cs.height))btn.style.height=cs.height;
+    btn.innerHTML='<span class="as-lb"></span><span class="as-ch"></span>';
+    sel.parentNode.insertBefore(wrap,sel);wrap.appendChild(btn);wrap.appendChild(sel);
+    sel.style.display='none';
+    var lb=btn.querySelector('.as-lb');
+    var pop=document.createElement('div');pop.className='as-pop';document.body.appendChild(pop);pops.push(pop);sel._asWrap=wrap;sel._asPop=pop;
+    var dV=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value'),dI=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'selectedIndex');
+    function sync(){var o=sel.options[sel.selectedIndex];lb.textContent=o?o.textContent:'';btn.disabled=!!sel.disabled;
+      wrap.style.display=wrap.style.display; }
+    try{
+      Object.defineProperty(sel,'value',{configurable:true,get:function(){return dV.get.call(sel)},set:function(v){dV.set.call(sel,v);sync()}});
+      Object.defineProperty(sel,'selectedIndex',{configurable:true,get:function(){return dI.get.call(sel)},set:function(v){dI.set.call(sel,v);sync()}});
+    }catch(e){}
+    new MutationObserver(sync).observe(sel,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['disabled','selected']});
+    sel.addEventListener('change',sync);
+    sync();
+    function render(){
+      pop.innerHTML='';
+      Array.prototype.forEach.call(sel.options,function(o,i){
+        if(o.hidden)return;
+        var it=document.createElement('div');it.className='as-it'+(i===sel.selectedIndex?' on':'')+(o.disabled?' dis':'');
+        var sp=document.createElement('span');sp.textContent=o.textContent;it.appendChild(sp);
+        it.addEventListener('click',function(e){e.stopPropagation();var ch=(i!==sel.selectedIndex);dI.set.call(sel,i);sync();closeAll();if(ch){sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}))}});
+        pop.appendChild(it);
+      });
+    }
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();e.preventDefault();
+      if(pop.classList.contains('show')){closeAll();return}
+      closeAll();render();
+      var r=btn.getBoundingClientRect(),vh=window.innerHeight,vw=window.innerWidth;
+      pop.style.minWidth=Math.max(r.width,150)+'px';
+      pop.classList.add('show');
+      var ph=Math.min(pop.scrollHeight+12,300),below=vh-r.bottom-8,above=r.top-8;
+      var top=(below>=ph||below>=above)?r.bottom+4:Math.max(8,r.top-ph-4);
+      pop.style.maxHeight=Math.min(300,Math.max(120,(below>=ph||below>=above)?below:above))+'px';
+      pop.style.top=top+'px';
+      var left=Math.min(Math.max(8,r.left),vw-pop.offsetWidth-8);pop.style.left=left+'px';
+      btn.classList.add('open');openPop=pop;
+      var on=pop.querySelector('.as-it.on');if(on)pop.scrollTop=on.offsetTop-pop.clientHeight/2+on.offsetHeight/2;
+    });
+  }
+  /* ទំព័រមាន dropdown ផ្ទាល់ខ្លួន (id+'Btn', .custom-dd-btn, .cs-btn) → លុបកំណែស្វ័យប្រវត្តិ កុំឱ្យស្ទួន */
+  function hasOther(sel){var w=sel._asWrap,r=w&&w.parentNode;if(!r)return false;
+    if(sel.id&&document.getElementById(sel.id+'Btn'))return true;
+    return !!r.querySelector('.custom-dd-btn,.cs-btn,.cs-wrap')}
+  function dropAs(sel){var w=sel._asWrap;if(w){var b=w.querySelector('.as-btn');if(b)b.remove()}
+    if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    try{delete sel.value;delete sel.selectedIndex}catch(e){}
+    sel._as=false;sel._enh=true;sel._asPop=null;sel.style.display='none'}
+  function scan(){
+    document.querySelectorAll('select').forEach(function(x){if(x._as&&((x.id&&document.getElementById(x.id+'Btn'))||x._cs||x._enh||x._cdd||x._custom)){unwrapAs(x);x.style.display='none'}});
+    var list=document.querySelectorAll('select');
+    for(var i=0;i<list.length;i++){var s=list[i];
+      if(s._as&&s._asWrap&&hasOther(s)){try{dropAs(s)}catch(e){}continue}
+      if(skip(s))continue;if(!visible(s))continue;try{enhance(s)}catch(e){console.warn('as',e)}}
+  }
+  document.addEventListener('click',function(e){if(!e.target.closest||!e.target.closest('.as-pop'))closeAll()});
+  window.addEventListener('resize',closeAll);window.addEventListener('scroll',function(e){if(openPop&&!(e.target&&e.target.closest&&e.target.closest('.as-pop')))closeAll()},true);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll()});
+  function boot(){scan();setInterval(scan,1200)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+  /* __asHook: ទំព័រដែលមាន enhanceSelect ផ្ទាល់ខ្លួន → ដកកំណែស្វ័យប្រវត្តិចេញ កុំឱ្យមានប្រអប់ស្ទួន */
+  function unwrapAs(sel){try{var w=sel._asWrap;if(w&&w.parentNode){var par=w.parentNode;par.insertBefore(sel,w);var ref=w;Array.prototype.slice.call(w.children).forEach(function(c){if(c===sel||c.classList.contains('as-btn'))return;par.insertBefore(c,w)});w.remove()}if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    sel.style.display='';sel._as=false;sel._asWrap=null;sel._asPop=null;try{if(typeof csSync==='function')csSync(sel)}catch(e){}}catch(e){}}
+  try{if(typeof window.enhanceSelect==='function'&&!window.enhanceSelect.__asHooked){var _orig=window.enhanceSelect;
+    window.enhanceSelect=function(a){var el=typeof a==='string'?document.getElementById(a):a;if(el&&el._as)unwrapAs(el);return _orig.apply(this,arguments)};
+    window.enhanceSelect.__asHooked=true}}catch(e){}
+  window.__autoSelectScan=scan;
+})();
 </script>
 </body>
 </html>
