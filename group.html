@@ -150,7 +150,7 @@ async function stRows(grades){
     .mini:disabled { opacity: 0.55; cursor: not-allowed; }
 
     .stage { width: 100%; min-width: 0; display: flex; justify-content: center; padding: 0 24px 0 0; user-select: none; -webkit-user-select: none; overflow: visible; }
-    .wheel-wrap { position: relative; width: min(100%, 360px); max-width: 100%; aspect-ratio: 1 / 1; flex: 0 1 360px; }
+    .wheel-wrap { position: relative; width: min(100%, 430px); max-width: 100%; aspect-ratio: 1 / 1; flex: 0 1 430px; }
     #wheelCanvas { width: 100%; height: 100%; display: block; border-radius: 50%; filter: drop-shadow(0 8px 22px rgba(0,0,0,0.18)); }
 
     /* ◀ ព្រួញចង្អុលនៅខាងស្តាំ */
@@ -178,7 +178,10 @@ async function stRows(grades){
     .chk input { width: 20px; height: 20px; accent-color: #059669; cursor: pointer; }
 
     #stageCol:fullscreen { background: var(--bg-app); justify-content: center; padding: 20px; }
-    #stageCol:fullscreen .wheel-wrap { width: min(52vh, 62vw, 360px); flex-basis: auto; }
+    #stageCol:fullscreen .wheel-wrap { width: min(66vh, 88vw); flex-basis: auto; }
+    #stageCol:fullscreen .stage { padding-right: 0; }
+    #stageCol:fullscreen #raceCanvas { width: min(94vw, calc(68vh * 720 / 520)) !important; height: auto !important; }
+    #stageCol:fullscreen .modal-overlay { position: fixed; inset: 0; z-index: 2147483000; }
 
     /* ── Right side panel ── */
     .side-card { background: var(--surface-card); border: 1px solid var(--border); border-radius: 24px; padding: 14px; box-shadow: var(--card-shadow); display: flex; flex-direction: column; gap: 12px; }
@@ -835,6 +838,9 @@ async function loadKit(done){
       });
       document.addEventListener('fullscreenchange', () => {
         document.getElementById('fsIcon').className = document.fullscreenElement ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+        // ផ្ទាំងលទ្ធផល (អ្នកឈ្នះ) ត្រូវនៅក្នុងធាតុពេញអេក្រង់ ទើបមើលឃើញពេលបង្វិល
+        const wm = document.getElementById('winnerModal'), fe = document.fullscreenElement;
+        if (wm) { const host = (fe && fe.contains(document.getElementById('stageCol'))) || fe === document.getElementById('stageCol') ? document.getElementById('stageCol') : document.body; if (wm.parentElement !== host) host.appendChild(wm); }
         setTimeout(redrawStage, 120);
       });
 
