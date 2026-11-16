@@ -76,6 +76,7 @@ function fmtDobKh(v){
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;900&family=Kantumruy+Pro:wght@300;400;500;600;700&family=Moul&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
 <style>
@@ -4488,6 +4489,27 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (inner && window.ResizeObserver) new ResizeObserver(updateMobileNavIndicator).observe(inner);
   } catch(e) {}
   if (CURRENT_USER && (CURRENT_USER.id || CURRENT_USER.username)) {
+    /* ⚡ បើកលឿន: tab របាយការណ៍ (only=1) ដែលមាន session រួចហើយ → បង្ហាញទំព័រភ្លាម រួចផ្ទៀងផ្ទាត់នៅ background */
+    let fastOpen = false;
+    try {
+      const sp0 = new URLSearchParams(location.search);
+      if (sp0.get('only') === '1') {
+        for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i) || ''; if (/^sb-.*-auth-token$/.test(k)) { fastOpen = true; break; } }
+      }
+    } catch (e) {}
+    if (fastOpen) {
+      const sp1 = window.location.hash.replace('#', '') || localStorage.getItem('krou_active_page') || 'dashboard';
+      currentPage = sp1;
+      showAppScreen(sp1);
+      (async () => {
+        try {
+          const ok1 = await AUTH_READY;
+          if (!ok1 && navigator.onLine !== false) { forceLogoutDeleted('សូមចូលប្រព័ន្ធឡើងវិញ ដើម្បីបន្តប្រើប្រាស់'); return; }
+          await verifySession();
+        } catch (e) {}
+      })();
+      return;
+    }
     const authOk = await AUTH_READY;
     if (!authOk && navigator.onLine !== false) {
       forceLogoutDeleted('សូមចូលប្រព័ន្ធឡើងវិញ ដើម្បីបន្តប្រើប្រាស់');
