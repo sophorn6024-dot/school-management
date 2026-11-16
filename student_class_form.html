@@ -360,6 +360,9 @@ table.kv td,table.kv .ed,table.kv .csb,table.kv .edu-b{font-size:14px}
 }
 
 /* ===== បង្រួមកម្ពស់ពេលព្រីន (ឱ្យអក្សរធំជាងមុន) — ប្រើជាមួយ fitOnePage ===== */
+.pf .dtbtn{display:none!important}
+.pf .ed{border-bottom:0!important;background:none!important}
+.pf .ed:empty:before{content:''!important}
 .pf .tip,.pf .banner,.pf .warn,.pf .toast{display:none!important}
 .pf .page{padding:6mm 8mm 4mm!important}
 .pf .ttl{line-height:1.5;padding:0 60px}
@@ -488,7 +491,7 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
     <div>ធ្វើនៅ<span id="kitPl">កំពង់ល្ពៅ</span> <span id="signSolar"></span></div>
     <div>គ្រូទទួលបន្ទុកថ្នាក់</div>
     <div style="height:15mm;display:flex;align-items:center;justify-content:center" id="kitTeaGap"></div>
-    <div style="padding-left:70px"><b><span class="ed" contenteditable data-k="teacher" data-ph="ឈ្មោះគ្រូ"></span></b></div>
+    <div style="text-align:center"><b><span class="ed" contenteditable data-k="teacher" data-ph="ឈ្មោះគ្រូ"></span></b></div>
   </div></div>
 </div>
 </div>
@@ -1525,7 +1528,7 @@ function kitStamp(){
   const K=34/m.d,mb=Math.max(0,(m.h-(m.y+m.d))*K);
   return '<div class="kit-stamp" style="margin-bottom:'+mb+'mm"><div class="kit-circle"><img alt="" src="'+m.url+'" style="width:'+(m.w*K)+'mm;left:'+(-m.x*K)+'mm;top:'+(-m.y*K)+'mm"></div></div>';
 }
-function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'" style="height:15mm!important;width:45mm!important;max-height:none!important;max-width:none!important;object-fit:contain">':''}
+function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'" style="height:16mm!important;width:auto!important;max-width:55mm!important;max-height:none!important;object-fit:contain;display:block;margin:0 auto">':''}
 function kitDirName(){return STAMP_META?'':(((PROF&&PROF.director_name)||'').trim())}
 async function loadKit(done){
   try{
