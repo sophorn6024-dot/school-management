@@ -252,6 +252,7 @@ table.tt{border-collapse:collapse;width:100%;min-width:640px;background:var(--su
 #sheet .tt td.time,#sheet .tt tr.brk td{background:#f1f5f9!important;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 #sheet .sum-line{display:flex;flex-wrap:wrap;gap:4px 6px;margin-top:6px;justify-content:center;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 #sheet .sum-chip{display:inline-flex;align-items:center;gap:5px;border-radius:12px;padding:1px 8px;font-size:10.5px;font-weight:700;color:#000;border:1px solid rgba(0,0,0,.18);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#sheet .sum-total{color:#fff!important}
 #sheet .sum-chip b{background:rgba(255,255,255,.7);border-radius:8px;padding:0 5px;font-weight:800}
 #sheet .sub{padding:1px 6px;display:inline-block;border-radius:6px;font-size:inherit;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 #sheet.pf-s .tt{font-size:10px}#sheet.pf-l .tt{font-size:14px}#sheet.pa-both .tt{font-size:9.5px}#sheet.pa-both .tt td,#sheet.pa-both .tt th{line-height:1.15}
@@ -1946,7 +1947,7 @@ function sumHtml(){
   const cnt={};Object.entries(D.cells).forEach(([k,v])=>{const [pid,d]=k.split('|');if(D.days.includes(+d)&&D.periods.some(p=>p.id===pid&&p.type==='class'))cnt[v]=(cnt[v]||0)+1});
   const ks=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);if(!ks.length)return'';
   const total=ks.reduce((a,[,c])=>a+c,0),slots=D.periods.filter(p=>p.type==='class').length*D.days.length;
-  return '<div class="sum-line">'+ks.map(([n,c])=>`<span class="sum-chip" style="background:${(subj(n)||{color:'#e2e8f0'}).color}">${esc(n)} <b>${kh(c)} ម៉ោង/សប្តាហ៍</b></span>`).join('')+'</div>';
+  return '<div class="sum-line">'+ks.map(([n,c])=>`<span class="sum-chip" style="background:${(subj(n)||{color:'#e2e8f0'}).color}">${esc(n)} <b>${kh(c)} ម៉ោង/សប្តាហ៍</b></span>`).join('')+`<span class="sum-chip sum-total" style="background:#0b3b6b;color:#fff;border-color:#0b3b6b">សរុប ${kh(total)} ម៉ោងសិក្សា/សប្តាហ៍</span></div>`;
 }
 function buildSheet(){
   const o=prGet();closeKhmerCalendar();
