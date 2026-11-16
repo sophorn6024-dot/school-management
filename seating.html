@@ -218,6 +218,19 @@ i.fa-solid,i.fa-regular,.fa-solid,.fa-regular{font-family:'Font Awesome 6 Free'!
 </style>
 </head>
 <body>
+<script>
+/* បិទបាំងភ្លាម កុំឱ្យឃើញទំព័រផ្សេង មុនរបាយការណ៍ចេញ */
+(function(){try{
+  if(new URLSearchParams(location.search).get('view')!=='rpt')return;
+  var light=localStorage.getItem('krou_theme_manual')==='light';
+  var d=document.createElement('div');d.id='soloSplash';
+  d.style.cssText="position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:'Battambang','Khmer OS Battambang',sans-serif;font-weight:700;font-size:14px;background:"+(light?"#f1f5f9":"#0f172a")+";color:"+(light?"#334155":"#e2e8f0");
+  d.innerHTML='<div style="width:42px;height:42px;border-radius:50%;border:4px solid rgba(128,128,128,.3);border-top-color:#0891b2;animation:soloSp .8s linear infinite"></div><div>កំពុងបើក...</div><style>@keyframes soloSp{to{transform:rotate(360deg)}}</style>';
+  document.documentElement.appendChild(d);
+  setTimeout(function(){var e=document.getElementById('soloSplash');if(e)e.remove()},9000);
+}catch(e){}})();
+window.hideSoloSplash=function(){var e=document.getElementById('soloSplash');if(e)e.remove()};
+</script>
 
 <div class="auth-wrap" id="authWrap">
   <div class="auth-card"><div style="font-size:38px">🔒</div><h2>សូមចូលប្រើប្រាស់ជាមុនសិន!</h2><p>លោកអ្នកមិនទាន់បាន Login ចូលក្នុងប្រព័ន្ធនៅឡើយទេ។</p>
@@ -535,7 +548,7 @@ async function loadClass(){
   }
   render();
   /* បើកពីរបាយការណ៍ → បង្ហាញទំព័រមើលមុនបោះពុម្ពភ្លាម */
-  if(OPEN_RPT&&!rptOpened){rptOpened=true;openSeatRpt()}
+  if(OPEN_RPT&&!rptOpened){rptOpened=true;openSeatRpt();try{hideSoloSplash();window.parent.postMessage({type:'VIEW_READY'},'*')}catch(e){}}
 }
 async function saveLayout(){
   if(!curClass)return;

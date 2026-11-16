@@ -412,6 +412,19 @@ async function stRows(grades){
   </style>
 </head>
 <body>
+<script>
+/* បិទបាំងភ្លាម កុំឱ្យឃើញទំព័រផ្សេង មុនរបាយការណ៍ចេញ */
+(function(){try{
+  if(new URLSearchParams(location.search).get('view')!=='rota')return;
+  var light=localStorage.getItem('krou_theme_manual')==='light';
+  var d=document.createElement('div');d.id='soloSplash';
+  d.style.cssText="position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:'Battambang','Khmer OS Battambang',sans-serif;font-weight:700;font-size:14px;background:"+(light?"#f1f5f9":"#0f172a")+";color:"+(light?"#334155":"#e2e8f0");
+  d.innerHTML='<div style="width:42px;height:42px;border-radius:50%;border:4px solid rgba(128,128,128,.3);border-top-color:#0891b2;animation:soloSp .8s linear infinite"></div><div>កំពុងបើក...</div><style>@keyframes soloSp{to{transform:rotate(360deg)}}</style>';
+  document.documentElement.appendChild(d);
+  setTimeout(function(){var e=document.getElementById('soloSplash');if(e)e.remove()},9000);
+}catch(e){}})();
+window.hideSoloSplash=function(){var e=document.getElementById('soloSplash');if(e)e.remove()};
+</script>
 
   <!-- ══════════════ 🔒 AUTH DENIED ══════════════ -->
   <div class="auth-wrapper" id="authDeniedWrap">
@@ -974,7 +987,7 @@ async function loadKit(done){
           rotaOpened = true;
           try { setTab('group'); } catch (e) {}
           if (currentGroups.some(x => x && x.length)) openGroupPrint();
-          else gStatus('⚠️ ថ្នាក់នេះមិនទាន់មានវេនសម្អាតទេ — សូមចុច «បែងចែកក្រុមស្វ័យប្រវត្តិ» រួចចុច «រក្សាទុក»', '#f59e0b');
+          else { try { hideSoloSplash(); window.parent.postMessage({ type: 'VIEW_READY' }, '*'); } catch (e) {} gStatus('⚠️ ថ្នាក់នេះមិនទាន់មានវេនសម្អាតទេ — សូមចុច «បែងចែកក្រុមស្វ័យប្រវត្តិ» រួចចុច «រក្សាទុក»', '#f59e0b'); }
         }
       } catch (e) {
         gStatus('❌ ' + e.message, '#ef4444');
@@ -1532,6 +1545,7 @@ async function loadKit(done){
       const fr = document.createElement('iframe');
       fr.style.cssText = 'width:100%;height:100%;border:0;display:block';
       fr.srcdoc = html; ov.appendChild(fr); document.body.appendChild(ov); document.body.style.overflow = 'hidden';
+      try { hideSoloSplash(); } catch (e) {} try { window.parent.postMessage({ type: 'VIEW_READY' }, '*'); } catch (e) {}
     }
 
     function onRoleChange() { enforceUnique(); updateRoleSummary(); }
@@ -1582,7 +1596,7 @@ async function loadKit(done){
       const arr = [p, d1, d2].filter(Boolean).map(studentKey);
       if (new Set(arr).size !== arr.length) { uiToast('សិស្សម្នាក់មិនអាចកាន់តួនាទីពីរបានទេ!'); return; }
 
-      gStatus('⏳ កំពុងរក្សាទុកទិន្នន័យ', '#0284c7');
+      gStatus('⏳ កំពុងរក្សាទុកក្នុង Supabase...', '#0284c7');
       try {
         const payload = {
           assigned_class: curClass,
@@ -1593,7 +1607,7 @@ async function loadKit(done){
         };
         const { error } = await stRpc('staff_class_row_save', { p_table: 'class_groups', p_records: payload });
         if (error) throw error;
-        gStatus('✅ បានរក្សាទុកតួនាទីថ្នាក់ រួចរាល់!', '#10b981');
+        gStatus('✅ បានរក្សាទុកតួនាទីថ្នាក់ក្នុង Supabase រួចរាល់!', '#10b981');
       } catch (e) { gStatus('❌ ' + e.message, '#ef4444'); }
     }
 
@@ -1841,7 +1855,7 @@ async function loadKit(done){
       const d1 = findStudent(document.getElementById('deputy1Select').value);
       const d2 = findStudent(document.getElementById('deputy2Select').value);
 
-      gStatus('⏳ កំពុងរក្សាទុកទិន្នន័យ', '#0284c7');
+      gStatus('⏳ កំពុងរក្សាទុកក្នុង Supabase...', '#0284c7');
       try {
         const payload = {
           assigned_class: curClass,

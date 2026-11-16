@@ -1101,6 +1101,19 @@ function qrStampLogo(box){
 </script>
 </head>
 <body>
+<script>
+/* បិទបាំងភ្លាម កុំឱ្យឃើញទំព័រផ្សេង មុនរបាយការណ៍ចេញ */
+(function(){try{
+  if(new URLSearchParams(location.search).get('only')!=='1')return;
+  var light=localStorage.getItem('krou_theme_manual')==='light';
+  var d=document.createElement('div');d.id='soloSplash';
+  d.style.cssText="position:fixed;inset:0;z-index:2147483000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:'Battambang','Khmer OS Battambang',sans-serif;font-weight:700;font-size:14px;background:"+(light?"#f1f5f9":"#0f172a")+";color:"+(light?"#334155":"#e2e8f0");
+  d.innerHTML='<div style="width:42px;height:42px;border-radius:50%;border:4px solid rgba(128,128,128,.3);border-top-color:#0891b2;animation:soloSp .8s linear infinite"></div><div>កំពុងបើក...</div><style>@keyframes soloSp{to{transform:rotate(360deg)}}</style>';
+  document.documentElement.appendChild(d);
+  setTimeout(function(){var e=document.getElementById('soloSplash');if(e)e.remove()},9000);
+}catch(e){}})();
+window.hideSoloSplash=function(){var e=document.getElementById('soloSplash');if(e)e.remove()};
+</script>
 
 <div id="authView" style="display:none;">
   <div class="stars"></div>
@@ -2747,6 +2760,7 @@ let profilePhotoDeleteRequested = false;
 function cleanGrade(g) { return String(g || '').replace(/[\u200B-\u200D\uFEFF]/g, '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').replace(/\s+/g, '').trim(); }
 
 function showAuthScreen() {
+  try { hideSoloSplash(); } catch(e) {}
   try { document.getElementById('loginGreet').textContent = timeGreeting() + ' !'; } catch(e) {}
   document.getElementById('authView').style.display = 'flex';
   document.getElementById('mainAppLayout').style.display = 'none';
@@ -3626,6 +3640,7 @@ function navigate(page, el) {
 
 document.getElementById('pageFrame').addEventListener('load', function() {
   document.getElementById('loadingOverlay').classList.remove('show');
+  try { if (!/[?&]view=/.test(this.contentWindow.location.search)) setTimeout(hideSoloSplash, 150); } catch(e) { hideSoloSplash(); }
   syncThemeToIframe(document.documentElement.getAttribute('data-theme') || 'dark');
   try {
     const fileMatch = this.contentWindow.location.pathname.match(/\/([^\/]+)\.html/);
@@ -3648,6 +3663,7 @@ document.getElementById('pageFrame').addEventListener('load', function() {
 
 window.addEventListener('message', (ev) => {
   if (!ev.data) return;
+  if (ev.data.type === 'VIEW_READY') { try { hideSoloSplash(); } catch(e) {} return; }
   if (ev.data.type === 'NAVIGATE' || ev.data.type === 'OPEN_PAGE') {
     const targetPage = ev.data.page || (ev.data.target ? ev.data.target.replace('.html', '') : null);
     if (targetPage) navigate(targetPage, null);
