@@ -764,7 +764,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .shortcuts-pill-grid{gap:8px}.shortcut-pill-btn{height:42px;padding:0 13px;font-size:12.5px;border-radius:14px}
 .admin-classes-grid{grid-template-columns:1fr 1fr;gap:8px}
 }
-@media (max-width:360px){.hero-banner-right{flex-direction:column}.hero-stat-card,.hero-today-card{width:100%}}
+@media (max-width:360px){.hero-banner-right{flex-direction:row!important;gap:8px}.hero-stat-card,.hero-today-card{width:auto!important;flex:1 1 0;min-width:0;padding:9px 8px 10px}.h-stat-top,.h-today-top{gap:4px}.hero-stat-card .lbl,.hero-today-card .lbl{font-size:11px}.hero-stat-card .chip,.hero-today-card .chip{width:24px;height:24px;border-radius:8px}.hero-stat-card .chip svg,.hero-today-card .chip svg{width:14px;height:14px}.h-stat-digit{font-size:26px}.h-today-status{font-size:17px}.h-stat-sub,.h-today-sub{font-size:10px;line-height:1.3}}
 /* ===== 🔄 UPDATE TOAST ===== */
 .upd-toast{position:fixed;right:18px;bottom:18px;z-index:10200;display:none;align-items:center;gap:14px;max-width:min(440px,calc(100vw - 24px));padding:14px 16px;border-radius:20px;background:var(--surface-card);border:1px solid var(--border);box-shadow:0 18px 40px rgba(0,0,0,.35);color:var(--text)}
 .upd-toast.show{display:flex;animation:updIn .4s cubic-bezier(.2,.9,.3,1.1)}
@@ -1141,7 +1141,17 @@ body.solo .iframe-container{bottom:0!important}
 .task-action-card:active,.report-card-item:active{transform:scale(.98)}
 /* រង្វង់ផ្ទុក: fade ចេញ */
 .loading-glass-overlay{transition:opacity .3s ease,visibility .3s ease}
-@media (prefers-reduced-motion:reduce){.sidebar,.nav-text,.nav-link-btn,#iframeView.active,#reportsHubView.active,#pageFrame,#reportsHubView.active .rg-row,#mainAppLayout .sidebar .nav-link-btn,.task-action-card{animation:none!important;transition:none!important}}
+
+/* 📱 ទូរស័ព្ទ/tablet: animation ច្បាស់ជាងមុន */
+@keyframes slideInR{from{opacity:0;transform:translateX(28px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes popUp{from{opacity:0;transform:translateY(26px) scale(.96)}to{opacity:1;transform:none}}
+#pageFrame.pf-anim{animation:slideInR .45s var(--ease-out) both}
+#iframeView.active,#reportsHubView.active{animation:slideInR .45s var(--ease-out) both}
+#moreSheet.open .ms-profile,#moreSheet.open .ms-item{animation:popUp .5s var(--ease-out) both}
+#moreSheet.open .ms-item:nth-of-type(1){animation-delay:.04s}#moreSheet.open .ms-item:nth-of-type(2){animation-delay:.08s}#moreSheet.open .ms-item:nth-of-type(3){animation-delay:.12s}#moreSheet.open .ms-item:nth-of-type(4){animation-delay:.16s}#moreSheet.open .ms-item:nth-of-type(5){animation-delay:.2s}#moreSheet.open .ms-item:nth-of-type(6){animation-delay:.24s}#moreSheet.open .ms-item:nth-of-type(n+7){animation-delay:.28s}
+.ms-item,.ms-profile,.m-nav-item,.report-card-item,.rg-row{-webkit-tap-highlight-color:transparent}
+.ms-item:active,.ms-profile:active{transform:scale(.97);transition:transform .12s ease}
+.ms-item,.ms-profile{transition:transform .3s var(--ease-out),box-shadow .25s ease}
 </style>
 <script>
 /* ដាក់ logo សាលាចំកណ្ដាល QR (ត្រូវប្រើ correctLevel H ដើម្បីនៅតែស្កេនបាន) */
@@ -1287,6 +1297,12 @@ window.hideSoloSplash=function(){var e=document.getElementById('soloSplash');if(
     </div>
   </aside>
 <script>(function(){ try { var v = localStorage.getItem('krou_sb_collapsed'); var sb0 = document.getElementById('sidebar'); if (sb0 && window.innerWidth > 768 && (v === '1' || (v === null && window.innerWidth >= 1100))) sb0.classList.add('collapsed'); } catch (e) {} })();</script>
+<script>
+/* restart animation ពេល iframe ផ្ទុកទំព័រថ្មី */
+document.addEventListener('DOMContentLoaded',function(){ var f=document.getElementById('pageFrame'); if(!f) return;
+  f.addEventListener('load',function(){ f.classList.remove('pf-anim'); void f.offsetWidth; f.classList.add('pf-anim'); }); });
+</script>
+
 
   <main class="main-wrapper">
     <div class="content-area">
