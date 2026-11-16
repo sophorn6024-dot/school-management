@@ -4560,10 +4560,10 @@ var st=document.createElement('style');st.textContent='.top-nav-bar,#tabDailyVie
 window.closeReportView=function(){try{closePageSetup()}catch(e){}try{window.top.close()}catch(e){}setTimeout(function(){try{window.top.location.href='index.html'}catch(e){location.href='index.html'}},250)};
 var n=0,done=false,t=setInterval(function(){n++;try{
  if(!done&&typeof switchNavTab==='function'&&typeof openReportView==='function'&&document.getElementById('rptMonthSelect')&&document.getElementById('reportViewerModal')){
-   var main=document.getElementById('mainPageContent');if(main&&main.style.display==='none'&&n<40)return;
-   if((typeof rawStudentsData==='undefined'||!rawStudentsData.length)&&n<60)return;
-   if(!window.__kitDone&&n<60)return;   /* រង់ចាំត្រា ហត្ថលេខា និងទីតាំងពីគណនី */   /* រង់ចាំបញ្ជីសិស្សផ្ទុករួច */
-   done=true;switchNavTab('reports');openReportView(type);
+   var main=document.getElementById('mainPageContent');if(main&&main.style.display==='none'&&n<120)return;
+   if((typeof rawStudentsData==='undefined'||!rawStudentsData.length)&&n<180)return;
+   if(!window.__kitDone&&n<180)return;   /* រង់ចាំត្រា ហត្ថលេខា និងទីតាំងពីគណនី */   /* រង់ចាំបញ្ជីសិស្សផ្ទុករួច */
+   done=true;switchNavTab('reports');openReportView(type);setTimeout(function(){try{parent.postMessage({type:'VIEW_READY'},'*')}catch(e){}},80);
    if(type==='monthly'){var src=document.getElementById('rptMonthSelect'),bar=document.querySelector('#reportViewerModal .vt-group');
      if(src&&bar){var sel=document.createElement('select');sel.className='only-month';sel.innerHTML=src.innerHTML;sel.value=src.value;
        sel.onchange=function(){src.value=sel.value;try{renderHolidayConfigSection()}catch(e){};openReportView('monthly')};bar.insertBefore(sel,bar.firstChild)}}
@@ -4574,7 +4574,7 @@ var n=0,done=false,t=setInterval(function(){n++;try{
        cp.onchange=function(){cs.value=cp.value;Promise.resolve(onClassChange()).then(function(){openReportView(type)})};
        bar.insertBefore(cp,bar.firstChild)}}catch(e){}
    clearInterval(t)}
-}catch(e){}if(n>100)clearInterval(t)},250);
+}catch(e){}if(n>300)clearInterval(t)},80);
 })();
 </script>
 <!-- 🔤 AUTO-SELECT : ប្តូរ <select> ធម្មតា ទៅជាបញ្ជីជ្រើសរើស font Battambang (បញ្ជីរបស់ browser មិនប្រើ font ទំព័រ) -->

@@ -53,8 +53,8 @@ async function stRows(){
 </script>
 <script>window.__kc=function(s){return String(s==null?'':s).replace(/[0-9]/g,function(d){return '០១២៣៤៥៦៧៨៩'[d]})};</script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+<script>(function(){try{if(window.parent&&window.parent!==window&&window.parent.supabase&&window.parent.supabase.createClient){window.supabase=window.parent.supabase;return}}catch(e){}document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>')})();</script>
 <style>
 :root,[data-theme="light"]{--primary:#0284c7;--bg:#f8fafc;--surface:#fff;--surface-elevated:#f1f5f9;--border:#cbd5e1;--text:#0f172a;--text-muted:#64748b;--card-shadow:0 4px 18px rgba(15,23,42,.06);--toolbar-bg:rgba(241,245,249,.95);--toolbar-border:#cbd5e1;
 --khmer-bg:#dbeafe;--khmer-txt:#1e40af;--khmer-col:#eff6ff;--khmer-brd:#bfdbfe;
@@ -3463,8 +3463,8 @@ function addMonthPick(){try{var bar=document.querySelector('#scoreReportModal .v
  }catch(e){}}
 var started=false,n=0,t=setInterval(function(){n++;try{
  if(!started&&typeof openScoreForm==='function'&&typeof checkAuthentication==='function'&&document.getElementById('classSelect')){started=true;openScoreForm('monthly');return}
- if(started&&typeof displayedStudents!=='undefined'&&displayedStudents.length&&document.querySelector('#tableArea table')&&typeof openScoreReportModal==='function'){clearInterval(t);openScoreReportModal();addMonthPick();return}
-}catch(e){}if(n>120)clearInterval(t)},250);
+ if(started&&typeof displayedStudents!=='undefined'&&displayedStudents.length&&document.querySelector('#tableArea table')&&typeof openScoreReportModal==='function'){clearInterval(t);openScoreReportModal();addMonthPick();setTimeout(function(){try{parent.postMessage({type:'VIEW_READY'},'*')}catch(e){}},80);return}
+}catch(e){}if(n>360)clearInterval(t)},80);
 })();
 </script>
 <!-- 🔤 AUTO-SELECT : ប្តូរ <select> ធម្មតា ទៅជាបញ្ជីជ្រើសរើស font Battambang (បញ្ជីរបស់ browser មិនប្រើ font ទំព័រ) -->

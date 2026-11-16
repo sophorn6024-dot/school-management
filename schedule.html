@@ -24,8 +24,8 @@ async function stRows(grades){
   return{data:rows,error:null};
 }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>(function(){try{if(window.parent&&window.parent!==window&&window.parent.supabase&&window.parent.supabase.createClient){window.supabase=window.parent.supabase;return}}catch(e){}document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>')})();</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
 <style>
 :root,[data-theme="light"]{
   --bg:#eef6fb;--bg2:#f6fbf8;--surface:#fff;--card:rgba(255,255,255,.82);--elev:#eef3f8;--border:#cfe0ec;
@@ -2172,7 +2172,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('app').style.display='block';
   render();
   const _pv=(function(){try{return new URLSearchParams(location.search).get('view')==='preview'}catch(e){return false}})();
-  if(_pv){window.__solo=true;initClasses().then(()=>openPreview());}else initClasses();
+  if(_pv){window.__solo=true;initClasses().then(()=>{openPreview();try{parent.postMessage({type:'VIEW_READY'},'*')}catch(e){}});}else initClasses();
   setInterval(()=>{if(!document.hidden&&!document.getElementById('setModal').classList.contains('show'))render()},60000);
 });
 </script>
