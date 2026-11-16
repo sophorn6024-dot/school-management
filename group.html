@@ -968,6 +968,13 @@ async function loadKit(done){
           }
         }
         gStatus('✅ បានទាញយកទិន្នន័យរួចរាល់', '#10b981');
+        /* បើកពីរបាយការណ៍ («វេនសម្អាត» → បើក) → បង្ហាញទំព័រមើលមុនបោះពុម្ពភ្លាម */
+        if (OPEN_ROTA && !rotaOpened) {
+          rotaOpened = true;
+          try { setTab('group'); } catch (e) {}
+          if (currentGroups.some(x => x && x.length)) openGroupPrint();
+          else gStatus('⚠️ ថ្នាក់នេះមិនទាន់មានវេនសម្អាតទេ — សូមចុច «បែងចែកក្រុមស្វ័យប្រវត្តិ» រួចចុច «រក្សាទុក»', '#f59e0b');
+        }
       } catch (e) {
         gStatus('❌ ' + e.message, '#ef4444');
         const nl = document.getElementById('nameList');
@@ -1453,6 +1460,8 @@ async function loadKit(done){
        👥 GROUP TAB
     ========================================================= */
     let currentGroups = [];
+    const OPEN_ROTA = (function () { try { return new URLSearchParams(location.search).get('view') === 'rota'; } catch (e) { return false; } })();
+    let rotaOpened = false;
     const daysOfWeek = ["ថ្ងៃចន្ទ", "ថ្ងៃអង្គារ", "ថ្ងៃពុធ", "ថ្ងៃព្រហស្បតិ៍", "ថ្ងៃសុក្រ", "ថ្ងៃសៅរ៍"];
 
     function gStatus(msg, color) {
