@@ -109,6 +109,9 @@ async function stRows(grades){
     .hdr-back:hover { background: rgba(0,0,0,0.07); }
     .hdr-title { color: var(--hdr-title); font-size: 15px; }
 
+    .back-pill { display:none; height:44px; padding:0 18px; border-radius:999px; border:1.5px solid var(--border); background:var(--surface); color:var(--text-main); font-weight:700; font-size:14px; font-family:inherit; cursor:pointer; align-items:center; gap:7px; flex:none; }
+    .back-pill:hover { border-color:#0284c7; }
+    .framed .back-pill { display:inline-flex; }
     .framed .app-header { display: none; }
     .shell { max-width: 1280px; margin: 0 auto; padding: 18px 20px 60px; }
 
@@ -314,24 +317,24 @@ async function stRows(grades){
     .rota-note { font-size:12.5px; line-height:1.8; color:var(--text-muted); }
     .rota-tools { display:flex; gap:8px; flex-wrap:wrap; }
     .rota-status { font-size:12.5px; font-weight:700; min-height:0; margin:0 0 6px; text-align:center; }
-    .rg-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:18px; margin-top:12px; align-items:start; }
-    .rg-card { --dc:#0ea5e9; background:linear-gradient(160deg, color-mix(in srgb, var(--dc) 9%, #fff) 0%, #fff7ed 100%); border:1.5px solid color-mix(in srgb, var(--dc) 28%, #fff); border-radius:22px; padding:6px 14px 10px; box-shadow:0 6px 18px rgba(15,23,42,.06); }
+    .rg-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; margin-top:12px; align-items:start; }
+    .rg-card { --dc:#0ea5e9; background:linear-gradient(160deg, color-mix(in srgb, var(--dc) 9%, #fff) 0%, #fff7ed 100%); border:1.5px solid color-mix(in srgb, var(--dc) 28%, #fff); border-radius:18px; padding:2px 10px 8px; box-shadow:0 6px 18px rgba(15,23,42,.06); }
     [data-theme="dark"] .rg-card { background:var(--surface); border-color:color-mix(in srgb, var(--dc) 45%, #0f172a); }
-    .rg-head { cursor:pointer; text-align:center; padding:14px 6px 4px; user-select:none; }
-    .rg-ttl { color:var(--dc); font-size:19px; font-weight:800; }
-    .rg-arrow { font-size:14px; margin-right:4px; }
-    .rg-sub { font-size:14px; margin-top:6px; color:var(--text-muted); }
+    .rg-head { cursor:pointer; text-align:center; padding:10px 4px 2px; user-select:none; }
+    .rg-ttl { color:var(--dc); font-size:15px; font-weight:800; }
+    .rg-arrow { font-size:11px; margin-right:4px; }
+    .rg-sub { font-size:12px; margin-top:3px; color:var(--text-muted); }
     .rg-sub .m { color:#0284c7; } .rg-sub .f { color:#e11d48; }
-    .rg-body { margin-top:14px; }
+    .rg-body { margin-top:8px; }
     .rg-card.closed .rg-body { display:none; }
-    .rg-row { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(104px,.95fr) minmax(0,1fr); gap:6px; align-items:center; padding:7px 0; border-bottom:1px solid var(--border); }
+    .rg-row { display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1.1fr) minmax(0,.85fr); gap:5px; align-items:center; padding:5px 0; border-bottom:1px solid var(--border); }
     .rg-row:last-child { border-bottom:0; }
-    .rg-name { font-weight:700; font-size:15px; color:var(--text-main); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .rg-name { font-weight:700; font-size:12.5px; color:var(--text-main); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .rg-name b { color:#7c3aed; margin-right:4px; }
     .rg-sel, .rg-row .as-wrap { width:100%; min-width:0; }
-    .rg-sel, .rg-row .as-btn { height:44px; border-radius:12px; border:1.5px solid var(--border); background:var(--surface); color:var(--text-main); font-size:14.5px; padding:0 8px; }
+    .rg-sel, .rg-row .as-btn { height:36px; border-radius:10px; border:1.5px solid var(--border); background:var(--surface); color:var(--text-main); font-size:12.5px; padding:0 6px; gap:4px; }
     .rg-empty { text-align:center; color:var(--text-muted); font-size:13px; padding:14px 0; }
-    @media (max-width: 1100px) { .rg-grid { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 900px) { .rg-grid { grid-template-columns:repeat(2, minmax(0,1fr)); } }
     @media (max-width: 768px) {
       .rota-title { font-size:20px; }
       .rota-btns { width:100%; display:grid; grid-template-columns:1fr 1fr; }
@@ -431,6 +434,7 @@ async function stRows(grades){
 
       <!-- ── ផ្ទាំងប្តូរ + ថ្នាក់ + អ្នកចូលរួម ── -->
       <div class="toolbar no-print">
+        <button type="button" class="back-pill" onclick="goBack()" title="ត្រឡប់"><i class="fa-solid fa-chevron-left"></i> ត្រឡប់</button>
         <div class="seg-tabs">
           <button type="button" class="seg active" id="segSpin" onclick="setTab('spin')"><i class="fa-solid fa-dice"></i> បង្វិលឈ្មោះ</button>
           <button type="button" class="seg" id="segGroup" onclick="setTab('group')"><i class="fa-regular fa-user"></i> បែងចែកក្រុម</button>
