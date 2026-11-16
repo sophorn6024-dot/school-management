@@ -287,6 +287,61 @@ async function stRows(grades){
       #tabGroup .split-main-btn { width:100%; min-width:0; min-height:46px; font-size:14px; }
     }
 
+
+    /* ══════════ វេនសម្អាត (រចនាថ្មី) ══════════ */
+    .rota-card { background: linear-gradient(135deg, #fff7ed 0%, #fef2f2 55%, #fdf2f8 100%); border-color: #fed7aa; }
+    [data-theme="dark"] .rota-card { background: var(--surface-card); border-color: var(--border); }
+    .rota-head { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+    .rota-title { font-size:22px; color:#ea580c; display:flex; align-items:center; gap:10px; }
+    [data-theme="dark"] .rota-title { color:#fb923c; }
+    .rota-info { width:34px; height:34px; border-radius:50%; border:0; background:rgba(234,88,12,.12); color:#ea580c; font-size:17px; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
+    .rota-info.on { background:#ea580c; color:#fff; }
+    .rota-btns { display:flex; gap:10px; flex-wrap:wrap; }
+    .rbtn { height:48px; padding:0 20px; border-radius:14px; border:1.5px solid var(--border); background:var(--surface); color:var(--text-main); font-weight:700; font-size:15px; cursor:pointer; font-family:inherit; transition:.15s; white-space:nowrap; }
+    .rbtn:hover { border-color:#0284c7; transform:translateY(-1px); }
+    .rbtn-save { background:#eef2f7; border-color:transparent; color:#475569; }
+    [data-theme="dark"] .rbtn-save { background:var(--surface-elevated); color:var(--text-muted); }
+    .rbtn-save.ready { background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; box-shadow:0 3px 10px rgba(245,158,11,.35); }
+    .rota-leaders { display:grid; grid-template-columns:repeat(3,1fr); gap:14px 18px; margin-bottom:16px; }
+    .rl { display:flex; flex-direction:column; gap:8px; min-width:0; }
+    .rl-lbl { text-align:center; font-size:15px; }
+    .rl-pres .rl-lbl { color:#c2410c; } .rl-d1 .rl-lbl { color:#be123c; } .rl-d2 .rl-lbl { color:#b45309; }
+    [data-theme="dark"] .rl-pres .rl-lbl { color:#fb923c; } [data-theme="dark"] .rl-d1 .rl-lbl { color:#fb7185; } [data-theme="dark"] .rl-d2 .rl-lbl { color:#fbbf24; }
+    .rl-sel, .rl .as-wrap { width:100%; }
+    .rl-sel, .rl .as-btn { height:56px; border-radius:14px; border:1.5px solid var(--border); background:var(--surface); color:var(--text-main); font-size:17px; padding:0 16px; }
+    .rota-settings { margin:0 0 16px; padding:14px; border:1.5px dashed var(--border-subtle); border-radius:16px; background:rgba(255,255,255,.55); display:flex; flex-direction:column; gap:12px; }
+    [data-theme="dark"] .rota-settings { background:rgba(255,255,255,.03); }
+    .rota-note { font-size:12.5px; line-height:1.8; color:var(--text-muted); }
+    .rota-tools { display:flex; gap:8px; flex-wrap:wrap; }
+    .rota-status { font-size:12.5px; font-weight:700; min-height:0; margin:0 0 6px; text-align:center; }
+    .rg-grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:18px; margin-top:12px; align-items:start; }
+    .rg-card { --dc:#0ea5e9; background:linear-gradient(160deg, color-mix(in srgb, var(--dc) 9%, #fff) 0%, #fff7ed 100%); border:1.5px solid color-mix(in srgb, var(--dc) 28%, #fff); border-radius:22px; padding:6px 14px 10px; box-shadow:0 6px 18px rgba(15,23,42,.06); }
+    [data-theme="dark"] .rg-card { background:var(--surface); border-color:color-mix(in srgb, var(--dc) 45%, #0f172a); }
+    .rg-head { cursor:pointer; text-align:center; padding:14px 6px 4px; user-select:none; }
+    .rg-ttl { color:var(--dc); font-size:19px; font-weight:800; }
+    .rg-arrow { font-size:14px; margin-right:4px; }
+    .rg-sub { font-size:14px; margin-top:6px; color:var(--text-muted); }
+    .rg-sub .m { color:#0284c7; } .rg-sub .f { color:#e11d48; }
+    .rg-body { margin-top:14px; }
+    .rg-card.closed .rg-body { display:none; }
+    .rg-row { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(104px,.95fr) minmax(0,1fr); gap:6px; align-items:center; padding:7px 0; border-bottom:1px solid var(--border); }
+    .rg-row:last-child { border-bottom:0; }
+    .rg-name { font-weight:700; font-size:15px; color:var(--text-main); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .rg-name b { color:#7c3aed; margin-right:4px; }
+    .rg-sel, .rg-row .as-wrap { width:100%; min-width:0; }
+    .rg-sel, .rg-row .as-btn { height:44px; border-radius:12px; border:1.5px solid var(--border); background:var(--surface); color:var(--text-main); font-size:14.5px; padding:0 8px; }
+    .rg-empty { text-align:center; color:var(--text-muted); font-size:13px; padding:14px 0; }
+    @media (max-width: 1100px) { .rg-grid { grid-template-columns:repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 768px) {
+      .rota-title { font-size:20px; }
+      .rota-btns { width:100%; display:grid; grid-template-columns:1fr 1fr; }
+      .rbtn { height:50px; font-size:14.5px; padding:0 8px; }
+      .rota-leaders { grid-template-columns:1fr 1fr; }
+      .rl-pres { grid-column:1 / -1; } .rl-pres .rl-sel, .rl-pres .as-wrap { width:min(100%,260px); margin:0 auto; }
+      .rl-sel, .rl .as-btn { height:52px; font-size:15px; }
+      .rg-grid { grid-template-columns:1fr; gap:14px; }
+    }
+    @media screen { #printableArea { display:none !important; } }
     .print-header, .print-footer { display: none; }
 
     /* ══════════════ 🏆 WINNER MODAL ══════════════ */
@@ -451,40 +506,27 @@ async function stRows(grades){
       <!-- ═════════════════ TAB 2: បែងចែកក្រុម ═════════════════ -->
       <section id="tabGroup">
 
-        <!-- តួនាទីអចិន្ត្រៃយ៍ក្នុងថ្នាក់ -->
-        <div class="roles-card no-print">
-          <div class="section-title khmer-moul"><i class="fa-solid fa-crown" style="color:#f59e0b;"></i> តួនាទីអចិន្ត្រៃយ៍ក្នុងថ្នាក់</div>
-
-          <div class="roles-grid">
-            <div class="role-item president">
-              <label class="lbl"><i class="fa-solid fa-flag" style="color:#ef4444;"></i> ប្រធានថ្នាក់</label>
-              <select id="presidentSelect" onchange="onRoleChange()"></select>
-            </div>
-            <div class="role-item deputy1">
-              <label class="lbl"><i class="fa-solid fa-star" style="color:#0284c7;"></i> អនុប្រធានទី១</label>
-              <select id="deputy1Select" onchange="onRoleChange()"></select>
-            </div>
-            <div class="role-item deputy2">
-              <label class="lbl"><i class="fa-solid fa-star" style="color:#10b981;"></i> អនុប្រធានទី២</label>
-              <select id="deputy2Select" onchange="onRoleChange()"></select>
+        <!-- ═══ វេនសម្អាត (កាតតែមួយ) ═══ -->
+        <div class="card rota-card no-print">
+          <div class="rota-head">
+            <div class="rota-title khmer-moul">វេនសម្អាត <button type="button" class="rota-info" id="rotaInfoBtn" onclick="toggleRotaSettings()" title="ការកំណត់ និងព័ត៌មាន"><i class="fa-solid fa-circle-info"></i></button></div>
+            <div class="rota-btns">
+              <button type="button" class="rbtn" onclick="generateGroups()">បែងចែកក្រុមស្វ័យប្រវត្តិ</button>
+              <button type="button" class="rbtn" onclick="deleteSavedGroups()">សម្អាតក្រុម</button>
+              <button type="button" class="rbtn" id="printBtn" onclick="openGroupPrint()">មើលមុនបោះពុម្ព</button>
+              <button type="button" class="rbtn rbtn-save" id="saveBtn" onclick="saveRota()">រក្សាទុក</button>
             </div>
           </div>
 
-          <div class="controls" style="margin-top:12px; background:transparent; padding:0; border:none; gap:8px;">
-            <button type="button" class="btn btn-role" onclick="randomLeadership()"><i class="fa-solid fa-dice"></i> រើសចៃដន្យ</button>
-            <button type="button" class="btn btn-rotate" onclick="rotateLeadership()"><i class="fa-solid fa-rotate"></i> កំណត់តាមវេន (បន្ទាប់)</button>
-            <button type="button" class="btn btn-group" onclick="saveLeadership()"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកតួនាទីថ្នាក់</button>
-            <button type="button" class="btn btn-del" onclick="deleteLeadership()"><i class="fa-solid fa-trash"></i> លុបតួនាទីថ្នាក់</button>
+          <div class="rota-leaders">
+            <div class="rl rl-pres"><label class="rl-lbl khmer-moul">ប្រធានថ្នាក់</label><select id="presidentSelect" class="rl-sel" onchange="onRoleChange()"></select></div>
+            <div class="rl rl-d1"><label class="rl-lbl khmer-moul">អនុប្រធានទី១</label><select id="deputy1Select" class="rl-sel" onchange="onRoleChange()"></select></div>
+            <div class="rl rl-d2"><label class="rl-lbl khmer-moul">អនុប្រធានទី២</label><select id="deputy2Select" class="rl-sel" onchange="onRoleChange()"></select></div>
           </div>
 
-          <div id="roleSummary" class="summary">សូមរង់ចាំ កំពុងទាញយកទិន្នន័យ...</div>
-        </div>
-
-        <!-- បែងចែកសិស្សសម្រាប់វេនសម្អាត -->
-        <div class="card no-print">
-          <div class="section-title khmer-moul"><i class="fa-solid fa-broom" style="color:#10b981;"></i> បែងចែកសិស្សសម្រាប់វេនសម្អាត</div>
-
-          <div class="split-panel">
+          <div id="rotaSettings" class="rota-settings" style="display:none;">
+            <div class="rota-note">ℹ️ <b>របៀបប្រើ៖</b> ជ្រើស ប្រធាន/អនុប្រធានថ្នាក់ → ចុច «បែងចែកក្រុមស្វ័យប្រវត្តិ» → កែតួនាទី ឬថ្ងៃរបស់សិស្សម្នាក់ៗក្នុងប្រអប់ជ្រើសរើស → ចុច «រក្សាទុក»។ សិស្ស ៣ តួនាទីអចិន្ត្រៃយ៍ មិនចូលវេនសម្អាតឡើយ។</div>
+            <div class="split-panel">
             <div class="split-tabs" role="tablist" aria-label="របៀបបែងចែក">
               <button type="button" class="split-tab active" id="splitTabGroups" onclick="setSplitMode('numGroups')">ចំនួនក្រុម</button>
               <button type="button" class="split-tab" id="splitTabSize" onclick="setSplitMode('groupSize')">ចំនួនសិស្សក្នុងក្រុម</button>
@@ -493,7 +535,7 @@ async function stRows(grades){
               <div class="split-entry">
                 <label class="split-label" id="inputLabel" for="splitValue">ចំនួនក្រុម · បញ្ចូល</label>
                 <div class="split-input-line">
-                  <input type="number" id="splitValue" min="1" value="1" oninput="updateSplitPreview()" aria-label="ចំនួនវេន">
+                  <input type="number" id="splitValue" min="1" value="6" oninput="updateSplitPreview()" aria-label="ចំនួនវេន">
                   <span id="splitUnit">ក្រុម</span>
                 </div>
               </div>
@@ -508,20 +550,24 @@ async function stRows(grades){
               <option value="groupSize">កំណត់ចំនួនសិស្សក្នុង១វេន</option>
             </select>
             <label class="chk" style="font-size:13px;"><input type="checkbox" id="balanceGender"> លាយភេទស្មើគ្នាក្នុងក្រុមនីមួយៗ (ប្រុស/ស្រី)</label>
-            <div class="split-actions">
-              <button type="button" class="btn btn-group split-main-btn" onclick="generateGroups()"><i class="fa-solid fa-shuffle"></i> បែងចែកក្រុម</button>
-              <button type="button" class="btn btn-rotate grp-tool" id="rotBtn" onclick="rotateGroups()" style="display:none;"><i class="fa-solid fa-rotate"></i> បង្វិលវេនបន្ទាប់</button>
-              <button type="button" class="btn btn-soft-sm grp-tool" id="copyBtn" onclick="copyGroups()" style="display:none;"><i class="fa-regular fa-copy"></i> ចម្លង</button>
-              <button type="button" class="btn btn-del grp-tool" id="delBtn" onclick="deleteSavedGroups()" style="display:none;"><i class="fa-solid fa-trash"></i> លុបវេនដែលបានរក្សា</button>
-              <button type="button" class="btn btn-save" id="saveBtn" onclick="saveGroupsToSupabase()"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកវេន</button>
-              <button type="button" class="btn btn-print" id="printBtn" onclick="openGroupPrint()"><i class="fa-solid fa-print"></i> បោះពុម្ព</button>
+            
             </div>
+            <div class="rota-tools">
+              <button type="button" class="btn btn-role" onclick="randomLeadership()"><i class="fa-solid fa-dice"></i> រើសតួនាទីចៃដន្យ</button>
+              <button type="button" class="btn btn-rotate" onclick="rotateLeadership()"><i class="fa-solid fa-rotate"></i> តួនាទីតាមវេន (បន្ទាប់)</button>
+              <button type="button" class="btn btn-group" onclick="saveLeadership()"><i class="fa-solid fa-floppy-disk"></i> រក្សាទុកតួនាទីថ្នាក់</button>
+              <button type="button" class="btn btn-del" onclick="deleteLeadership()"><i class="fa-solid fa-trash"></i> លុបតួនាទីថ្នាក់</button>
+              <button type="button" class="btn btn-rotate" onclick="rotateGroups()"><i class="fa-solid fa-rotate"></i> បង្វិលវេនបន្ទាប់</button>
+              <button type="button" class="btn btn-soft-sm" onclick="copyGroups()"><i class="fa-regular fa-copy"></i> ចម្លងវេន</button>
+            </div>
+            <div id="roleSummary" class="summary">សូមរង់ចាំ កំពុងទាញយកទិន្នន័យ...</div>
           </div>
 
-          <div id="swapHint" class="count-info no-print" style="display:none;">💡 ចុចលើសិស្សម្នាក់ រួចចុចសិស្សម្នាក់ទៀតដើម្បីប្តូរកន្លែង ឬចុចលើក្បាលក្រុមដើម្បីផ្លាស់ទៅក្រុមនោះ។</div>
+          <div id="gStatus" class="rota-status"></div>
           <div id="countInfo" class="count-info"></div>
-          <div id="gStatus"></div>
+          <div id="rotaGroups" class="rg-grid"></div>
         </div>
+        <div id="swapHint" style="display:none"></div>
 
         <!-- 🖨️ Printable Area -->
         <div id="printableArea">
@@ -858,12 +904,9 @@ async function loadKit(done){
 
       // reset group tab
       currentGroups = [];
-      document.getElementById('groupsContainer').innerHTML = '';
+      document.getElementById('rotaGroups').innerHTML = '';
       document.getElementById('countInfo').innerHTML = '';
-      document.getElementById('saveBtn').style.display = 'none';
-      document.getElementById('printBtn').style.display = 'none';
-      document.querySelectorAll('.grp-tool').forEach(b => b.style.display = 'none');
-      document.getElementById('swapHint').style.display = 'none';
+      rgOpen = {}; rgDirty(false);
       selStu = null;
       clearRoles();
 
@@ -1596,6 +1639,7 @@ async function loadKit(done){
       currentGroups = groups.map(g => g.map(s => ({ id: s.id, name: s.name, sex: s.sex })));
       document.getElementById('printClassName').innerText = 'ប្រចាំ ថ្នាក់ទី ' + __kc(curClass);
       updatePrintRoles();
+      rgOpen = {}; rgDirty(true);
       renderGroups(currentGroups);
 
       document.getElementById('countInfo').innerHTML =
@@ -1612,58 +1656,70 @@ async function loadKit(done){
         ' | អនុប្រធានទី២៖ ' + (d2 ? d2.name : '........');
     }
 
+    /* ═══ បង្ហាញក្រុម (កាតតាមថ្ងៃ · ប្រអប់តួនាទី · ប្រអប់ថ្ងៃ) ═══ */
+    const RG_COL = ['#0ea5e9', '#8b5cf6', '#10b981', '#f59e0b', '#ec4899', '#14b8a6'];
+    let rgOpen = {};
+    const dayShort = i => (daysOfWeek[i] || ('ក្រុមទី ' + (i + 1))).replace(/^ថ្ងៃ/, '');
+    function rgDirty(on) { const b = document.getElementById('saveBtn'); if (b) b.classList.toggle('ready', !!on); }
+    function toggleRg(i) { const cur = rgOpen[i] !== undefined ? rgOpen[i] : true; rgOpen[i] = !cur; renderGroups(currentGroups, true); }
+    function toggleRotaSettings() {
+      const p = document.getElementById('rotaSettings'), b = document.getElementById('rotaInfoBtn');
+      const show = p.style.display === 'none'; p.style.display = show ? 'flex' : 'none'; b.classList.toggle('on', show);
+    }
     function renderGroups(groups, keepStatus) {
-      const c = document.getElementById('groupsContainer');
+      const c = document.getElementById('rotaGroups');
+      // លុប popup របស់ប្រអប់ជ្រើសរើសចាស់ (កុំឱ្យកកកុញ)
+      c.querySelectorAll('select').forEach(x => { if (x._asPop) x._asPop.remove(); });
       c.innerHTML = '';
+      const mobile = window.innerWidth <= 768, n = groups.length;
+      const dayOpts = sel => groups.map((_, k) => '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + escapeHtml(dayShort(k)) + '</option>').join('');
       groups.forEach((group, index) => {
-        if (!group.length) return;
+        const isF = s => String(s.sex || '').includes('ស្រី'), isM = s => String(s.sex || '').includes('ប្រុស');
+        const open = rgOpen[index] !== undefined ? rgOpen[index] : (!mobile || index === 0);
         const box = document.createElement('div');
-        box.className = 'group-box';
-
-        const h = document.createElement('div');
-        h.className = 'group-header';
-        h.onclick = () => moveSelTo(index);
-        h.innerHTML = '<i class="fa-solid fa-flag"></i> ' + (daysOfWeek[index] || ('ក្រុមទី ' + (index + 1))) + ' (' + group.length + ' នាក់)';
-        box.appendChild(h);
-
-        const ul = document.createElement('ul');
-        ul.className = 'group-list';
+        box.className = 'rg-card' + (open ? '' : ' closed');
+        box.style.setProperty('--dc', RG_COL[index % RG_COL.length]);
+        let rows = '';
         group.forEach((s, i) => {
-          const li = document.createElement('li');
-          li.onclick = () => pickStudent(index, i);
-          if (selStu && selStu.g === index && selStu.i === i) li.classList.add('sel');
-          const left = document.createElement('span');
-          left.innerHTML = '<b>' + (i + 1) + '.</b> ' + escapeHtml(s.name);
-          if (i === 0) {
-            const b = document.createElement('span');
-            b.className = 'role-badge role-leader';
-            b.innerHTML = '<i class="fa-solid fa-crown"></i> ប្រធាន';
-            left.appendChild(b);
-          } else if (i === 1) {
-            const b = document.createElement('span');
-            b.className = 'role-badge role-sub';
-            b.innerHTML = '<i class="fa-solid fa-star"></i> អនុប្រធាន';
-            left.appendChild(b);
-          }
-          const sex = document.createElement('span');
-          sex.className = 'student-sex';
-          sex.textContent = '(' + (s.sex || 'មិនបានដាក់') + ')';
-          li.appendChild(left); li.appendChild(sex);
-          ul.appendChild(li);
+          const role = i === 0 ? 'L' : i === 1 ? 'S' : 'M';
+          rows += '<div class="rg-row"><span class="rg-name" title="' + escapeHtml(s.name) + '"><b>' + (i + 1) + '.</b>' + escapeHtml(s.name) + '</span>' +
+            '<select class="rg-sel" onchange="setRole(' + index + ',' + i + ',this.value)">' +
+            '<option value="L"' + (role === 'L' ? ' selected' : '') + '>ប្រធាន</option>' +
+            '<option value="S"' + (role === 'S' ? ' selected' : '') + '>អនុប្រធាន</option>' +
+            '<option value="M"' + (role === 'M' ? ' selected' : '') + '>សមាជិក</option></select>' +
+            '<select class="rg-sel" onchange="moveStu(' + index + ',' + i + ',this.value)">' + dayOpts(index) + '</select></div>';
         });
-        box.appendChild(ul);
+        box.innerHTML =
+          '<div class="rg-head" onclick="toggleRg(' + index + ')"><div class="rg-ttl khmer-moul"><span class="rg-arrow">' + (open ? '▼' : '▶') + '</span>' + escapeHtml(daysOfWeek[index] || ('ក្រុមទី ' + (index + 1))) + ' · ' + group.length + ' នាក់</div>' +
+          '<div class="rg-sub"><span class="m">ប្រុស ' + group.filter(isM).length + '</span> · <span class="f">ស្រី ' + group.filter(isF).length + '</span></div></div>' +
+          '<div class="rg-body">' + (rows || '<div class="rg-empty">មិនមានសិស្ស</div>') + '</div>';
         c.appendChild(box);
       });
-
       if (!keepStatus) gStatus('🎉 បែងចែកវេនបានជោគជ័យ!', '#10b981');
-      document.getElementById('saveBtn').style.display = 'inline-flex';
-      document.getElementById('printBtn').style.display = 'inline-flex';
-      document.querySelectorAll('.grp-tool').forEach(b => b.style.display = 'inline-flex');
-      document.getElementById('swapHint').style.display = 'block';
       const d = new Date(), kd = n => String(n).replace(/\d/g, x => '០១២៣៤៥៦៧៨៩'[x]);
       const be = document.getElementById('printBE'), ce = document.getElementById('printCE');
       if (be) be.textContent = kd(d.getFullYear() + (d.getMonth() >= 4 ? 544 : 543));
       if (ce) ce.textContent = kd(d.getFullYear());
+      try { window.__autoSelectScan && window.__autoSelectScan(); } catch (e) {}
+    }
+    /* តួនាទីក្នុងក្រុម = តាមលំដាប់ (ទី១=ប្រធាន · ទី២=អនុប្រធាន · ផ្សេងទៀត=សមាជិក) */
+    function setRole(g, i, r) {
+      const arr = currentGroups[g]; if (!arr || !arr[i]) return;
+      const st = arr.splice(i, 1)[0];
+      arr.splice(r === 'L' ? 0 : r === 'S' ? Math.min(1, arr.length) : Math.min(2, arr.length), 0, st);
+      rgDirty(true); renderGroups(currentGroups, true);
+      gStatus('✏️ បានកែតួនាទី — កុំភ្លេចចុច "រក្សាទុក"!', '#0284c7');
+    }
+    function moveStu(g, i, ng) {
+      ng = parseInt(ng, 10); if (ng === g || !currentGroups[ng] || !currentGroups[g] || !currentGroups[g][i]) return;
+      const st = currentGroups[g].splice(i, 1)[0];
+      currentGroups[ng].push(st);
+      rgOpen[ng] = true; rgDirty(true); renderGroups(currentGroups, true);
+      gStatus('➡️ បានប្តូរទៅ ' + (daysOfWeek[ng] || ('ក្រុមទី ' + (ng + 1))) + ' — កុំភ្លេចចុច "រក្សាទុក"!', '#0284c7');
+    }
+    async function saveRota() {
+      if (currentGroups.length) { await saveGroupsToSupabase(); rgDirty(false); }
+      else { await saveLeadership(); }
     }
 
     /* ── ផ្លាស់ប្តូរសិស្សដោយដៃ / បង្វិលវេន / ចម្លង / លុប ── */
@@ -1688,7 +1744,7 @@ async function loadKit(done){
     function rotateGroups() {
       if (currentGroups.length < 2) { uiToast('ត្រូវមានយ៉ាងតិច ២ ក្រុម'); return; }
       currentGroups.unshift(currentGroups.pop());   // ក្រុមចុងក្រោយ → ថ្ងៃដំបូង
-      selStu = null; renderGroups(currentGroups, true);
+      selStu = null; rgDirty(true); renderGroups(currentGroups, true);
       gStatus('🔄 បានបង្វិលវេន — កុំភ្លេចចុច "រក្សាទុកវេន"!', '#0284c7');
     }
     function groupsAsText() {
@@ -1714,12 +1770,9 @@ async function loadKit(done){
         const { error } = await stRpc('staff_class_row_save', { p_table: 'class_groups', p_records: { assigned_class: curClass, groups_data: null, updated_at: new Date().toISOString() } });
         if (error) throw error;
         currentGroups = []; selStu = null;
-        document.getElementById('groupsContainer').innerHTML = '';
+        document.getElementById('rotaGroups').innerHTML = '';
         document.getElementById('countInfo').innerHTML = '';
-        document.getElementById('saveBtn').style.display = 'none';
-        document.getElementById('printBtn').style.display = 'none';
-        document.querySelectorAll('.grp-tool').forEach(b => b.style.display = 'none');
-        document.getElementById('swapHint').style.display = 'none';
+        rgOpen = {}; rgDirty(false);
         gStatus('🗑️ បានលុបកាលវិភាគវេនរួចរាល់', '#10b981');
       } catch (e) { gStatus('❌ ' + e.message, '#ef4444'); }
     }
