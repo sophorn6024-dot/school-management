@@ -1592,7 +1592,7 @@ async function loadKit(done){
         };
         const { error } = await stRpc('staff_class_row_save', { p_table: 'class_groups', p_records: payload });
         if (error) throw error;
-        gStatus('✅ បានរក្សាទុកតួនាទីថ្នាក់ក្នុង Supabase រួចរាល់!', '#10b981');
+        gStatus('✅ បានរក្សាទុកតួនាទីថ្នាក់ រួចរាល់!', '#10b981');
       } catch (e) { gStatus('❌ ' + e.message, '#ef4444'); }
     }
 
@@ -1840,7 +1840,7 @@ async function loadKit(done){
       const d1 = findStudent(document.getElementById('deputy1Select').value);
       const d2 = findStudent(document.getElementById('deputy2Select').value);
 
-      gStatus('⏳ កំពុងរក្សាទុកក្នុង Supabase...', '#0284c7');
+      gStatus('⏳ កំពុងរក្សាទុកទិន្នន័យ', '#0284c7');
       try {
         const payload = {
           assigned_class: curClass,
@@ -1852,7 +1852,7 @@ async function loadKit(done){
         };
         const { error } = await stRpc('staff_class_row_save', { p_table: 'class_groups', p_records: payload });
         if (error) throw error;
-        gStatus('✅ បានរក្សាទុកកាលវិភាគវេនសម្អាតក្នុង Supabase រួចរាល់!', '#10b981');
+        gStatus('✅ បានរក្សាទុកកាលវិភាគវេនសម្អាត រួចរាល់!', '#10b981');
       } catch (e) { gStatus('❌ ' + e.message, '#ef4444'); }
     }
   </script>
