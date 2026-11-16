@@ -1946,7 +1946,7 @@ function sumHtml(){
   const cnt={};Object.entries(D.cells).forEach(([k,v])=>{const [pid,d]=k.split('|');if(D.days.includes(+d)&&D.periods.some(p=>p.id===pid&&p.type==='class'))cnt[v]=(cnt[v]||0)+1});
   const ks=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);if(!ks.length)return'';
   const total=ks.reduce((a,[,c])=>a+c,0),slots=D.periods.filter(p=>p.type==='class').length*D.days.length;
-  return '<div class="sum-line">'+ks.map(([n,c])=>`<span class="sum-chip" style="background:${(subj(n)||{color:'#e2e8f0'}).color}">${esc(n)} <b>${kh(c)} ម៉ោង/សប្តាហ៍</b></span>`).join('')+`<span class="sum-chip" style="background:#eef2f7">បានដាក់ ${kh(total)}/${kh(slots)} ម៉ោង</span></div>`;
+  return '<div class="sum-line">'+ks.map(([n,c])=>`<span class="sum-chip" style="background:${(subj(n)||{color:'#e2e8f0'}).color}">${esc(n)} <b>${kh(c)} ម៉ោង/សប្តាហ៍</b></span>`).join('')+'</div>';
 }
 function buildSheet(){
   const o=prGet();closeKhmerCalendar();
