@@ -1077,69 +1077,6 @@ body.solo .iframe-container{bottom:0!important}
 .dx-h .rs{color:var(--text);line-height:1.35}
 .dx-h.past{opacity:.5}
 .dx-h.next{border-color:#f59e0b;background:rgba(245,158,11,.10)}
-
-/* ✨ ANIM KIT — animation រលូន (មិនប៉ះទិន្នន័យ) */
-:root{--ease-out:cubic-bezier(.22,1,.36,1)}
-@media (min-width:769px){
-  .sidebar{transition:width .38s var(--ease-out),margin .38s var(--ease-out),box-shadow .3s ease,background .35s ease!important;overflow:hidden}
-  .sidebar.collapsed .nav-text{display:inline!important;opacity:0;max-width:0;overflow:hidden;transform:translateX(-8px)}
-  .nav-text{opacity:1;max-width:220px;transition:opacity .25s ease .08s,max-width .38s var(--ease-out),transform .3s var(--ease-out);display:inline-block}
-  .sidebar.collapsed .user-profile-meta{display:block!important;opacity:0;max-height:0;max-width:0;overflow:hidden;margin:0;padding:0}
-  .sidebar.collapsed .user-profile-left,.sidebar.collapsed .user-profile-box{gap:0}
-  .user-profile-meta{transition:opacity .25s ease .08s,max-height .3s ease}
-  .sidebar.collapsed .class-year-pill-box{display:flex!important;opacity:0;max-height:0;overflow:hidden;margin-top:0;margin-bottom:0;padding-top:0;padding-bottom:0}
-  .class-year-pill-box{transition:opacity .25s ease .08s,max-height .3s ease}
-  .sidebar.collapsed .sidebar-theme-btn .nav-text,.sidebar.collapsed .sidebar-logout-btn .nav-text{opacity:0}
-  /* rail ពង្រីកស្វ័យប្រវត្តិពេល hover (មិនរុញខ្លឹមសារ) */
-  .sidebar.collapsed:hover{width:var(--sidebar-w);margin-right:calc(var(--sidebar-w-collapsed) - var(--sidebar-w));box-shadow:14px 0 40px rgba(0,0,0,.35)}
-  .sidebar.collapsed:hover .nav-text{opacity:1;max-width:220px;transform:none}
-  .sidebar.collapsed:hover .user-profile-meta{opacity:1;max-height:80px;max-width:200px}
-  .sidebar.collapsed:hover .class-year-pill-box{opacity:1;max-height:80px}
-  .sidebar.collapsed:hover .nav-link-btn,.sidebar.collapsed:hover .sidebar-theme-btn,.sidebar.collapsed:hover .sidebar-logout-btn{justify-content:flex-start;padding:0 14px}
-}
-/* ប៊ូតុងម៉ឺនុយ: glow + បន្ទាត់សម្គាល់ */
-.nav-link-btn{transition:background .25s ease,color .25s ease,transform .25s var(--ease-out),box-shadow .3s ease,border-color .25s ease}
-.nav-link-btn:hover .nav-icon-box{transform:scale(1.14) rotate(-4deg)}
-.nav-link-btn.active{animation:navPop .45s var(--ease-out)}
-.nav-link-btn.active::before{content:'';position:absolute;left:-10px;top:22%;bottom:22%;width:4px;border-radius:0 4px 4px 0;background:#fff;opacity:.85;animation:navBar .4s var(--ease-out)}
-@keyframes navPop{0%{transform:scale(.94)}60%{transform:scale(1.03)}100%{transform:none}}
-@keyframes navBar{from{transform:scaleY(0)}to{transform:scaleY(1)}}
-/* ម៉ឺនុយលេចម្ដងមួយៗពេលចូល */
-#mainAppLayout .sidebar .nav-link-btn{animation:navIn .5s var(--ease-out) both}
-@keyframes navIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
-#mainAppLayout .sidebar .nav-link-btn:nth-child(1){animation-delay:0.03s}
-#mainAppLayout .sidebar .nav-link-btn:nth-child(2){animation-delay:0.06s}
-#mainAppLayout .sidebar .nav-link-btn:nth-child(3){animation-delay:0.09s}
-#mainAppLayout .sidebar .nav-link-btn:nth-child(4){animation-delay:0.12s}
-#mainAppLayout .sidebar .nav-link-btn:nth-child(5){animation-delay:0.15s}
-#mainAppLayout .sidebar .nav-link-btn:nth-child(6){animation-delay:0.18s}
-#mainAppLayout .sidebar .nav-link-btn:nth-child(7){animation-delay:0.21s}
-#mainAppLayout .sidebar .nav-link-btn:nth-child(8){animation-delay:0.24s}
-#mainAppLayout .sidebar .nav-link-btn:nth-child(9){animation-delay:0.27s}
-#mainAppLayout .sidebar .nav-link-btn:nth-child(10){animation-delay:0.30s}
-#mainAppLayout .sidebar .nav-link-btn:nth-child(11){animation-delay:0.33s}
-#mainAppLayout .sidebar .nav-link-btn:nth-child(12){animation-delay:0.36s}
-#mainAppLayout .sidebar .nav-link-btn:nth-child(13){animation-delay:0.39s}
-
-/* ប្តូរទំព័រ: fade + រអិលឡើង */
-#iframeView.active{animation:viewIn .42s var(--ease-out)}
-#reportsHubView.active{animation:viewIn .42s var(--ease-out)}
-@keyframes viewIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-#pageFrame{animation:frameIn .45s ease both}
-@keyframes frameIn{from{opacity:0}to{opacity:1}}
-/* របាយការណ៍ hub: កាត/ជួរលេចម្ដងមួយៗ */
-#reportsHubView.active .rg-row,#reportsHubView.active .rg-roster{animation:rowIn .45s var(--ease-out) both}
-#reportsHubView.active .rg-row:nth-child(1){animation-delay:.05s}#reportsHubView.active .rg-row:nth-child(2){animation-delay:.1s}#reportsHubView.active .rg-row:nth-child(3){animation-delay:.15s}#reportsHubView.active .rg-row:nth-child(4){animation-delay:.2s}#reportsHubView.active .rg-row:nth-child(5){animation-delay:.25s}#reportsHubView.active .rg-row:nth-child(n+6){animation-delay:.3s}
-@keyframes rowIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
-.rg-row{transition:background .2s ease,transform .25s var(--ease-out)}
-.rg-row:hover{transform:translateX(4px)}
-/* កាត: លើក + glow */
-.task-action-card,.report-card-item,.hero-stat-card{transition:transform .3s var(--ease-out),box-shadow .3s ease,border-color .25s ease,background .25s ease}
-.task-action-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px color-mix(in srgb,var(--primary) 22%,transparent)}
-.task-action-card:active,.report-card-item:active{transform:scale(.98)}
-/* រង្វង់ផ្ទុក: fade ចេញ */
-.loading-glass-overlay{transition:opacity .3s ease,visibility .3s ease}
-@media (prefers-reduced-motion:reduce){.sidebar,.nav-text,.nav-link-btn,#iframeView.active,#reportsHubView.active,#pageFrame,#reportsHubView.active .rg-row,#mainAppLayout .sidebar .nav-link-btn,.task-action-card{animation:none!important;transition:none!important}}
 </style>
 <script>
 /* ដាក់ logo សាលាចំកណ្ដាល QR (ត្រូវប្រើ correctLevel H ដើម្បីនៅតែស្កេនបាន) */
@@ -1284,7 +1221,6 @@ window.hideSoloSplash=function(){var e=document.getElementById('soloSplash');if(
       <button class="sidebar-logout-btn" onclick="doLogout()" title="ចាកចេញពីប្រព័ន្ធ"><span>🚪</span><span class="nav-text">ចាកចេញ</span></button>
     </div>
   </aside>
-<script>(function(){ try { var v = localStorage.getItem('krou_sb_collapsed'); var sb0 = document.getElementById('sidebar'); if (sb0 && window.innerWidth > 768 && (v === '1' || (v === null && window.innerWidth >= 1100))) sb0.classList.add('collapsed'); } catch (e) {} })();</script>
 
   <main class="main-wrapper">
     <div class="content-area">
@@ -3742,8 +3678,7 @@ window.addEventListener('hashchange', () => {
   const h = window.location.hash.replace('#', '');
   if (h && h !== currentPage && CURRENT_USER && CURRENT_USER.username) navigate(h, null);
 });
-function toggleSidebarCollapse() { var c = document.getElementById('sidebar').classList.toggle('collapsed'); try { localStorage.setItem('krou_sb_collapsed', c ? '1' : '0'); } catch (e) {} }
-
+function toggleSidebarCollapse() { document.getElementById('sidebar').classList.toggle('collapsed'); }
 /* ===== 📱 MORE SHEET ===== */
 const MORE_ITEMS = [
   { page: 'chat', t: 'សារសន្ទនា', d: 'អាណាព្យាបាល · គ្រូក្នុងសាលា · គ្រូទាំងអស់', i: 'chat', badge: true },
