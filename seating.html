@@ -317,6 +317,7 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;',
 function applyTheme(t){document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark')}
 applyTheme(new URLSearchParams(location.search).get('theme')||localStorage.getItem('krou_theme_manual')||'dark');
 window.addEventListener('message',e=>{if(e.data&&(e.data.type==='THEME_CHANGE'||e.data.theme))applyTheme(e.data.theme||e.data)});
+var OPEN_RPT=(function(){try{return new URLSearchParams(location.search).get('view')==='rpt'}catch(e){return false}})(),rptOpened=false;
 function goHubBack(){try{if(window.parent&&window.parent!==window){window.parent.postMessage({type:'NAVIGATE',page:'classes'},'*');return}}catch(e){}location.href='index.html#classes'}
 function goToIndex(e){if(e)e.preventDefault();try{if(window.parent!==window){window.parent.postMessage({type:'OPEN_LOGIN',action:'LOGIN'},'*');window.parent.location.href='index.html';return}}catch(x){}location.href='index.html'}
 
@@ -533,6 +534,8 @@ async function loadClass(){
     L.per=2;L.cols=4;L.rows=Math.min(MAXR,Math.max(1,Math.ceil(students.length/(L.cols*L.per))));
   }
   render();
+  /* បើកពីរបាយការណ៍ → បង្ហាញទំព័រមើលមុនបោះពុម្ពភ្លាម */
+  if(OPEN_RPT&&!rptOpened){rptOpened=true;openSeatRpt()}
 }
 async function saveLayout(){
   if(!curClass)return;
@@ -1891,7 +1894,13 @@ function openSeatRpt(){
   loadSeatTeacher().then(function(){buildSeatSheet()});
   if(!window.__seatKit){window.__seatKit=1;loadKit(function(){buildSeatSheet()})}
 }
-function closeSeatRpt(){document.body.classList.remove('rpt-open');document.getElementById('seatRpt').classList.remove('show')}
+function closeSeatRpt(){
+  if(OPEN_RPT){ /* បើកពីរបាយការណ៍ → ត្រឡប់ទៅរបាយការណ៍ */
+    try{if(window.parent&&window.parent!==window){window.parent.postMessage({type:'NAVIGATE',page:'reportsHub'},'*');return}}catch(e){}
+    try{window.close()}catch(e){}
+  }
+  document.body.classList.remove('rpt-open');document.getElementById('seatRpt').classList.remove('show')
+}
 function seatPrint(){var sc=document.getElementById('seatScaler');sc.style.transform='none';setTimeout(function(){window.print();setTimeout(fitSeatSheet,300)},60)}
 function seatPDF(){
   if(typeof html2pdf==='undefined'){toast('កំពុងផ្ទុក PDF… សូមព្យាយាមម្តងទៀត');return}
