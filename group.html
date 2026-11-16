@@ -1777,6 +1777,7 @@ async function loadKit(done){
   </script>
 <!-- 🔤 AUTO-SELECT : ប្តូរ <select> ធម្មតា ទៅជាបញ្ជីជ្រើសរើស font Battambang (បញ្ជីរបស់ browser មិនប្រើ font ទំព័រ) -->
 <style id="asStyle">
+.as-wrap:has(>.split-mode-hidden){display:none!important}
 .as-wrap{position:relative;display:inline-block;vertical-align:middle;max-width:100%;min-width:0}
 .as-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;cursor:pointer;text-align:left;box-sizing:border-box;font-family:'Khmer OS Battambang','Battambang',sans-serif !important;appearance:none;-webkit-appearance:none}
 .as-btn .as-lb{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Khmer OS Battambang','Battambang',sans-serif !important}
@@ -1801,6 +1802,7 @@ async function loadKit(done){
   function closeAll(){pops.forEach(function(p){p.classList.remove('show')});document.querySelectorAll('.as-btn.open').forEach(function(b){b.classList.remove('open')});openPop=null}
   function skip(sel){
     if(sel._as||sel.multiple||sel.size>1||sel.hasAttribute('data-native')||sel._enh)return true;
+    if(sel.getAttribute('aria-hidden')==='true'||sel.classList.contains('split-mode-hidden'))return true; /* select ដែលលាក់ (splitMode) មិនបំប្លែងទេ */
     if(sel.closest('.cs-wrap,.as-wrap'))return true;
     if(sel._cs||sel._enh||sel._cdd||sel._custom)return true; /* __asOwn2 */
     if(sel.id&&document.getElementById(sel.id+'Btn'))return true; /* __asBtnFix: ទំព័រមាន custom dropdown ផ្ទាល់ខ្លួន */
