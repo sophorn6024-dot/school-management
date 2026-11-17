@@ -895,7 +895,7 @@ function renderRosterTable() {
       <td>${toKhmerNum(idx + 1)}</td>
       <td class="name-cell">${s.name || ''}</td>
       <td>${s.gender || 'ប្រុស'}</td>
-      <td>${s.dob || ''}</td>
+      <td>${fmtDob(s.dob)}</td>
       <td>${s.pob || ''}</td>
       <td>${s.father_name || ''}</td>
       <td>${s.father_job || ''}</td>
@@ -914,7 +914,7 @@ function renderRosterTable() {
 function exportToExcel() {
   if (!studentsDataList.length) { alert('មិនមានទិន្នន័យសម្រាប់ទាញយកទេ!'); return; }
   const headers = ["ល.រ","នាមត្រកូល និងនាម","ភេទ","ថ្ងៃខែឆ្នាំកំណើត","ទីកន្លែងកំណើត","ឈ្មោះឪពុក","មុខរបរ","ឈ្មោះម្តាយ","មុខរបរ","លំនៅដ្ឋាន","ក្រុមជនជាតិ","ពិការភាព","សេចក្តីផ្សេងៗ"];
-  const rows = studentsDataList.map((s, i) => [i + 1, s.name, s.gender, s.dob, s.pob, s.father_name, s.father_job, s.mother_name, s.mother_job, s.address, s.ethnicity, s.disability, s.note]);
+  const rows = studentsDataList.map((s, i) => [i + 1, s.name, s.gender, fmtDob(s.dob), s.pob, s.father_name, s.father_job, s.mother_name, s.mother_job, s.address, s.ethnicity, s.disability, s.note]);
   const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "បញ្ជីរាយនាមសិស្ស");
@@ -1078,6 +1078,13 @@ function editPrincipalDate() { openCalendar('principal'); }
 /* =========================================================
    6. ⚙️ PAGE SETUP (A4/F4, MARGIN, ZOOM)
 ========================================================= */
+/* ថ្ងៃខែឆ្នាំកំណើត៖ ថ្ងៃ-ខែ-ឆ្នាំ (ឧ. 13-12-2016) */
+function fmtDob(v) {
+  const t = String(v == null ? '' : v).trim();
+  const m = t.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})(?:[T\s].*)?$/);
+  if (!m) return t;
+  return m[3].padStart(2, '0') + '-' + m[2].padStart(2, '0') + '-' + m[1];
+}
 const PX = 96 / 25.4;
 const PAPERS = { A4: [210, 297], F4: [216, 330] };
 let PS = { paper: 'A4', orient: 'landscape', margin: 10, font: 100, rowH: 6.2 };
