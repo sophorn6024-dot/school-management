@@ -143,6 +143,7 @@ function fmtDobKh(v){
 
     .f-moul { font-family: 'Khmer OS Muol Light', 'Moul', cursive; font-weight: normal; letter-spacing: 0.3px; }
 
+.kit-abs{position:relative;height:15mm;width:100%}.kit-abs .kit-sig{position:absolute;left:50%;transform:translateX(-50%);top:0}
 .kit-stamp{display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}.kit-sig{max-height:100%;max-width:60%;object-fit:contain}
     .rep-stamp{position:absolute;left:50%;top:calc(-30px + 1.5mm);width:0;height:0;pointer-events:none;z-index:2}.rep-stamp .kit-stamp{position:absolute;left:0;top:0;margin:0 !important;transform:translateX(-50%) scale(1);transform-origin:top center}
     .f-bold { font-family: 'Khmer OS Battambang', 'Battambang', sans-serif; font-weight: 700; }
@@ -3026,7 +3027,8 @@ async function loadKit(done){
                   ${sigDateHTML('teacher', month)}
                   <div class="sig-title" style="margin-top: 3px;">គ្រូទទួលបន្ទុកថ្នាក់</div>
                 </div>
-                <div class="sig-name" style="font-size: 12px; margin-top: ${PROFILE_SIG ? '2px' : '38px'}; display: flex; align-items: flex-end; justify-content: center; gap: 1.5mm;">${PROFILE_SIG ? '<img class="kit-sig" alt="" src="' + PROFILE_SIG + '" style="height:11mm!important;width:auto!important;max-width:30mm!important;max-height:11mm!important;object-fit:contain;display:block;flex:none">' : ''}<span style="padding-bottom:1mm">${TEACHER_NAME || ''}</span></div>
+                <div class="kit-abs">${kitSig()}</div>
+                <div class="sig-name" style="font-size: 12px; margin-top: 0; padding-left: 70px;">${TEACHER_NAME || ''}</div>
               </div>
             </div>
           </div>
