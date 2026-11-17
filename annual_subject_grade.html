@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="km" data-theme="dark">
 <head>
+<script>window.T2=function(x){return Math.floor(Number(x)*100+1e-7)/100};</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
   <title>តារាងនិទ្ទេសតាមមុខវិជ្ជាគោល</title>
@@ -2145,7 +2146,7 @@ exports.default = {
         .map(key => readJsonScore(scoreObject, [key]))
         .filter(value => value !== null);
       if (values.length) {
-        return Number((values.reduce((sum, value) => sum + value, 0) / values.length).toFixed(2));
+        return T2(values.reduce((sum, value) => sum + value, 0) / values.length);
       }
       return null;
     }
@@ -2329,13 +2330,13 @@ exports.default = {
       rawStudentsList.forEach(s => {
         let sc = s.scores;
         if (currentSubjectMode === 'KM_MA') {
-          s.totalAvg = Number(((sc.km + sc.ma) / 2).toFixed(2));
+          s.totalAvg = T2((sc.km + sc.ma) / 2);
         } else if (s.savedAverage !== null && s.savedAverage !== undefined) {
-          s.totalAvg = Number(s.savedAverage.toFixed(2));
+          s.totalAvg = T2(s.savedAverage);
         } else {
           const vals = Object.values(sc);
           const sum = vals.reduce((a, b) => a + b, 0);
-          s.totalAvg = vals.length ? Number((sum / vals.length).toFixed(2)) : 0;
+          s.totalAvg = vals.length ? T2(sum / vals.length) : 0;
         }
       });
 

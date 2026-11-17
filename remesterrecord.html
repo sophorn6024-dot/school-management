@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="km" data-theme="dark">
 <head>
+<script>window.T2=function(x){return Math.floor(Number(x)*100+1e-7)/100};</script>
   <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
@@ -72,7 +73,7 @@ function fmtDobKh(v){
   return kh(d)+' ខែ'+M[mo-1]+' ឆ្នាំ'+kh(y);
 }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>(function(){try{if(window.parent&&window.parent!==window&&window.parent.supabase&&window.parent.supabase.createClient){window.supabase=window.parent.supabase;return}}catch(e){}document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>')})();</script>
 
   <style>
     /* =========================================================
@@ -3029,14 +3030,14 @@ async function loadKit(done){
             const r = myScores.find(sc => sc.score_type === 'monthly' && sc.period === m);
             if (r && Number(r.average) > 0) { sum1 += Number(r.average); c1++; }
           });
-          if (c1 > 0) s1MonthlyAvgMap[sId] = (sum1 / c1).toFixed(2);
+          if (c1 > 0) s1MonthlyAvgMap[sId] = T2(sum1 / c1).toFixed(2);
 
           let sum2 = 0, c2 = 0;
           s2Months.forEach(m => {
             const r = myScores.find(sc => sc.score_type === 'monthly' && sc.period === m);
             if (r && Number(r.average) > 0) { sum2 += Number(r.average); c2++; }
           });
-          if (c2 > 0) s2MonthlyAvgMap[sId] = (sum2 / c2).toFixed(2);
+          if (c2 > 0) s2MonthlyAvgMap[sId] = T2(sum2 / c2).toFixed(2);
         });
 
         const attMap = {};
@@ -3117,7 +3118,7 @@ async function loadKit(done){
       const s1TotList = [], s2TotList = [];
       const s1SemList = [], s2SemList = [], yAvgList = [];
       const calcMap = {};
-      const r2 = x => Number(Number(x).toFixed(2));
+      const r2 = x => T2(x);
       const combine2 = (a, b) => (a > 0 && b > 0) ? (a + b) / 2 : (a > 0 ? a : (b > 0 ? b : 0));
 
       SEMESTER_SUBJECTS.forEach(sub => {

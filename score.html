@@ -2347,7 +2347,7 @@ function calcAvg(sid,den){
   });
   if(own>0){
     const d=(den!==undefined)?den:activeCoefTotal();
-    return d>0?ws/d:0;
+    return d>0?Math.floor(ws/d*100+1e-7)/100:0; /* កាត់ត្រឹម ២ ខ្ទង់ (មិនជុំឡើង): ៤.៩៩៦ → ៤.៩៩ → ចំណាត់ថ្នាក់ ស្មើ និងជាប់/ធ្លាក់ ស្របគ្នា */
   }
   // ប្រើមធ្យមភាគក្នុង DB តែពេលសិស្សនេះមិនទាន់ត្រូវបានកែ/លុបពិន្ទុក្នុងវគ្គនេះ
   if(!touchedSids[sid]&&savedDbAverages[sid])return savedDbAverages[sid];

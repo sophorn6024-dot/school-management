@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="km">
 <head>
+<script>window.T2=function(x){return Math.floor(Number(x)*100+1e-7)/100};</script>
   <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
@@ -57,10 +58,10 @@ async function stRows(){
 </script>
 <script>window.__kc=function(s){return String(s==null?'':s).replace(/[0-9]/g,function(d){return '០១២៣៤៥៦៧៨៩'[d]})};</script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
 
   <!-- ⚡ Supabase JS Client (v2) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>(function(){try{if(window.parent&&window.parent!==window&&window.parent.supabase&&window.parent.supabase.createClient){window.supabase=window.parent.supabase;return}}catch(e){}document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>')})();</script>
 
   <style>
     * {
@@ -2230,7 +2231,7 @@ async function stRows(){
             });
 
             /* ចែកតាមមុខវិជ្ជាទាំងអស់ក្នុងថ្នាក់ (មានពិន្ទុ ≥១ នាក់) មិនមែនតាមមុខដែលសិស្សម្នាក់ៗមាន */
-            const avgScore = (wCnt > 0 && dCnt > 0) ? (wSum / dCnt) : 0;
+            const avgScore = (wCnt > 0 && dCnt > 0) ? T2(wSum / dCnt) : 0;
 
             return {
               id: st.student_id || st.id,
@@ -2279,10 +2280,10 @@ async function stRows(){
               });
             });
 
-            const avg1 = (c1 > 0 && d1 > 0) ? (t1 / d1) : 0;
-            const avg2 = (c2 > 0 && d2 > 0) ? (t2 / d2) : 0;
+            const avg1 = (c1 > 0 && d1 > 0) ? T2(t1 / d1) : 0;
+            const avg2 = (c2 > 0 && d2 > 0) ? T2(t2 / d2) : 0;
             let yearAvg = 0;
-            if (avg1 > 0 && avg2 > 0) yearAvg = (avg1 + avg2) / 2;
+            if (avg1 > 0 && avg2 > 0) yearAvg = T2((avg1 + avg2) / 2);
             else if (avg1 > 0) yearAvg = avg1;
             else if (avg2 > 0) yearAvg = avg2;
 
@@ -2326,7 +2327,7 @@ async function stRows(){
               });
             });
 
-            const semAvg = (semWc > 0 && semD > 0) ? (semW / semD) : 0;
+            const semAvg = (semWc > 0 && semD > 0) ? T2(semW / semD) : 0;
 
             return {
               id: st.student_id || st.id,
@@ -2486,7 +2487,7 @@ async function stRows(){
         summaryRowsHtml = `
           <tr style="background:#f8fafc;">
             <td colspan="3" class="summary-cell-text" style="text-align:left; padding-left:12px;">
-              ពិន្ទុសរុប ${st.avgScore > 0 ? st.totalScore.toFixed(2) : '-'} • មធ្យមភាគ ${st.avgScore > 0 ? st.avgScore.toFixed(2) : '-'}
+              ពិន្ទុសរុប ${st.avgScore > 0 ? st.totalScore.toFixed(2) : '-'} • មធ្យមភាគ ${st.avgScore > 0 ? T2(st.avgScore).toFixed(2) : '-'}
             </td>
             <td colspan="2" class="summary-cell-text">
               ${st.rank ? 'ចំណាត់ថ្នាក់ទី <span style="color:#dc2626; font-weight:800;">' + st.rank + '</span>' : ''}
@@ -2527,7 +2528,7 @@ async function stRows(){
           tbodyHtml = `<tr><td colspan="8" style="padding: 24px; color:#ef4444; font-weight:bold;">⚠️ សិស្សនេះមិនទាន់មានពិន្ទុប្រឡងឆមាសនៅឡើយទេ</td></tr>`;
         } else {
           ySubs.forEach((row, i) => {
-            const avgTxt = (row.avg === null || row.avg === undefined) ? '' : Number(row.avg).toFixed(2).replace(/\.00$/, '');
+            const avgTxt = (row.avg === null || row.avg === undefined) ? '' : T2(row.avg).toFixed(2).replace(/\.00$/, '');
             tbodyHtml += `
               <tr>
                 <td>${i + 1}</td>
@@ -2546,13 +2547,13 @@ async function stRows(){
         summaryRowsHtml = `
           <tr style="background:#f8fafc;">
             <td colspan="3" class="summary-cell-text" style="text-align:left; padding-left:10px;">
-              មធ្យមភាគឆមាសទី១ ${st.avgSem1 > 0 ? st.avgSem1.toFixed(2) : '-'}
+              មធ្យមភាគឆមាសទី១ ${st.avgSem1 > 0 ? T2(st.avgSem1).toFixed(2) : '-'}
             </td>
             <td colspan="2" class="summary-cell-text">
-              មធ្យមភាគឆមាសទី២ ${st.avgSem2 > 0 ? st.avgSem2.toFixed(2) : '-'}
+              មធ្យមភាគឆមាសទី២ ${st.avgSem2 > 0 ? T2(st.avgSem2).toFixed(2) : '-'}
             </td>
             <td colspan="3" class="summary-cell-text">
-              មធ្យមភាគប្រចាំឆ្នាំ ${st.avgScore > 0 ? st.avgScore.toFixed(2) : '-'}
+              មធ្យមភាគប្រចាំឆ្នាំ ${st.avgScore > 0 ? T2(st.avgScore).toFixed(2) : '-'}
             </td>
           </tr>
           <tr style="background:#f8fafc;">
@@ -2601,7 +2602,7 @@ async function stRows(){
         summaryRowsHtml = `
           <tr style="background:#f8fafc;">
             <td colspan="2" class="summary-cell-text" style="text-align:left; padding-left:12px;">
-              ពិន្ទុសរុប ${st.avgScore > 0 ? st.totalScore.toFixed(2) : '-'} • មធ្យមភាគ ${st.avgScore > 0 ? st.avgScore.toFixed(2) : '-'}
+              ពិន្ទុសរុប ${st.avgScore > 0 ? st.totalScore.toFixed(2) : '-'} • មធ្យមភាគ ${st.avgScore > 0 ? T2(st.avgScore).toFixed(2) : '-'}
             </td>
             <td colspan="2" class="summary-cell-text">
               ${st.rank ? 'ចំណាត់ថ្នាក់ទី <span style="color:#dc2626; font-weight:800;">' + st.rank + '</span>' : ''}

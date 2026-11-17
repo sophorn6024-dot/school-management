@@ -2473,7 +2473,7 @@ exports.default = {
        ប្រចាំខែ   = មធ្យមភាគតាមខែក្នុងឆមាស / ចំនួនខែ
        ប្រចាំឆមាស = (ប្រចាំខែ + ប្រឡងឆមាស) / ២
        ប្រចាំឆ្នាំ  = (ប្រចាំឆមាសទី១ + ប្រចាំឆមាសទី២) / ២ */
-    const R2 = x => Number(Number(x).toFixed(2));
+    const R2 = x => Math.floor(Number(x) * 100 + 1e-7) / 100; /* កាត់ត្រឹម ២ ខ្ទង់ ដូចទំព័រពិន្ទុ */
     function combine2(a, b) { return (a > 0 && b > 0) ? (a + b) / 2 : (a > 0 ? a : (b > 0 ? b : 0)); }
 
     function calcSemester(myScores, months, examPeriod) {
