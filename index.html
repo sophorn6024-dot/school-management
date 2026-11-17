@@ -1152,6 +1152,14 @@ body.solo .iframe-container{bottom:0!important}
 .ms-item,.ms-profile,.m-nav-item,.report-card-item,.rg-row{-webkit-tap-highlight-color:transparent}
 .ms-item:active,.ms-profile:active{transform:scale(.97);transition:transform .12s ease}
 .ms-item,.ms-profile{transition:transform .3s var(--ease-out),box-shadow .25s ease}
+
+/* 🧩 ផ្ទាំងរបាយការណ៍: ក្រឡាចត្រង្គស្មើគ្នា (កាតក្នុងជួរតែមួយមានកម្ពស់ស្មើគ្នា) */
+.reports-grid-clean.rg-groups{grid-template-columns:repeat(3,minmax(0,1fr));gap:36px 20px;align-items:stretch}
+.rg-col{display:contents}
+.rg-card{display:flex;flex-direction:column;gap:2px;box-sizing:border-box}
+.rg-card .rg-row,.rg-card .rg-roster{min-height:46px}
+@media (max-width:1100px){.reports-grid-clean.rg-groups{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.reports-grid-clean.rg-groups{grid-template-columns:minmax(0,1fr);gap:34px 0}}
 </style>
 <script>
 /* ដាក់ logo សាលាចំកណ្ដាល QR (ត្រូវប្រើ correctLevel H ដើម្បីនៅតែស្កេនបាន) */
@@ -1403,7 +1411,7 @@ document.addEventListener('DOMContentLoaded',function(){ var f=document.getEleme
             </div>
               <div class="rg-row" onclick="openInTab('student_age_stats')"><span class="rg-name">ស្ថិតិសិស្សតាមអាយុ នាដើមឆ្នាំ</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('student_age_stats')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
               <div class="rg-row" onclick="openInTab('student_village_age')"><span class="rg-name">តារាងចំនួនសិស្សតាមភូមិ និងអាយុ</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('student_village_age')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
-              <div class="rg-row" onclick="openInTab('student_class_form')"><span class="rg-name">តារាងចំនួនសិស្សតាមថ្នាក់ (សម្រាប់គ្រូ · សិស្សថ្មី/ត្រួតតាមភូមិ)</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('student_class_form')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
+              <div class="rg-row" onclick="openInTab('student_class_form')"><span class="rg-name">តារាង PRI</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('student_class_form')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
             </div>
             <div class="rg-card rg-blue">
               <div class="rg-title f-moul">២. ថ្នាក់រៀន និងសិស្ស</div>
