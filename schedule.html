@@ -1943,10 +1943,11 @@ function fitSheet(){
   sh.style.zoom=1;const w=sh.offsetWidth,avail=pv.clientWidth-24;sh.style.zoom=Math.min(2.2,Math.max(0.3,avail/w)).toFixed(3);
 }
 window.addEventListener('resize',fitSheet);
-function sumHtml(){
-  const cnt={};Object.entries(D.cells).forEach(([k,v])=>{const [pid,d]=k.split('|');if(D.days.includes(+d)&&D.periods.some(p=>p.id===pid&&p.type==='class'))cnt[v]=(cnt[v]||0)+1});
+function sumHtml(list){
+  const cp=D.periods.filter(p=>p.type==='class'&&(!list||list.includes(p.session)));
+  const cnt={};Object.entries(D.cells).forEach(([k,v])=>{const [pid,d]=k.split('|');if(D.days.includes(+d)&&cp.some(p=>p.id===pid))cnt[v]=(cnt[v]||0)+1});
   const ks=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);if(!ks.length)return'';
-  const total=ks.reduce((a,[,c])=>a+c,0),slots=D.periods.filter(p=>p.type==='class').length*D.days.length;
+  const total=ks.reduce((a,[,c])=>a+c,0),slots=cp.length*D.days.length;
   return '<div class="sum-line">'+ks.map(([n,c])=>`<span class="sum-chip" style="background:${(subj(n)||{color:'#e2e8f0'}).color}">${esc(n)} <b>${kh(c)} ម៉ោង/សប្តាហ៍</b></span>`).join('')+`<span class="sum-chip sum-total" style="background:#0b3b6b;color:#fff;border-color:#0b3b6b">សរុប ${kh(total)} ម៉ោងសិក្សា/សប្តាហ៍</span></div>`;
 }
 function buildSheet(){
@@ -1965,11 +1966,11 @@ function buildSheet(){
       <div class="k moul" style="font-size:15px">ព្រះរាជាណាចក្រកម្ពុជា</div>
       <div class="k moul" style="font-size:13.5px">ជាតិ សាសនា ព្រះមហាក្សត្រ</div>
       <div style="font-size:12px;letter-spacing:4px;margin:2px 0 6px">─────── ❖ ───────</div>
-      <div class="s" id="rptSchoolLines" style="text-align:left;font-size:12px;font-weight:700;line-height:1.6;margin-bottom:6px">${schoolLinesHtml()}</div>
+      <div class="s" id="rptSchoolLines" style="text-align:left;font-size:14.5px;font-weight:700;line-height:1.7;margin-bottom:8px">${schoolLinesHtml()}</div>
       <div class="t moul">កាលវិភាគសិក្សាប្រចាំសប្តាហ៍</div>
       <div class="s">ថ្នាក់ទី ${esc(__kc(curClass))}${list.length>1?'':' · '+SESS[list[0]]}${who?' · គ្រូបន្ទុក ៖ '+esc(who):''}</div></div>`
     +(tables||'<div style="text-align:center;padding:30px">មិនទាន់មានម៉ោងសម្រាប់បោះពុម្ព</div>')
-    +sumHtml()
+    +sumHtml(list)
     +(o.sign?`<div class="pf">
       <div style="margin-top:34px"><div id="directorDateLine" style="font-size:11.5px;margin-bottom:3px;display:none"></div><b class="moul" style="font-size:12px">បានឃើញ និងឯកភាព</b><br><b class="moul" id="dirTitle" style="font-size:12px">${esc((SCH&&SCH.director_title)||'នាយកសាលា')}</b><div class="sp" id="spBlank"></div><div class="stamp-space" id="stampSpace" style="display:none"><div class="stamp-circle"><img id="stampImg" alt=""></div></div><div id="dirName" class="moul" style="font-size:12px;margin-top:6px"></div></div>
       <div><div style="font-size:11.5px" id="rptLunarDate"></div><div style="font-size:11.5px;margin-top:2px" id="rptSolarDate"></div><b class="moul" style="font-size:12px;display:block;margin-top:3px">គ្រូបន្ទុកថ្នាក់</b><div class="signature-box"><img id="teacherSigImg" alt="" style="display:none"></div><div id="rptTeacherName" style="font-size:12px;font-weight:700;margin-top:2px;text-align:center;padding-left:70px">${esc(who)}</div></div></div>`:'');
