@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="km" data-theme="dark">
 <head>
+<script id="stRowsJs">
+/* 🔒 អានសិស្សតាមមុខងារ staff_student_list (គ្រូឃើញតែថ្នាក់ខ្លួន ក្នុងសាលាខ្លួន · Admin ឃើញទាំងអស់) */
+async function stRows(grades){
+  var u=null,pw='';try{u=JSON.parse(localStorage.getItem('krou_supabase_user')||'null');pw=localStorage.getItem('krou_pw')||''}catch(e){}
+  if(!u||!u.username||!pw)return{data:null,error:{message:'សូមចូលប្រព័ន្ធឡើងវិញ'}};
+  var c=(typeof sb!=='undefined')?sb:SB;
+  var r=await c.rpc('staff_student_list',{p_u:u.username,p_p:pw});
+  if(r.error)return{data:null,error:r.error};
+  if(r.data&&r.data.error){if(r.data.error==='auth'){try{localStorage.removeItem('krou_pw')}catch(e){}}return{data:null,error:{message:String(r.data.error)}}}
+  var rows=(r.data&&r.data.rows)||[];
+  if(grades&&grades.length)rows=rows.filter(function(s){return grades.indexOf(s.grade)>-1});
+  return{data:rows,error:null};
+}
+</script>
   <base target="_top">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
@@ -14,7 +28,7 @@
 
   <!-- ⚡ Supabase JS Client (v2) -->
   <script>window.__kc=function(s){return String(s==null?'':s).replace(/[0-9]/g,function(d){return '០១២៣៤៥៦៧៨៩'[d]})};</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>(function(){try{if(window.parent&&window.parent!==window&&window.parent.supabase&&window.parent.supabase.createClient){window.supabase=window.parent.supabase;return}}catch(e){}document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>')})();</script>
 
   <style>
     /* =========================================================
@@ -2734,10 +2748,7 @@ async function loadKit(done){
       var isAdmin = (String(USER_ROLE).toLowerCase().trim() === 'admin');
 
       try {
-        const { data, error } = await sb
-          .from('students')
-          .select('id, student_id, student_name, gender, dob, grade, dropout_semester')
-          .order('id', { ascending: true });
+        const { data, error } = await stRows();
 
         if (error) throw error;
         allStudentsCache = data || [];
