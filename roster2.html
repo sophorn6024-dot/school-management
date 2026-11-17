@@ -1120,9 +1120,10 @@ function applyPsStyles() {
   paper.classList.toggle('is-portrait', !isL);
   /* បញ្ឈរ៖ ប្រើទទឹងជួរតាម % ដើម្បីតារាងមិនហួសក្រដាស */
   const ths = document.querySelectorAll('#rosterTable thead th');
+  const PW = [32, 108, 44, 68, 158, 90, 58, 90, 58, 158, 52, 48, 56];   /* ទម្ងន់ជួរក្នុងរបៀបបញ្ឈរ (ទីកន្លែងកំណើត/លំនៅដ្ឋានធំជាងគេ) */
   let tot = 0;
-  ths.forEach(th => { if (th.dataset.w0 === undefined) th.dataset.w0 = parseFloat(th.style.width) || 60; tot += parseFloat(th.dataset.w0); });
-  ths.forEach(th => { th.style.width = isL ? `${th.dataset.w0}px` : `${(parseFloat(th.dataset.w0) / tot * 100).toFixed(2)}%`; });
+  ths.forEach((th, i) => { if (th.dataset.w0 === undefined) th.dataset.w0 = parseFloat(th.style.width) || 60; tot += (PW[i] || parseFloat(th.dataset.w0)); });
+  ths.forEach((th, i) => { th.style.width = isL ? `${th.dataset.w0}px` : `${((PW[i] || parseFloat(th.dataset.w0)) / tot * 100).toFixed(2)}%`; });
   document.querySelectorAll('.table-roster tr').forEach(r => { r.style.height = `${PS.rowH}mm`; });
   document.getElementById('psUsable').innerText = `ផ្ទៃប្រើ ${w - PS.margin * 2}×${h - PS.margin * 2}mm`;
 }
