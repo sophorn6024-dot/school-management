@@ -2334,14 +2334,30 @@ exports.default = {
         } else if (s.savedAverage !== null && s.savedAverage !== undefined) {
           s.totalAvg = T2(s.savedAverage);
         } else {
-          const vals = Object.values(sc);
+          const vals = Object.keys(sc).filter(k => k !== 'wk').map(k => sc[k]);
           const sum = vals.reduce((a, b) => a + b, 0);
           s.totalAvg = vals.length ? T2(sum / vals.length) : 0;
         }
       });
 
       const sorted = [...rawStudentsList].sort((a, b) => b.totalAvg - a.totalAvg);
-      sorted.forEach((s, idx) => s.rank = idx + 1);
+      let _pr = 0, _pv = null;
+      sorted.forEach((s, idx) => {
+        if (!(s.totalAvg > 0)) { s.rank = ''; return; }   /* មិនទាន់មានពិន្ទុ → មិនដាក់ចំណាត់ថ្នាក់ */
+        if (s.totalAvg !== _pv) { _pr = idx + 1; _pv = s.totalAvg; }  /* មធ្យមភាគស្មើ → ចំណាត់ថ្នាក់ស្មើ */
+        s.rank = _pr;
+      });
+      /* ចំណាត់ថ្នាក់តាមមុខវិជ្ជា (ភាសាខ្មែរ / គណិតវិទ្យា) ដោយឡែក */
+      ['km', 'ma'].forEach(k => {
+        const arr = [...rawStudentsList].sort((a, b) => b.scores[k] - a.scores[k]);
+        let pr = 0, pv = null;
+        arr.forEach((s, i) => {
+          const v = s.scores[k];
+          if (!(v > 0)) { s['rk_' + k] = ''; return; }
+          if (v !== pv) { pr = i + 1; pv = v; }
+          s['rk_' + k] = pr;
+        });
+      });
     }
 
     /* =========================================================
@@ -2392,13 +2408,11 @@ exports.default = {
               <th colspan="2">អប់រំកាយសុខភាព</th>
               <th colspan="2">ភាសាបរទេស</th>
               <th colspan="2">គេហវិទ្យា-អប់រំសិល្បៈ</th>
-              <th colspan="2">ផ្សារភ្ជាប់ការងារ-សុខភាព</th>
               <th colspan="2">អប់រំបំណិនជីវិត</th>
               <th colspan="3">លទ្ធផលសរុប</th>
               <th rowspan="2" style="width:45px;">អវត្តមាន</th>
             </tr>
             <tr>
-              <th><div class="th-sub-label">មធ្យមភាគ</div></th><th><div class="th-sub-label">និទ្ទេស</div></th>
               <th><div class="th-sub-label">មធ្យមភាគ</div></th><th><div class="th-sub-label">និទ្ទេស</div></th>
               <th><div class="th-sub-label">មធ្យមភាគ</div></th><th><div class="th-sub-label">និទ្ទេស</div></th>
               <th><div class="th-sub-label">មធ្យមភាគ</div></th><th><div class="th-sub-label">និទ្ទេស</div></th>
@@ -2425,10 +2439,10 @@ exports.default = {
               <td style="text-align:left; padding-left:8px;">${s.name}</td>
               <td>${s.gender}</td>
               <td>${sc.km.toFixed(2)}</td>
-              <td class="${s.rank === 1 ? 'col-rank-1' : ''}">${s.rank}</td>
+              <td class="${s.rk_km === 1 ? 'col-rank-1' : ''}">${s.rk_km}</td>
               <td class="${getGradeColor(kmG)}">${kmG}</td>
               <td>${sc.ma.toFixed(2)}</td>
-              <td class="${s.rank === 1 ? 'col-rank-1' : ''}">${s.rank}</td>
+              <td class="${s.rk_ma === 1 ? 'col-rank-1' : ''}">${s.rk_ma}</td>
               <td class="${getGradeColor(maG)}">${maG}</td>
               <td>${s.totalAvg.toFixed(2)}</td>
               <td class="${s.rank === 1 ? 'col-rank-1' : ''}">${s.rank}</td>
@@ -2448,7 +2462,6 @@ exports.default = {
               <td>${sc.pe.toFixed(2)}</td><td class="${getGradeColor(gFn(sc.pe))}">${gFn(sc.pe)}</td>
               <td>${sc.fl.toFixed(2)}</td><td class="${getGradeColor(gFn(sc.fl))}">${gFn(sc.fl)}</td>
               <td>${sc.art.toFixed(2)}</td><td class="${getGradeColor(gFn(sc.art))}">${gFn(sc.art)}</td>
-              <td>${sc.wk.toFixed(2)}</td><td class="${getGradeColor(gFn(sc.wk))}">${gFn(sc.wk)}</td>
               <td>${sc.ls.toFixed(2)}</td><td class="${getGradeColor(gFn(sc.ls))}">${gFn(sc.ls)}</td>
               <td>${s.totalAvg.toFixed(2)}</td>
               <td class="${s.rank === 1 ? 'col-rank-1' : ''}">${s.rank}</td>
