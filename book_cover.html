@@ -41,7 +41,7 @@ body{background:var(--bg);color:var(--tx);font-family:'Battambang','Khmer OS Bat
 .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:3mm}
 .hd .l{font:400 3.7mm/1.55 'Moul','Battambang',serif;text-align:left;max-width:50%;margin-top:13mm}
 .hd .r{font:400 3.7mm/1.55 'Moul','Battambang',serif;text-align:center;width:50%}
-.hd .r .num{font:400 15mm/1 'Battambang',sans-serif;margin-top:2mm;min-height:2mm}
+.hd .r .orn{font:400 3.6mm/1 'Battambang',sans-serif;letter-spacing:.8mm;margin-top:1.5mm;white-space:nowrap}
 .grade{font:700 7mm/1.2 'Moul','Battambang',serif;color:#7030a0;margin-top:3mm;text-shadow:.3mm .3mm .6mm rgba(0,0,0,.35)}
 .mid{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:3.2mm;padding-bottom:6mm}
 .t1{font:400 15mm/1.25 'Moul','Battambang',serif;color:#4472c4;text-shadow:.5mm .5mm .8mm rgba(0,0,0,.35)}
@@ -78,7 +78,6 @@ body{background:var(--bg);color:var(--tx);font-family:'Battambang','Khmer OS Bat
   <div class="f wide"><label>ប្រភេទសៀវភៅ</label><select id="fTitle" onchange="onTitle()"></select></div>
   <div class="f wide" id="fCustomWrap" style="display:none"><label>ចំណងជើងផ្ទាល់ខ្លួន</label><input id="fCustom" oninput="save()" placeholder="ឧ. សៀវភៅចូលរួម"></div>
   <div class="f" id="fClsWrap" style="display:none"><label>ថ្នាក់</label><select id="fCls" onchange="onCls()"></select></div>
-  <div class="f"><label>លេខ/ចំនួន (ជ្រុងខាងលើស្តាំ — ទុកទទេបានបើមិនប្រើ)</label><input id="fNum" oninput="save()" maxlength="4"></div>
   <div class="f"><label>ទំហំក្រដាស</label><select id="fPaper" onchange="save()"><option value="a5">A5 បញ្ឈរ (ក្របតែមួយ)</option><option value="a4">A4 ផ្ដេក (ក្របនៅខាងស្តាំ — ដូចគំរូ PDF)</option></select></div>
 </div>
 <div class="hint">ថ្នាក់ ឈ្មោះគ្រូ លេខទូរស័ព្ទ ក្បាលសាលា និងឆ្នាំសិក្សា ទាញពីទិន្នន័យប្រព័ន្ធដោយស្វ័យប្រវត្តិ។ · ពេលព្រីន សូមជ្រើស «ទំហំក្រដាស» ឱ្យត្រូវនឹងដែលបានជ្រើសខាងលើ ហើយបិទ «Headers and footers» · អាចរក្សាទុកជា PDF តាមរយៈ Save as PDF។</div>
@@ -135,12 +134,11 @@ function fillForm(){
   sel.innerHTML=TITLES.map((t,i)=>'<option value="'+i+'">'+(i+1)+'. '+esc(t)+'</option>').join('')+'<option value="c">✎ ចំណងជើងផ្សេង…</option>';
   sel.value=ST.title!=null?ST.title:'0';
   $('fCustom').value=ST.custom||'';
-  $('fNum').value=ST.num||'';
-  $('fPaper').value=ST.paper||'a5';
+    $('fPaper').value=ST.paper||'a5';
   $('fCustomWrap').style.display=sel.value==='c'?'':'none';
 }
 function save(){
-  ST={title:$('fTitle').value,custom:$('fCustom').value,num:$('fNum').value,paper:$('fPaper').value,cls:ST.cls};
+  ST={title:$('fTitle').value,custom:$('fCustom').value,paper:$('fPaper').value,cls:ST.cls};
   try{localStorage.setItem(KEY,JSON.stringify(ST))}catch(e){}
   render();
 }
@@ -157,7 +155,7 @@ function coverHtml(title){
   const head=D.head.map(esc).join('<br>');
   const phone=D.phone;
   return '<div class="cover"><img class="emb" alt="" src="'+EMB+'"><div class="in">'
-   +'<div class="hd"><div class="l">'+head+'</div><div class="r">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ<div class="num">'+esc(v('fNum'))+'</div></div></div>'
+   +'<div class="hd"><div class="l">'+head+'</div><div class="r">ព្រះរាជាណាចក្រកម្ពុជា<br>ជាតិ សាសនា ព្រះមហាក្សត្រ<div class="orn">─────── ❖ ───────</div></div></div>'
    +'<div class="grade">'+esc(D.grade)+'</div>'
    +'<div class="mid"><div class="t1">សៀវភៅ</div><div class="t2">“'+esc(title)+'”</div>'
    +'<div class="t3">ឈ្មោះគ្រូទទួលបន្ទុកថ្នាក់</div><div class="t4">'+esc(D.name)+'</div>'
