@@ -1145,6 +1145,15 @@ function kInfo(y, m, d) {
     mi: k.monthIndex, be: k.beYear, animal: k.animalYearName, sak: k.sakName
   });
 }
+/* ថ្ងៃខែក្រោមបញ្ជី (ហត្ថលេខាគ្រូ)៖ លំនាំដើម = ថ្ងៃបច្ចុប្បន្ន ប្រសិនបើមិនទាន់ជ្រើសថ្ងៃ */
+function applyTodaySign(){
+  if (calPicked.teacher || typeof momentkh === 'undefined') return;
+  try {
+    const t = new Date(), o = kInfo(t.getFullYear(), t.getMonth() + 1, t.getDate());
+    document.getElementById('lblLunarDate').value = lunarFull(o);
+    document.getElementById('lblSolarDate').value = solarFull(o);
+  } catch (e) { console.warn('today sign', e); }
+}
 function calLunarDay(o) { return toKhmerNum(o.kd) + (o.ph === 1 ? 'រោច' : 'កើត'); }
 function lunarFull(o) {
   return `ថ្ងៃ${CAL_DOW[o.dow]} ${calLunarDay(o)} ខែ${CAL_LMN[o.mi]} ឆ្នាំ${o.animal} ${o.sak} ពុទ្ធសករាជ ${toKhmerNum(o.be)}`;
@@ -1495,6 +1504,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   updateAgeLbl();
   await initAdminClassDropdown();
   await loadRosterData();
+  applyTodaySign();
   applyPsStyles();
   setTimeout(fitPaper, 100);
   loadKit(()=>{applyKit();try{fitPaper()}catch(e){}});
