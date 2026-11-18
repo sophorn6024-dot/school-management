@@ -81,8 +81,10 @@ body{background:var(--bg);color:var(--text);padding:14px 14px 70px;min-height:10
 .doc-main-title h1{font-size:17px;margin-bottom:4px}
 .doc-main-title .sub-meta{font-size:12px;font-weight:700}
 .is-portrait .table-roster{table-layout:fixed;width:100%}
-.is-portrait .table-roster th,.is-portrait .table-roster td{white-space:normal!important;word-break:break-word;overflow-wrap:anywhere;padding:3px 1.5px;line-height:1.35}
-.is-portrait .table-roster thead th,.is-portrait .table-roster tbody td{font-size:8.6px}
+.is-portrait .table-roster th,.is-portrait .table-roster td{white-space:normal!important;word-break:break-word;overflow-wrap:anywhere;line-height:1.35}
+.is-portrait.dense .table-roster th,.is-portrait.dense .table-roster td{padding:3px 1.5px}
+.is-portrait.dense .table-roster thead th,.is-portrait.dense .table-roster tbody td{font-size:8.6px}
+.table-roster td.l{text-align:left;padding-left:6px}
 .table-roster{width:100%;border-collapse:collapse;text-align:center;margin-bottom:16px;border:1px solid #000;font-size:10.5px}
 .table-roster th,.table-roster td{border:1px solid #000;padding:5px 3px;vertical-align:middle;white-space:nowrap}
 .table-roster thead th{background:#f1f5f9;font-weight:700;font-size:10.5px}
@@ -160,7 +162,7 @@ body{background:var(--bg);color:var(--text);padding:14px 14px 70px;min-height:10
 @media print{
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   body{background:#fff!important;color:#000!important;padding:0!important;margin:0!important}
-  .top-toolbar,.ps-panel,.ps-backdrop,.cal-panel,.cal-backdrop,#authDeniedWrap{display:none!important}
+  .top-toolbar,.cols-bar,.ps-panel,.ps-backdrop,.cal-panel,.cal-backdrop,#authDeniedWrap{display:none!important}
   .report-paper-wrap{padding:0!important;overflow:visible!important}
   #paperScaler{width:auto!important;height:auto!important;transform:none!important}
   .report-paper{width:100%!important;min-height:0!important;padding:0!important;box-shadow:none!important;transform:none!important;border-radius:0!important}
@@ -185,6 +187,28 @@ try{const pr=window.parent&&window.parent!==window&&window.parent.document.docum
 window.addEventListener('message',e=>{if(e.data&&e.data.type==='THEME_CHANGE'){if(e.data.theme)R.setAttribute('data-theme',e.data.theme==='light'?'light':'dark');setP(e.data.primary)}});
 window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue)R.setAttribute('data-theme',e.newValue==='light'?'light':'dark')});})();
 </script>
+<style id="rosterV2">
+.tb-select{height:38px;border-radius:14px;border:1px solid var(--tb-line,var(--border));background:var(--pillbg,rgba(148,163,184,.1));color:var(--text);font-size:12.5px;font-weight:700;padding:0 12px;cursor:pointer;outline:none}
+.tb-btn.dtbtn{position:relative;overflow:hidden}
+.tb-btn.dtbtn input[type=date]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.tb-btn.dtbtn .lbl{display:inline!important}
+.tb-lbl{font-size:12px;font-weight:700;color:var(--text-muted);white-space:nowrap}
+.cols-bar{max-width:1400px;margin:-4px auto 14px;padding:10px 12px;border:1px solid var(--border);border-radius:16px;background:var(--surface);display:none}
+.cols-bar.show{display:block}
+.cb-top{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:10px}
+.cb-top .tb-lbl{margin-right:-4px}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-left:auto}
+.seg button{border:0;background:transparent;color:var(--text-muted);padding:8px 14px;font-size:12.5px;font-weight:700;cursor:pointer}
+.seg button.on{background:#2563eb;color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px 8px 8px;border:1px solid var(--border);border-radius:10px;background:rgba(148,163,184,.08);font-size:12.5px;font-weight:600;user-select:none;-webkit-user-select:none}
+.chip.on{border-color:#2563eb;background:rgba(37,99,235,.10)}
+.chip .hd{cursor:grab;color:#64748b;padding:2px 4px;touch-action:none;font-size:13px}
+.chip.on .hd{color:#3b82f6}
+.chip input{width:18px;height:18px;accent-color:#2563eb;cursor:pointer}
+.chip label{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.chip.drag{opacity:.55;outline:2px dashed #2563eb}
+</style>
 <style id="tbGlass">
 /* ===== 🧰 Toolbar glass + pill ===== */
 :root{--primary:#0284c7}
@@ -231,6 +255,21 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
     <div class="tb-sep"></div>
 
     <div class="tb-group">
+      <select id="layoutSelect" class="tb-select" onchange="setLayout(this.value)" title="ទម្រង់បញ្ជី">
+        <option value="bio">ជីវប្រវត្តិ</option>
+        <option value="portrait">ទម្រង់បញ្ឈរ</option>
+        <option value="pick">ជ្រើសជួរ</option>
+      </select>
+      <span class="tb-lbl">អាយុគិតត្រឹម</span>
+      <label class="tb-btn dtbtn" style="--c:#14b8a6" title="កាលបរិច្ឆេទគិតអាយុ">
+        <span class="ic"><i class="fa-regular fa-calendar"></i></span><span class="lbl" id="ageDateLbl">...</span>
+        <input type="date" id="ageDateInput" onchange="setAgeDate(this.value)">
+      </label>
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <div class="tb-group">
       <button type="button" class="tb-btn" style="--c:#8b5cf6" onclick="openCalendar('browse')" title="ប្រតិទិនចន្ទគតិ">
         <span class="ic"><i class="fa-solid fa-moon"></i></span><span class="lbl">ប្រតិទិន</span>
       </button>
@@ -269,6 +308,19 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
     </div>
   </div>
 
+  <!-- 🧩 COLUMN PICKER (ទម្រង់ ជ្រើសជួរ) -->
+  <div class="cols-bar" id="colsBar">
+    <div class="cb-top">
+      <span class="tb-lbl">ចំណងជើង</span>
+      <select id="titleSelect" class="tb-select" onchange="setTitleOpt(this.value)"></select>
+      <div class="seg" id="orientSeg">
+        <button type="button" data-o="portrait" onclick="setOrientFromBar('portrait')">បញ្ឈរ</button>
+        <button type="button" data-o="landscape" onclick="setOrientFromBar('landscape')">ផ្ដេក</button>
+      </div>
+    </div>
+    <div class="chips" id="colChips"></div>
+  </div>
+
   <!-- 📄 REPORT PAPER -->
   <div class="report-paper-wrap">
     <div id="paperScaler">
@@ -284,33 +336,17 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
           <div class="doc-left-info">
             <div id="kitHead"><div>ការិយាល័យអប់រំ យុវជន និងកីឡា</div>
             <div>សាលាបឋមសិក្សាកំពង់ល្ពៅ</div></div>
-            <div id="lblDisplayClass">ថ្នាក់ទី ៤ក</div>
+            <div id="lblDisplayClass" data-keep="1">ថ្នាក់ទី ៤ក</div>
           </div>
         </div>
 
         <div class="doc-main-title">
-          <h1 class="f-moul">បញ្ជីរាយនាមសិស្ស</h1>
+          <h1 class="f-moul" id="lblMainTitle">បញ្ជីរាយនាមសិស្ស</h1>
           <div class="sub-meta" id="lblSubMetaStats">ឆ្នាំសិក្សា ២០២៦-២០២៧ · សិស្សសរុប ០នាក់ · ស្រី ០នាក់</div>
         </div>
 
         <table class="table-roster" id="rosterTable">
-          <thead>
-            <tr>
-              <th style="width:34px;">ល.រ</th>
-              <th style="width:160px;">នាមត្រកូល និងនាម</th>
-              <th style="width:52px;">ភេទ</th>
-              <th style="width:85px;">ថ្ងៃខែឆ្នាំកំណើត</th>
-              <th style="width:95px;">ទីកន្លែងកំណើត</th>
-              <th style="width:110px;">ឈ្មោះឪពុក</th>
-              <th style="width:75px;">មុខរបរ</th>
-              <th style="width:110px;">ឈ្មោះម្តាយ</th>
-              <th style="width:75px;">មុខរបរ</th>
-              <th style="width:95px;">លំនៅដ្ឋាន</th>
-              <th style="width:75px;">ក្រុមជនជាតិ</th>
-              <th style="width:65px;">ពិការភាព</th>
-              <th style="width:85px;">សេចក្តីផ្សេងៗ</th>
-            </tr>
-          </thead>
+          <thead id="rosterHead"><tr></tr></thead>
           <tbody id="rosterTableBody">
             <tr><td colspan="13" style="padding:30px; color:#64748b;">កំពុងទាញទិន្នន័យ...</td></tr>
           </tbody>
@@ -864,7 +900,7 @@ async function loadRosterData() {
     if (stData) stData.sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km'));
     if (stData && stData.length > 0) {
       studentsDataList = stData.map(s => ({
-        id: s.id, name: s.student_name, gender: s.gender || 'ប្រុស', dob: s.dob || '',
+        id: s.id, student_id: s.student_id || '', phone: s.phone || s.parent_phone || s.tel || '', is_repeat: !!(s.is_repeat || s.repeat_class || s.repeater), name: s.student_name, gender: s.gender || 'ប្រុស', dob: s.dob || '',
         pob: s.pob || 'បាត់ដំបង', father_name: s.father_name || '', father_job: s.father_job || '',
         mother_name: s.mother_name || '', mother_job: s.mother_job || '', address: s.address || 'បាត់ដំបង',
         ethnicity: s.ethnicity || 'ខ្មែរ', disability: s.disability || 'គ្មាន', note: s.note || ''
@@ -880,32 +916,186 @@ async function loadRosterData() {
   fitPaper();
 }
 
+/* =========================================================
+   ROSTER V2 · ទម្រង់ជាច្រើន + ជ្រើស/អូសតម្រៀបជួរ + អាយុគិតត្រឹមថ្ងៃ
+========================================================= */
+const RV2_KEY = 'krou_roster_v2';
+function _gl(s){ return s.gender && s.gender.includes('ស្រី') ? 'ស្រី' : 'ប្រុស'; }
+const ALL_COLS = {
+  no:     { l:'ល.រ',            w:34,  wp:34,  g:(s,i)=>toKhmerNum(i+1), x:(s,i)=>i+1 },
+  sid:    { l:'អត្តលេខ',        w:70,  wp:60,  g:s=>s.student_id||'', x:s=>s.student_id||'' },
+  name:   { l:'គោត្តនាម នាម',   w:160, wp:120, c:'name-cell', g:s=>s.name||'', x:s=>s.name||'' },
+  gender: { l:'ភេទ',            w:52,  wp:44,  g:(s,i,L)=>L==='portrait'?(_gl(s)==='ស្រី'?'ស':'ប'):(s.gender||'ប្រុស'), x:s=>s.gender||'ប្រុស' },
+  dob:    { l:'ថ្ងៃខែឆ្នាំកំណើត', w:88, wp:78,  g:s=>fmtDob(s.dob), x:s=>fmtDob(s.dob) },
+  age:    { l:'អាយុ',           w:44,  wp:40,  g:(s,i,L)=>{const a=calcAge(s.dob);return a===''?'':(L==='portrait'?a+'ឆ្នាំ':a)}, x:s=>calcAge(s.dob) },
+  pob:    { l:'ទីកន្លែងកំណើត',  w:150, wp:158, g:s=>s.pob||'', x:s=>s.pob||'' },
+  fname:  { l:'ឈ្មោះឪពុក',      w:110, wp:90,  g:s=>s.father_name||'', x:s=>s.father_name||'' },
+  fjob:   { l:'មុខរបរ',         w:75,  wp:58,  g:s=>s.father_job||'', x:s=>s.father_job||'' },
+  mname:  { l:'ឈ្មោះម្តាយ',     w:110, wp:90,  g:s=>s.mother_name||'', x:s=>s.mother_name||'' },
+  mjob:   { l:'មុខរបរ',         w:75,  wp:58,  g:s=>s.mother_job||'', x:s=>s.mother_job||'' },
+  phone:  { l:'លេខទូរសព្ទ',     w:90,  wp:78,  g:s=>s.phone||'', x:s=>s.phone||'' },
+  address:{ l:'លំនៅដ្ឋាន',       w:150, wp:158, g:s=>s.address||'', x:s=>s.address||'' },
+  eth:    { l:'ក្រុមជនជាតិ',    w:75,  wp:52,  g:s=>s.ethnicity||'', x:s=>s.ethnicity||'' },
+  dis:    { l:'ពិការភាព',       w:70,  wp:48,  g:s=>s.disability||'', x:s=>s.disability||'' },
+  rep:    { l:'សិស្សថ្មី/ត្រួតថ្នាក់', w:100, wp:80, g:s=>s.is_repeat?'ត្រួតថ្នាក់':'', x:s=>s.is_repeat?'ត្រួតថ្នាក់':'' },
+  note:   { l:'ផ្សេងៗ',         w:90,  wp:90,  g:s=>s.note||'', x:s=>s.note||'' }
+};
+const LAYOUTS = {
+  bio:      { orient:'landscape', cols:['no','name','gender','dob','age','pob','fname','fjob','mname','mjob','address','eth','dis'], lab:{ name:'នាមត្រកូល និងនាម' } },
+  portrait: { orient:'portrait',  cols:['no','sid','name','gender','dob','age','pob','note'], lab:{} }
+};
+/* ជ្រើសជួរ៖ លំដាប់ទាំងអស់ក្នុងបញ្ជី chip (ការបង្ហាញ/ការលាក់ + លំដាប់ ចាំទុក) */
+const PICK_ORDER_DEFAULT = ['no','name','gender','dob','age','fname','fjob','mname','mjob','phone','pob','sid','address','rep','note'];
+const PICK_LAB = { address:'ទីលំនៅបច្ចុប្បន្ន', fjob:'មុខរបរឪពុក', mjob:'មុខរបរម្តាយ' };
+const PICK_ON_DEFAULT = ['no','name','gender','dob','age'];
+
+let RV2 = { layout:'bio', ageDate:'', pickOrder:PICK_ORDER_DEFAULT.slice(), pickOn:PICK_ON_DEFAULT.slice(), pickOrient:'portrait', titleOpt:1 };
+try { const o = JSON.parse(localStorage.getItem(RV2_KEY) || 'null'); if (o) {
+  if (LAYOUTS[o.layout] || o.layout === 'pick') RV2.layout = o.layout;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(o.ageDate||'')) RV2.ageDate = o.ageDate;
+  if (Array.isArray(o.pickOrder)) { const ord = o.pickOrder.filter(k=>ALL_COLS[k]&&k!=='x'); PICK_ORDER_DEFAULT.forEach(k=>{ if(!ord.includes(k)) ord.push(k); }); RV2.pickOrder = ord; }
+  if (Array.isArray(o.pickOn)) RV2.pickOn = o.pickOn.filter(k=>ALL_COLS[k]);
+  if (o.pickOrient==='landscape'||o.pickOrient==='portrait') RV2.pickOrient = o.pickOrient;
+  if (o.titleOpt===1||o.titleOpt===2) RV2.titleOpt = o.titleOpt;
+} } catch(e){}
+function saveRV2(){ try{ localStorage.setItem(RV2_KEY, JSON.stringify(RV2)); }catch(e){} }
+function todayISO(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+if (!RV2.ageDate) RV2.ageDate = todayISO();
+
+function calcAge(dob){
+  const m = String(dob==null?'':dob).trim().match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
+  const a = RV2.ageDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m || !a) return '';
+  let age = +a[1] - +m[1];
+  if (+a[2] < +m[2] || (+a[2] === +m[2] && +a[3] < +m[3])) age--;
+  return age < 0 ? '' : age;
+}
+function setAgeDate(v){
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(v||'')) return;
+  RV2.ageDate = v; saveRV2(); updateAgeLbl(); renderRosterTable();
+}
+function updateAgeLbl(){
+  const m = RV2.ageDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  document.getElementById('ageDateLbl').textContent = m ? (+m[3]) + ' ' + CAL_GM[+m[2]-1] + ' ' + m[1] : '';
+  document.getElementById('ageDateInput').value = RV2.ageDate;
+}
+function schoolYearTxt(){
+  const d = new Date(); const y = d.getMonth() >= 8 ? d.getFullYear() : d.getFullYear() - 1;
+  return y + '-' + (y + 1);
+}
+function clsLabel(){
+  return __kc(String(currentSelectedClass || '៤ក')).replace(/\s+/g,'').replace(/\(([^)]*)\)/,'«$1»');
+}
+function titleOptions(){
+  const yr = __kc(schoolYearTxt());
+  return [
+    { v:1, t:`បញ្ជីឈ្មោះថ្នាក់ទី${clsLabel()} ឆ្នាំ${yr}` },
+    { v:2, t:`បញ្ជីរាយនាមសិស្សថ្នាក់ទី${clsLabel()} ឆ្នាំសិក្សា ${yr}` }
+  ];
+}
+function activeCols(){
+  if (RV2.layout === 'pick') {
+    const keys = RV2.pickOrder.filter(k => RV2.pickOn.includes(k));
+    return keys.map(k => ({ k, ...ALL_COLS[k], l: PICK_LAB[k] || ALL_COLS[k].l }));
+  }
+  const L = LAYOUTS[RV2.layout];
+  return L.cols.map(k => ({ k, ...ALL_COLS[k], l: (L.lab && L.lab[k]) || ALL_COLS[k].l }));
+}
+
+function setLayout(v){
+  if (v !== 'pick' && !LAYOUTS[v]) v = 'bio';
+  RV2.layout = v;
+  PS.orient = v === 'pick' ? RV2.pickOrient : LAYOUTS[v].orient;
+  saveRV2(); renderRosterTable(); updatePsPanel();
+}
+function setOrientFromBar(o){
+  RV2.pickOrient = o; PS.orient = o; saveRV2(); renderRosterTable(); updatePsPanel();
+}
+function setTitleOpt(v){ RV2.titleOpt = +v; saveRV2(); renderRosterTable(); }
+function toggleCol(k, on){
+  RV2.pickOn = on ? RV2.pickOrder.filter(x => RV2.pickOn.includes(x) || x === k) : RV2.pickOn.filter(x => x !== k);
+  saveRV2(); renderColChips(); renderRosterTable();
+}
+function renderColChips(){
+  const box = document.getElementById('colChips');
+  box.innerHTML = RV2.pickOrder.map(k => {
+    const on = RV2.pickOn.includes(k), lab = PICK_LAB[k] || ALL_COLS[k].l;
+    return `<div class="chip${on?' on':''}" data-k="${k}"><span class="hd" title="អូសដើម្បីតម្រៀប"><i class="fa-solid fa-grip-vertical"></i></span><label><input type="checkbox" ${on?'checked':''} onchange="toggleCol('${k}',this.checked)"><span>${lab}</span></label></div>`;
+  }).join('');
+  box.querySelectorAll('.hd').forEach(h => h.addEventListener('pointerdown', startChipDrag));
+}
+/* អូសតម្រៀប chip (ដំណើរការទាំងម៉ៅស៍ និងអេក្រង់ប៉ះ) */
+function startChipDrag(e){
+  e.preventDefault();
+  const chip = e.currentTarget.closest('.chip'), box = chip.parentNode;
+  chip.classList.add('drag');
+  try { e.currentTarget.setPointerCapture(e.pointerId); } catch(_){}
+  const move = ev => {
+    const el = document.elementFromPoint(ev.clientX, ev.clientY);
+    const tgt = el && el.closest && el.closest('.chip');
+    if (!tgt || tgt === chip || tgt.parentNode !== box) return;
+    const r = tgt.getBoundingClientRect();
+    const after = (ev.clientY > r.bottom - r.height / 2 && ev.clientX > r.left + r.width / 2) || ev.clientY > r.bottom;
+    box.insertBefore(chip, after ? tgt.nextSibling : tgt);
+  };
+  const up = () => {
+    window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
+    chip.classList.remove('drag');
+    RV2.pickOrder = [...box.querySelectorAll('.chip')].map(c => c.dataset.k);
+    saveRV2(); renderRosterTable();
+  };
+  window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+}
+
 function renderRosterTable() {
-  const tbody = document.getElementById('rosterTableBody');
+  const L = RV2.layout, cols = activeCols();
   const total = studentsDataList.length;
   const female = studentsDataList.filter(s => s.gender && s.gender.includes('ស្រី')).length;
-  document.getElementById('lblSubMetaStats').innerText =
-    `ឆ្នាំសិក្សា ២០២៦-២០២៧ · សិស្សសរុប ${toKhmerNum(total)}នាក់ · ស្រី ${toKhmerNum(female)}នាក់`;
-  if (!total) {
-    tbody.innerHTML = `<tr><td colspan="13" style="padding:26px; color:#64748b;">មិនមានទិន្នន័យសិស្សសម្រាប់ថ្នាក់នេះទេ</td></tr>`;
-    return;
+  /* ក្បាលបញ្ជី */
+  const yr = __kc(schoolYearTxt());
+  const title = document.getElementById('lblMainTitle'), sub = document.getElementById('lblSubMetaStats'), cl = document.getElementById('lblDisplayClass');
+  cl.innerText = `ថ្នាក់ទី${clsLabel()}`;
+  cl.style.display = L === 'pick' ? 'none' : '';
+  if (L === 'bio') {
+    title.innerText = 'បញ្ជីរាយនាមសិស្ស';
+    sub.style.display = '';
+    sub.innerText = `ឆ្នាំសិក្សា ${yr} · សិស្សសរុប ${toKhmerNum(total)}នាក់ · ស្រី ${toKhmerNum(female)}នាក់`;
+  } else if (L === 'portrait') {
+    title.innerText = `បញ្ជីរាយនាមសិស្សឆ្នាំ ${yr}`;
+    sub.style.display = 'none';
+  } else {
+    title.innerText = (titleOptions().find(o => o.v === RV2.titleOpt) || titleOptions()[0]).t;
+    sub.style.display = 'none';
   }
-  tbody.innerHTML = studentsDataList.map((s, idx) => `
-    <tr>
-      <td>${toKhmerNum(idx + 1)}</td>
-      <td class="name-cell">${s.name || ''}</td>
-      <td>${s.gender || 'ប្រុស'}</td>
-      <td>${fmtDob(s.dob)}</td>
-      <td>${s.pob || ''}</td>
-      <td>${s.father_name || ''}</td>
-      <td>${s.father_job || ''}</td>
-      <td>${s.mother_name || ''}</td>
-      <td>${s.mother_job || ''}</td>
-      <td>${s.address || ''}</td>
-      <td>${s.ethnicity || ''}</td>
-      <td>${s.disability || ''}</td>
-      <td>${s.note || ''}</td>
-    </tr>`).join('');
+  /* ផ្ទាំងជ្រើសជួរ */
+  const bar = document.getElementById('colsBar');
+  bar.classList.toggle('show', L === 'pick');
+  document.getElementById('layoutSelect').value = L;
+  if (L === 'pick') {
+    const ts = document.getElementById('titleSelect');
+    const opts = titleOptions();
+    ts.innerHTML = opts.map(o => `<option value="${o.v}"${o.v===RV2.titleOpt?' selected':''}>${o.t}</option>`).join('');
+    ts.value = String(RV2.titleOpt);
+    document.querySelectorAll('#orientSeg button').forEach(b => b.classList.toggle('on', b.dataset.o === PS.orient));
+    if (!document.getElementById('colChips').children.length || document.getElementById('colChips').dataset.sig !== RV2.pickOrder.join(',') + '|' + RV2.pickOn.join(',')) {
+      renderColChips();
+      document.getElementById('colChips').dataset.sig = RV2.pickOrder.join(',') + '|' + RV2.pickOn.join(',');
+    }
+  }
+  /* តារាង */
+  document.getElementById('rosterHead').innerHTML = '<tr>' + cols.map(c => `<th data-w="${c.w}" data-wp="${c.wp}">${c.l}</th>`).join('') + '</tr>';
+  const tbody = document.getElementById('rosterTableBody');
+  if (!cols.length) {
+    tbody.innerHTML = `<tr><td style="padding:26px;color:#64748b;">សូមជ្រើសរើសជួរយ៉ាងហោចណាស់មួយ</td></tr>`;
+  } else if (!total) {
+    tbody.innerHTML = `<tr><td colspan="${cols.length}" style="padding:26px; color:#64748b;">មិនមានទិន្នន័យសិស្សសម្រាប់ថ្នាក់នេះទេ</td></tr>`;
+  } else {
+    const LL = L;
+    tbody.innerHTML = studentsDataList.map((s, idx) =>
+      '<tr>' + cols.map(c => `<td${c.c?` class="${c.c}"`:''}>${c.g(s, idx, LL)}</td>`).join('') + '</tr>').join('');
+  }
+  applyPsStyles();
+  fitPaper();
 }
 
 /* =========================================================
@@ -913,8 +1103,9 @@ function renderRosterTable() {
 ========================================================= */
 function exportToExcel() {
   if (!studentsDataList.length) { alert('មិនមានទិន្នន័យសម្រាប់ទាញយកទេ!'); return; }
-  const headers = ["ល.រ","នាមត្រកូល និងនាម","ភេទ","ថ្ងៃខែឆ្នាំកំណើត","ទីកន្លែងកំណើត","ឈ្មោះឪពុក","មុខរបរ","ឈ្មោះម្តាយ","មុខរបរ","លំនៅដ្ឋាន","ក្រុមជនជាតិ","ពិការភាព","សេចក្តីផ្សេងៗ"];
-  const rows = studentsDataList.map((s, i) => [i + 1, s.name, s.gender, fmtDob(s.dob), s.pob, s.father_name, s.father_job, s.mother_name, s.mother_job, s.address, s.ethnicity, s.disability, s.note]);
+  const cols = activeCols();
+  const headers = cols.map(c => c.l);
+  const rows = studentsDataList.map((s, i) => cols.map(c => c.x(s, i)));
   const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "បញ្ជីរាយនាមសិស្ស");
@@ -1099,7 +1290,7 @@ function closePageSetup() {
   document.getElementById('psBackdrop').classList.remove('show');
 }
 function psSetPaper(p) { PS.paper = p; updatePsAll(); }
-function psSetOrient(o) { PS.orient = o; updatePsAll(); }
+function psSetOrient(o) { PS.orient = o; if (RV2.layout === 'pick') { RV2.pickOrient = o; saveRV2(); } renderRosterTable(); updatePsPanel(); }
 function psPreset(m) { PS.margin = m; updatePsAll(); }
 function psStep(key, dir) {
   if (key === 'margin') PS.margin = Math.max(2, Math.min(30, PS.margin + dir));
@@ -1113,7 +1304,7 @@ function psInput(key, val) {
   PS[key] = v;
   updatePsAll();
 }
-function psReset() { PS = { paper: 'A4', orient: 'landscape', margin: 10, font: 100, rowH: 6.2 }; updatePsAll(); }
+function psReset() { PS = { paper: 'A4', orient: RV2.layout === 'pick' ? RV2.pickOrient : LAYOUTS[RV2.layout].orient, margin: 10, font: 100, rowH: 6.2 }; updatePsAll(); renderRosterTable(); }
 function updatePsAll() { applyPsStyles(); updatePsPanel(); fitPaper(); }
 
 function applyPsStyles() {
@@ -1125,12 +1316,11 @@ function applyPsStyles() {
   paper.style.padding = `${PS.margin}mm`;
   paper.style.fontSize = `${(11 * PS.font) / 100}px`;
   paper.classList.toggle('is-portrait', !isL);
-  /* បញ្ឈរ៖ ប្រើទទឹងជួរតាម % ដើម្បីតារាងមិនហួសក្រដាស */
-  const ths = document.querySelectorAll('#rosterTable thead th');
-  const PW = [32, 108, 44, 68, 158, 90, 58, 90, 58, 158, 52, 48, 56];   /* ទម្ងន់ជួរក្នុងរបៀបបញ្ឈរ (ទីកន្លែងកំណើត/លំនៅដ្ឋានធំជាងគេ) */
-  let tot = 0;
-  ths.forEach((th, i) => { if (th.dataset.w0 === undefined) th.dataset.w0 = parseFloat(th.style.width) || 60; tot += (PW[i] || parseFloat(th.dataset.w0)); });
-  ths.forEach((th, i) => { th.style.width = isL ? `${th.dataset.w0}px` : `${((PW[i] || parseFloat(th.dataset.w0)) / tot * 100).toFixed(2)}%`; });
+  paper.classList.toggle('dense', document.querySelectorAll('#rosterTable thead th').length > 8);
+  /* បញ្ឈរ៖ ប្រើទទឹងជួរតាម % ដើម្បីតារាងមិនហួសក្រដាស · ផ្តេក៖ px */
+  const ths = [...document.querySelectorAll('#rosterTable thead th')];
+  let tot = 0; ths.forEach(th => { tot += parseFloat(th.dataset.wp) || 60; });
+  ths.forEach(th => { th.style.width = isL ? `${parseFloat(th.dataset.w) || 60}px` : `${((parseFloat(th.dataset.wp) || 60) / tot * 100).toFixed(2)}%`; });
   document.querySelectorAll('.table-roster tr').forEach(r => { r.style.height = `${PS.rowH}mm`; });
   document.getElementById('psUsable').innerText = `ផ្ទៃប្រើ ${w - PS.margin * 2}×${h - PS.margin * 2}mm`;
 }
@@ -1299,6 +1489,8 @@ async function loadKit(done){
 window.addEventListener('DOMContentLoaded', async () => {
   const isAuth = await checkAuthentication();
   if (!isAuth) return;
+  PS.orient = RV2.layout === 'pick' ? RV2.pickOrient : LAYOUTS[RV2.layout].orient;
+  updateAgeLbl();
   await initAdminClassDropdown();
   await loadRosterData();
   applyPsStyles();
