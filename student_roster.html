@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="km" data-theme="dark">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>បញ្ជីរាយនាមសិស្ស</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;600;700;800;900&family=Moul&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script id="stRowsJs">
+/* 🔒 អានសិស្សតាមមុខងារ staff_student_list (គ្រូឃើញតែថ្នាក់ខ្លួន ក្នុងសាលាខ្លួន · Admin ឃើញទាំងអស់) */
+async function stRows(grades){
+  var u=null,pw='';try{u=JSON.parse(localStorage.getItem('krou_supabase_user')||'null');pw=localStorage.getItem('krou_pw')||''}catch(e){}
+  if(!u||!u.username||!pw)return{data:null,error:{message:'សូមចូលប្រព័ន្ធឡើងវិញ'}};
+  var c=(typeof sb!=='undefined')?sb:SB;
+  var r=await c.rpc('staff_student_list',{p_u:u.username,p_p:pw});
+  if(r.error)return{data:null,error:r.error};
+  if(r.data&&r.data.error){if(r.data.error==='auth'){try{localStorage.removeItem('krou_pw')}catch(e){}}return{data:null,error:{message:String(r.data.error)}}}
+  var rows=(r.data&&r.data.rows)||[];
+  if(grades&&grades.length)rows=rows.filter(function(s){return grades.indexOf(s.grade)>-1});
+  return{data:rows,error:null};
+}
+</script>
+<script>window.__kc=function(s){return String(s==null?'':s).replace(/[0-9]/g,function(d){return '០១២៣៤៥៦៧៨៩'[d]})};</script>
+<script>(function(){try{if(window.parent&&window.parent!==window&&window.parent.supabase&&window.parent.supabase.createClient){window.supabase=window.parent.supabase;return}}catch(e){}document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>')})();</script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+<style>
+:root{--primary:#0284c7;--primary-hover:#0369a1;--bg:#0f172a;--surface:#1e293b;--surface-card:#1e293b;--border:#334155;--text:#f8fafc;--text-muted:#94a3b8}
+[data-theme="light"]{--bg:#f1f5f9;--surface:#fff;--surface-card:#fff;--border:#cbd5e1;--text:#0f172a;--text-muted:#64748b}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Khmer OS Battambang','Battambang',sans-serif!important}
+.fa-solid,.fas,.fa{font-family:"Font Awesome 6 Free"!important;font-weight:900!important}.fa-regular,.far{font-family:"Font Awesome 6 Free"!important;font-weight:400!important}.fa-brands,.fab{font-family:"Font Awesome 6 Brands"!important;font-weight:400!important}
+.f-moul{font-family:'Khmer OS Muol Light','Moul',cursive!important;font-weight:normal}
+body{background:var(--bg);color:var(--text);padding:14px 14px 70px;min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* AUTH */
+.auth-wrapper{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;text-align:center;padding:30px 20px}
+.auth-card{background:var(--surface-card);border:1.5px solid var(--border);border-radius:24px;padding:40px 28px;max-width:440px;width:100%;box-shadow:0 14px 40px rgba(0,0,0,.4);display:flex;flex-direction:column;align-items:center}
+.auth-icon{width:68px;height:68px;border-radius:20px;background:rgba(239,68,68,.15);color:#ef4444;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:16px}
+.auth-card h2{font-size:18px;margin-bottom:8px;color:#ef4444;font-weight:700}
+.auth-card p{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:24px}
+.btn-login-redirect{background:linear-gradient(135deg,var(--primary),var(--primary-hover));color:#fff;padding:10px 24px;border-radius:12px;font-weight:700;font-size:13.5px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;cursor:pointer;border:none}
+
+/* TOOLBAR */
+.top-toolbar{max-width:1400px;margin:0 auto 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:8px 10px;box-shadow:0 6px 22px rgba(0,0,0,.18)}
+.tb-group{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.tb-sep{width:1px;height:28px;background:var(--border);margin:0 4px}
+.tb-spacer{flex:1}
+.tb-btn{--c:#0284c7;height:42px;padding:0 13px 0 6px;border-radius:13px;border:1px solid var(--border);background:rgba(148,163,184,.10);color:var(--text);font-size:12.5px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:all .15s ease;outline:none;white-space:nowrap;user-select:none}
+.tb-btn:hover{background:rgba(148,163,184,.2);transform:translateY(-1px);border-color:var(--c)}
+.tb-btn:focus-visible{outline:2px solid var(--c);outline-offset:2px}
+.tb-btn .ic{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;font-size:14px;color:#fff;background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 70%,#000));flex:none}
+.tb-btn .chev{font-size:10px;color:var(--text-muted)}
+.tb-badge{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:7px;background:rgba(148,163,184,.18);color:var(--text-muted)}
+.tb-badge.set{background:rgba(16,185,129,.18);color:#10b981}
+.tb-btn.solid{background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 70%,#000));border-color:transparent;color:#fff}
+.tb-btn.solid .ic{background:rgba(255,255,255,.22)}
+.tb-btn.solid:hover{filter:brightness(1.1)}
+.dd-wrap{position:relative;display:inline-block}
+.dd-popup{display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:195px;max-height:290px;overflow-y:auto;background:#fff;border-radius:16px;box-shadow:0 14px 35px rgba(0,0,0,.35);border:1px solid #e2e8f0;padding:6px;z-index:1000;animation:ddIn .15s ease-out}
+.dd-popup.show{display:block}
+@keyframes ddIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.dd-item{padding:9px 13px;border-radius:11px;font-size:13px;font-weight:700;color:#1e293b;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;white-space:nowrap}
+.dd-item:hover{background:#f1f5f9}
+.dd-item.active{background:#e0f2fe;color:#0284c7}
+
+/* PAPER */
+.report-paper-wrap{width:100%;display:flex;justify-content:center;padding:4px 0 20px;overflow-x:auto}
+#paperScaler{margin:0 auto;position:relative;transition:transform .2s}
+.report-paper{width:297mm;min-height:210mm;background:#fff;color:#000;padding:10mm;border-radius:4px;box-shadow:0 10px 40px rgba(0,0,0,.45);font-size:11px;line-height:1.4;position:relative;transform-origin:top left}
+.report-paper *{color:#000}
+.doc-header-national{text-align:center;margin-bottom:6px}
+.doc-header-national h2{font-size:15px;margin-bottom:2px}
+.doc-header-national h3{font-size:13.5px;margin-bottom:2px}
+.doc-divider{letter-spacing:4px;font-size:11px;margin-top:1px}
+.doc-meta-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+.doc-left-info{font-size:11.5px;font-weight:700;line-height:1.45}
+.doc-main-title{text-align:center;margin:4px 0 12px}
+.doc-main-title h1{font-size:17px;margin-bottom:4px}
+.doc-main-title .sub-meta{font-size:12px;font-weight:700}
+.is-portrait .table-roster{table-layout:fixed;width:100%}
+.is-portrait .table-roster th,.is-portrait .table-roster td{white-space:normal!important;word-break:break-word;overflow-wrap:anywhere;line-height:1.35}
+.is-portrait.dense .table-roster th,.is-portrait.dense .table-roster td{padding:3px 1.5px}
+.is-portrait.dense .table-roster thead th,.is-portrait.dense .table-roster tbody td{font-size:8.6px}
+.table-roster td.l{text-align:left;padding-left:6px}
+.table-roster{width:100%;border-collapse:collapse;text-align:center;margin-bottom:16px;border:1px solid #000;font-size:10.5px}
+.table-roster th,.table-roster td{border:1px solid #000;padding:5px 3px;vertical-align:middle;white-space:nowrap}
+.table-roster thead th{background:#f1f5f9;font-weight:700;font-size:10.5px}
+.table-roster tbody td{font-size:10.5px;font-weight:600}
+.name-cell{text-align:left!important;padding-left:8px!important;font-weight:700}
+.sign-row{display:flex;justify-content:space-between;align-items:flex-start;margin-top:18px;padding:0 14px}
+.sign-col{text-align:center;min-width:240px;font-size:11.5px;font-weight:700}
+.sign-col .sign-title{font-size:12px;margin-top:4px}
+.sign-col .sign-space{height:65px;display:flex;align-items:center;justify-content:center}
+.kit-stamp{display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}.kit-sig{max-height:100%;max-width:60%;object-fit:contain}
+
+.sign-col .sign-name{font-size:12px;font-weight:700;margin-top:2px}
+#lblTeacherName{text-align:center;padding-left:70px}
+.editable-input{border:none;background:transparent;text-align:center;font-size:11.5px;font-weight:700;color:inherit;outline:none;width:100%}
+.editable-input:focus{background:rgba(2,132,199,.08);border-radius:4px}
+
+/* PAGE SETUP */
+.ps-backdrop{display:none;position:fixed;inset:0;z-index:2500;background:rgba(0,0,0,.6)}
+.ps-backdrop.show{display:block}
+.ps-panel{display:none;position:fixed;z-index:2600;top:58px;right:20px;width:380px;max-width:calc(100vw - 24px);max-height:calc(100vh - 74px);overflow-y:auto;background:#25272b;color:#f1f5f9;border:1px solid #3f434a;border-radius:22px;padding:18px 20px 16px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.ps-panel.show{display:block;animation:psIn .18s ease-out}
+@keyframes psIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.ps-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ps-head h3{font-size:16.5px;font-weight:800;color:#f8fafc}
+.ps-head .ps-reset{background:none;border:none;color:#9ca3af;font-size:13px;font-weight:700;cursor:pointer}
+.ps-sec{display:flex;align-items:center;gap:8px;color:#9ca3af;font-size:13.5px;font-weight:700;margin:12px 0 8px}
+.ps-sec .ps-line{flex:1;height:1px;background:#3f434a}
+.ps-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:8px}
+.ps-opt{background:#34373d;color:#f1f5f9;border:none;border-radius:12px;padding:9px 4px;min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;font-size:13.5px;font-weight:800}
+.ps-opt small{font-size:11px;font-weight:500;color:#9ca3af}
+.ps-opt.active{background:#0284c7;color:#fff}
+.ps-opt.active small{color:rgba(255,255,255,.85)}
+.ps-row{display:grid;grid-template-columns:60px auto 1fr;align-items:center;gap:8px;margin:10px 0;font-size:13.5px}
+.ps-row label{color:#f1f5f9;font-weight:700}
+.ps-row .ps-hint{font-size:11.5px;color:#9ca3af}
+.ps-step{display:inline-flex;align-items:center;gap:5px}
+.ps-step>button{width:34px;height:38px;border-radius:10px;border:none;background:#34373d;color:#f1f5f9;font-size:16px;font-weight:700;cursor:pointer}
+.ps-val{display:inline-flex;align-items:center;gap:4px;background:#34373d;border-radius:10px;height:38px;padding:0 8px;width:88px}
+.ps-val input{flex:1;min-width:0;width:100%;background:transparent;border:none;outline:none;text-align:center;color:#f1f5f9;font-size:14px;font-weight:700}
+.ps-val span{color:#9ca3af;font-size:12px}
+
+/* CALENDAR MODAL */
+.cal-backdrop{display:none;position:fixed;inset:0;z-index:2700;background:rgba(0,0,0,.6)}
+.cal-backdrop.show{display:block}
+.cal-panel{display:none;position:fixed;z-index:2800;top:50%;left:50%;transform:translate(-50%,-50%);width:440px;max-width:calc(100vw - 20px);max-height:calc(100vh - 20px);overflow-y:auto;background:#25272b;color:#f1f5f9;border:1px solid #3f434a;border-radius:22px;padding:16px 16px 14px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.cal-panel.show{display:block;animation:psIn .18s ease-out}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal-head h3{font-size:15.5px;font-weight:800;display:flex;gap:8px;align-items:center}
+.cal-x{background:#34373d;border:none;color:#f1f5f9;width:34px;height:34px;border-radius:10px;cursor:pointer}
+.cal-nav{display:flex;gap:6px;margin-bottom:8px}
+.cal-nav button,.cal-nav select{height:38px;border-radius:10px;border:none;background:#34373d;color:#f1f5f9;font-weight:700;cursor:pointer;padding:0 10px;font-size:13px}
+.cal-nav button{width:38px;padding:0}
+.cal-nav select{flex:1;min-width:0}
+.cal-dow,.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.cal-dow div{text-align:center;font-size:12px;font-weight:700;color:#9ca3af;padding:4px 0}
+.cal-dow div:first-child{color:#f87171}
+.cal-cell{position:relative;border:1px solid transparent;background:#2e3136;color:#f1f5f9;border-radius:10px;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;padding:2px 0;line-height:1.25}
+.cal-cell:hover{background:#3b3f46}
+.cal-cell b{font-size:15px}
+.cal-cell small{font-size:10px;color:#9ca3af}
+.cal-cell.sun b{color:#f87171}
+.cal-cell.holy small{color:#fbbf24;font-weight:700}
+.cal-cell .mo{position:absolute;top:1px;right:3px;font-size:10px}
+.cal-cell.today{border-color:#38bdf8}
+.cal-cell.sel{background:#0284c7;border-color:#0284c7}
+.cal-cell.sel small{color:#e0f2fe}
+.cal-preview{margin:12px 0 10px;padding:10px 12px;border-radius:12px;background:#1c1e22;font-size:12.5px;line-height:1.7}
+.cal-preview .p1{font-weight:800;color:#7dd3fc}
+.cal-foot{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.cal-foot button{height:40px;padding:0 14px;border-radius:11px;border:none;font-weight:700;font-size:13px;cursor:pointer;background:#34373d;color:#f1f5f9;display:inline-flex;align-items:center;gap:6px}
+.cal-foot .ok{background:#0284c7;color:#fff}
+.cal-foot .ok2{background:#d97706;color:#fff}
+.cal-foot .del{background:rgba(239,68,68,.18);color:#fca5a5}
+
+@media print{
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  body{background:#fff!important;color:#000!important;padding:0!important;margin:0!important}
+  .top-toolbar,.cols-bar,.ps-panel,.ps-backdrop,.cal-panel,.cal-backdrop,#authDeniedWrap{display:none!important}
+  .report-paper-wrap{padding:0!important;overflow:visible!important}
+  #paperScaler{width:auto!important;height:auto!important;transform:none!important}
+  .report-paper{width:100%!important;min-height:0!important;padding:0!important;box-shadow:none!important;transform:none!important;border-radius:0!important}
+  .table-roster thead{display:table-header-group}
+  .table-roster tr{break-inside:avoid;page-break-inside:avoid}
+}
+@media(max-width:768px){
+  .ps-panel{top:auto;left:0;right:0;bottom:0;width:100%;max-width:100%;border-radius:22px 22px 0 0}
+}
+@media(max-width:560px){
+  .tb-btn .lbl,.tb-btn .tb-badge{display:none}
+  .tb-btn{padding:0 6px}
+  .tb-sep{display:none}
+}
+</style>
+<script>
+(function(){const R=document.documentElement;let t='dark';try{const u=new URLSearchParams(location.search).get('theme');let p=null;try{if(window.parent&&window.parent!==window)p=window.parent.document.documentElement.getAttribute('data-theme')}catch(e){}
+t=u||p||localStorage.getItem('krou_theme_manual')||R.getAttribute('data-theme')||'dark'}catch(e){}R.setAttribute('data-theme',t==='light'?'light':'dark');
+function setP(v){if(/^#[0-9a-fA-F]{6}$/.test(v||''))R.style.setProperty('--primary',v)}
+try{setP(new URLSearchParams(location.search).get('primary'))}catch(e){}
+try{const pr=window.parent&&window.parent!==window&&window.parent.document.documentElement.style.getPropertyValue('--primary');if(pr)setP(pr.trim())}catch(e){}
+window.addEventListener('message',e=>{if(e.data&&e.data.type==='THEME_CHANGE'){if(e.data.theme)R.setAttribute('data-theme',e.data.theme==='light'?'light':'dark');setP(e.data.primary)}});
+window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue)R.setAttribute('data-theme',e.newValue==='light'?'light':'dark')});})();
+</script>
+<style id="rosterV2">
+.tb-select{height:38px;border-radius:14px;border:1px solid var(--tb-line,var(--border));background:var(--pillbg,rgba(148,163,184,.1));color:var(--text);font-size:12.5px;font-weight:700;padding:0 12px;cursor:pointer;outline:none}
+.tb-btn.dtbtn{position:relative;overflow:hidden}
+.tb-btn.dtbtn input[type=date]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.tb-btn.dtbtn .lbl{display:inline!important}
+.tb-lbl{font-size:12px;font-weight:700;color:var(--text-muted);white-space:nowrap}
+.cols-bar{max-width:1400px;margin:-4px auto 14px;padding:10px 12px;border:1px solid var(--border);border-radius:16px;background:var(--surface);display:none}
+.cols-bar.show{display:block}
+.cb-top{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:10px}
+.cb-top .tb-lbl{margin-right:-4px}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-left:auto}
+.seg button{border:0;background:transparent;color:var(--text-muted);padding:8px 14px;font-size:12.5px;font-weight:700;cursor:pointer}
+.seg button.on{background:#2563eb;color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:8px 12px 8px 8px;border:1px solid var(--border);border-radius:10px;background:rgba(148,163,184,.08);font-size:12.5px;font-weight:600;user-select:none;-webkit-user-select:none}
+.chip.on{border-color:#2563eb;background:rgba(37,99,235,.10)}
+.chip .hd{cursor:grab;color:#64748b;padding:2px 4px;touch-action:none;font-size:13px}
+.chip.on .hd{color:#3b82f6}
+.chip input{width:18px;height:18px;accent-color:#2563eb;cursor:pointer}
+.chip label{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.chip.drag{opacity:.55;outline:2px dashed #2563eb}
+</style>
+<style id="tbGlass">
+/* ===== 🧰 Toolbar glass + pill ===== */
+:root{--primary:#0284c7}
+:root,[data-theme="light"]{--tb-1:color-mix(in srgb,var(--primary) 12%,#fff);--tb-2:color-mix(in srgb,var(--primary) 5%,#fff);--tb-line:color-mix(in srgb,var(--primary) 28%,#dbe3ee);--pillbg:#fff}
+[data-theme="dark"]{--tb-1:color-mix(in srgb,var(--primary) 17%,#0f1b2d);--tb-2:color-mix(in srgb,var(--primary) 7%,#0c1524);--tb-line:color-mix(in srgb,var(--primary) 32%,#16273f);--pillbg:rgba(255,255,255,.05)}
+.top-toolbar{margin:0 auto 14px!important;padding:8px 10px!important;border:1px solid var(--tb-line)!important;border-radius:20px!important;background:linear-gradient(120deg,var(--tb-1),var(--tb-2))!important;box-shadow:0 6px 18px color-mix(in srgb,var(--primary) 14%,transparent)!important;gap:6px 8px!important}
+.top-toolbar .tb-btn{height:38px;border-radius:14px;background:var(--pillbg);border-color:var(--tb-line)}
+.top-toolbar .tb-btn.solid{background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 70%,#000))}
+.top-toolbar .tb-btn:hover{border-color:var(--c)}
+.top-toolbar .tb-sep{background:var(--tb-line)}
+@media(min-width:721px){.top-toolbar .tb-group{display:contents}.top-toolbar .tb-sep{display:none}}
+</style>
+</head>
+<body>
+
+<!-- 🔒 AUTH DENIED -->
+<div id="authDeniedWrap" class="auth-wrapper">
+  <div class="auth-card">
+    <div class="auth-icon">🔒</div>
+    <h2>សូមចូលប្រើប្រាស់ជាមុនសិន!</h2>
+    <p id="authDeniedMsg">លោកអ្នកមិនទាន់បាន Login ចូលក្នុងប្រព័ន្ធនៅឡើយទេ។ សូម Login គណនីរបស់អ្នកដើម្បីមើលបញ្ជីរាយនាមសិស្ស។</p>
+    <a href="index.html" target="_top" class="btn-login-redirect" onclick="goToIndex(event)"><span>🔑</span> <span>ទៅកាន់ទំព័រដើម (Login)</span></a>
+  </div>
+</div>
+
+<div id="mainPageContent" style="display:none;">
+
+  <!-- 🛠️ TOOLBAR -->
+  <div class="top-toolbar">
+    <div class="tb-group">
+      <button type="button" class="tb-btn" style="--c:#64748b" onclick="goBack()" title="ត្រឡប់ក្រោយ">
+        <span class="ic"><i class="fa-solid fa-arrow-left"></i></span><span class="lbl">ត្រឡប់</span>
+      </button>
+      <div class="dd-wrap" id="adminClassDropdownWrap" style="display:none;">
+        <button type="button" class="tb-btn" style="--c:#0ea5e9" id="btnClassSelect" onclick="toggleDropdown('ddClassSelect')" title="ជ្រើសរើសថ្នាក់">
+          <span class="ic"><i class="fa-solid fa-school"></i></span>
+          <span class="lbl" id="txtClassSelect">ថ្នាក់ទី ៤(ក)</span>
+          <i class="fa-solid fa-chevron-down chev"></i>
+        </button>
+        <div class="dd-popup" id="ddClassSelect"></div>
+      </div>
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <div class="tb-group">
+      <select id="layoutSelect" class="tb-select" onchange="setLayout(this.value)" title="ទម្រង់បញ្ជី">
+        <option value="bio">ជីវប្រវត្តិ</option>
+        <option value="portrait">ទម្រង់បញ្ឈរ</option>
+        <option value="pick">ជ្រើសជួរ</option>
+      </select>
+      <span class="tb-lbl">អាយុគិតត្រឹម</span>
+      <label class="tb-btn dtbtn" style="--c:#14b8a6" title="កាលបរិច្ឆេទគិតអាយុ">
+        <span class="ic"><i class="fa-regular fa-calendar"></i></span><span class="lbl" id="ageDateLbl">...</span>
+        <input type="date" id="ageDateInput" onchange="setAgeDate(this.value)">
+      </label>
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <div class="tb-group">
+      <button type="button" class="tb-btn" style="--c:#8b5cf6" onclick="openCalendar('browse')" title="ប្រតិទិនចន្ទគតិ">
+        <span class="ic"><i class="fa-solid fa-moon"></i></span><span class="lbl">ប្រតិទិន</span>
+      </button>
+      <button type="button" class="tb-btn" style="--c:#06b6d4" onclick="editTeacherDate()" title="កាលបរិច្ឆេទគ្រូចុះហត្ថលេខា">
+        <span class="ic"><i class="fa-solid fa-chalkboard-user"></i></span>
+        <span class="lbl">ថ្ងៃគ្រូ</span>
+        <span class="tb-badge" id="teacherDateBadge">ជ្រើសថ្ងៃ</span>
+      </button>
+      <button type="button" class="tb-btn" style="--c:#f59e0b" onclick="editPrincipalDate()" title="កាលបរិច្ឆេទនាយកចុះហត្ថលេខា">
+        <span class="ic"><i class="fa-solid fa-user-tie"></i></span>
+        <span class="lbl">ថ្ងៃនាយក</span>
+        <span class="tb-badge" id="principalDateBadge">មិនដាក់</span>
+      </button>
+    </div>
+
+    <div class="tb-sep"></div>
+
+    <div class="tb-group">
+      <button type="button" class="tb-btn" style="--c:#c084fc" onclick="openPageSetup()" title="កំណត់ទំព័រ">
+        <span class="ic"><i class="fa-solid fa-sliders"></i></span><span class="lbl">កំណត់ទំព័រ</span>
+      </button>
+    </div>
+
+    <div class="tb-spacer"></div>
+
+    <div class="tb-group">
+      <button type="button" class="tb-btn" style="--c:#10b981" onclick="exportToExcel()" title="ទាញយក Excel">
+        <span class="ic"><i class="fa-solid fa-file-excel"></i></span><span class="lbl">Excel</span>
+      </button>
+      <button type="button" class="tb-btn" style="--c:#ef4444" onclick="downloadPDF()" title="ទាញយក PDF">
+        <span class="ic"><i class="fa-solid fa-file-pdf"></i></span><span class="lbl">PDF</span>
+      </button>
+      <button type="button" class="tb-btn solid" style="--c:#0284c7" onclick="printReport()" title="បោះពុម្ព">
+        <span class="ic"><i class="fa-solid fa-print"></i></span><span class="lbl">បោះពុម្ព</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 🧩 COLUMN PICKER (ទម្រង់ ជ្រើសជួរ) -->
+  <div class="cols-bar" id="colsBar">
+    <div class="cb-top">
+      <span class="tb-lbl">ចំណងជើង</span>
+      <select id="titleSelect" class="tb-select" onchange="setTitleOpt(this.value)"></select>
+      <div class="seg" id="orientSeg">
+        <button type="button" data-o="portrait" onclick="setOrientFromBar('portrait')">បញ្ឈរ</button>
+        <button type="button" data-o="landscape" onclick="setOrientFromBar('landscape')">ផ្ដេក</button>
+      </div>
+    </div>
+    <div class="chips" id="colChips"></div>
+  </div>
+
+  <!-- 📄 REPORT PAPER -->
+  <div class="report-paper-wrap">
+    <div id="paperScaler">
+      <div class="report-paper" id="printableReportPaper">
+
+        <div class="doc-header-national">
+          <h2 class="f-moul">ព្រះរាជាណាចក្រកម្ពុជា</h2>
+          <h3 class="f-moul">ជាតិ សាសនា ព្រះមហាក្សត្រ</h3>
+          <div class="doc-divider">────── ❖ ──────</div>
+        </div>
+
+        <div class="doc-meta-row">
+          <div class="doc-left-info">
+            <div id="kitHead"><div>ការិយាល័យអប់រំ យុវជន និងកីឡា</div>
+            <div>សាលាបឋមសិក្សាកំពង់ល្ពៅ</div></div>
+            <div id="lblDisplayClass" data-keep="1">ថ្នាក់ទី ៤ក</div>
+          </div>
+        </div>
+
+        <div class="doc-main-title">
+          <h1 class="f-moul" id="lblMainTitle">បញ្ជីរាយនាមសិស្ស</h1>
+          <div class="sub-meta" id="lblSubMetaStats">ឆ្នាំសិក្សា ២០២៦-២០២៧ · សិស្សសរុប ០នាក់ · ស្រី ០នាក់</div>
+        </div>
+
+        <table class="table-roster" id="rosterTable">
+          <thead id="rosterHead"><tr></tr></thead>
+          <tbody id="rosterTableBody">
+            <tr><td colspan="13" style="padding:30px; color:#64748b;">កំពុងទាញទិន្នន័យ...</td></tr>
+          </tbody>
+        </table>
+
+        <div class="sign-row">
+          <div class="sign-col" style="margin-top:36px;">
+            <div id="lblPrincipalDate" style="font-size:11px;margin-bottom:4px;display:none;line-height:1.5;"></div>
+            <div class="f-moul sign-title">បានឃើញនិងឯកភាព</div>
+            <div class="f-moul sign-title" id="kitDirTitle" style="margin-top:4px;">នាយកសាលា</div>
+            <div class="sign-space" id="kitDirSpace"></div>
+            <div class="sign-name" id="lblPrincipalName"></div>
+          </div>
+
+          <div class="sign-col">
+            <input type="text" class="editable-input" id="lblLunarDate" value="ថ្ងៃសុក្រ ៥កើត ខែអស្សុជ ឆ្នាំមមែ អដ្ឋស័ក ពុទ្ធសករាជ ២៥៧០">
+            <input type="text" class="editable-input" id="lblSolarDate" value="កំពង់ល្ពៅ ថ្ងៃទី១៦ ខែតុលា ឆ្នាំ២០២៦">
+            <div class="f-moul sign-title" style="margin-top:6px;">គ្រូទទួលបន្ទុកថ្នាក់</div>
+            <div class="sign-space" id="kitTeaSpace"></div>
+            <div class="sign-name" id="lblTeacherName">សេង សុភាន់</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⚙️ PAGE SETUP -->
+<div class="ps-backdrop" id="psBackdrop" onclick="closePageSetup()"></div>
+<div class="ps-panel" id="psPanel" role="dialog" aria-label="ការរៀបចំទំព័រ">
+  <div class="ps-head">
+    <h3>ការរៀបចំទំព័រ</h3>
+    <button type="button" class="ps-reset" onclick="psReset()"><i class="fa-solid fa-rotate-left"></i> ដើមវិញ</button>
+  </div>
+  <div class="ps-sec"><i class="fa-regular fa-file-lines"></i> ក្រដាស <span class="ps-line"></span></div>
+  <div class="ps-grid4">
+    <button type="button" class="ps-opt" data-paper="A4" onclick="psSetPaper('A4')">A4<small>210×297</small></button>
+    <button type="button" class="ps-opt" data-paper="F4" onclick="psSetPaper('F4')">F4<small>216×330</small></button>
+    <button type="button" class="ps-opt" data-orient="portrait" onclick="psSetOrient('portrait')"><i class="fa-regular fa-file"></i>បញ្ឈរ</button>
+    <button type="button" class="ps-opt active" data-orient="landscape" onclick="psSetOrient('landscape')"><i class="fa-regular fa-file" style="transform:rotate(90deg);"></i>ផ្តេក</button>
+  </div>
+  <div class="ps-grid4">
+    <button type="button" class="ps-opt" data-m="2" onclick="psPreset(2)">តូច<small>2</small></button>
+    <button type="button" class="ps-opt" data-m="5" onclick="psPreset(5)">មធ្យម<small>5</small></button>
+    <button type="button" class="ps-opt active" data-m="10" onclick="psPreset(10)">ធំ<small>10</small></button>
+    <button type="button" class="ps-opt" data-m="15" onclick="psPreset(15)">ធំបំផុត<small>15</small></button>
+  </div>
+  <div class="ps-row">
+    <label>គែម</label>
+    <div class="ps-step">
+      <button type="button" onclick="psStep('margin',-1)">−</button>
+      <div class="ps-val"><input id="psIn_margin" inputmode="decimal" value="10" onchange="psInput('margin',this.value)"><span>mm</span></div>
+      <button type="button" onclick="psStep('margin',1)">+</button>
+    </div>
+    <div class="ps-hint" id="psUsable">ផ្ទៃប្រើ 277×190mm</div>
+  </div>
+  <div class="ps-sec"><i class="fa-solid fa-layer-group"></i> អក្សរ និងក្រឡា <span class="ps-line"></span></div>
+  <div class="ps-row">
+    <label>អក្សរ</label>
+    <div class="ps-step">
+      <button type="button" onclick="psStep('font',-1)">−</button>
+      <div class="ps-val"><input id="psIn_font" inputmode="numeric" value="100" onchange="psInput('font',this.value)"><span>%</span></div>
+      <button type="button" onclick="psStep('font',1)">+</button>
+    </div>
+    <div class="ps-hint">ធម្មតា</div>
+  </div>
+  <div class="ps-row">
+    <label>កម្ពស់ជួរ</label>
+    <div class="ps-step">
+      <button type="button" onclick="psStep('rowH',-1)">−</button>
+      <div class="ps-val"><input id="psIn_rowH" inputmode="decimal" value="6.2" onchange="psInput('rowH',this.value)"><span>mm</span></div>
+      <button type="button" onclick="psStep('rowH',1)">+</button>
+    </div>
+    <div class="ps-hint">តាមអក្សរ</div>
+  </div>
+</div>
+
+<!-- 📅 CALENDAR MODAL -->
+<div class="cal-backdrop" id="calBackdrop" onclick="closeCalendar()"></div>
+<div class="cal-panel" id="calPanel" role="dialog" aria-label="ប្រតិទិនចន្ទគតិ">
+  <div class="cal-head">
+    <h3><i class="fa-solid fa-moon" style="color:#a78bfa"></i><span id="calTitle">ប្រតិទិនចន្ទគតិ</span></h3>
+    <button type="button" class="cal-x" onclick="closeCalendar()" aria-label="បិទ"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="cal-nav">
+    <button type="button" onclick="calShift(-1)" aria-label="ខែមុន"><i class="fa-solid fa-chevron-left"></i></button>
+    <select id="calMonth" onchange="calJump()"></select>
+    <select id="calYear" onchange="calJump()"></select>
+    <button type="button" onclick="calShift(1)" aria-label="ខែបន្ទាប់"><i class="fa-solid fa-chevron-right"></i></button>
+  </div>
+  <div class="cal-dow" id="calDow"></div>
+  <div class="cal-grid" id="calGrid"></div>
+  <div class="cal-preview" id="calPreview"></div>
+  <div class="cal-foot">
+    <button type="button" onclick="calToday()"><i class="fa-regular fa-calendar-check"></i> ថ្ងៃនេះ</button>
+    <button type="button" class="del" id="calBtnClear" onclick="calClearPrincipal()"><i class="fa-regular fa-calendar-xmark"></i> មិនដាក់</button>
+    <button type="button" class="ok" id="calBtnTeacher" onclick="calApply('teacher')"><i class="fa-solid fa-chalkboard-user"></i> ប្រើជាថ្ងៃគ្រូ</button>
+    <button type="button" class="ok2" id="calBtnPrincipal" onclick="calApply('principal')"><i class="fa-solid fa-user-tie"></i> ប្រើជាថ្ងៃនាយក</button>
+  </div>
+</div>
+
+<script id="momentkh-lib">
+var momentkh = (function () {
+"use strict";
+var LunarMonthNames = ['មិគសិរ','បុស្ស','មាឃ','ផល្គុន','ចេត្រ','ពិសាខ','ជេស្ឋ','អាសាឍ','ស្រាពណ៍','ភទ្របទ','អស្សុជ','កត្ដិក','បឋមាសាឍ','ទុតិយាសាឍ'];
+var AnimalYearNames = ['ជូត','ឆ្លូវ','ខាល','ថោះ','រោង','ម្សាញ់','មមី','មមែ','វក','រកា','ច','កុរ'];
+var SakNames = ['សំរឹទ្ធិស័ក','ឯកស័ក','ទោស័ក','ត្រីស័ក','ចត្វាស័ក','បញ្ចស័ក','ឆស័ក','សប្តស័ក','អដ្ឋស័ក','នព្វស័ក'];
+var WeekdayNames = ['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
+var MoonPhaseNames = ['កើត','រោច'];
+var Jesth = 6, Pisakh = 5, Cheit = 4, Kadeuk = 11, Migasir = 0, Srap = 8, Pathamasadh = 12, Tutiyasadh = 13;
+
+var khNewYearMoments = {
+  '1879':'12-04-1879 11:36','1897':'13-04-1897 02:00','2011':'14-04-2011 13:12','2012':'14-04-2012 19:11',
+  '2013':'14-04-2013 02:12','2014':'14-04-2014 08:07','2015':'14-04-2015 14:02','2024':'13-04-2024 22:17'
+};
+
+function gregorianToJulianDay(year, month, day) {
+  var a = Math.floor((14 - month) / 12), y = year + 4800 - a, m = month + 12 * a - 3;
+  return day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+}
+function julianDayToGregorian(jdn) {
+  var a = jdn + 32044, b = Math.floor((4 * a + 3) / 146097), c = a - Math.floor((146097 * b) / 4);
+  var d = Math.floor((4 * c + 3) / 1461), e = c - Math.floor((1461 * d) / 4), m = Math.floor((5 * e + 2) / 153);
+  return {
+    year: 100 * b + d - 4800 + Math.floor(m / 10),
+    month: m + 3 - 12 * Math.floor(m / 10),
+    day: e - Math.floor((153 * m + 2) / 5) + 1
+  };
+}
+function getDayOfWeek(y, m, d) { return (gregorianToJulianDay(y, m, d) + 1) % 7; }
+function adToJs(ad) { return ad - 638; }
+function beToJs(be) { return be - 1182; }
+
+/* ---- BE-year based calendar ---- */
+function getAharkun(be) { return Math.floor((be * 292207 + 499) / 800) + 4; }
+function getAharkunMod(be) { return (be * 292207 + 499) % 800; }
+function getKromthupul(be) { return 800 - getAharkunMod(be); }
+function getAvoman(be) { return (getAharkun(be) * 11 + 25) % 692; }
+function getBodithey(be) {
+  var a = getAharkun(be);
+  return (Math.floor((a * 11 + 25) / 692) + a + 29) % 30;
+}
+function isKhmerSolarLeap(be) { return getKromthupul(be) <= 207; }
+function isKhmerLeapDayByCalculation(be) {
+  var avoman = getAvoman(be), solar = isKhmerSolarLeap(be);
+  if (avoman === 0 && getAvoman(be - 1) === 137) return true;
+  else if (solar) return avoman < 127;
+  else if (avoman === 137 && getAvoman(be + 1) === 0) return false;
+  else if (avoman < 138) return true;
+  return false;
+}
+function isKhmerLeapMonth(be) {
+  var b = getBodithey(be), bn = getBodithey(be + 1);
+  if (b === 25 && bn === 5) return false;
+  return (b === 24 && bn === 6) || (b >= 25) || (b < 6);
+}
+function getLeapType(be) {
+  if (isKhmerLeapMonth(be)) return 1;
+  else if (isKhmerLeapDayByCalculation(be)) return 2;
+  else if (isKhmerLeapMonth(be - 1)) {
+    var prev = be - 1;
+    while (true) {
+      if (isKhmerLeapDayByCalculation(prev)) return 2;
+      prev -= 1;
+      if (!isKhmerLeapMonth(prev)) return 0;
+    }
+  }
+  return 0;
+}
+function getNumberOfDaysInKhmerMonth(idx, be) {
+  var lt = getLeapType(be);
+  if (idx === Jesth && lt === 2) return 30;
+  if (idx === Pathamasadh || idx === Tutiyasadh) return lt === 1 ? 30 : 0;
+  return idx % 2 === 0 ? 29 : 30;
+}
+function getNumberOfDaysInKhmerYear(be) {
+  var lt = getLeapType(be);
+  return lt === 1 ? 384 : lt === 2 ? 355 : 354;
+}
+function nextMonthOf(idx, be) {
+  var lt = getLeapType(be);
+  if (idx === Jesth && lt === 1) return Pathamasadh;
+  if (idx === Kadeuk) return Migasir;
+  if (idx === Pathamasadh) return Tutiyasadh;
+  if (idx === Tutiyasadh) return Srap;
+  return idx + 1;
+}
+
+/* ---- JS-year based (New Year) ---- */
+function getAharkunJs(js) { return Math.floor((js * 292207 + 373) / 800) + 1; }
+function getAvomanJs(js) { return (getAharkunJs(js) * 11 + 650) % 692; }
+function getKromthupulJs(js) { return 800 - ((292207 * js + 373) % 800); }
+function getBoditheyJs(js) {
+  var a = getAharkunJs(js), x = 11 * a + 650;
+  return (a + Math.floor(x / 692)) % 30;
+}
+function isAdhikameas(js) {
+  var b = getBoditheyJs(js), bn = getBoditheyJs(js + 1);
+  if (b === 24 && bn === 6) return true;
+  if (b === 25 && bn === 5) return false;
+  return b > 24 || b < 6;
+}
+function isChantrathimeas(js) {
+  var av = getAvomanJs(js), avn = getAvomanJs(js + 1), avp = getAvomanJs(js - 1);
+  var solar = getKromthupulJs(js) <= 207;
+  if (av === 0 && avp === 137) return true;
+  if (solar) return av < 127;
+  if (av === 137 && avn === 0) return false;
+  if (!solar && av < 138) return true;
+  if (avp === 137 && av === 0) return true;
+  return false;
+}
+function has366Days(js) { return getKromthupulJs(js) <= 207; }
+
+function getSunInfo(jsYear, sotin) {
+  var kromathopol = getKromthupulJs(jsYear - 1);
+  var r2 = 800 * sotin + kromathopol;
+  var reasey = Math.floor(r2 / 24350), r3 = r2 % 24350;
+  var angsar = Math.floor(r3 / 811), r4 = r3 % 811;
+  var libda = Math.floor(r4 / 14) - 3;
+  var sunAvg = (30 * 60 * reasey) + (60 * angsar) + libda;
+  var s1 = (30 * 60 * 2) + (60 * 20);
+  var leftOver = sunAvg - s1;
+  if (sunAvg < s1) leftOver += (30 * 60 * 12);
+  var kaen = Math.floor(leftOver / (30 * 60));
+  var rs = -1;
+  if ([0, 1, 2].indexOf(kaen) >= 0) rs = kaen;
+  else if ([3, 4, 5].indexOf(kaen) >= 0) rs = (30 * 60 * 6) - leftOver;
+  else if ([6, 7, 8].indexOf(kaen) >= 0) rs = leftOver - (30 * 60 * 6);
+  else if ([9, 10, 11].indexOf(kaen) >= 0) rs = ((30 * 60 * 11) + (60 * 29) + 60) - leftOver;
+  var last = {
+    reasey: Math.floor(rs / (30 * 60)),
+    angsar: Math.floor((rs % (30 * 60)) / 60),
+    libda: rs % 60
+  };
+  var khan, pouichalip;
+  if (last.angsar >= 15) { khan = 2 * last.reasey + 1; pouichalip = 60 * (last.angsar - 15) + last.libda; }
+  else { khan = 2 * last.reasey; pouichalip = 60 * last.angsar + last.libda; }
+  var map = [{m:35,c:0},{m:32,c:35},{m:27,c:67},{m:22,c:94},{m:13,c:116},{m:5,c:129}];
+  var cs = khan <= 5 ? map[khan] : { m: 0, c: 134 };
+  var q = Math.floor((pouichalip * cs.m) / 900);
+  var phol = q + cs.c;
+  var inaug = kaen <= 5 ? sunAvg - phol : sunAvg + phol;
+  return {
+    sunInaugurationAsLibda: inaug,
+    reasey: Math.floor(inaug / (30 * 60)),
+    angsar: Math.floor((inaug % (30 * 60)) / 60),
+    libda: inaug % 60
+  };
+}
+function getNewYearInfo(jsYear) {
+  var sotins = has366Days(jsYear - 1) ? [363, 364, 365, 366] : [362, 363, 364, 365];
+  var list = sotins.map(function (s) { return getSunInfo(jsYear, s); });
+  var t = { hour: 0, minute: 0 };
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].angsar === 0) {
+      var minutes = (24 * 60) - (list[i].libda * 24);
+      t = { hour: Math.floor(minutes / 60) % 24, minute: minutes % 60 };
+      break;
+    }
+  }
+  return { timeOfNewYear: t, numberOfVanabatDays: list[0].angsar === 0 ? 2 : 1, newYearsDaySotins: list };
+}
+
+/* ---- Khmer date ---- */
+function KhmerDate(day, moonPhase, monthIndex, beYear) {
+  this.day = day; this.moonPhase = moonPhase; this.monthIndex = monthIndex; this.beYear = beYear;
+}
+KhmerDate.prototype.getDayNumber = function () {
+  return this.moonPhase === 0 ? this.day - 1 : 15 + (this.day - 1);
+};
+KhmerDate.fromDayNumber = function (n) {
+  return n < 15 ? { day: n + 1, moonPhase: 0 } : { day: (n - 15) + 1, moonPhase: 1 };
+};
+
+function getMaybeBEYear(year, month) { return month <= 4 ? year + 543 : year + 544; }
+
+var visakhaBocheaCache = {}, newYearInfoCache = {};
+
+function getPisakhaBochea(year) {
+  if (visakhaBocheaCache[year]) return visakhaBocheaCache[year];
+  for (var sm = 4; sm <= 6; sm++) {
+    var dim = new Date(year, sm, 0).getDate();
+    for (var sd = 1; sd <= dim; sd++) {
+      var r = g2k(year, sm, sd, 12, 0, 0, true);
+      if (r.khmer.monthIndex === Pisakh && r._khmerDateObj.getDayNumber() === 15) {
+        var ts = new Date(year, sm - 1, sd, 0, 0, 0, 0).getTime();
+        visakhaBocheaCache[year] = ts;
+        return ts;
+      }
+    }
+  }
+  var fb = new Date(year, 3, 15, 0, 0, 0, 0).getTime();
+  visakhaBocheaCache[year] = fb;
+  return fb;
+}
+
+function g2k(year, month, day, hour, minute, second, isSearching) {
+  var epochJdn = gregorianToJulianDay(1900, 1, 1);
+  var targetJdn = gregorianToJulianDay(year, month, day);
+  var khmerMonth = 1, khmerDayNumber = 0;
+  var diffDays = targetJdn - epochJdn;
+  var eg, be, dim;
+
+  if (diffDays > 0) {
+    while (true) {
+      eg = julianDayToGregorian(epochJdn);
+      var nextBE = getMaybeBEYear(eg.year + 1, eg.month);
+      var dny = getNumberOfDaysInKhmerYear(nextBE);
+      if (diffDays > dny) { diffDays -= dny; epochJdn += dny; } else break;
+    }
+  } else if (diffDays < 0) {
+    while (diffDays < 0) {
+      eg = julianDayToGregorian(epochJdn);
+      var curBE = getMaybeBEYear(eg.year, eg.month);
+      var dcy = getNumberOfDaysInKhmerYear(curBE);
+      diffDays += dcy; epochJdn -= dcy;
+    }
+  }
+  while (diffDays > 0) {
+    eg = julianDayToGregorian(epochJdn);
+    be = getMaybeBEYear(eg.year, eg.month);
+    dim = getNumberOfDaysInKhmerMonth(khmerMonth, be);
+    if (diffDays > dim) { diffDays -= dim; epochJdn += dim; khmerMonth = nextMonthOf(khmerMonth, be); }
+    else break;
+  }
+  khmerDayNumber = diffDays;
+  var finalBE = getMaybeBEYear(year, month);
+  var total = getNumberOfDaysInKhmerMonth(khmerMonth, finalBE);
+  if (khmerDayNumber >= total) {
+    khmerDayNumber = khmerDayNumber % total;
+    khmerMonth = nextMonthOf(khmerMonth, finalBE);
+  }
+  var kdi = KhmerDate.fromDayNumber(khmerDayNumber);
+
+  var beYear;
+  if (isSearching) {
+    beYear = month <= 4 ? year + 543 : year + 544;
+  } else {
+    var inTs = new Date(year, month - 1, day, hour, minute, second).getTime();
+    beYear = inTs >= getPisakhaBochea(year) ? year + 544 : year + 543;
+  }
+  var jsYear = beToJs(beYear);
+  var animalIdx = (((beYear + 4) % 12) + 12) % 12;
+  if (!isSearching) {
+    var ny = getNewYearFullInfo(year);
+    var ts2 = new Date(year, month - 1, day, hour, minute, second).getTime();
+    var vb = getPisakhaBochea(year);
+    if (ts2 >= ny.newYearMoment.getTime() && ts2 <= vb) animalIdx = (animalIdx + 1) % 12;
+    if (ts2 >= ny.lerngSakMoment.getTime() && ts2 <= vb) jsYear++;
+  }
+  var sakIdx = ((jsYear % 10) + 10) % 10;
+  var dow = getDayOfWeek(year, month, day);
+  return {
+    gregorian: { year: year, month: month, day: day, hour: hour, minute: minute, second: second, dayOfWeek: dow },
+    khmer: {
+      day: kdi.day, moonPhase: kdi.moonPhase, moonPhaseName: MoonPhaseNames[kdi.moonPhase],
+      monthIndex: khmerMonth, monthName: LunarMonthNames[khmerMonth], beYear: beYear, jsYear: jsYear,
+      animalYear: animalIdx, animalYearName: AnimalYearNames[animalIdx],
+      sak: sakIdx, sakName: SakNames[sakIdx], dayOfWeek: dow, dayOfWeekName: WeekdayNames[dow]
+    },
+    _khmerDateObj: new KhmerDate(kdi.day, kdi.moonPhase, khmerMonth, beYear)
+  };
+}
+
+function getNewYearFullInfo(ceYear) {
+  if (newYearInfoCache[ceYear]) return newYearInfoCache[ceYear];
+  var jsYear = adToJs(ceYear);
+  var nyi = getNewYearInfo(jsYear);
+  var bodithey = getBoditheyJs(jsYear);
+  if (isAdhikameas(jsYear - 1) && isChantrathimeas(jsYear - 1)) bodithey = (bodithey + 1) % 30;
+  var lunarLerngSak = {
+    day: bodithey >= 6 ? bodithey - 1 : bodithey,
+    month: bodithey >= 6 ? 4 : 5
+  };
+  var numberNewYearDay = nyi.newYearsDaySotins[0].angsar === 0 ? 4 : 3;
+  var khEpoch = g2k(ceYear, 4, 17, 12, 0, 0, true)._khmerDateObj;
+  var diff = ((khEpoch.monthIndex - 4) * 29 + khEpoch.getDayNumber()) - ((lunarLerngSak.month - 4) * 29 + lunarLerngSak.day);
+  var daysToSubtract = diff + numberNewYearDay - 1;
+  var newYearJdn = gregorianToJulianDay(ceYear, 4, 17) - daysToSubtract;
+  if (khNewYearMoments[ceYear]) {
+    var parts = khNewYearMoments[ceYear].split(' ');
+    var dp = parts[0].split('-').map(Number), tp = parts[1].split(':').map(Number);
+    nyi.timeOfNewYear = { hour: tp[0], minute: tp[1] };
+    newYearJdn = gregorianToJulianDay(dp[2], dp[1], dp[0]);
+  }
+  var nd = julianDayToGregorian(newYearJdn);
+  var newYearMoment = new Date(nd.year, nd.month - 1, nd.day, nyi.timeOfNewYear.hour, nyi.timeOfNewYear.minute);
+  var ld = julianDayToGregorian(newYearJdn + numberNewYearDay - 1);
+  var lerngSakMoment = new Date(ld.year, ld.month - 1, ld.day, 0, 0, 0);
+  return (newYearInfoCache[ceYear] = { newYearMoment: newYearMoment, lerngSakMoment: lerngSakMoment });
+}
+
+function fromGregorian(year, month, day, hour, minute, second) {
+  return g2k(year, month, day, hour || 0, minute || 0, second || 0, false);
+}
+return { fromGregorian: fromGregorian };
+})();
+
+</script>
+
+<script>
+/* =========================================================
+   1. SUPABASE & AUTH
+========================================================= */
+const SUPABASE_URL = "https://nggnuobnrxiqjtcwlvwk.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_AHDcUJbuMAfhaocyfm2X7w_O9s06wML";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const khmerDigits = ['០','១','២','៣','៤','៥','៦','៧','៨','៩'];
+function toKhmerNum(num) {
+  if (num === null || num === undefined) return '';
+  return num.toString().replace(/\d/g, d => khmerDigits[parseInt(d)]);
+}
+function readSession() {
+  try { return JSON.parse(localStorage.getItem('krou_supabase_user') || 'null'); } catch (e) { return null; }
+}
+const CURRENT_USER = readSession();
+
+async function checkAuthentication() {
+  if (!CURRENT_USER || !CURRENT_USER.username) {
+    showAuthDenied('លោកអ្នកមិនទាន់បាន Login ចូលក្នុងប្រព័ន្ធនៅឡើយទេ។ សូម Login គណនីរបស់អ្នកដើម្បីមើលបញ្ជីរាយនាមសិស្ស។');
+    return false;
+  }
+  if (CURRENT_USER.id) {
+    try {
+      const { data, error } = await sb.from('users').select('id').eq('id', CURRENT_USER.id).maybeSingle();
+      if (!error && !data) {
+        localStorage.removeItem('krou_supabase_user');
+        localStorage.removeItem('krou_active_page');
+        showAuthDenied('គណនីរបស់អ្នកត្រូវបានលុបចេញពីប្រព័ន្ធរួចហើយ! សូមចូលប្រើប្រាស់ដោយគណនីថ្មី។');
+        return false;
+      }
+    } catch (err) { console.warn('Auth verify issue:', err); }
+  }
+  document.getElementById('authDeniedWrap').style.display = 'none';
+  document.getElementById('mainPageContent').style.display = 'block';
+  return true;
+}
+function showAuthDenied(msg) {
+  document.getElementById('mainPageContent').style.display = 'none';
+  document.getElementById('authDeniedWrap').style.display = 'flex';
+  if (msg) document.getElementById('authDeniedMsg').innerText = msg;
+}
+function goToIndex(e) {
+  if (e) e.preventDefault();
+  if (window.parent && window.parent !== window) {
+    try {
+      window.parent.postMessage({ type: 'OPEN_LOGIN', action: 'LOGIN' }, '*');
+      window.parent.location.href = 'index.html';
+      return;
+    } catch (err) {}
+  }
+  window.location.href = 'index.html';
+}
+function goBack() {
+  if (window.parent && window.parent !== window) {
+    try { window.parent.postMessage({ type: 'NAVIGATE', page: 'reportsHub' }, '*'); return; } catch (e) {}
+  }
+  if (window.history.length > 1) window.history.back();
+}
+
+const USER_ROLE = CURRENT_USER?.role || "teacher";
+const USER_CLASS = CURRENT_USER?.assigned_classes || CURRENT_USER?.assigned_class || "៤(ក)";
+const TEACHER_NAME = CURRENT_USER?.teacher_name || "សេង សុភាស់";
+const IS_ADMIN = String(USER_ROLE).toLowerCase().trim() === 'admin';
+
+let currentSelectedClass = cleanGrade(USER_CLASS) || '៤(ក)';
+let studentsDataList = [];
+
+function cleanGrade(g) { return String(g || '').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/, '').trim(); }
+
+/* =========================================================
+   2. DROPDOWN
+========================================================= */
+function toggleDropdown(id) {
+  const p = document.getElementById(id);
+  const isShow = p.classList.contains('show');
+  closeAllDropdowns();
+  if (!isShow) p.classList.add('show');
+}
+function closeAllDropdowns() { document.querySelectorAll('.dd-popup').forEach(p => p.classList.remove('show')); }
+document.addEventListener('click', e => { if (!e.target.closest('.dd-wrap')) closeAllDropdowns(); });
+
+function selectClass(cls) {
+  currentSelectedClass = cleanGrade(cls);
+  document.getElementById('txtClassSelect').innerText = 'ថ្នាក់ទី ' + currentSelectedClass;
+  document.getElementById('lblDisplayClass').innerText = 'ថ្នាក់ទី ' + __kc(currentSelectedClass);
+  closeAllDropdowns();
+  updateClassDropdownUI();
+  loadRosterData();
+}
+function updateClassDropdownUI() {
+  document.querySelectorAll('#ddClassSelect .dd-item').forEach(el => {
+    const isActive = el.getAttribute('data-class') === currentSelectedClass;
+    el.classList.toggle('active', isActive);
+    const icon = el.querySelector('.fa-check');
+    if (icon) icon.style.display = isActive ? 'inline' : 'none';
+  });
+}
+function renderClassItems(classes) {
+  return classes.map(c => `
+    <div class="dd-item ${c === currentSelectedClass ? 'active' : ''}" data-class="${c}" onclick="selectClass('${c}')">
+      <span>ថ្នាក់ទី ${c}</span>
+      <i class="fa-solid fa-check" style="${c === currentSelectedClass ? '' : 'display:none;'}"></i>
+    </div>`).join('');
+}
+async function initAdminClassDropdown() {
+  if (!IS_ADMIN) { document.getElementById('adminClassDropdownWrap').style.display = 'none'; return; }
+  document.getElementById('adminClassDropdownWrap').style.display = 'inline-block';
+  const dd = document.getElementById('ddClassSelect');
+  const fallback = ['១', '២', '៣', '៤(ក)', '៤(ខ)', '៥', '៦'];
+  try {
+    const { data: stList } = await stRows();
+    let classes = [...new Set((stList || []).map(s => cleanGrade(s.grade)).filter(Boolean))];
+    if (!classes.length) classes = fallback;
+    classes.sort((a, b) => a.localeCompare(b, 'km'));
+    dd.innerHTML = renderClassItems(classes);
+  } catch (e) {
+    dd.innerHTML = renderClassItems(fallback);
+  }
+  document.getElementById('txtClassSelect').innerText = 'ថ្នាក់ទី ' + currentSelectedClass;
+}
+
+/* =========================================================
+   3. LOAD STUDENTS & RENDER
+========================================================= */
+const SAMPLE_STUDENT = {
+  id: 1, name: 'កេះ លីណា', gender: 'ប្រុស', dob: '', pob: 'បាត់ដំបង',
+  father_name: '', father_job: '', mother_name: '', mother_job: '',
+  address: 'បាត់ដំបង', ethnicity: '', disability: '', note: ''
+};
+
+async function loadRosterData() {
+  const cls = currentSelectedClass;
+  document.getElementById('lblDisplayClass').innerText = `ថ្នាក់ទី ${__kc(cls || '៤ក')}`;
+
+  if (IS_ADMIN) {
+    try {
+      const { data: uData } = await sb.from('users').select('teacher_name').eq('assigned_classes', cls).maybeSingle();
+      document.getElementById('lblTeacherName').innerText = uData?.teacher_name || TEACHER_NAME;
+    } catch (e) { document.getElementById('lblTeacherName').innerText = TEACHER_NAME; }
+  } else {
+    document.getElementById('lblTeacherName').innerText = TEACHER_NAME;
+  }
+
+  try {
+    const { data: stData, error } = await stRows(cls ? [cls, `ថ្នាក់ទី${cls}`, `ថ្នាក់ទី ${cls}`] : null);
+    if (error) throw error;
+    if (stData) stData.sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km'));
+    if (stData && stData.length > 0) {
+      studentsDataList = stData.map(s => ({
+        id: s.id, student_id: s.student_id || '', phone: s.phone || s.parent_phone || s.tel || '', is_repeat: !!(s.is_repeat || s.repeat_class || s.repeater), name: s.student_name, gender: s.gender || 'ប្រុស', dob: s.dob || '',
+        pob: s.pob || 'បាត់ដំបង', father_name: s.father_name || '', father_job: s.father_job || '',
+        mother_name: s.mother_name || '', mother_job: s.mother_job || '', address: s.address || 'បាត់ដំបង',
+        ethnicity: s.ethnicity || 'ខ្មែរ', disability: s.disability || 'គ្មាន', note: s.note || ''
+      }));
+    } else {
+      studentsDataList = [SAMPLE_STUDENT];
+    }
+  } catch (e) {
+    studentsDataList = [SAMPLE_STUDENT];
+  }
+  renderRosterTable();
+  applyPsStyles();
+  fitPaper();
+}
+
+/* =========================================================
+   ROSTER V2 · ទម្រង់ជាច្រើន + ជ្រើស/អូសតម្រៀបជួរ + អាយុគិតត្រឹមថ្ងៃ
+========================================================= */
+const RV2_KEY = 'krou_roster_v2';
+function _gl(s){ return s.gender && s.gender.includes('ស្រី') ? 'ស្រី' : 'ប្រុស'; }
+const ALL_COLS = {
+  no:     { l:'ល.រ',            w:34,  wp:34,  g:(s,i)=>toKhmerNum(i+1), x:(s,i)=>i+1 },
+  sid:    { l:'អត្តលេខ',        w:70,  wp:60,  g:s=>s.student_id||'', x:s=>s.student_id||'' },
+  name:   { l:'គោត្តនាម នាម',   w:160, wp:120, c:'name-cell', g:s=>s.name||'', x:s=>s.name||'' },
+  gender: { l:'ភេទ',            w:52,  wp:44,  g:(s,i,L)=>L==='portrait'?(_gl(s)==='ស្រី'?'ស':'ប'):(s.gender||'ប្រុស'), x:s=>s.gender||'ប្រុស' },
+  dob:    { l:'ថ្ងៃខែឆ្នាំកំណើត', w:88, wp:78,  g:s=>fmtDob(s.dob), x:s=>fmtDob(s.dob) },
+  age:    { l:'អាយុ',           w:44,  wp:40,  g:(s,i,L)=>{const a=calcAge(s.dob);return a===''?'':(L==='portrait'?a+'ឆ្នាំ':a)}, x:s=>calcAge(s.dob) },
+  pob:    { l:'ទីកន្លែងកំណើត',  w:150, wp:158, g:s=>s.pob||'', x:s=>s.pob||'' },
+  fname:  { l:'ឈ្មោះឪពុក',      w:110, wp:90,  g:s=>s.father_name||'', x:s=>s.father_name||'' },
+  fjob:   { l:'មុខរបរ',         w:75,  wp:58,  g:s=>s.father_job||'', x:s=>s.father_job||'' },
+  mname:  { l:'ឈ្មោះម្តាយ',     w:110, wp:90,  g:s=>s.mother_name||'', x:s=>s.mother_name||'' },
+  mjob:   { l:'មុខរបរ',         w:75,  wp:58,  g:s=>s.mother_job||'', x:s=>s.mother_job||'' },
+  phone:  { l:'លេខទូរសព្ទ',     w:90,  wp:78,  g:s=>s.phone||'', x:s=>s.phone||'' },
+  address:{ l:'លំនៅដ្ឋាន',       w:150, wp:158, g:s=>s.address||'', x:s=>s.address||'' },
+  eth:    { l:'ក្រុមជនជាតិ',    w:75,  wp:52,  g:s=>s.ethnicity||'', x:s=>s.ethnicity||'' },
+  dis:    { l:'ពិការភាព',       w:70,  wp:48,  g:s=>s.disability||'', x:s=>s.disability||'' },
+  rep:    { l:'សិស្សថ្មី/ត្រួតថ្នាក់', w:100, wp:80, g:s=>s.is_repeat?'ត្រួតថ្នាក់':'', x:s=>s.is_repeat?'ត្រួតថ្នាក់':'' },
+  note:   { l:'ផ្សេងៗ',         w:90,  wp:90,  g:s=>s.note||'', x:s=>s.note||'' }
+};
+const LAYOUTS = {
+  bio:      { orient:'landscape', cols:['no','name','gender','dob','age','pob','fname','fjob','mname','mjob','address','eth','dis'], lab:{ name:'នាមត្រកូល និងនាម' } },
+  portrait: { orient:'portrait',  cols:['no','sid','name','gender','dob','age','pob','note'], lab:{} }
+};
+/* ជ្រើសជួរ៖ លំដាប់ទាំងអស់ក្នុងបញ្ជី chip (ការបង្ហាញ/ការលាក់ + លំដាប់ ចាំទុក) */
+const PICK_ORDER_DEFAULT = ['no','name','gender','dob','age','fname','fjob','mname','mjob','phone','pob','sid','address','rep','note'];
+const PICK_LAB = { address:'ទីលំនៅបច្ចុប្បន្ន', fjob:'មុខរបរឪពុក', mjob:'មុខរបរម្តាយ' };
+const PICK_ON_DEFAULT = ['no','name','gender','dob','age'];
+
+let RV2 = { layout:'bio', ageDate:'', pickOrder:PICK_ORDER_DEFAULT.slice(), pickOn:PICK_ON_DEFAULT.slice(), pickOrient:'portrait', titleOpt:1 };
+try { const o = JSON.parse(localStorage.getItem(RV2_KEY) || 'null'); if (o) {
+  if (LAYOUTS[o.layout] || o.layout === 'pick') RV2.layout = o.layout;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(o.ageDate||'')) RV2.ageDate = o.ageDate;
+  if (Array.isArray(o.pickOrder)) { const ord = o.pickOrder.filter(k=>ALL_COLS[k]&&k!=='x'); PICK_ORDER_DEFAULT.forEach(k=>{ if(!ord.includes(k)) ord.push(k); }); RV2.pickOrder = ord; }
+  if (Array.isArray(o.pickOn)) RV2.pickOn = o.pickOn.filter(k=>ALL_COLS[k]);
+  if (o.pickOrient==='landscape'||o.pickOrient==='portrait') RV2.pickOrient = o.pickOrient;
+  if (o.titleOpt===1||o.titleOpt===2) RV2.titleOpt = o.titleOpt;
+} } catch(e){}
+function saveRV2(){ try{ localStorage.setItem(RV2_KEY, JSON.stringify(RV2)); }catch(e){} }
+function todayISO(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+if (!RV2.ageDate) RV2.ageDate = todayISO();
+
+function calcAge(dob){
+  const m = String(dob==null?'':dob).trim().match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
+  const a = RV2.ageDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m || !a) return '';
+  let age = +a[1] - +m[1];
+  if (+a[2] < +m[2] || (+a[2] === +m[2] && +a[3] < +m[3])) age--;
+  return age < 0 ? '' : age;
+}
+function setAgeDate(v){
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(v||'')) return;
+  RV2.ageDate = v; saveRV2(); updateAgeLbl(); renderRosterTable();
+}
+function updateAgeLbl(){
+  const m = RV2.ageDate.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  document.getElementById('ageDateLbl').textContent = m ? (+m[3]) + ' ' + CAL_GM[+m[2]-1] + ' ' + m[1] : '';
+  document.getElementById('ageDateInput').value = RV2.ageDate;
+}
+function schoolYearTxt(){
+  const d = new Date(); const y = d.getMonth() >= 8 ? d.getFullYear() : d.getFullYear() - 1;
+  return y + '-' + (y + 1);
+}
+function clsLabel(){
+  return __kc(String(currentSelectedClass || '៤ក')).replace(/\s+/g,'').replace(/\(([^)]*)\)/,'«$1»');
+}
+function titleOptions(){
+  const yr = __kc(schoolYearTxt());
+  return [
+    { v:1, t:`បញ្ជីឈ្មោះថ្នាក់ទី${clsLabel()} ឆ្នាំ${yr}` },
+    { v:2, t:`បញ្ជីរាយនាមសិស្សថ្នាក់ទី${clsLabel()} ឆ្នាំសិក្សា ${yr}` }
+  ];
+}
+function activeCols(){
+  if (RV2.layout === 'pick') {
+    const keys = RV2.pickOrder.filter(k => RV2.pickOn.includes(k));
+    return keys.map(k => ({ k, ...ALL_COLS[k], l: PICK_LAB[k] || ALL_COLS[k].l }));
+  }
+  const L = LAYOUTS[RV2.layout];
+  return L.cols.map(k => ({ k, ...ALL_COLS[k], l: (L.lab && L.lab[k]) || ALL_COLS[k].l }));
+}
+
+function setLayout(v){
+  if (v !== 'pick' && !LAYOUTS[v]) v = 'bio';
+  RV2.layout = v;
+  PS.orient = v === 'pick' ? RV2.pickOrient : LAYOUTS[v].orient;
+  saveRV2(); renderRosterTable(); updatePsPanel();
+}
+function setOrientFromBar(o){
+  RV2.pickOrient = o; PS.orient = o; saveRV2(); renderRosterTable(); updatePsPanel();
+}
+function setTitleOpt(v){ RV2.titleOpt = +v; saveRV2(); renderRosterTable(); }
+function toggleCol(k, on){
+  RV2.pickOn = on ? RV2.pickOrder.filter(x => RV2.pickOn.includes(x) || x === k) : RV2.pickOn.filter(x => x !== k);
+  saveRV2(); renderColChips(); renderRosterTable();
+}
+function renderColChips(){
+  const box = document.getElementById('colChips');
+  box.innerHTML = RV2.pickOrder.map(k => {
+    const on = RV2.pickOn.includes(k), lab = PICK_LAB[k] || ALL_COLS[k].l;
+    return `<div class="chip${on?' on':''}" data-k="${k}"><span class="hd" title="អូសដើម្បីតម្រៀប"><i class="fa-solid fa-grip-vertical"></i></span><label><input type="checkbox" ${on?'checked':''} onchange="toggleCol('${k}',this.checked)"><span>${lab}</span></label></div>`;
+  }).join('');
+  box.querySelectorAll('.hd').forEach(h => h.addEventListener('pointerdown', startChipDrag));
+}
+/* អូសតម្រៀប chip (ដំណើរការទាំងម៉ៅស៍ និងអេក្រង់ប៉ះ) */
+function startChipDrag(e){
+  e.preventDefault();
+  const chip = e.currentTarget.closest('.chip'), box = chip.parentNode;
+  chip.classList.add('drag');
+  try { e.currentTarget.setPointerCapture(e.pointerId); } catch(_){}
+  const move = ev => {
+    const el = document.elementFromPoint(ev.clientX, ev.clientY);
+    const tgt = el && el.closest && el.closest('.chip');
+    if (!tgt || tgt === chip || tgt.parentNode !== box) return;
+    const r = tgt.getBoundingClientRect();
+    const after = (ev.clientY > r.bottom - r.height / 2 && ev.clientX > r.left + r.width / 2) || ev.clientY > r.bottom;
+    box.insertBefore(chip, after ? tgt.nextSibling : tgt);
+  };
+  const up = () => {
+    window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
+    chip.classList.remove('drag');
+    RV2.pickOrder = [...box.querySelectorAll('.chip')].map(c => c.dataset.k);
+    saveRV2(); renderRosterTable();
+  };
+  window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+}
+
+function renderRosterTable() {
+  const L = RV2.layout, cols = activeCols();
+  const total = studentsDataList.length;
+  const female = studentsDataList.filter(s => s.gender && s.gender.includes('ស្រី')).length;
+  /* ក្បាលបញ្ជី */
+  const yr = __kc(schoolYearTxt());
+  const title = document.getElementById('lblMainTitle'), sub = document.getElementById('lblSubMetaStats'), cl = document.getElementById('lblDisplayClass');
+  cl.innerText = `ថ្នាក់ទី${clsLabel()}`;
+  cl.style.display = L === 'pick' ? 'none' : '';
+  if (L === 'bio') {
+    title.innerText = 'បញ្ជីរាយនាមសិស្ស';
+    sub.style.display = '';
+    sub.innerText = `ឆ្នាំសិក្សា ${yr} · សិស្សសរុប ${toKhmerNum(total)}នាក់ · ស្រី ${toKhmerNum(female)}នាក់`;
+  } else if (L === 'portrait') {
+    title.innerText = `បញ្ជីរាយនាមសិស្សឆ្នាំ ${yr}`;
+    sub.style.display = 'none';
+  } else {
+    title.innerText = (titleOptions().find(o => o.v === RV2.titleOpt) || titleOptions()[0]).t;
+    sub.style.display = 'none';
+  }
+  /* ផ្ទាំងជ្រើសជួរ */
+  const bar = document.getElementById('colsBar');
+  bar.classList.toggle('show', L === 'pick');
+  document.getElementById('layoutSelect').value = L;
+  if (L === 'pick') {
+    const ts = document.getElementById('titleSelect');
+    const opts = titleOptions();
+    ts.innerHTML = opts.map(o => `<option value="${o.v}"${o.v===RV2.titleOpt?' selected':''}>${o.t}</option>`).join('');
+    ts.value = String(RV2.titleOpt);
+    document.querySelectorAll('#orientSeg button').forEach(b => b.classList.toggle('on', b.dataset.o === PS.orient));
+    if (!document.getElementById('colChips').children.length || document.getElementById('colChips').dataset.sig !== RV2.pickOrder.join(',') + '|' + RV2.pickOn.join(',')) {
+      renderColChips();
+      document.getElementById('colChips').dataset.sig = RV2.pickOrder.join(',') + '|' + RV2.pickOn.join(',');
+    }
+  }
+  /* តារាង */
+  document.getElementById('rosterHead').innerHTML = '<tr>' + cols.map(c => `<th data-w="${c.w}" data-wp="${c.wp}">${c.l}</th>`).join('') + '</tr>';
+  const tbody = document.getElementById('rosterTableBody');
+  if (!cols.length) {
+    tbody.innerHTML = `<tr><td style="padding:26px;color:#64748b;">សូមជ្រើសរើសជួរយ៉ាងហោចណាស់មួយ</td></tr>`;
+  } else if (!total) {
+    tbody.innerHTML = `<tr><td colspan="${cols.length}" style="padding:26px; color:#64748b;">មិនមានទិន្នន័យសិស្សសម្រាប់ថ្នាក់នេះទេ</td></tr>`;
+  } else {
+    const LL = L;
+    tbody.innerHTML = studentsDataList.map((s, idx) =>
+      '<tr>' + cols.map(c => `<td${c.c?` class="${c.c}"`:''}>${c.g(s, idx, LL)}</td>`).join('') + '</tr>').join('');
+  }
+  applyPsStyles();
+  fitPaper();
+}
+
+/* =========================================================
+   4. EXCEL
+========================================================= */
+function exportToExcel() {
+  if (!studentsDataList.length) { alert('មិនមានទិន្នន័យសម្រាប់ទាញយកទេ!'); return; }
+  const cols = activeCols();
+  const headers = cols.map(c => c.l);
+  const rows = studentsDataList.map((s, i) => cols.map(c => c.x(s, i)));
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "បញ្ជីរាយនាមសិស្ស");
+  XLSX.writeFile(wb, `បញ្ជីរាយនាមសិស្ស_ថ្នាក់ទី_${currentSelectedClass}.xlsx`);
+}
+
+/* =========================================================
+   5. 📅 KHMER LUNAR CALENDAR + SIGNATURE DATES
+========================================================= */
+let SCHOOL_PLACE = 'កំពង់ល្ពៅ';
+const CAL_GM = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
+const CAL_DOW = ['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
+const CAL_DOWS = ['អា','ច','អ','ព','ព្រ','សុ','ស'];
+const CAL_LMN = {0:'មិគសិរ',1:'បុស្ស',2:'មាឃ',3:'ផល្គុន',4:'ចេត្រ',5:'ពិសាខ',6:'ជេស្ឋ',7:'អាសាឍ',8:'ស្រាពណ៍',9:'ភទ្របទ',10:'អស្សុជ',11:'កត្តិក',12:'បឋមាសាឍ',13:'ទុតិយាសាឍ'};
+
+let calMode = 'browse';
+let calView = { y: 0, m: 0 };
+let calSel = null;
+const calPicked = { teacher: null, principal: null };
+const _calCache = {};
+
+function calReady() {
+  if (typeof momentkh === 'undefined') {
+    alert('Library MomentKH មិនដំណើរការ។');
+    return false;
+  }
+  return true;
+}
+function kInfo(y, m, d) {
+  const key = y * 10000 + m * 100 + d;
+  if (_calCache[key]) return _calCache[key];
+  const r = momentkh.fromGregorian(y, m, d), k = r.khmer;
+  return (_calCache[key] = {
+    y, m, d, dow: r.gregorian.dayOfWeek, kd: k.day, ph: k.moonPhase,
+    mi: k.monthIndex, be: k.beYear, animal: k.animalYearName, sak: k.sakName
+  });
+}
+function calLunarDay(o) { return toKhmerNum(o.kd) + (o.ph === 1 ? 'រោច' : 'កើត'); }
+function lunarFull(o) {
+  return `ថ្ងៃ${CAL_DOW[o.dow]} ${calLunarDay(o)} ខែ${CAL_LMN[o.mi]} ឆ្នាំ${o.animal} ${o.sak} ពុទ្ធសករាជ ${toKhmerNum(o.be)}`;
+}
+function solarFull(o) {
+  return `${SCHOOL_PLACE} ថ្ងៃទី${toKhmerNum(o.d)} ខែ${CAL_GM[o.m - 1]} ឆ្នាំ${toKhmerNum(o.y)}`;
+}
+function calIsLast(o) {
+  const t = new Date(o.y, o.m - 1, o.d + 1);
+  const n = kInfo(t.getFullYear(), t.getMonth() + 1, t.getDate());
+  return n.kd === 1 && n.ph === 0;
+}
+function calMoon(o) {
+  if (o.ph === 0 && o.kd === 15) return '🌕';
+  if (o.ph === 0 && o.kd === 8) return '🌓';
+  if (o.ph === 1 && o.kd === 8) return '🌗';
+  if (calIsLast(o)) return '🌑';
+  return '';
+}
+
+(function calInit() {
+  let h = '';
+  CAL_GM.forEach((n, i) => h += `<option value="${i + 1}">${n}</option>`);
+  document.getElementById('calMonth').innerHTML = h;
+  h = '';
+  for (let y = 2000; y <= 2100; y++) h += `<option value="${y}">${toKhmerNum(y)}</option>`;
+  document.getElementById('calYear').innerHTML = h;
+  document.getElementById('calDow').innerHTML = CAL_DOWS.map(d => `<div>${d}</div>`).join('');
+  document.getElementById('calGrid').addEventListener('click', e => {
+    const c = e.target.closest('.cal-cell'); if (!c) return;
+    calSel = { y: calView.y, m: calView.m, d: +c.dataset.d };
+    calRender();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCalendar(); });
+})();
+
+function openCalendar(mode) {
+  if (!calReady()) return;
+  calMode = mode;
+  const now = new Date();
+  const base = calPicked[mode] || { y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate() };
+  calSel = { ...base };
+  calView = { y: base.y, m: base.m };
+  document.getElementById('calTitle').innerText =
+    mode === 'teacher' ? 'ថ្ងៃគ្រូចុះហត្ថលេខា' : mode === 'principal' ? 'ថ្ងៃនាយកចុះហត្ថលេខា' : 'ប្រតិទិនចន្ទគតិ';
+  document.getElementById('calBtnTeacher').style.display = (mode === 'principal') ? 'none' : 'inline-flex';
+  document.getElementById('calBtnPrincipal').style.display = (mode === 'teacher') ? 'none' : 'inline-flex';
+  document.getElementById('calBtnClear').style.display = (mode === 'principal') ? 'inline-flex' : 'none';
+  document.getElementById('calPanel').classList.add('show');
+  document.getElementById('calBackdrop').classList.add('show');
+  calRender();
+}
+function closeCalendar() {
+  document.getElementById('calPanel').classList.remove('show');
+  document.getElementById('calBackdrop').classList.remove('show');
+}
+function calShift(n) {
+  const t = new Date(calView.y, calView.m - 1 + n, 1);
+  calView = { y: Math.min(2100, Math.max(2000, t.getFullYear())), m: t.getMonth() + 1 };
+  calRender();
+}
+function calJump() {
+  calView = { y: +document.getElementById('calYear').value, m: +document.getElementById('calMonth').value };
+  calRender();
+}
+function calToday() {
+  const n = new Date();
+  calSel = { y: n.getFullYear(), m: n.getMonth() + 1, d: n.getDate() };
+  calView = { y: calSel.y, m: calSel.m };
+  calRender();
+}
+function calRender() {
+  const { y, m } = calView;
+  document.getElementById('calMonth').value = m;
+  document.getElementById('calYear').value = y;
+  const first = new Date(y, m - 1, 1).getDay(), dim = new Date(y, m, 0).getDate();
+  const t = new Date();
+  let h = '<span></span>'.repeat(first);
+  for (let d = 1; d <= dim; d++) {
+    const o = kInfo(y, m, d), mo = calMoon(o);
+    const isToday = t.getFullYear() === y && t.getMonth() + 1 === m && t.getDate() === d;
+    const isSel = calSel && calSel.y === y && calSel.m === m && calSel.d === d;
+    const small = (o.kd === 1 && o.ph === 0) ? 'ខែ' + CAL_LMN[o.mi] : calLunarDay(o);
+    h += `<button type="button" class="cal-cell${o.dow === 0 ? ' sun' : ''}${mo ? ' holy' : ''}${isToday ? ' today' : ''}${isSel ? ' sel' : ''}" data-d="${d}">`
+       + `<b>${toKhmerNum(d)}</b><small>${small}</small>${mo ? `<span class="mo">${mo}</span>` : ''}</button>`;
+  }
+  document.getElementById('calGrid').innerHTML = h;
+  if (calSel) {
+    const s = kInfo(calSel.y, calSel.m, calSel.d);
+    document.getElementById('calPreview').innerHTML = `<div class="p1">${lunarFull(s)}</div><div>${solarFull(s)}</div>`;
+  }
+}
+function calApply(target) {
+  if (!calSel) return;
+  const o = kInfo(calSel.y, calSel.m, calSel.d);
+  const short = `${toKhmerNum(o.d)} ${CAL_GM[o.m - 1]} ${toKhmerNum(o.y)}`;
+  if (target === 'teacher') {
+    document.getElementById('lblLunarDate').value = lunarFull(o);
+    document.getElementById('lblSolarDate').value = solarFull(o);
+    const b = document.getElementById('teacherDateBadge');
+    b.innerText = short; b.classList.add('set');
+    calPicked.teacher = { ...calSel };
+  } else {
+    const lbl = document.getElementById('lblPrincipalDate');
+    lbl.innerHTML = `<div>${lunarFull(o)}</div><div>${solarFull(o)}</div>`;
+    lbl.style.display = 'block';
+    const b = document.getElementById('principalDateBadge');
+    b.innerText = short; b.classList.add('set');
+    calPicked.principal = { ...calSel };
+  }
+  closeCalendar();
+}
+function calClearPrincipal() {
+  const lbl = document.getElementById('lblPrincipalDate');
+  lbl.innerHTML = ''; lbl.style.display = 'none';
+  const b = document.getElementById('principalDateBadge');
+  b.innerText = 'មិនដាក់'; b.classList.remove('set');
+  calPicked.principal = null;
+  closeCalendar();
+}
+function editTeacherDate() { openCalendar('teacher'); }
+function editPrincipalDate() { openCalendar('principal'); }
+
+/* =========================================================
+   6. ⚙️ PAGE SETUP (A4/F4, MARGIN, ZOOM)
+========================================================= */
+/* ថ្ងៃខែឆ្នាំកំណើត៖ ថ្ងៃ-ខែ-ឆ្នាំ (ឧ. 13-12-2016) */
+function fmtDob(v) {
+  const t = String(v == null ? '' : v).trim();
+  const m = t.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})(?:[T\s].*)?$/);
+  if (!m) return t;
+  return m[3].padStart(2, '0') + '-' + m[2].padStart(2, '0') + '-' + m[1];
+}
+const PX = 96 / 25.4;
+const PAPERS = { A4: [210, 297], F4: [216, 330] };
+let PS = { paper: 'A4', orient: 'landscape', margin: 10, font: 100, rowH: 6.2 };
+
+function openPageSetup() {
+  document.getElementById('psPanel').classList.add('show');
+  document.getElementById('psBackdrop').classList.add('show');
+  updatePsPanel();
+}
+function closePageSetup() {
+  document.getElementById('psPanel').classList.remove('show');
+  document.getElementById('psBackdrop').classList.remove('show');
+}
+function psSetPaper(p) { PS.paper = p; updatePsAll(); }
+function psSetOrient(o) { PS.orient = o; if (RV2.layout === 'pick') { RV2.pickOrient = o; saveRV2(); } renderRosterTable(); updatePsPanel(); }
+function psPreset(m) { PS.margin = m; updatePsAll(); }
+function psStep(key, dir) {
+  if (key === 'margin') PS.margin = Math.max(2, Math.min(30, PS.margin + dir));
+  if (key === 'font') PS.font = Math.max(70, Math.min(140, PS.font + dir * 5));
+  if (key === 'rowH') PS.rowH = Math.max(3.5, Math.min(25, Number((PS.rowH + dir * 0.4).toFixed(1))));
+  updatePsAll();
+}
+function psInput(key, val) {
+  const v = parseFloat(val);
+  if (isNaN(v)) return;
+  PS[key] = v;
+  updatePsAll();
+}
+function psReset() { PS = { paper: 'A4', orient: RV2.layout === 'pick' ? RV2.pickOrient : LAYOUTS[RV2.layout].orient, margin: 10, font: 100, rowH: 6.2 }; updatePsAll(); renderRosterTable(); }
+function updatePsAll() { applyPsStyles(); updatePsPanel(); fitPaper(); }
+
+function applyPsStyles() {
+  const pDim = PAPERS[PS.paper], isL = PS.orient === 'landscape';
+  const w = isL ? pDim[1] : pDim[0], h = isL ? pDim[0] : pDim[1];
+  const paper = document.getElementById('printableReportPaper');
+  paper.style.width = `${w}mm`;
+  paper.style.minHeight = `${h}mm`;
+  paper.style.padding = `${PS.margin}mm`;
+  paper.style.fontSize = `${(11 * PS.font) / 100}px`;
+  paper.classList.toggle('is-portrait', !isL);
+  paper.classList.toggle('dense', document.querySelectorAll('#rosterTable thead th').length > 8);
+  /* បញ្ឈរ៖ ប្រើទទឹងជួរតាម % ដើម្បីតារាងមិនហួសក្រដាស · ផ្តេក៖ px */
+  const ths = [...document.querySelectorAll('#rosterTable thead th')];
+  let tot = 0; ths.forEach(th => { tot += parseFloat(th.dataset.wp) || 60; });
+  ths.forEach(th => { th.style.width = isL ? `${parseFloat(th.dataset.w) || 60}px` : `${((parseFloat(th.dataset.wp) || 60) / tot * 100).toFixed(2)}%`; });
+  document.querySelectorAll('.table-roster tr').forEach(r => { r.style.height = `${PS.rowH}mm`; });
+  document.getElementById('psUsable').innerText = `ផ្ទៃប្រើ ${w - PS.margin * 2}×${h - PS.margin * 2}mm`;
+}
+function updatePsPanel() {
+  document.querySelectorAll('[data-paper]').forEach(b => b.classList.toggle('active', b.dataset.paper === PS.paper));
+  document.querySelectorAll('[data-orient]').forEach(b => b.classList.toggle('active', b.dataset.orient === PS.orient));
+  document.querySelectorAll('[data-m]').forEach(b => b.classList.toggle('active', parseFloat(b.dataset.m) === PS.margin));
+  document.getElementById('psIn_margin').value = PS.margin;
+  document.getElementById('psIn_font').value = PS.font;
+  document.getElementById('psIn_rowH').value = PS.rowH;
+}
+function fitPaper() {
+  const paper = document.getElementById('printableReportPaper');
+  const sc = document.getElementById('paperScaler');
+  if (!paper || !sc) return;
+  const pDim = PAPERS[PS.paper], isL = PS.orient === 'landscape';
+  const wPx = (isL ? pDim[1] : pDim[0]) * PX;
+  const availW = window.innerWidth - 28;
+  if (availW < wPx) {
+    const scale = availW / wPx;
+    paper.style.transform = `scale(${scale})`;
+    sc.style.width = `${wPx * scale}px`;
+    sc.style.height = `${paper.offsetHeight * scale}px`;
+  } else {
+    paper.style.transform = 'none';
+    sc.style.width = 'auto';
+    sc.style.height = 'auto';
+  }
+}
+window.addEventListener('resize', fitPaper);
+
+function downloadPDF() {
+  const element = document.getElementById('printableReportPaper');
+  const pDim = PAPERS[PS.paper];
+  closePageSetup();
+  const opt = {
+    margin: [PS.margin, PS.margin, PS.margin, PS.margin],
+    filename: `បញ្ជីរាយនាមសិស្ស_ថ្នាក់ទី_${currentSelectedClass}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2.5, useCORS: true },
+    jsPDF: { unit: 'mm', format: [Math.min(pDim[0], pDim[1]), Math.max(pDim[0], pDim[1])], orientation: PS.orient }
+  };
+  html2pdf().from(element).set(opt).save();
+}
+function printReport() { closePageSetup(); window.print(); }
+
+const USER=CURRENT_USER;
+const esc=t=>String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function applyKit(){
+  const g=id=>document.getElementById(id);
+  if(kitHasProf()){
+    g('kitHead').innerHTML=schoolHeadLines(PROF).map(x=>'<div>'+esc(x)+'</div>').join('');
+    const pl=kitPlace();
+    SCHOOL_PLACE=pl;
+    ['lblSolarDate'].forEach(id=>{const e=g(id);if(e)e.value=e.value.replace(/^.*?(?= ថ្ងៃទី)/,pl)});
+    const pd=g('lblPrincipalDate');if(pd&&pd.innerHTML)pd.innerHTML=pd.innerHTML.replace(/(<div>)[^<]*?(?= ថ្ងៃទី)/g,'$1'+pl);
+    if(PROF.director_title)g('kitDirTitle').textContent=PROF.director_title;
+  }
+  if(STAMP_META){g('kitDirSpace').innerHTML=kitStamp();g('kitDirSpace').style.height='auto';g('kitDirSpace').style.minHeight='34mm'}
+  g('lblPrincipalName').textContent=kitDirName();
+  g('kitTeaSpace').innerHTML=kitSig();
+}
+
+/* ===== ព័ត៌មានសាលា/ហត្ថលេខា/ត្រា ពីគណនី (ប្រវត្តិរូបរបស់ខ្ញុំ) ===== */
+let PROF=null,PROFILE_SIG='',STAMP_META=null;
+    /* 🔍 ស្កេនរូបត្រា៖ កាត់គែមទទេ រួចរកខ្សែបន្ទាត់រង្វង់ត្រា (ក្រហម) → {url,x,y,d,w,h}  (ហត្ថលេខា/ឈ្មោះដែលលើសរង្វង់ មិនគិតក្នុងទំហំត្រា) */
+    function analyzeStamp(src) {
+      return new Promise(res => {
+        const im = new Image();
+        im.onerror = () => res(null);
+        im.onload = () => {
+          try {
+            const w = im.naturalWidth, h = im.naturalHeight, c = document.createElement('canvas');
+            c.width = w; c.height = h; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(im, 0, 0);
+            const d = x.getImageData(0, 0, w, h).data;
+            const cr = (cx, cy) => { const i = (cy * w + cx) * 4; return [d[i], d[i + 1], d[i + 2], d[i + 3]]; };
+            const cs = [cr(0, 0), cr(w - 1, 0), cr(0, h - 1), cr(w - 1, h - 1)];
+            const bg = [0, 1, 2, 3].map(k => Math.round(cs.reduce((t, q) => t + q[k], 0) / 4));
+            const ink = i => {
+              const a = d[i + 3];
+              if (bg[3] < 30) return a > 40;
+              if (Math.abs(a - bg[3]) > 60) return true;
+              return Math.abs(d[i] - bg[0]) + Math.abs(d[i + 1] - bg[1]) + Math.abs(d[i + 2] - bg[2]) > 90;
+            };
+            let x0 = w, y0 = h, x1 = -1, y1 = -1; const all = [], red = [];
+            for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++) {
+              const i = (yy * w + xx) * 4;
+              if (!ink(i)) continue;
+              if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy;
+              all.push(xx, yy);
+              if (d[i] > d[i + 2] + 25 && d[i] > d[i + 1] + 15) red.push(xx, yy);   // ក្រហម (ត្រា + ឈ្មោះ) មិនមែនខៀវ (ហត្ថលេខា)
+            }
+            if (x1 < 0) return res(null);
+            const cw = x1 - x0 + 1, ch = y1 - y0 + 1, o = document.createElement('canvas');
+            o.width = cw; o.height = ch; o.getContext('2d').drawImage(c, x0, y0, cw, ch, 0, 0, cw, ch);
+            /* ផ្ទៃរូបមិនថ្លា (ស/ប្រផេះ) → ធ្វើឱ្យថ្លា ដើម្បីមិនបាំងអក្សរ */
+            if (bg[3] >= 30) {
+              const oc = o.getContext('2d', { willReadFrequently: true }), od = oc.getImageData(0, 0, cw, ch), q = od.data;
+              for (let i = 0; i < q.length; i += 4) {
+                const dist = Math.abs(q[i] - bg[0]) + Math.abs(q[i + 1] - bg[1]) + Math.abs(q[i + 2] - bg[2]);
+                if (dist < 40) q[i + 3] = 0; else if (dist < 110) q[i + 3] = Math.round(q[i + 3] * (dist - 40) / 70);
+              }
+              oc.putImageData(od, 0, 0);
+            }
+            const url = o.toDataURL('image/png');
+            let pts = red.length >= 200 ? red : all;
+            const stride = Math.max(2, Math.floor(pts.length / 2 / 5000) * 2); const P = [];
+            for (let i = 0; i < pts.length; i += stride) P.push(pts[i] - x0, pts[i + 1] - y0);
+            let L = cw, T = ch; for (let i = 0; i < P.length; i += 2) { if (P[i] < L) L = P[i]; if (P[i + 1] < T) T = P[i + 1]; }
+            const maxR = Math.min(cw - L, ch - T) / 2, minR = Math.max(20, Math.min(cw, ch) * 0.2);
+            let best = null;
+            for (let r = Math.floor(minR); r <= maxR; r += 2) {
+              const cx = L + r, cy = T + r, tol = Math.max(2.5, r * 0.04), bins = new Uint8Array(72); let cnt = 0;
+              for (let i = 0; i < P.length; i += 2) {
+                const dx = P[i] - cx, dy = P[i + 1] - cy, dist = Math.sqrt(dx * dx + dy * dy);
+                if (Math.abs(dist - r) <= tol) { bins[Math.min(71, Math.floor((Math.atan2(dy, dx) + Math.PI) / (2 * Math.PI) * 72))] = 1; cnt++; }
+              }
+              let cov = 0; for (let b = 0; b < 72; b++) cov += bins[b]; cov /= 72;
+              if (!best || cov > best.cov + 0.02 || (Math.abs(cov - best.cov) <= 0.02 && cnt > best.cnt)) best = { r, cov, cnt };
+            }
+            if (!best || best.cov < 0.5) return res({ url, x: 0, y: 0, d: Math.min(cw, ch), w: cw, h: ch, fallback: true });
+            res({ url, x: L, y: T, d: best.r * 2, w: cw, h: ch });
+          } catch (e) { res(null); }
+        };
+        im.src = src;
+      });
+    }
+    
+
+function schoolHeadLines(d){
+  const school=((d&&d.school_name)||'').trim()||'សាលាបឋមសិក្សាកំពង់ល្ពៅ',t=(d&&d.head_type)||'oc';
+  const dept=((d&&d.dept)||'').trim(),office=((d&&d.office)||'').trim(),cl=((d&&d.cluster)||'').trim(),L=[];
+  if(t==='doc'&&dept)L.push(dept);
+  if(t!=='s'&&office)L.push(office);
+  if((t==='oc'||t==='doc')&&cl)L.push(cl);
+  L.push(school);return L;
+}
+function kitHasProf(){return !!(PROF&&(PROF.school_name||PROF.office||PROF.cluster||PROF.dept||PROF.head_type))}
+function kitPlace(def){return ((PROF&&PROF.sign_place)||'').trim()||def||'កំពង់ល្ពៅ'}
+function kitStamp(){
+  const m=STAMP_META;if(!m)return '';
+  const K=34/m.d,mb=Math.max(0,(m.h-(m.y+m.d))*K);
+  return '<div class="kit-stamp" style="margin-bottom:'+mb+'mm"><div class="kit-circle"><img alt="" src="'+m.url+'" style="width:'+(m.w*K)+'mm;left:'+(-m.x*K)+'mm;top:'+(-m.y*K)+'mm"></div></div>';
+}
+function kitSig(){return PROFILE_SIG?'<img class="kit-sig" alt="" src="'+PROFILE_SIG+'" style="height:16mm!important;width:auto!important;max-width:55mm!important;max-height:none!important;object-fit:contain;display:block;margin:0 auto">':''}
+function kitDirName(){return STAMP_META?'':(((PROF&&PROF.director_name)||'').trim())}
+async function loadKit(done){
+  try{
+    let pw='';try{pw=localStorage.getItem('krou_pw')||''}catch(e){}
+    if(!sb||!USER||!USER.username||!pw)return;
+    const a={p_u:USER.username,p_p:pw};
+    const [pr,sc]=await Promise.all([sb.rpc('staff_my_profile_get',a),sb.rpc('staff_school_get',a)]);
+    PROFILE_SIG=(pr.data&&pr.data.signature_url)||'';
+    const sd=sc.data;
+    if(sd&&sd.ok){
+      PROF=sd.data||{};
+      if(sd.stamp_url){
+        const m=PROF.stamp_circle&&PROF.stamp_circle.d?Object.assign({},PROF.stamp_circle,{url:sd.stamp_url}):await analyzeStamp(sd.stamp_url);
+        if(m)STAMP_META=m;
+      }
+    }
+    if(done)done();
+  }catch(e){console.warn('kit',e)}
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const isAuth = await checkAuthentication();
+  if (!isAuth) return;
+  PS.orient = RV2.layout === 'pick' ? RV2.pickOrient : LAYOUTS[RV2.layout].orient;
+  updateAgeLbl();
+  await initAdminClassDropdown();
+  await loadRosterData();
+  applyPsStyles();
+  setTimeout(fitPaper, 100);
+  loadKit(()=>{applyKit();try{fitPaper()}catch(e){}});
+});
+</script>
+<!-- 🔤 AUTO-SELECT : ប្តូរ <select> ធម្មតា ទៅជាបញ្ជីជ្រើសរើស font Battambang (បញ្ជីរបស់ browser មិនប្រើ font ទំព័រ) -->
+<style id="asStyle">
+.as-wrap{position:relative;display:inline-block;vertical-align:middle;max-width:100%;min-width:0}
+.as-btn{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;cursor:pointer;text-align:left;box-sizing:border-box;font-family:'Khmer OS Battambang','Battambang',sans-serif !important;appearance:none;-webkit-appearance:none}
+.as-btn .as-lb{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Khmer OS Battambang','Battambang',sans-serif !important}
+.as-btn .as-ch{flex:none;width:0;height:0;border-left:4.5px solid transparent;border-right:4.5px solid transparent;border-top:6px solid currentColor;opacity:.65;transition:transform .15s}
+.as-btn.open .as-ch{transform:rotate(180deg)}
+.as-btn:disabled{opacity:.55;cursor:not-allowed}
+.as-pop{display:none;position:fixed;z-index:2147483000;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 14px 35px rgba(0,0,0,.35);padding:6px;overflow-y:auto;max-height:300px;box-sizing:border-box}
+.as-pop.show{display:block;animation:asIn .14s ease-out}
+@keyframes asIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.as-it{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:700;color:#1e293b;cursor:pointer;font-family:'Khmer OS Battambang','Battambang',sans-serif !important;line-height:1.35}
+.as-it:hover{background:#f1f5f9}
+.as-it.on{background:#e0f2fe;color:#0284c7}
+.as-it.on::after{content:'✓';font-size:13px}
+.as-it.dis{opacity:.4;pointer-events:none}
+@media print{.as-pop{display:none !important}}
+</style>
+<script id="asScript">
+(function(){
+  var COPY=['width','minWidth','maxWidth','height','minHeight','margin','flex','flexGrow','flexShrink','flexBasis','alignSelf','justifySelf','gridColumn','gridRow','order'];
+  var STY=['padding','border','borderRadius','background','backgroundColor','color','fontSize','fontWeight','lineHeight','boxShadow','textAlign'];
+  var pops=[],openPop=null;
+  function closeAll(){pops.forEach(function(p){p.classList.remove('show')});document.querySelectorAll('.as-btn.open').forEach(function(b){b.classList.remove('open')});openPop=null}
+  function skip(sel){
+    if(sel._as||sel.multiple||sel.size>1||sel.hasAttribute('data-native')||sel._enh)return true;
+    if(sel.closest('.cs-wrap,.as-wrap'))return true;
+    if(sel._cs||sel._enh||sel._cdd||sel._custom)return true; /* __asOwn2 */
+    if(sel.id&&document.getElementById(sel.id+'Btn'))return true; /* __asBtnFix: ទំព័រមាន custom dropdown ផ្ទាល់ខ្លួន */
+    return false;
+  }
+  function visible(sel){var cs=getComputedStyle(sel);return cs.display!=='none'&&cs.visibility!=='hidden'}
+  function enhance(sel){
+    var cs=getComputedStyle(sel);
+    sel._as=true;
+    var wrap=document.createElement('span');wrap.className='as-wrap';
+    var disp=cs.display;if(disp==='block'||disp==='flex')wrap.style.display=disp==='flex'?'flex':'block';
+    COPY.forEach(function(k){var v=cs[k];if(v&&v!=='auto'&&v!=='normal'&&v!=='none'&&!(k==='margin'&&v==='0px'))wrap.style[k]=v});
+    if(cs.position==='absolute'||cs.position==='fixed'){wrap.style.position=cs.position;['top','left','right','bottom'].forEach(function(k){wrap.style[k]=cs[k]})}
+    if(cs.width&&/px$/.test(cs.width)&&sel.style.width)wrap.style.width=sel.style.width;
+    var btn=document.createElement('button');btn.type='button';btn.className='as-btn';
+    STY.forEach(function(k){btn.style[k]=cs[k]});
+    if(cs.height&&/px$/.test(cs.height))btn.style.height=cs.height;
+    btn.innerHTML='<span class="as-lb"></span><span class="as-ch"></span>';
+    sel.parentNode.insertBefore(wrap,sel);wrap.appendChild(btn);wrap.appendChild(sel);
+    sel.style.display='none';
+    var lb=btn.querySelector('.as-lb');
+    var pop=document.createElement('div');pop.className='as-pop';document.body.appendChild(pop);pops.push(pop);sel._asWrap=wrap;sel._asPop=pop;
+    var dV=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'value'),dI=Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype,'selectedIndex');
+    function sync(){var o=sel.options[sel.selectedIndex];lb.textContent=o?o.textContent:'';btn.disabled=!!sel.disabled;
+      wrap.style.display=wrap.style.display; }
+    try{
+      Object.defineProperty(sel,'value',{configurable:true,get:function(){return dV.get.call(sel)},set:function(v){dV.set.call(sel,v);sync()}});
+      Object.defineProperty(sel,'selectedIndex',{configurable:true,get:function(){return dI.get.call(sel)},set:function(v){dI.set.call(sel,v);sync()}});
+    }catch(e){}
+    new MutationObserver(sync).observe(sel,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['disabled','selected']});
+    sel.addEventListener('change',sync);
+    sync();
+    function render(){
+      pop.innerHTML='';
+      Array.prototype.forEach.call(sel.options,function(o,i){
+        if(o.hidden)return;
+        var it=document.createElement('div');it.className='as-it'+(i===sel.selectedIndex?' on':'')+(o.disabled?' dis':'');
+        var sp=document.createElement('span');sp.textContent=o.textContent;it.appendChild(sp);
+        it.addEventListener('click',function(e){e.stopPropagation();var ch=(i!==sel.selectedIndex);dI.set.call(sel,i);sync();closeAll();if(ch){sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}))}});
+        pop.appendChild(it);
+      });
+    }
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();e.preventDefault();
+      if(pop.classList.contains('show')){closeAll();return}
+      closeAll();render();
+      var r=btn.getBoundingClientRect(),vh=window.innerHeight,vw=window.innerWidth;
+      pop.style.minWidth=Math.max(r.width,150)+'px';
+      pop.classList.add('show');
+      var ph=Math.min(pop.scrollHeight+12,300),below=vh-r.bottom-8,above=r.top-8;
+      var top=(below>=ph||below>=above)?r.bottom+4:Math.max(8,r.top-ph-4);
+      pop.style.maxHeight=Math.min(300,Math.max(120,(below>=ph||below>=above)?below:above))+'px';
+      pop.style.top=top+'px';
+      var left=Math.min(Math.max(8,r.left),vw-pop.offsetWidth-8);pop.style.left=left+'px';
+      btn.classList.add('open');openPop=pop;
+      var on=pop.querySelector('.as-it.on');if(on)pop.scrollTop=on.offsetTop-pop.clientHeight/2+on.offsetHeight/2;
+    });
+  }
+  /* ទំព័រមាន dropdown ផ្ទាល់ខ្លួន (id+'Btn', .custom-dd-btn, .cs-btn) → លុបកំណែស្វ័យប្រវត្តិ កុំឱ្យស្ទួន */
+  function hasOther(sel){var w=sel._asWrap,r=w&&w.parentNode;if(!r)return false;
+    if(sel.id&&document.getElementById(sel.id+'Btn'))return true;
+    return !!r.querySelector('.custom-dd-btn,.cs-btn,.cs-wrap')}
+  function dropAs(sel){var w=sel._asWrap;if(w){var b=w.querySelector('.as-btn');if(b)b.remove()}
+    if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    try{delete sel.value;delete sel.selectedIndex}catch(e){}
+    sel._as=false;sel._enh=true;sel._asPop=null;sel.style.display='none'}
+  function scan(){
+    document.querySelectorAll('select').forEach(function(x){if(x._as&&((x.id&&document.getElementById(x.id+'Btn'))||x._cs||x._enh||x._cdd||x._custom)){unwrapAs(x);x.style.display='none'}});
+    var list=document.querySelectorAll('select');
+    for(var i=0;i<list.length;i++){var s=list[i];
+      if(s._as&&s._asWrap&&hasOther(s)){try{dropAs(s)}catch(e){}continue}
+      if(skip(s))continue;if(!visible(s))continue;try{enhance(s)}catch(e){console.warn('as',e)}}
+  }
+  document.addEventListener('click',function(e){if(!e.target.closest||!e.target.closest('.as-pop'))closeAll()});
+  window.addEventListener('resize',closeAll);window.addEventListener('scroll',function(e){if(openPop&&!(e.target&&e.target.closest&&e.target.closest('.as-pop')))closeAll()},true);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll()});
+  function boot(){scan();setInterval(scan,1200)}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+  /* __asHook: ទំព័រដែលមាន enhanceSelect ផ្ទាល់ខ្លួន → ដកកំណែស្វ័យប្រវត្តិចេញ កុំឱ្យមានប្រអប់ស្ទួន */
+  function unwrapAs(sel){try{var w=sel._asWrap;if(w&&w.parentNode){var par=w.parentNode;par.insertBefore(sel,w);var ref=w;Array.prototype.slice.call(w.children).forEach(function(c){if(c===sel||c.classList.contains('as-btn'))return;par.insertBefore(c,w)});w.remove()}if(sel._asPop){sel._asPop.remove();var i=pops.indexOf(sel._asPop);if(i>-1)pops.splice(i,1)}
+    sel.style.display='';sel._as=false;sel._asWrap=null;sel._asPop=null;try{if(typeof csSync==='function')csSync(sel)}catch(e){}}catch(e){}}
+  try{if(typeof window.enhanceSelect==='function'&&!window.enhanceSelect.__asHooked){var _orig=window.enhanceSelect;
+    window.enhanceSelect=function(a){var el=typeof a==='string'?document.getElementById(a):a;if(el&&el._as)unwrapAs(el);return _orig.apply(this,arguments)};
+    window.enhanceSelect.__asHooked=true}}catch(e){}
+  window.__autoSelectScan=scan;
+})();
+</script>
+</body>
+</html>

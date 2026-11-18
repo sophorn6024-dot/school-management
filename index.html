@@ -1401,18 +1401,7 @@ document.addEventListener('DOMContentLoaded',function(){ var f=document.getEleme
             <div class="rg-col">
             <div class="rg-card rg-red">
               <div class="rg-title f-moul">១. បញ្ជីឈ្មោះសិស្ស</div>
-              <div class="rg-roster">
-              <div class="rg-name">បញ្ជីរាយនាមសិស្ស</div>
-              <div class="rf-row">
-                <button type="button" class="rf-select" id="rfTrigger" onclick="toggleRosterFormatMenu(event)" aria-haspopup="listbox">
-                  <span id="rfLabel">ទម្រង់ 1</span>
-                  <svg class="rf-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-                </button>
-                <button type="button" class="rf-open" onclick="openRosterFormat()">
-                  <svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span>បើក</span>
-                </button>
-              </div>
-            </div>
+              <div class="rg-row" onclick="openInTab('student_roster')"><span class="rg-name">បញ្ជីរាយនាមសិស្ស</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('student_roster')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
               <div class="rg-row" onclick="openInTab('student_age_stats')"><span class="rg-name">ស្ថិតិសិស្សតាមអាយុ នាដើមឆ្នាំ</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('student_age_stats')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
               <div class="rg-row" onclick="openInTab('student_village_age')"><span class="rg-name">តារាងចំនួនសិស្សតាមភូមិ និងអាយុ</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('student_village_age')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
               <div class="rg-row" onclick="openInTab('student_class_form')"><span class="rg-name">តារាង PRI</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('student_class_form')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
@@ -3675,7 +3664,7 @@ function navigate(page, el) {
 
   document.querySelectorAll('.nav-link-btn').forEach(n => n.classList.remove('active'));
   const HUB_CHILDREN = ['addStudent', 'group', 'seating', 'bmi', 'curriculum', 'schedule', 'my_classes', 'committee_meeting', 'book'];
-  const isReportChild = ['roster', 'roster2', 'rank', 'honor', 'certificate', 'report', 'remesterrecord'].includes(page);
+  const isReportChild = ['roster', 'roster2', 'student_roster', 'rank', 'honor', 'certificate', 'report', 'remesterrecord'].includes(page);
   let target = el || document.querySelector(`[data-page="${page}"]`);
   if (!target && isReportChild) target = document.querySelector('[data-page="reportsHub"]');
   if (!target && HUB_CHILDREN.includes(page)) target = document.querySelector('[data-page="classes"]');
