@@ -210,6 +210,13 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
 .chip label{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
 .chip.drag{opacity:.55;outline:2px dashed #2563eb}
 </style>
+<style id="tbPlainIcons">
+/* icon ធម្មតា៖ គ្មានប្រអប់ពណ៌ · icon ធំ ច្បាស់ */
+.top-toolbar .tb-btn .ic,.top-toolbar .tb-ico{background:none!important;width:22px;height:22px;border-radius:0;font-size:17px;color:var(--c)!important;box-shadow:none}
+.top-toolbar .tb-btn{padding:0 13px 0 11px;gap:8px}
+.top-toolbar .tb-btn.solid .ic{color:#fff!important}
+.top-toolbar .tb-ico{margin-right:0}
+</style>
 <style id="tbGlass">
 /* ===== 🧰 Toolbar glass + pill ===== */
 :root{--primary:#0284c7}
@@ -262,9 +269,15 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
         <option value="portrait">ទម្រង់បញ្ឈរ</option>
         <option value="pick">ជ្រើសជួរ</option>
       </select>
+      <span class="tb-ico" style="--c:#8b5cf6"><i class="fa-solid fa-filter"></i></span>
+      <select id="semesterSelect" class="tb-select" onchange="setSemester(this.value)" title="បង្ហាញតាមឆមាស (សិស្សបោះបង់)">
+        <option value="ឆមាសទី១">ឆមាសទី១</option>
+        <option value="ឆមាសទី២">ឆមាសទី២</option>
+        <option value="ទាំងអស់">ទាំងអស់</option>
+      </select>
       <span class="tb-lbl">អាយុគិតត្រឹម</span>
       <label class="tb-btn dtbtn" style="--c:#ec4899" title="កាលបរិច្ឆេទគិតអាយុ">
-        <span class="ic"><i class="fa-solid fa-cake-candles"></i></span><span class="lbl" id="ageDateLbl">...</span>
+        <span class="ic"><i class="fa-regular fa-calendar"></i></span><span class="lbl" id="ageDateLbl">...</span>
         <input type="date" id="ageDateInput" onchange="setAgeDate(this.value)">
       </label>
     </div>
@@ -902,7 +915,7 @@ async function loadRosterData() {
     if (stData) stData.sort((a,b)=>String(a.student_name||'').localeCompare(String(b.student_name||''),'km'));
     if (stData && stData.length > 0) {
       studentsDataList = stData.map(s => ({
-        id: s.id, student_id: s.student_id || '', phone: s.phone || s.parent_phone || s.tel || '', is_repeat: !!(s.is_repeat || s.repeat_class || s.repeater), name: s.student_name, gender: s.gender || 'ប្រុស', dob: s.dob || '',
+        id: s.id, dropout_semester: s.dropout_semester || s.dropoutSemester || '', student_id: s.student_id || '', phone: s.phone || s.parent_phone || s.tel || '', is_repeat: !!(s.is_repeat || s.repeat_class || s.repeater), name: s.student_name, gender: s.gender || 'ប្រុស', dob: s.dob || '',
         pob: s.pob || 'បាត់ដំបង', father_name: s.father_name || '', father_job: s.father_job || '',
         mother_name: s.mother_name || '', mother_job: s.mother_job || '', address: s.address || 'បាត់ដំបង',
         ethnicity: s.ethnicity || 'ខ្មែរ', disability: s.disability || 'គ្មាន', note: s.note || ''
@@ -940,25 +953,27 @@ const ALL_COLS = {
   eth:    { l:'ក្រុមជនជាតិ',    w:75,  wp:52,  g:s=>s.ethnicity||'', x:s=>s.ethnicity||'' },
   dis:    { l:'ពិការភាព',       w:70,  wp:48,  g:s=>s.disability||'', x:s=>s.disability||'' },
   rep:    { l:'សិស្សថ្មី/ត្រួតថ្នាក់', w:100, wp:80, g:s=>s.is_repeat?'ត្រួតថ្នាក់':'', x:s=>s.is_repeat?'ត្រួតថ្នាក់':'' },
-  note:   { l:'ផ្សេងៗ',         w:90,  wp:90,  g:s=>s.note||'', x:s=>s.note||'' }
+  note:   { l:'ផ្សេងៗ',         w:90,  wp:90,  g:s=>s.note||dropMark(s), x:s=>s.note||dropMark(s) }
 };
 const LAYOUTS = {
   bio:      { orient:'landscape', cols:['no','name','gender','dob','age','pob','fname','fjob','mname','mjob','address','eth','dis'], lab:{ name:'នាមត្រកូល និងនាម' } },
   portrait: { orient:'portrait',  cols:['no','sid','name','gender','dob','age','pob','note'], lab:{} }
 };
 /* ជ្រើសជួរ៖ លំដាប់ទាំងអស់ក្នុងបញ្ជី chip (ការបង្ហាញ/ការលាក់ + លំដាប់ ចាំទុក) */
-const PICK_ORDER_DEFAULT = ['no','name','gender','dob','age','fname','fjob','mname','mjob','phone','pob','sid','address','rep','note'];
+const PICK_ORDER_DEFAULT = ['no','sid','name','gender','dob','age','fname','fjob','mname','mjob','phone','pob','address','rep','note'];
 const PICK_LAB = { address:'ទីលំនៅបច្ចុប្បន្ន', fjob:'មុខរបរឪពុក', mjob:'មុខរបរម្តាយ' };
 const PICK_ON_DEFAULT = ['no','name','gender','dob','age'];
 
-let RV2 = { layout:'bio', ageDate:'', pickOrder:PICK_ORDER_DEFAULT.slice(), pickOn:PICK_ON_DEFAULT.slice(), pickOrient:'portrait', titleOpt:1 };
+let RV2 = { v2:1, layout:'bio', ageDate:'', pickOrder:PICK_ORDER_DEFAULT.slice(), pickOn:PICK_ON_DEFAULT.slice(), pickOrient:'portrait', titleOpt:1, semester:'ឆមាសទី១' };
 try { const o = JSON.parse(localStorage.getItem(RV2_KEY) || 'null'); if (o) {
   if (LAYOUTS[o.layout] || o.layout === 'pick') RV2.layout = o.layout;
   if (/^\d{4}-\d{2}-\d{2}$/.test(o.ageDate||'')) RV2.ageDate = o.ageDate;
-  if (Array.isArray(o.pickOrder)) { const ord = o.pickOrder.filter(k=>ALL_COLS[k]&&k!=='x'); PICK_ORDER_DEFAULT.forEach(k=>{ if(!ord.includes(k)) ord.push(k); }); RV2.pickOrder = ord; }
+  if (Array.isArray(o.pickOrder)) { const ord = o.pickOrder.filter(k=>ALL_COLS[k]&&k!=='x'); PICK_ORDER_DEFAULT.forEach(k=>{ if(!ord.includes(k)) ord.push(k); }); if (!o.v2) { const i = ord.indexOf('sid'); if (i > -1) ord.splice(i, 1); ord.splice(ord.indexOf('name') > -1 ? ord.indexOf('name') : 1, 0, 'sid'); }
+  RV2.pickOrder = ord; }
   if (Array.isArray(o.pickOn)) RV2.pickOn = o.pickOn.filter(k=>ALL_COLS[k]);
   if (o.pickOrient==='landscape'||o.pickOrient==='portrait') RV2.pickOrient = o.pickOrient;
   if (o.titleOpt===1||o.titleOpt===2) RV2.titleOpt = o.titleOpt;
+  if (['ឆមាសទី១','ឆមាសទី២','ទាំងអស់'].includes(o.semester)) RV2.semester = o.semester;
 } } catch(e){}
 function saveRV2(){ try{ localStorage.setItem(RV2_KEY, JSON.stringify(RV2)); }catch(e){} }
 function todayISO(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
@@ -995,13 +1010,15 @@ function titleOptions(){
     { v:2, t:`បញ្ជីរាយនាមសិស្សថ្នាក់ទី${clsLabel()} ឆ្នាំសិក្សា ${yr}` }
   ];
 }
-function activeCols(){
+function activeCols(VS){
   if (RV2.layout === 'pick') {
     const keys = RV2.pickOrder.filter(k => RV2.pickOn.includes(k));
     return keys.map(k => ({ k, ...ALL_COLS[k], l: PICK_LAB[k] || ALL_COLS[k].l }));
   }
   const L = LAYOUTS[RV2.layout];
-  return L.cols.map(k => ({ k, ...ALL_COLS[k], l: (L.lab && L.lab[k]) || ALL_COLS[k].l }));
+  const base = L.cols.slice();
+  if (RV2.layout === 'bio' && (VS || visibleStudents()).some(s => dropMark(s))) base.push('note');   /* បង្ហាញជួរ «ផ្សេងៗ» ពេលមានសិស្សបោះបង់ */
+  return base.map(k => ({ k, ...ALL_COLS[k], l: (L.lab && L.lab[k]) || ALL_COLS[k].l }));
 }
 
 function setLayout(v){
@@ -1049,10 +1066,29 @@ function startChipDrag(e){
   window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
 }
 
+/* សិស្សបោះបង់ (ចាប់ពីព័ត៌មានសិស្ស → dropout_semester) */
+function dropSem(s){
+  const v = String(s.dropout_semester || '').trim();
+  if (!v) return '';
+  const n = v.replace(/\s+/g,'').replace(/1/g,'១').replace(/2/g,'២');
+  if (n.includes('ឆមាស២') || n.includes('ឆមាសទី២') || n === '២') return 'ឆមាសទី២';
+  return 'ឆមាសទី១';   /* ឆមាសទី១ / «បោះបង់» ឬតម្លៃផ្សេងទៀត */
+}
+/* បោះបង់ឆមាស១ → មិនបង្ហាញក្នុងឆមាស២ */
+function visibleStudents(){
+  return studentsDataList.filter(s => !(RV2.semester === 'ឆមាសទី២' && dropSem(s) === 'ឆមាសទី១'));
+}
+function dropMark(s){
+  const d = dropSem(s); if (!d) return '';
+  if (RV2.semester === 'ទាំងអស់' || RV2.semester === d) return 'បោះបង់';
+  return '';
+}
+function setSemester(v){ RV2.semester = v; saveRV2(); renderRosterTable(); }
 function renderRosterTable() {
-  const L = RV2.layout, cols = activeCols();
-  const total = studentsDataList.length;
-  const female = studentsDataList.filter(s => s.gender && s.gender.includes('ស្រី')).length;
+  const VS = visibleStudents();
+  const L = RV2.layout, cols = activeCols(VS);
+  const total = VS.length;
+  const female = VS.filter(s => s.gender && s.gender.includes('ស្រី')).length;
   /* ក្បាលបញ្ជី */
   const yr = __kc(schoolYearTxt());
   const title = document.getElementById('lblMainTitle'), sub = document.getElementById('lblSubMetaStats'), cl = document.getElementById('lblDisplayClass');
@@ -1073,6 +1109,7 @@ function renderRosterTable() {
   const bar = document.getElementById('colsBar');
   bar.classList.toggle('show', L === 'pick');
   document.getElementById('layoutSelect').value = L;
+  document.getElementById('semesterSelect').value = RV2.semester;
   if (L === 'pick') {
     const ts = document.getElementById('titleSelect');
     const opts = titleOptions();
@@ -1093,7 +1130,7 @@ function renderRosterTable() {
     tbody.innerHTML = `<tr><td colspan="${cols.length}" style="padding:26px; color:#64748b;">មិនមានទិន្នន័យសិស្សសម្រាប់ថ្នាក់នេះទេ</td></tr>`;
   } else {
     const LL = L;
-    tbody.innerHTML = studentsDataList.map((s, idx) =>
+    tbody.innerHTML = VS.map((s, idx) =>
       '<tr>' + cols.map(c => `<td${c.c?` class="${c.c}"`:''}>${c.g(s, idx, LL)}</td>`).join('') + '</tr>').join('');
   }
   applyPsStyles();
@@ -1104,10 +1141,11 @@ function renderRosterTable() {
    4. EXCEL
 ========================================================= */
 function exportToExcel() {
-  if (!studentsDataList.length) { alert('មិនមានទិន្នន័យសម្រាប់ទាញយកទេ!'); return; }
-  const cols = activeCols();
+  const VS = visibleStudents();
+  if (!VS.length) { alert('មិនមានទិន្នន័យសម្រាប់ទាញយកទេ!'); return; }
+  const cols = activeCols(VS);
   const headers = cols.map(c => c.l);
-  const rows = studentsDataList.map((s, i) => cols.map(c => c.x(s, i)));
+  const rows = VS.map((s, i) => cols.map(c => c.x(s, i)));
   const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "បញ្ជីរាយនាមសិស្ស");
