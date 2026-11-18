@@ -16,6 +16,7 @@
 html,body{margin:0;min-height:100%}
 body{background:var(--bg);color:var(--tx);font-family:'Battambang','Khmer OS Battambang',sans-serif}
 .bar{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--bd);padding:10px 14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.bar .barsel{flex:1 1 150px;min-width:140px;max-width:240px}.bar .barsel label{display:none}.bar .barsel select{padding:8px 11px;font-size:13px}
 .bar h1{font-size:16px;margin:0 6px 0 0;font-family:'Moul','Battambang',serif;font-weight:400}
 .btn{border:1px solid var(--bd);background:var(--in);color:var(--tx);border-radius:10px;padding:8px 14px;font:700 13px 'Battambang',sans-serif;cursor:pointer}
 .btn.pri{background:var(--primary);border-color:var(--primary);color:#fff}
@@ -82,6 +83,8 @@ body{background:var(--bg);color:var(--tx);font-family:'Battambang','Khmer OS Bat
   <button class="btn" onclick="goBack()">← ត្រឡប់</button>
   <button class="btn pri" onclick="doPrint('one')">🖨 ព្រីនក្របនេះ</button>
   <button class="btn" onclick="doPrint('all')">🖨 ព្រីនទាំងអស់</button>
+  <div class="f barsel"><label>ស៊ុម</label><select id="fFrame" onchange="save()"><option value="g">ស៊ុមបៃតង-មាស (ថ្មី)</option><option value="b">ស៊ុមខៀវ-មាស</option><option value="r">ស៊ុមក្រហម-មាស</option><option value="p">ស៊ុមស្វាយ-មាស</option><option value="i1">ស៊ុមវល្លិ៍បៃតង</option><option value="i2">ស៊ុមផ្កាស្វាយ</option><option value="i3">ស៊ុមមាសក្រហម</option><option value="o">ស៊ុមដើម (ពី PDF)</option></select></div>
+  <div class="f barsel"><label>ទំហំក្រដាស</label><select id="fPaper" onchange="save()"><option value="a5">A5 បញ្ឈរ</option><option value="a4">A4 ផ្ដេក</option></select></div>
   <button type="button" class="btn" id="btnAdd" onclick="showAdd(true)">＋ បន្ថែមឈ្មោះសៀវភៅ</button>
   <button type="button" class="btn" id="btnDel" style="display:none;color:#f87171" onclick="delBook()">🗑 លុបឈ្មោះនេះ</button>
 </div>
@@ -90,8 +93,6 @@ body{background:var(--bg);color:var(--tx);font-family:'Battambang','Khmer OS Bat
   <div class="f wide" id="addRow">
     <div id="addBox" style="display:none;gap:8px;margin-top:8px;flex-wrap:wrap"><input id="fNew" placeholder="វាយឈ្មោះសៀវភៅ ឧ. ប្រជុំគណៈគ្រប់គ្រង" style="flex:1;min-width:200px;background:var(--in);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:9px 11px;font:700 14px 'Battambang',sans-serif" onkeydown="if(event.key==='Enter')addBook()"><button type="button" class="btn pri" onclick="addBook()">បន្ថែម</button><button type="button" class="btn" onclick="showAdd(false)">បោះបង់</button></div></div>
   <div class="f" id="fClsWrap" style="display:none"><label>ថ្នាក់</label><select id="fCls" onchange="onCls()"></select></div>
-  <div class="f"><label>ស៊ុម</label><select id="fFrame" onchange="save()"><option value="g">ស៊ុមបៃតង-មាស (ថ្មី)</option><option value="b">ស៊ុមខៀវ-មាស</option><option value="r">ស៊ុមក្រហម-មាស</option><option value="p">ស៊ុមស្វាយ-មាស</option><option value="i1">ស៊ុមវល្លិ៍បៃតង</option><option value="i2">ស៊ុមផ្កាស្វាយ</option><option value="i3">ស៊ុមមាសក្រហម</option><option value="o">ស៊ុមដើម (ពី PDF)</option></select></div>
-  <div class="f"><label>ទំហំក្រដាស</label><select id="fPaper" onchange="save()"><option value="a5">A5 បញ្ឈរ (ក្របតែមួយ)</option><option value="a4">A4 ផ្ដេក (ក្របនៅខាងស្តាំ)</option></select></div>
 </div>
 <div id="stage"></div>
 <div id="printHost"></div>
