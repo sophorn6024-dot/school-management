@@ -3229,7 +3229,7 @@ exports.default = {
       if (!cls) { alert('មិនទាន់មានថ្នាក់ទទួលបន្ទុក! សូមទាក់ទង Admin។'); return; }
       var mName = document.getElementById('rptMonthSelect').value;
       var reasonInput = document.getElementById('holidayReasonInput');
-      if (!selectedHolidayDay) { alert('សូមចុចលើប្រអប់ប្រតិទិន ដើម្បីជ្រើសរើសថ្ងៃឈប់សម្រាកសិន!'); return; }
+      if (!selectedHolidayDay) { alert('សូមជ្រើសរើសថ្ងៃឈប់សម្រាកក្នុងប្រតិទិនជាមុនសិន'); return; }
       var reason = (reasonInput.value || 'ថ្ងៃឈប់សម្រាក').trim();
       var yr = selectedDate.getFullYear();
 
@@ -4730,6 +4730,35 @@ var n=0,done=false,t=setInterval(function(){n++;try{
     window.enhanceSelect=function(a){var el=typeof a==='string'?document.getElementById(a):a;if(el&&el._as)unwrapAs(el);return _orig.apply(this,arguments)};
     window.enhanceSelect.__asHooked=true}}catch(e){}
   window.__autoSelectScan=scan;
+})();
+</script>
+<style>
+#kAlertOv{position:fixed;inset:0;z-index:99999;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(15,23,42,.45);backdrop-filter:blur(3px)}
+#kAlertOv.show{display:flex}
+#kAlertBox{width:100%;max-width:340px;background:var(--surface,#fff);color:var(--text,#0f172a);border:1px solid var(--border,#e2e8f0);border-radius:20px;padding:22px 20px 16px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.3);font-family:inherit;animation:kAlertIn .18s ease-out}
+#kAlertIc{width:54px;height:54px;margin:0 auto 10px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;background:#fef3c7}
+#kAlertMsg{font-size:14.5px;line-height:1.7;font-weight:600;white-space:pre-line;word-break:break-word}
+#kAlertBtn{margin-top:16px;width:100%;padding:11px;border:0;border-radius:12px;background:var(--primary,#2563eb);color:#fff;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
+@keyframes kAlertIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+<script>
+(function(){
+  function build(){
+    if(document.getElementById('kAlertOv'))return;
+    var d=document.createElement('div');d.id='kAlertOv';
+    d.innerHTML='<div id="kAlertBox"><div id="kAlertIc"></div><div id="kAlertMsg"></div><button id="kAlertBtn" type="button">យល់ព្រម</button></div>';
+    document.body.appendChild(d);
+    d.addEventListener('click',function(e){if(e.target===d||e.target.id==='kAlertBtn')d.classList.remove('show')});
+  }
+  window.alert=function(m){
+    build();
+    var t=String(m==null?'':m),err=/^\s*❌|បញ្ហា|កំហុស/.test(t);
+    t=t.replace(/^\s*❌\s*/,'');
+    var ic=document.getElementById('kAlertIc');
+    ic.textContent=err?'⚠️':'📅';ic.style.background=err?'#fee2e2':'#fef3c7';
+    document.getElementById('kAlertMsg').textContent=t;
+    document.getElementById('kAlertOv').classList.add('show');
+  };
 })();
 </script>
 </body>
