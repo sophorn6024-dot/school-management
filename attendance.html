@@ -200,6 +200,13 @@
       padding: 16px; z-index: 100;
     }
     .calendar-popup.show { display: block; }
+    @media (max-width: 640px) {
+      .calendar-popup {
+        position: fixed !important; top: 50% !important; left: 50% !important; right: auto !important;
+        transform: translate(-50%, -50%); width: min(320px, calc(100vw - 32px)) !important;
+        max-height: 88vh; overflow-y: auto; z-index: 10000;
+      }
+    }
     .cal-head-selectors { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
     .cal-head-selectors select {
       flex: 1; padding: 6px 8px; border-radius: 10px; border: 1px solid var(--border);
