@@ -192,6 +192,7 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
 .tb-btn.dtbtn{position:relative;overflow:hidden}
 .tb-btn.dtbtn input[type=date]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
 .tb-btn.dtbtn .lbl{display:inline!important}
+.tb-ico{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;font-size:14px;color:#fff;background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 70%,#000));flex:none;margin-right:-2px}
 .tb-lbl{font-size:12px;font-weight:700;color:var(--text-muted);white-space:nowrap}
 .cols-bar{max-width:1400px;margin:-4px auto 14px;padding:10px 12px;border:1px solid var(--border);border-radius:16px;background:var(--surface);display:none}
 .cols-bar.show{display:block}
@@ -255,14 +256,15 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
     <div class="tb-sep"></div>
 
     <div class="tb-group">
+      <span class="tb-ico" style="--c:#3b82f6"><i class="fa-solid fa-table-columns"></i></span>
       <select id="layoutSelect" class="tb-select" onchange="setLayout(this.value)" title="ទម្រង់បញ្ជី">
         <option value="bio">ជីវប្រវត្តិ</option>
         <option value="portrait">ទម្រង់បញ្ឈរ</option>
         <option value="pick">ជ្រើសជួរ</option>
       </select>
       <span class="tb-lbl">អាយុគិតត្រឹម</span>
-      <label class="tb-btn dtbtn" style="--c:#14b8a6" title="កាលបរិច្ឆេទគិតអាយុ">
-        <span class="ic"><i class="fa-regular fa-calendar"></i></span><span class="lbl" id="ageDateLbl">...</span>
+      <label class="tb-btn dtbtn" style="--c:#ec4899" title="កាលបរិច្ឆេទគិតអាយុ">
+        <span class="ic"><i class="fa-solid fa-cake-candles"></i></span><span class="lbl" id="ageDateLbl">...</span>
         <input type="date" id="ageDateInput" onchange="setAgeDate(this.value)">
       </label>
     </div>
@@ -289,7 +291,7 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
 
     <div class="tb-group">
       <button type="button" class="tb-btn" style="--c:#c084fc" onclick="openPageSetup()" title="កំណត់ទំព័រ">
-        <span class="ic"><i class="fa-solid fa-sliders"></i></span><span class="lbl">កំណត់ទំព័រ</span>
+        <span class="ic"><i class="fa-solid fa-file-lines"></i></span><span class="lbl">កំណត់ទំព័រ</span>
       </button>
     </div>
 
