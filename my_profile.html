@@ -16,19 +16,29 @@ body{font-family:'Khmer OS Battambang','Battambang',sans-serif;background:linear
 button,input,select{font-family:inherit;font-size:14px;color:var(--text)}
 .wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
 .card{background:var(--card);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow);padding:20px}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.ttl{text-align:center;font-weight:800;font-size:17px;margin-bottom:12px;color:var(--muted)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:stretch}
+.two>div{display:flex;flex-direction:column;min-width:0}
+.ttl{text-align:center;font-weight:800;font-size:18px;margin-bottom:14px;color:var(--text)}
 h3.sec{font-size:18px;font-weight:800;display:flex;align-items:center;gap:10px;margin-bottom:14px}
 h3.sec small{font-weight:400;color:var(--muted);font-size:14px}
 /* cover + avatar */
-.cover{position:relative;height:200px;border-radius:16px;background:linear-gradient(135deg,#9fe3f5,#c8f1ea 55%,#c6dcf8);background-size:cover;background-position:center;overflow:visible}
-.cover .cv-btn{position:absolute;right:10px;top:10px}
-.avatar{position:absolute;left:14px;bottom:-26px;width:92px;height:92px;border-radius:50%;border:4px solid #fff;background:#0f5fd8 center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.cover{position:relative;height:170px;border-radius:16px;background:linear-gradient(135deg,#9fe3f5,#c8f1ea 55%,#c6dcf8);background-size:cover;background-position:center;overflow:visible}
+.cover .cv-btn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.28);color:#fff;border-radius:999px;height:38px;padding:0 18px;backdrop-filter:blur(2px)}
+.cover .cv-btn:hover{background:rgba(0,0,0,.42)}
+.cv-pick{margin-top:14px;border:1px solid var(--border);border-radius:18px;padding:16px 16px 12px;background:rgba(255,255,255,.55)}
+[data-theme="dark"] .cv-pick{background:rgba(255,255,255,.04)}
+.cv-pick h4{text-align:center;font-weight:700;font-size:15px;color:var(--muted);margin-bottom:12px}
+.cv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.cv-opt{aspect-ratio:4/3;border-radius:10px;border:3px solid transparent;background-size:cover;background-position:center;cursor:pointer;padding:0;box-shadow:0 2px 8px rgba(0,0,0,.12);transition:transform .15s,border-color .15s}
+.cv-opt:hover{transform:translateY(-2px)}
+.cv-opt.on{border-color:#10b981;box-shadow:0 0 0 2px rgba(16,185,129,.25)}
+.cv-del{display:flex;margin:12px auto 0;background:none;border:0;color:var(--danger);font-weight:700;cursor:pointer;align-items:center;gap:6px;padding:8px 14px}
+.avatar{position:absolute;left:14px;bottom:14px;width:78px;height:78px;border-radius:50%;border:4px solid #fff;background:#0f5fd8 center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2)}
 .avatar .cam{position:absolute;right:-2px;bottom:-2px;width:28px;height:28px;border-radius:50%;background:var(--primary);border:2px solid #fff;font-size:13px;display:flex;align-items:center;justify-content:center}
-.cover-pad{height:30px}
-.sign-box{border:1.5px dashed var(--border);border-radius:16px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:14px;background:rgba(127,127,127,.05)}
+
+.sign-box{flex:1;border:1.5px dashed var(--border);border-radius:18px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;background:rgba(14,143,176,.05)}
 .sign-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
-.sign-prev{width:170px;height:58px;border:1.5px dashed var(--border);border-radius:12px;background:#fff center/contain no-repeat}
+.sign-prev{width:180px;height:62px;border:1.5px dashed var(--border);border-radius:12px;background:#fff center/contain no-repeat}
 .note{color:var(--muted);font-size:12.5px;text-align:center;line-height:1.6}
 .btn{height:40px;padding:0 16px;border-radius:12px;border:0;background:rgba(127,127,127,.14);font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
 .btn.pri{background:var(--primary2);color:#fff}.btn.pri:disabled,.btn.sec:disabled{opacity:.45;cursor:not-allowed}
@@ -71,7 +81,7 @@ label.l .rq{color:var(--danger)}
 .dlg .acts .pri{background:var(--primary2);color:#fff}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:11px 18px;border-radius:14px;font-weight:700;z-index:100001;display:none;max-width:90vw}
 .auth{display:none;text-align:center;padding:80px 16px}
-@media(max-width:820px){.two,.acc{grid-template-columns:1fr}.acc>div{padding:0;border:0!important}.acc>div+div{margin-top:20px;padding-top:18px;border-top:1px solid var(--border)!important}.fg{grid-template-columns:1fr}.cover{height:150px}.pwrow{flex-wrap:wrap}.pwrow .in{flex:1 1 30%}}
+@media(max-width:820px){.cv-grid{grid-template-columns:repeat(4,1fr);gap:8px}.two,.acc{grid-template-columns:1fr}.acc>div{padding:0;border:0!important}.acc>div+div{margin-top:20px;padding-top:18px;border-top:1px solid var(--border)!important}.fg{grid-template-columns:1fr}.cover{height:150px}.pwrow{flex-wrap:wrap}.pwrow .in{flex:1 1 30%}}
 </style>
 </head>
 <body>
@@ -83,10 +93,14 @@ label.l .rq{color:var(--danger)}
     <div>
       <div class="ttl">Profile</div>
       <div class="cover" id="cover">
-        <button class="btn cv-btn" onclick="pick('cover')">📷 ប្តូររូបខាងក្រោយ</button>
+        <button class="btn cv-btn" onclick="pick('cover')">ជ្រើស cover</button>
         <div class="avatar" id="avatar" onclick="pick('avatar')" title="ប្តូររូប Profile"><span id="avLetter">ក</span><span class="cam">📷</span></div>
       </div>
-      <div class="cover-pad"></div>
+      <div class="cv-pick">
+        <h4>ជ្រើស cover ស្រាប់</h4>
+        <div class="cv-grid" id="cvGrid"></div>
+        <button class="cv-del" id="cvDel" onclick="delMedia('cover')">🗑️ ដក cover</button>
+      </div>
     </div>
     <div>
       <div class="ttl">ហត្ថលេខាគ្រូ (សម្រាប់របាយការណ៍)</div>
@@ -254,7 +268,7 @@ function fill(){
 }
 function setImg(){
   const av=$('avatar');const ph=ROW&&ROW.photo_url;av.style.backgroundImage=ph?'url("'+ph+'")':'';$('avLetter').style.display=ph?'none':'';
-  $('cover').style.backgroundImage=MEDIA.cover?'url("'+MEDIA.cover+'")':'';
+  $('cover').style.backgroundImage=MEDIA.cover?'url("'+MEDIA.cover+'")':'';renderCovers();
   $('signPrev').style.backgroundImage=MEDIA.sign?'url("'+MEDIA.sign+'")':'';$('signDel').style.display=MEDIA.sign?'':'none';$('signBtn').textContent=MEDIA.sign?'⬆️ ប្តូររូប':'⬆️ ផ្ទុករូប';
   $('stampPrev').style.backgroundImage=SCH.stamp?'url("'+SCH.stamp+'")':'';$('stampDel').style.display=SCH.stamp&&SCH.admin?'':'none';$('stampBtn').textContent=SCH.stamp?'⬆️ ប្តូររូប':'⬆️ ផ្ទុករូប';
 }
@@ -281,6 +295,43 @@ async function saveForm(t){
 
 /* ===== រូបភាព ===== */
 let PICK=null;
+
+/* ===== 🎨 Cover ស្រាប់ ===== */
+const COVERS=[
+ {a:'#38bdf8',b:'#0ea5e9',hill:['#0369a1','#075985'],deco:'cloud'},
+ {a:'#bbf7d0',b:'#34d399',hill:['#10b981','#047857'],deco:'mount',mc:'#34d399'},
+ {a:'#fdba74',b:'#ea580c',hill:['#c2410c','#7c2d12'],deco:'sun'},
+ {a:'#4338ca',b:'#312e81',hill:['#312e81','#1e1b4b'],deco:'stars'},
+ {a:'#fbcfe8',b:'#fb7185',hill:['#f43f5e','#be123c'],deco:'cloud'},
+ {a:'#2dd4bf',b:'#0f766e',hill:['#0d9488','#115e59'],deco:'band'},
+ {a:'#ede9fe',b:'#a78bfa',hill:['#7c3aed','#6d28d9'],deco:'mount',mc:'#8b5cf6'},
+ {a:'#fed7aa',b:'#f59e0b',hill:['#d97706','#92400e'],deco:'dune'}
+];
+function coverSvg(c,w,h){
+  let d='';
+  if(c.deco==='cloud')d='<ellipse cx="120" cy="40" rx="55" ry="12" fill="#fff" opacity=".45"/>';
+  if(c.deco==='sun')d='<circle cx="330" cy="70" r="30" fill="#fff" opacity=".6"/>';
+  if(c.deco==='stars')d='<g fill="#fff" opacity=".85"><circle cx="60" cy="30" r="1.4"/><circle cx="150" cy="60" r="1.2"/><circle cx="250" cy="25" r="1.6"/><circle cx="330" cy="50" r="1.2"/><circle cx="380" cy="20" r="1.4"/><circle cx="200" cy="90" r="1"/></g>';
+  if(c.deco==='mount')d='<path d="M60 170 L170 70 L280 170Z" fill="'+c.mc+'" opacity=".9"/><path d="M200 170 L300 95 L400 170Z" fill="'+c.mc+'" opacity=".7"/>';
+  if(c.deco==='band')d='<path d="M60 0 L140 0 L90 240 L10 240Z" fill="#fff" opacity=".1"/><path d="M250 0 L330 0 L280 240 L200 240Z" fill="#fff" opacity=".08"/>';
+  const hills='<path d="M0 170 Q100 130 200 160 T400 150 V240 H0Z" fill="'+c.hill[0]+'"/><path d="M0 200 Q120 170 230 195 T400 185 V240 H0Z" fill="'+c.hill[1]+'"/>';
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="0 0 400 240" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+c.a+'"/><stop offset="1" stop-color="'+c.b+'"/></linearGradient></defs><rect width="400" height="240" fill="url(#g)"/>'+d+hills+'</svg>';
+}
+function coverThumb(c){return "url('data:image/svg+xml;charset=utf-8,"+encodeURIComponent(coverSvg(c,400,300)).replace(/'/g,'%27')+"')"}
+function coverIdx(){try{const v=localStorage.getItem('krou_cover_preset');return v===null?-1:+v}catch(e){return -1}}
+function renderCovers(){
+  const cur=MEDIA.cover?coverIdx():-1;
+  $('cvGrid').innerHTML=COVERS.map((c,i)=>'<button type="button" class="cv-opt'+(i===cur?' on':'')+'" style="background-image:'+coverThumb(c)+'" onclick="pickCover('+i+')" aria-label="cover '+(i+1)+'"></button>').join('');
+  $('cvDel').style.display=MEDIA.cover?'':'none';
+}
+function coverToJpeg(c){return new Promise((res,rej)=>{const im=new Image();im.onerror=()=>rej(new Error('បង្កើតរូប cover មិនបាន'));
+  im.onload=()=>{const cv=document.createElement('canvas');cv.width=1400;cv.height=420;const x=cv.getContext('2d');x.drawImage(im,0,0,1400,420);res(cv.toDataURL('image/jpeg',.82))};
+  im.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(coverSvg(c,1400,420))})}
+async function pickCover(i){
+  try{const u=await coverToJpeg(COVERS[i]);const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{cover_url:u}});
+    MEDIA.cover=d.cover_url||'';try{localStorage.setItem('krou_cover_preset',String(i))}catch(e){}setImg();toast('✅ បានប្តូរ cover')}
+  catch(e){uiAlert('❌ '+(e.message||e))}
+}
 
 /* 🔍 ស្កេនរូបត្រា៖ កាត់គែមទទេ រួចរកខ្សែបន្ទាត់រង្វង់ត្រា (ក្រហម) → {url,x,y,d,w,h}  (ហត្ថលេខា/ឈ្មោះដែលលើសរង្វង់ មិនគិតក្នុងទំហំត្រា) */
 function analyzeStamp(src) {
@@ -355,7 +406,7 @@ async function onPicked(inp){
   const f=inp.files&&inp.files[0];inp.value='';if(!f||!PICK)return;const k=PICK;
   try{
     if(k==='avatar'){const u=await resize(f,360,360,false,.85);const d=await rpc('staff_my_profile_save',{p_users:{photo_url:u},p_data:{},p_media:{}});syncUser(d.row)}
-    else if(k==='cover'){const u=await resize(f,1400,420,false,.82);const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{cover_url:u}});MEDIA.cover=d.cover_url||''}
+    else if(k==='cover'){const u=await resize(f,1400,420,false,.82);const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{cover_url:u}});MEDIA.cover=d.cover_url||'';try{localStorage.removeItem('krou_cover_preset')}catch(e){}}
     else if(k==='sign'){const u=await resize(f,600,200,true);const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{signature_url:u}});MEDIA.sign=d.signature_url||''}
     else if(k==='logo'){const u=await resize(f,300,300,true);const d=await rpc('staff_school_save',{p_data:{},p_media:{logo_url:u}});SCH.logo=d.logo_url||''}
     else if(k==='stamp'){
@@ -368,9 +419,10 @@ async function onPicked(inp){
   }catch(e){uiAlert('❌ '+(e.message||e))}
 }
 async function delMedia(k){
-  if(!await uiConfirm('ដកចេញរូបនេះ?',{okText:'ដកចេញ'}))return;
+  if(!await uiConfirm(k==='cover'?'ដក cover ចេញ?':'ដកចេញរូបនេះ?',{okText:'ដកចេញ'}))return;
   try{
-    if(k==='sign'){const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{signature_url:''}});MEDIA.sign=d.signature_url||''}
+    if(k==='cover'){const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{cover_url:''}});MEDIA.cover=d.cover_url||'';try{localStorage.removeItem('krou_cover_preset')}catch(e){}}
+    else if(k==='sign'){const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{signature_url:''}});MEDIA.sign=d.signature_url||''}
     else if(k==='logo'){const d=await rpc('staff_school_save',{p_data:{},p_media:{logo_url:''}});SCH.logo=d.logo_url||''}
     else if(k==='stamp'){const d=await rpc('staff_school_save',{p_data:{stamp_circle:null},p_media:{stamp_url:''}});SCH.stamp=d.stamp_url||''}
     setImg();toast('🗑️ បានដកចេញ');
