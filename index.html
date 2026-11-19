@@ -944,7 +944,6 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
   .dc-leg{display:none!important}
   .dc-day{min-height:26px!important;height:27px!important}
   .dc-day .n{font-size:12px!important}.dc-day .l{font-size:7.5px!important}
-  .dc-detail span{font-size:10.5px!important;line-height:1.2!important}
   .dc-detail{padding:3px 10px!important;margin-top:4px!important}
   .dc-list{max-height:34px!important}
   .dash-cal-card .dc-ico{width:34px;height:34px;border-radius:12px}
@@ -958,6 +957,21 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
   .section-slate-sub{display:none!important}
   .task-action-card{padding:9px 16px!important}
   .dash-inner-container{padding-top:0!important}
+}
+
+/* ថ្ងៃដែលបានជ្រើស៖ បន្ទាត់ទី១ = ចន្ទគតិ · បន្ទាត់ទី២ = សុរិយគតិ (កណ្ដាល មិនបាក់បន្ទាត់) */
+@media (min-width:769px){
+  .dash-cal-card .dc-detail{text-align:center;align-items:center;gap:0!important}
+  .dash-cal-card .dc-detail span{order:1;color:var(--text)!important;font-weight:700!important;font-size:11.5px!important;line-height:1.35!important;white-space:normal}
+  .dash-cal-card .dc-detail b{order:2;color:var(--text);font-weight:700;font-size:12.5px!important;line-height:1.35}
+  .dash-cal-card .dc-detail em{order:3}
+}
+
+/* 🕒 ម៉ោងធំជាងមុន */
+@media (min-width:769px){
+  .hero-banner-card .dash-clock .ck-hm{font-size:clamp(46px,5.2vw,68px)!important;line-height:1.05!important}
+  .hero-banner-card .dash-clock .ck-s{font-size:clamp(20px,2vw,26px)!important}
+  .hero-banner-card .dash-clock .ck-p{font-size:clamp(16px,1.6vw,20px)!important}
 }
 /* ===== 🔐 LOGIN — ទំនើប (glass) ===== */
 #authView{background:radial-gradient(1100px 600px at 12% 0%,rgba(99,102,241,.38),transparent 60%),radial-gradient(900px 560px at 100% 100%,rgba(14,165,233,.30),transparent 60%),linear-gradient(160deg,#0b1226 0%,#0a1020 55%,#060a14 100%)}
@@ -4727,8 +4741,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     h+='</div>';
     if(!sel){var t1=new Date();sel={y:t1.getFullYear(),m:t1.getMonth(),d:t1.getDate()}}
     var so=safe(sel.y,sel.m+1,sel.d),sdw=new Date(sel.y,sel.m,sel.d).getDay(),sh=holidays(sel.y,sel.m)[sel.d];
-    h+='<div class="dc-detail"><b>ថ្ងៃ'+DWK[sdw]+' ទី'+sel.d+' ខែ'+GMN[sel.m]+' ឆ្នាំ'+sel.y+'</b>'+
-       (so?'<span>'+so.kd+(so.ph===0?'កើត':'រោច')+' ខែ'+so.mn+' ឆ្នាំ'+so.animal+' '+(so.sak||'')+' ពុទ្ធសករាជ '+so.be+'</span>':'')+
+    h+='<div class="dc-detail"><b>ថ្ងៃទី'+sel.d+' ខែ'+GMN[sel.m]+' ឆ្នាំ'+sel.y+'</b>'+
+       (so?'<span>ថ្ងៃ'+DWK[sdw]+' '+so.kd+(so.ph===0?'កើត':'រោច')+' ខែ'+so.mn+' ឆ្នាំ'+so.animal+' '+(so.sak||'')+' ពុទ្ធសករាជ '+so.be+'</span>':'')+
        (holy(sel.y,sel.m+1,sel.d)?'<em class="sl">🪷 ថ្ងៃសីល</em>':'')+(sh?'<em>🎌 '+sh+'</em>':'')+'</div>';
     h+='<div class="dc-leg"><span><i class="lg1"></i>ថ្ងៃសីល</span><span><i class="lg2"></i>ថ្ងៃបុណ្យ/ឈប់សម្រាក</span><span><i class="lg3"></i>ថ្ងៃនេះ</span></div>';
     var days=Object.keys(H).map(Number).sort(function(p,q){return p-q});
