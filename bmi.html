@@ -423,6 +423,7 @@ table.bt{width:100%;border-collapse:collapse;table-layout:fixed;font-size:var(--
 table.bt th{background:#dbe8f7;border:1px solid #333;padding:2mm 1mm;font-weight:400;text-align:center;line-height:1.35;position:static}
 table.bt td{border:1px solid #333;padding:0 1.5mm;height:var(--rh);text-align:center;line-height:1.3;word-break:break-word}
 table.bt td.l{text-align:left}
+table.bt td:nth-child(n+3):nth-child(-n+7){white-space:nowrap;word-break:normal}
 .pg .ft{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:5mm;margin-top:6mm;color:#1f3d99;font-size:12pt;line-height:1.7;align-items:start}
 .ft .lf .sm div{white-space:normal}
 .ft .rt{text-align:right}
@@ -436,8 +437,11 @@ table.lg td.cc{width:50%}
 .sgc .mt{font-size:12.5pt}
 .rt .sgc .mt{color:#1f3d99}
 .lf .sgc .mt{color:#000}
-.sgn{text-align:center;color:#1f3d99;font-size:13pt;margin-top:2mm}
+.sgn{text-align:center;color:#1f3d99;font-size:12.5pt;font-weight:700;margin-top:.5mm;padding-left:18mm}
 .dirsp{min-height:22mm}
+.kit-stamp{display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}
+.lf .mt{line-height:1.4}
+.lf .sgn{padding-left:0}
 @media(max-width:700px){.tbar{position:static}}
 @media print{
   @page{size:A4 portrait;margin:0}
@@ -768,7 +772,7 @@ function headHtml(){
    +'<div class="hdl">'+L.map(esc).join('<br>')+'</div>'
    +'<div class="ttl">'+esc(titleTxt())+'</div><div class="sub">'+esc(clsTxt())+' ឆ្នាំសិក្សា '+esc(yearTxt())+'</div>';
 }
-const THEAD='<thead><tr><th style="width:4.5%">ល.រ</th><th style="width:19%">គោត្តនាម-នាម</th><th style="width:5.5%">ភេទ</th><th style="width:8%">អាយុ</th><th style="width:9%">ទម្ងន់(Kg)</th><th style="width:9%">កម្ពស់(m)</th><th style="width:13.5%">សន្ទស្សន៍ម៉ាស<br>រាងកាយ(BMI)</th><th style="width:14%">សន្និដ្ឋាន</th><th style="width:8%">ពណ៌</th><th style="width:9%">ផ្សេងៗ</th></tr></thead>';
+const THEAD='<thead><tr><th style="width:4.5%">ល.រ</th><th style="width:18%">គោត្តនាម-នាម</th><th style="width:7%">ភេទ</th><th style="width:8.5%">អាយុ</th><th style="width:9%">ទម្ងន់(Kg)</th><th style="width:9%">កម្ពស់(m)</th><th style="width:12.5%">សន្ទស្សន៍ម៉ាស<br>រាងកាយ(BMI)</th><th style="width:13.5%">សន្និដ្ឋាន</th><th style="width:8%">ពណ៌</th><th style="width:9%">ផ្សេងៗ</th></tr></thead>';
 function rowHtml(r){
   const c=r.ci>=0?CATS[r.ci]:null;
   return '<tr><td>'+r.i+'</td><td class="l">'+esc(r.name)+'</td><td>'+esc(r.sex)+'</td><td>'+(r.age===''?'':r.age+' ឆ្នាំ')+'</td><td>'+esc(r.w)+'</td><td>'+esc(r.h)+'</td><td>'+(r.b==null?'':r.b.toFixed(1))+'</td><td>'+(c?c.t:'')+'</td><td'+(c?' style="background:'+c.c+'"':'')+'></td><td>'+esc(r.n)+'</td></tr>';
@@ -784,7 +788,7 @@ function footHtml(rows){
   const stamp=showSt?(kitStamp()||''):'';
   const dirName=showSt&&!stamp?esc(kitDirName()):'';
   const left='<div class="lf"><div class="sm">'+sm.join('')+'</div><div style="height:14mm"></div>'+dirDate+'<div class="sgc"><div class="mt">បានឃើញនិងឯកភាព</div><div class="mt">នាយកសាលា</div>'+stamp+(stamp?'':'<div class="dirsp"></div>')+(dirName?'<div class="sgn" style="color:#000">'+dirName+'</div>':'')+'</div></div>';
-  const right='<div class="rt">'+lg+(st?'<div class="sgl">'+(st.l?esc(st.l)+'<br>':'')+st.s+'</div>':'')+'<div class="sgc"><div class="mt">គ្រូទទួលបន្ទុកថ្នាក់</div><div style="min-height:18mm;display:flex;align-items:center;justify-content:center">'+kitSig()+'</div><div class="sgn">'+esc(teacherTxt())+'</div></div></div>';
+  const right='<div class="rt">'+lg+(st?'<div class="sgl">'+(st.l?esc(st.l)+'<br>':'')+st.s+'</div>':'')+'<div class="sgc"><div class="mt">គ្រូទទួលបន្ទុកថ្នាក់</div><div style="height:17mm;display:flex;align-items:center;justify-content:center">'+kitSig()+'</div><div class="sgn">'+esc(teacherTxt())+'</div></div></div>';
   return '<div class="ft">'+left+right+'</div>';
 }
 function buildPaper(){
