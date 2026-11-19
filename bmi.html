@@ -386,11 +386,14 @@ table.etb td.s{font-weight:700;color:var(--text);white-space:nowrap}
 .esum span{display:inline-flex;align-items:center}
 @media(max-width:700px){.ehead{padding:12px 14px}.ehead h1{font-size:16px}.etw{max-height:none}}
 @media(max-width:700px){
-.wrap{padding:8px}
-.etw{max-height:none;overflow:visible;border-radius:20px}
+body:not(.view-paper){padding:0 0 90px}
+.wrap{padding:0}
+.ehead{border-radius:0 0 18px 18px;border-left:0;border-right:0;margin-bottom:8px}
+.thp,.esum{border-radius:0;border-left:0;border-right:0}
+.etw{max-height:none;overflow:visible;border-radius:0;border-left:0;border-right:0;margin-bottom:8px}
 table.etb,table.etb tbody{display:block;min-width:0;width:100%}
 table.etb thead{display:none}
-table.etb tr{display:grid;grid-template-columns:30px 1fr 1fr 1fr;grid-template-areas:"no name name name" ". sex age con" ". w h bmi" ". note note note";gap:6px 8px;padding:12px 12px;border-bottom:1px solid rgba(127,127,127,.2);align-items:end}
+table.etb tr{display:grid;grid-template-columns:22px 1fr 1fr 1fr;grid-template-areas:"no name name name" ". sex age con" ". w h bmi" ". note note note";gap:6px 8px;padding:12px 12px;border-bottom:1px solid rgba(127,127,127,.2);align-items:end}
 table.etb td{display:block;padding:0;border:0;background:transparent!important;text-align:left;min-width:0}
 table.etb td:nth-child(1){grid-area:no;color:var(--muted);align-self:center}
 table.etb td:nth-child(2){grid-area:name;font-weight:700;font-size:15px;align-self:center}
@@ -447,7 +450,7 @@ table.lg{border-collapse:collapse;margin:0 auto;font-size:12pt;color:#1f3d99;wid
 table.lg td{border:1px solid #333;padding:0 2mm;height:7.5mm;line-height:1.3;text-align:left;font-weight:700}
 table.lg td.cc{width:50%}
 .sgl{color:#222;text-align:center;font-size:11pt;line-height:1.5;margin-top:1.5mm;white-space:nowrap}
-.ftb{align-items:start!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}.ftb .lf{display:flex;justify-content:flex-end;padding-right:4mm}.ftb .lf>div{min-width:56mm}.ftb .sgl{font-size:10.5pt}
+.ftb{align-items:start!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}.ftb .lf{display:flex;justify-content:center}.ftb .lf>div{min-width:56mm}.ftb .sgl{font-size:10.5pt}
 .mt{font-family:'Moul','Khmer OS Muol Light','Battambang',serif;font-weight:400;line-height:1.6}
 .sgc{text-align:center}
 .sgc .mt{font-size:12.5pt}
@@ -801,10 +804,11 @@ function footHtml(rows){
   const st=signLines(SD.t),dr=signLines(SD.d);
   const showSt=INFO.stamp!==false;
   const dirDate=dr?'<div class="sgl" style="margin:0">'+(dr.l?esc(dr.l)+'<br>':'')+dr.s+'</div>':(st?'<div class="sgl" style="margin:0;visibility:hidden">'+(st.l?'&nbsp;<br>':'')+'&nbsp;</div>':'');
+  const dirPad=(dr||st)?'<div style="height:7mm"></div>':'';
   const stamp=showSt?(kitStamp()||''):'';
   const dirName=showSt&&!stamp?esc(kitDirName()):'';
   const a='<div class="ft"><div class="lf"><div class="sm">'+sm.join('')+'</div></div><div class="rt">'+lg+'</div></div>';
-  const left='<div class="lf">'+dirDate+'<div class="sgc" style="margin-top:0"><div class="mt">បានឃើញនិងឯកភាព</div><div class="mt">នាយកសាលា</div>'+stamp+(stamp?'':'<div class="dirsp"></div>')+(dirName?'<div class="sgn" style="color:#000">'+dirName+'</div>':'')+'</div></div>';
+  const left='<div class="lf"><div>'+dirDate+dirPad+'<div class="sgc" style="margin-top:0"><div class="mt">បានឃើញនិងឯកភាព</div><div class="mt">នាយកសាលា</div>'+stamp+(stamp?'':'<div class="dirsp"></div>')+(dirName?'<div class="sgn" style="color:#000">'+dirName+'</div>':'')+'</div></div></div>';
   const right='<div class="rt">'+(st?'<div class="sgl" style="margin-top:0">'+(st.l?esc(st.l)+'<br>':'')+st.s+'</div>':'')+'<div class="sgc"><div class="mt">គ្រូទទួលបន្ទុកថ្នាក់</div><div style="height:15mm;display:flex;align-items:center;justify-content:center">'+kitSig()+'</div><div class="sgn">'+esc(teacherTxt())+'</div></div></div>';
   return [a,'<div class="ft ftb" style="margin-top:2mm">'+left+right+'</div>'];
 }
