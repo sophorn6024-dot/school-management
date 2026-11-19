@@ -785,7 +785,7 @@ function footHtml(rows){
   const lg='<div class="lgh"><b>**សម្គាល់</b> (យោងតាមតារាងអង្គការសុខភាពពិភពលោក WHO)</div><table class="lg">'+CATS.map(c=>'<tr><td class="cc">'+c.t+'</td><td style="background:'+c.c+'"></td></tr>').join('')+'</table>';
   const st=signLines(SD.t),dr=signLines(SD.d);
   const showSt=INFO.stamp!==false;
-  const dirDate=dr?'<div class="sgl" style="margin:0 0 2mm">'+(dr.l?esc(dr.l)+'<br>':'')+dr.s+'</div>':'';
+  const dirDate=dr?'<div class="sgl" style="margin:0">'+(dr.l?esc(dr.l)+'<br>':'')+dr.s+'</div>':(st?'<div class="sgl" style="margin:0;visibility:hidden">'+(st.l?'&nbsp;<br>':'')+'&nbsp;</div>':'');
   const stamp=showSt?(kitStamp()||''):'';
   const dirName=showSt&&!stamp?esc(kitDirName()):'';
   const a='<div class="ft"><div class="lf"><div class="sm">'+sm.join('')+'</div></div><div class="rt">'+lg+'</div></div>';
