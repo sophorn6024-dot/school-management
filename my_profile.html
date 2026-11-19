@@ -25,8 +25,12 @@ h3.sec small{font-weight:400;color:var(--muted);font-size:14px}
 .cover{position:relative;height:170px;border-radius:16px;background:linear-gradient(135deg,#9fe3f5,#c8f1ea 55%,#c6dcf8);background-size:cover;background-position:center;overflow:visible}
 .cover .cv-btn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.28);color:#fff;border-radius:999px;height:38px;padding:0 18px;backdrop-filter:blur(2px)}
 .cover .cv-btn:hover{background:rgba(0,0,0,.42)}
-.cv-pick{margin-top:14px;border:1px solid var(--border);border-radius:18px;padding:16px 16px 12px;background:rgba(255,255,255,.55)}
+.cv-pick{display:none;margin-top:14px;animation:cvIn .2s ease-out;border:1px solid var(--border);border-radius:18px;padding:16px 16px 12px;background:rgba(255,255,255,.55)}
 [data-theme="dark"] .cv-pick{background:rgba(255,255,255,.04)}
+.cv-pick.open{display:block}
+@keyframes cvIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.cv-acts{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:8px}
+.cv-acts .cv-del{margin:0}
 .cv-pick h4{text-align:center;font-weight:700;font-size:15px;color:var(--muted);margin-bottom:12px}
 .cv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .cv-opt{aspect-ratio:4/3;border-radius:10px;border:3px solid transparent;background-size:cover;background-position:center;cursor:pointer;padding:0;box-shadow:0 2px 8px rgba(0,0,0,.12);transition:transform .15s,border-color .15s}
@@ -92,14 +96,17 @@ label.l .rq{color:var(--danger)}
   <div class="card two">
     <div>
       <div class="ttl">Profile</div>
-      <div class="cover" id="cover">
-        <button class="btn cv-btn" onclick="pick('cover')">ជ្រើស cover</button>
-        <div class="avatar" id="avatar" onclick="pick('avatar')" title="ប្តូររូប Profile"><span id="avLetter">ក</span><span class="cam">📷</span></div>
+      <div class="cover" id="cover" onclick="toggleCovers()" style="cursor:pointer" title="ចុចដើម្បីជ្រើស cover">
+        <button type="button" class="btn cv-btn" id="cvToggle">ជ្រើស cover</button>
+        <div class="avatar" id="avatar" onclick="event.stopPropagation();pick('avatar')" title="ប្តូររូប Profile"><span id="avLetter">ក</span><span class="cam">📷</span></div>
       </div>
-      <div class="cv-pick">
+      <div class="cv-pick" id="cvPick">
         <h4>ជ្រើស cover ស្រាប់</h4>
         <div class="cv-grid" id="cvGrid"></div>
-        <button class="cv-del" id="cvDel" onclick="delMedia('cover')">🗑️ ដក cover</button>
+        <div class="cv-acts">
+          <button type="button" class="cv-del" style="color:var(--primary2)" onclick="pick('cover')">📷 ផ្ទុករូបផ្ទាល់ខ្លួន</button>
+          <button type="button" class="cv-del" id="cvDel" onclick="delMedia('cover')">🗑️ ដក cover</button>
+        </div>
       </div>
     </div>
     <div>
@@ -319,6 +326,7 @@ function coverSvg(c,w,h){
 }
 function coverThumb(c){return "url('data:image/svg+xml;charset=utf-8,"+encodeURIComponent(coverSvg(c,400,300)).replace(/'/g,'%27')+"')"}
 function coverIdx(){try{const v=localStorage.getItem('krou_cover_preset');return v===null?-1:+v}catch(e){return -1}}
+function toggleCovers(){const o=$('cvPick').classList.toggle('open');$('cover').setAttribute('aria-expanded',o?'true':'false')}
 function renderCovers(){
   const cur=MEDIA.cover?coverIdx():-1;
   $('cvGrid').innerHTML=COVERS.map((c,i)=>'<button type="button" class="cv-opt'+(i===cur?' on':'')+'" style="background-image:'+coverThumb(c)+'" onclick="pickCover('+i+')" aria-label="cover '+(i+1)+'"></button>').join('');
