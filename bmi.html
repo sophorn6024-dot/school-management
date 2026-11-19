@@ -424,14 +424,14 @@ table.bt th{background:#dbe8f7;border:1px solid #333;padding:2mm 1mm;font-weight
 table.bt td{border:1px solid #333;padding:0 1.5mm;height:var(--rh);text-align:center;line-height:1.3;word-break:break-word}
 table.bt td.l{text-align:left}
 table.bt td:nth-child(n+3):nth-child(-n+7){white-space:nowrap;word-break:normal}
-.pg .ft{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:5mm;margin-top:6mm;color:#1f3d99;font-size:12pt;line-height:1.7;align-items:start}
+.pg .ft{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:5mm;margin-top:3mm;color:#1f3d99;font-size:12pt;line-height:1.5;align-items:start}
 .ft .lf .sm div{white-space:normal}
 .ft .rt{text-align:right}
 .lgh{margin-bottom:1mm;font-size:11.5pt;line-height:1.5}
 table.lg{border-collapse:collapse;margin:0 auto;font-size:12pt;color:#1f3d99;width:70%}
-table.lg td{border:1px solid #333;padding:0 2mm;height:9mm;text-align:left;font-weight:700}
+table.lg td{border:1px solid #333;padding:0 2mm;height:7.5mm;line-height:1.3;text-align:left;font-weight:700}
 table.lg td.cc{width:50%}
-.sgl{color:#222;text-align:center;font-size:11.5pt;line-height:1.7;margin-top:3mm}
+.sgl{color:#222;text-align:center;font-size:11.5pt;line-height:1.5;margin-top:1.5mm}
 .mt{font-family:'Moul','Khmer OS Muol Light','Battambang',serif;font-weight:400;line-height:1.6}
 .sgc{text-align:center}
 .sgc .mt{font-size:12.5pt}
@@ -787,9 +787,10 @@ function footHtml(rows){
   const dirDate=dr?'<div class="sgl" style="margin:0 0 2mm">'+(dr.l?esc(dr.l)+'<br>':'')+dr.s+'</div>':'';
   const stamp=showSt?(kitStamp()||''):'';
   const dirName=showSt&&!stamp?esc(kitDirName()):'';
-  const left='<div class="lf"><div class="sm">'+sm.join('')+'</div><div style="height:14mm"></div>'+dirDate+'<div class="sgc"><div class="mt">បានឃើញនិងឯកភាព</div><div class="mt">នាយកសាលា</div>'+stamp+(stamp?'':'<div class="dirsp"></div>')+(dirName?'<div class="sgn" style="color:#000">'+dirName+'</div>':'')+'</div></div>';
-  const right='<div class="rt">'+lg+(st?'<div class="sgl">'+(st.l?esc(st.l)+'<br>':'')+st.s+'</div>':'')+'<div class="sgc"><div class="mt">គ្រូទទួលបន្ទុកថ្នាក់</div><div style="height:17mm;display:flex;align-items:center;justify-content:center">'+kitSig()+'</div><div class="sgn">'+esc(teacherTxt())+'</div></div></div>';
-  return '<div class="ft">'+left+right+'</div>';
+  const a='<div class="ft"><div class="lf"><div class="sm">'+sm.join('')+'</div></div><div class="rt">'+lg+'</div></div>';
+  const left='<div class="lf">'+dirDate+'<div class="sgc" style="margin-top:0"><div class="mt">បានឃើញនិងឯកភាព</div><div class="mt">នាយកសាលា</div>'+stamp+(stamp?'':'<div class="dirsp"></div>')+(dirName?'<div class="sgn" style="color:#000">'+dirName+'</div>':'')+'</div></div>';
+  const right='<div class="rt">'+(st?'<div class="sgl" style="margin-top:0">'+(st.l?esc(st.l)+'<br>':'')+st.s+'</div>':'')+'<div class="sgc"><div class="mt">គ្រូទទួលបន្ទុកថ្នាក់</div><div style="height:15mm;display:flex;align-items:center;justify-content:center">'+kitSig()+'</div><div class="sgn">'+esc(teacherTxt())+'</div></div></div>';
+  return [a,'<div class="ft" style="margin-top:2mm">'+left+right+'</div>'];
 }
 function buildPaper(){
   const root=document.getElementById('papers');if(!root)return;
@@ -811,9 +812,11 @@ function buildPaper(){
     tb.insertAdjacentHTML('beforeend',rowHtml(r));
     if(over(inn)&&tb.children.length>1){const tr=tb.lastElementChild;tb.removeChild(tr);inn=mkPage(false,true);tb=inn.querySelector('tbody');tb.appendChild(tr)}
   });
-  const f=document.createElement('div');f.innerHTML=footHtml(rows);const fe=f.firstElementChild;
-  inn.appendChild(fe);
-  if(over(inn)){inn.removeChild(fe);inn=mkPage(false,false);inn.appendChild(fe)}
+  footHtml(rows).forEach(h=>{
+    const f=document.createElement('div');f.innerHTML=h;const fe=f.firstElementChild;
+    inn.appendChild(fe);
+    if(over(inn)){inn.removeChild(fe);inn=mkPage(false,false);inn.appendChild(fe)}
+  });
   fitZoom();
 }
 function fitZoom(){
