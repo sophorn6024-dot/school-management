@@ -390,19 +390,12 @@ body:not(.view-paper){padding:0 0 90px}
 .wrap{padding:0}
 .ehead{border-radius:0 0 18px 18px;border-left:0;border-right:0;margin-bottom:8px}
 .thp,.esum{border-radius:0;border-left:0;border-right:0}
-.etw{max-height:none;overflow:visible;border-radius:0;border-left:0;border-right:0;margin-bottom:8px}
-table.etb,table.etb tbody{display:block;min-width:0;width:100%}
-table.etb thead{display:none}
-table.etb tr{display:grid;grid-template-columns:22px 1fr 1fr 1fr;grid-template-areas:"no name name name" ". sex age con" ". w h bmi" ". note note note";gap:6px 8px;padding:12px 12px;border-bottom:1px solid rgba(127,127,127,.2);align-items:end}
-table.etb td{display:block;padding:0;border:0;background:transparent!important;text-align:left;min-width:0}
-table.etb td:nth-child(1){grid-area:no;color:var(--muted);align-self:center}
-table.etb td:nth-child(2){grid-area:name;font-weight:700;font-size:15px;align-self:center}
-table.etb td:nth-child(3){grid-area:sex}table.etb td:nth-child(4){grid-area:age}table.etb td:nth-child(5){grid-area:w}table.etb td:nth-child(6){grid-area:h}table.etb td:nth-child(7){grid-area:bmi}table.etb td:nth-child(8){grid-area:con}table.etb td:nth-child(9){grid-area:note}
-table.etb td[data-l]::before{content:attr(data-l);display:block;font-size:11px;font-weight:400;color:var(--muted);margin-bottom:2px;white-space:nowrap}
-table.etb td input{min-width:0;width:100%;text-align:left;padding:0 10px}
-table.etb td.s{white-space:normal;font-size:12.5px}
-table.etb td[colspan]{display:block;grid-column:1/-1}
+.etw{max-height:calc(100vh - 200px);border-radius:0;border-left:0;border-right:0;margin-bottom:8px;-webkit-overflow-scrolling:touch}
+table.etb{min-width:820px}
 }
+table.etb th:nth-child(1),table.etb td:nth-child(1){position:sticky;left:0;width:44px;min-width:44px;z-index:1}
+table.etb th:nth-child(2),table.etb td:nth-child(2){position:sticky;left:44px;min-width:140px;white-space:nowrap;z-index:1;box-shadow:2px 0 4px rgba(0,0,0,.06)}
+table.etb th:nth-child(-n+2){background:var(--surface);z-index:3}
 </style>
 <style id="bmiPaper">
 body.view-paper{background:#4a4f55;padding:0 0 40px}
