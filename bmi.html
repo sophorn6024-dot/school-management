@@ -385,6 +385,21 @@ table.etb td.s{font-weight:700;color:var(--text);white-space:nowrap}
 .esum{display:flex;gap:8px 20px;flex-wrap:wrap;align-items:center;padding:12px 18px;font-size:13px;color:var(--muted)}
 .esum span{display:inline-flex;align-items:center}
 @media(max-width:700px){.ehead{padding:12px 14px}.ehead h1{font-size:16px}.etw{max-height:none}}
+@media(max-width:700px){
+.wrap{padding:8px}
+.etw{max-height:none;overflow:visible;border-radius:20px}
+table.etb,table.etb tbody{display:block;min-width:0;width:100%}
+table.etb thead{display:none}
+table.etb tr{display:grid;grid-template-columns:30px 1fr 1fr 1fr;grid-template-areas:"no name name name" ". sex age con" ". w h bmi" ". note note note";gap:6px 8px;padding:12px 12px;border-bottom:1px solid rgba(127,127,127,.2);align-items:end}
+table.etb td{display:block;padding:0;border:0;background:transparent!important;text-align:left;min-width:0}
+table.etb td:nth-child(1){grid-area:no;color:var(--muted);align-self:center}
+table.etb td:nth-child(2){grid-area:name;font-weight:700;font-size:15px;align-self:center}
+table.etb td:nth-child(3){grid-area:sex}table.etb td:nth-child(4){grid-area:age}table.etb td:nth-child(5){grid-area:w}table.etb td:nth-child(6){grid-area:h}table.etb td:nth-child(7){grid-area:bmi}table.etb td:nth-child(8){grid-area:con}table.etb td:nth-child(9){grid-area:note}
+table.etb td[data-l]::before{content:attr(data-l);display:block;font-size:11px;font-weight:400;color:var(--muted);margin-bottom:2px;white-space:nowrap}
+table.etb td input{min-width:0;width:100%;text-align:left;padding:0 10px}
+table.etb td.s{white-space:normal;font-size:12.5px}
+table.etb td[colspan]{display:block;grid-column:1/-1}
+}
 </style>
 <style id="bmiPaper">
 body.view-paper{background:#4a4f55;padding:0 0 40px}
@@ -432,7 +447,7 @@ table.lg{border-collapse:collapse;margin:0 auto;font-size:12pt;color:#1f3d99;wid
 table.lg td{border:1px solid #333;padding:0 2mm;height:7.5mm;line-height:1.3;text-align:left;font-weight:700}
 table.lg td.cc{width:50%}
 .sgl{color:#222;text-align:center;font-size:11pt;line-height:1.5;margin-top:1.5mm;white-space:nowrap}
-.ftb{align-items:stretch!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}.ftb .sgl{font-size:10.5pt}.ftb .rt{display:flex;flex-direction:column}.ftb .rt .sgc{flex:1;display:flex;flex-direction:column}
+.ftb{align-items:start!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}.ftb .lf{display:flex;justify-content:flex-end;padding-right:4mm}.ftb .lf>div{min-width:56mm}.ftb .sgl{font-size:10.5pt}
 .mt{font-family:'Moul','Khmer OS Muol Light','Battambang',serif;font-weight:400;line-height:1.6}
 .sgc{text-align:center}
 .sgc .mt{font-size:12.5pt}
@@ -643,7 +658,7 @@ async function init(){
   const sel=document.getElementById('clsSel'),badge=document.getElementById('clsBadge'),mine=cleanGrade(USER_CLASS);
   if(!IS_ADMIN){
     if(!mine){document.getElementById('body').innerHTML='<div class="panel" style="text-align:center;color:var(--warn);font-weight:700">⚠️ អ្នកមិនទាន់មានថ្នាក់ — សូមបង្កើតថ្នាក់ក្នុង «ថ្នាក់ និងសិស្ស» ជាមុន</div>';return}
-    badge.textContent='ថ្នាក់ទី '+mine;badge.style.display='inline-block';curClass=mine;await load();return;
+    curClass=mine;await load();return;
   }
   sel.style.display='inline-block';
   try{
@@ -704,11 +719,11 @@ function draw(){
   const t=th();['t1','t2','t3'].forEach((id,i)=>document.getElementById(id).value=[t.lo,t.mid,t.hi][i]);
   const rec=(D.p||{})[perKey()]||{};
   document.getElementById('tb').innerHTML=students.map((s,i)=>{const r=rec[s.id]||{};
-    return '<tr data-id="'+esc(s.id)+'"><td>'+(i+1)+'</td><td class="l">'+esc(s.name)+'</td><td>'+esc(s.sex)+'</td><td>'+(ageOf(s.dob,asOf())===''?'':ageOf(s.dob,asOf())+' ឆ្នាំ')+'</td>'
-    +'<td><input type="number" step="0.1" min="0" value="'+esc(r.w==null?'':r.w)+'" oninput="setV(\''+esc(s.id).replace(/'/g,"\\'")+'\',\'w\',this.value)"></td>'
-    +'<td><input type="number" step="0.1" min="0" value="'+esc(r.h==null?'':r.h)+'" oninput="setV(\''+esc(s.id).replace(/'/g,"\\'")+'\',\'h\',this.value)"></td>'
-    +'<td class="b"></td><td class="s"></td>'
-    +'<td><input type="text" class="l" value="'+esc(r.n||'')+'" oninput="setV(\''+esc(s.id).replace(/'/g,"\\'")+'\',\'n\',this.value)"></td></tr>'}).join('')||'<tr><td colspan="9" style="padding:30px;color:var(--muted)">មិនទាន់មានសិស្សក្នុងថ្នាក់នេះ</td></tr>';
+    return '<tr data-id="'+esc(s.id)+'"><td>'+(i+1)+'</td><td class="l">'+esc(s.name)+'</td><td data-l="ភេទ">'+esc(s.sex)+'</td><td data-l="អាយុ">'+(ageOf(s.dob,asOf())===''?'':ageOf(s.dob,asOf())+' ឆ្នាំ')+'</td>'
+    +'<td data-l="ទម្ងន់ (Kg)"><input type="number" step="0.1" min="0" value="'+esc(r.w==null?'':r.w)+'" oninput="setV(\''+esc(s.id).replace(/'/g,"\\'")+'\',\'w\',this.value)"></td>'
+    +'<td data-l="កម្ពស់ (cm)"><input type="number" step="0.1" min="0" value="'+esc(r.h==null?'':r.h)+'" oninput="setV(\''+esc(s.id).replace(/'/g,"\\'")+'\',\'h\',this.value)"></td>'
+    +'<td class="b" data-l="BMI"></td><td class="s" data-l="សន្និដ្ឋាន"></td>'
+    +'<td data-l="ផ្សេងៗ"><input type="text" class="l" value="'+esc(r.n||'')+'" oninput="setV(\''+esc(s.id).replace(/'/g,"\\'")+'\',\'n\',this.value)"></td></tr>'}).join('')||'<tr><td colspan="9" style="padding:30px;color:var(--muted)">មិនទាន់មានសិស្សក្នុងថ្នាក់នេះ</td></tr>';
   students.forEach(s=>rowUpd(s.id));sum();
   if(isPaper())buildPaper();
 }
@@ -790,7 +805,7 @@ function footHtml(rows){
   const dirName=showSt&&!stamp?esc(kitDirName()):'';
   const a='<div class="ft"><div class="lf"><div class="sm">'+sm.join('')+'</div></div><div class="rt">'+lg+'</div></div>';
   const left='<div class="lf">'+dirDate+'<div class="sgc" style="margin-top:0"><div class="mt">បានឃើញនិងឯកភាព</div><div class="mt">នាយកសាលា</div>'+stamp+(stamp?'':'<div class="dirsp"></div>')+(dirName?'<div class="sgn" style="color:#000">'+dirName+'</div>':'')+'</div></div>';
-  const right='<div class="rt">'+(st?'<div class="sgl" style="margin-top:0">'+(st.l?esc(st.l)+'<br>':'')+st.s+'</div>':'')+'<div class="sgc"><div class="mt">គ្រូទទួលបន្ទុកថ្នាក់</div><div style="min-height:15mm;flex:1;display:flex;align-items:center;justify-content:center">'+kitSig()+'</div><div class="sgn">'+esc(teacherTxt())+'</div></div></div>';
+  const right='<div class="rt">'+(st?'<div class="sgl" style="margin-top:0">'+(st.l?esc(st.l)+'<br>':'')+st.s+'</div>':'')+'<div class="sgc"><div class="mt">គ្រូទទួលបន្ទុកថ្នាក់</div><div style="height:15mm;display:flex;align-items:center;justify-content:center">'+kitSig()+'</div><div class="sgn">'+esc(teacherTxt())+'</div></div></div>';
   return [a,'<div class="ft ftb" style="margin-top:2mm">'+left+right+'</div>'];
 }
 function buildPaper(){
