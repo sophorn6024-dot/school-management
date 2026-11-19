@@ -478,14 +478,12 @@ table.lg td.cc{width:50%}
 <div class="tbar" id="tbar">
  <div class="trow">
   <button class="tbtn" onclick="showPaper(false)"><svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>ត្រឡប់</button>
-  <select class="in" id="mode" onchange="onPeriod()"><option value="m">តាមខែ</option><option value="q">តាមត្រីមាស</option></select>
-  <select class="in" id="per" onchange="onPeriod()"></select>
-  <select class="in" id="yr" onchange="onPeriod()"></select>
+  <select class="in" id="mode" onchange="onPeriod()" style="display:none"><option value="m">តាមខែ</option><option value="q">តាមត្រីមាស</option></select>
+  <select class="in" id="per" onchange="onPeriod()" style="display:none"></select>
+  <select class="in" id="yr" onchange="onPeriod()" style="display:none"></select>
   <button class="tbtn" onclick="dlExcel()"><svg class="ic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>ទាញយក Excel</button>
   <span class="sgrp"><span class="tlbl">ថ្ងៃអ្នកធ្វើចុះហត្ថលេខា</span><input class="tdate" type="date" id="sdT" onchange="onSD()"></span>
   <span class="sgrp"><span class="tlbl">ថ្ងៃនាយកចុះហត្ថលេខា</span><input class="tdate" type="date" id="sdD" onchange="onSD()"></span>
- </div>
- <div class="trow">
   <button class="tbtn" id="psBtn" onclick="togPanel('psPanel')"><svg class="ic" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>កំណត់ទំព័រ</button>
   <button class="tbtn" onclick="dlPdf()"><svg class="ic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>ទាញយក PDF</button>
   <button class="tbtn pri" onclick="window.print()"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>បោះពុម្ព</button>
@@ -682,7 +680,8 @@ function perLabel(){const m=document.getElementById('mode').value,p=+document.ge
 function fillPer(){const m=document.getElementById('mode').value,s=document.getElementById('per');const cur=s.value;
   s.innerHTML=(m==='m'?MON.map((x,i)=>'<option value="'+(i+1)+'">'+x+'</option>'):[1,2,3,4].map(i=>'<option value="'+i+'">ត្រីមាសទី'+i+'</option>')).join('');
   if(cur&&s.querySelector('option[value="'+cur+'"]'))s.value=cur;else s.value=m==='m'?String(new Date().getMonth()+1):String(Math.floor(new Date().getMonth()/3)+1)}
-(function(){const y=new Date().getFullYear();document.getElementById('yr').innerHTML=[y-1,y,y+1].map(a=>'<option'+(a===y?' selected':'')+'>'+a+'</option>').join('');fillPer()})();
+function schoolStartYear(){const d=new Date();return d.getMonth()>=10?d.getFullYear():d.getFullYear()-1}
+(function(){const y=new Date().getFullYear(),S=schoolStartYear();document.getElementById('yr').innerHTML=[S,S+1].map(a=>'<option'+(a===y?' selected':'')+'>'+a+'</option>').join('');fillPer()})();
 function onPeriod(){fillPer();syncPm();draw()}
 function afterLoad(){D.p=D.p||{};D.th=D.th||{lo:14.5,mid:18.5,hi:21}}
 function th(){return D.th||{lo:14.5,mid:18.5,hi:21}}
@@ -750,7 +749,7 @@ function clsTxt(){
 function yearTxt(){
   if((INFO.year||'').trim())return INFO.year.trim();
   const y=+document.getElementById('yr').value,mo=document.getElementById('mode').value,p=+document.getElementById('per').value;
-  const mm=mo==='m'?p:p*3-2,s=mm>=9?y:y-1;return __kc(s+'-'+(s+1));
+  const mm=mo==='m'?p:p*3-2,s=mm>=11?y:y-1;return __kc(s+'-'+(s+1));
 }
 function titleTxt(){
   if((INFO.title||'').trim())return INFO.title.trim();
@@ -833,8 +832,8 @@ function asOf(){
 }
 function asOfTxt(){const q=asOf().split('-');return q[2]+'-'+q[1]+'-'+q[0]}
 function buildPm(){
-  const el=document.getElementById('pm'),y=+document.getElementById('yr').value||new Date().getFullYear(),o=['<option value="q" hidden>តាមត្រីមាស</option>'];
-  [y-1,y,y+1].forEach(Y=>MON.forEach((m,i)=>o.push('<option value="'+Y+'-'+(i+1)+'">'+m+' '+Y+'</option>')));
+  const el=document.getElementById('pm'),S=schoolStartYear(),o=['<option value="q" hidden>តាមត្រីមាស</option>'];
+  for(let k=0;k<12;k++){const m=(10+k)%12,Y=m>=10?S:S+1;o.push('<option value="'+Y+'-'+(m+1)+'">'+MON[m]+' '+Y+'</option>')}
   el.innerHTML=o.join('');syncPm();
 }
 function syncPm(){
