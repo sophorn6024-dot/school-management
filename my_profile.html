@@ -25,6 +25,8 @@ h3.sec small{font-weight:400;color:var(--muted);font-size:14px}
 .cover{position:relative;height:170px;border-radius:16px;background:linear-gradient(135deg,#9fe3f5,#c8f1ea 55%,#c6dcf8);background-size:cover;background-position:center;overflow:visible}
 .cover .cv-btn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.28);color:#fff;border-radius:999px;height:38px;padding:0 18px;backdrop-filter:blur(2px)}
 .cover .cv-btn:hover{background:rgba(0,0,0,.42)}
+.cover .cv-btn{opacity:0;pointer-events:none;transition:opacity .2s}
+@media(hover:hover){.cover:hover .cv-btn{opacity:1}}
 .cv-pick{display:none;margin-top:14px;animation:cvIn .2s ease-out;border:1px solid var(--border);border-radius:18px;padding:16px 16px 12px;background:rgba(255,255,255,.55)}
 [data-theme="dark"] .cv-pick{background:rgba(255,255,255,.04)}
 .cv-pick.open{display:block}
