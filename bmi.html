@@ -385,13 +385,31 @@ table.etb td.s{font-weight:700;color:var(--text);white-space:nowrap}
 .esum{display:flex;gap:8px 20px;flex-wrap:wrap;align-items:center;padding:12px 18px;font-size:13px;color:var(--muted)}
 .esum span{display:inline-flex;align-items:center}
 @media(max-width:700px){.ehead{padding:12px 14px}.ehead h1{font-size:16px}.etw{max-height:none}}
+.agecap{display:none}
 @media(max-width:700px){
 body:not(.view-paper){padding:0 0 90px}
-.wrap{padding:0}
-.ehead{border-radius:0 0 18px 18px;border-left:0;border-right:0;margin-bottom:8px}
-.thp,.esum{border-radius:0;border-left:0;border-right:0}
-.etw{max-height:calc(100vh - 200px);border-radius:0;border-left:0;border-right:0;margin-bottom:8px;-webkit-overflow-scrolling:touch}
-table.etb{min-width:820px}
+.wrap{padding:10px}
+.ehead{padding:12px 14px;border-radius:18px;margin-bottom:8px;gap:10px}
+.ehead h1{font-size:18px;min-width:0}
+.ehead .bt{display:none}
+.ebtn{padding:0;width:44px;justify-content:center}
+.ehead .as-wrap{order:9!important;flex:1 1 100%!important;width:100%!important;min-width:100%!important}
+.ehead .as-btn{width:100%;justify-content:space-between;text-align:center}
+.agecap{display:block;font-size:13px;color:var(--muted);padding:2px 6px 8px}
+.thp{border-radius:16px;margin-bottom:8px}
+.esum{border-radius:16px}
+.etw{max-height:calc(100vh - 260px);border-radius:18px;margin-bottom:8px;-webkit-overflow-scrolling:touch}
+table.etb{min-width:0;width:max-content}
+table.etb th{padding:10px 4px;font-size:13px}
+table.etb td{padding:5px 4px}
+table.etb th:nth-child(1),table.etb td:nth-child(1){width:32px;min-width:32px;max-width:32px;padding:5px 2px;text-align:center}
+table.etb th:nth-child(2),table.etb td:nth-child(2){left:32px;width:108px;min-width:108px;max-width:108px;overflow:hidden;text-overflow:ellipsis;font-size:13px}
+table.etb th:nth-child(5),table.etb td:nth-child(5),table.etb th:nth-child(6),table.etb td:nth-child(6){width:80px;min-width:80px;max-width:80px}
+table.etb td input{min-width:0;width:100%;padding:0 4px}
+table.etb th:nth-child(5),table.etb th:nth-child(6){font-size:11.5px;letter-spacing:-.2px}
+table.etb th:nth-child(7),table.etb td:nth-child(7){min-width:54px}
+table.etb th:nth-child(8),table.etb td:nth-child(8),table.etb th:nth-child(9),table.etb td:nth-child(9){min-width:130px}
+table.etb th:nth-child(3),table.etb td:nth-child(3),table.etb th:nth-child(4),table.etb td:nth-child(4){display:none}
 }
 table.etb th:nth-child(1),table.etb td:nth-child(1){position:sticky;left:0;width:44px;min-width:44px;z-index:1}
 table.etb th:nth-child(2),table.etb td:nth-child(2){position:sticky;left:44px;min-width:140px;white-space:nowrap;z-index:1;box-shadow:2px 0 4px rgba(0,0,0,.06)}
@@ -443,7 +461,7 @@ table.lg{border-collapse:collapse;margin:0 auto;font-size:12pt;color:#1f3d99;wid
 table.lg td{border:1px solid #333;padding:0 2mm;height:7.5mm;line-height:1.3;text-align:left;font-weight:700}
 table.lg td.cc{width:50%}
 .sgl{color:#222;text-align:center;font-size:11pt;line-height:1.5;margin-top:1.5mm;white-space:nowrap}
-.ftb{align-items:start!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}.ftb .lf{display:flex;justify-content:center}.ftb .lf>div{min-width:56mm}.ftb .sgl{font-size:10.5pt}
+.ftb{align-items:start!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}.ftb .lf{display:flex;justify-content:center;padding-right:22mm}.ftb .lf>div{min-width:56mm}.ftb .sgl{font-size:10.5pt}
 .mt{font-family:'Moul','Khmer OS Muol Light','Battambang',serif;font-weight:400;line-height:1.6}
 .sgc{text-align:center}
 .sgc .mt{font-size:12.5pt}
@@ -477,9 +495,10 @@ table.lg td.cc{width:50%}
   <span class="chip" id="clsBadge" style="display:none"></span>
   <select class="in ebig" id="pm" onchange="onPm()"></select>
   <button class="ebtn" onclick="togTh()" title="កម្រិត BMI"><svg class="ic" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></button>
-  <button class="ebtn ok" id="saveBtn" onclick="save()"><svg class="ic" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2zM17 21v-8H7v8M7 3v5h8"/></svg>រក្សាទុក</button>
-  <button class="ebtn" onclick="showPaper(true)"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>បោះពុម្ព</button>
+  <button class="ebtn ok" id="saveBtn" onclick="save()"><svg class="ic" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2zM17 21v-8H7v8M7 3v5h8"/></svg><span class="bt">រក្សាទុក</span></button>
+  <button class="ebtn" onclick="showPaper(true)"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg><span class="bt">បោះពុម្ព</span></button>
  </div>
+ <div class="agecap" id="ageCap"></div>
  <div class="gcard thp" id="thPanel" style="display:none">
   <div class="note">ជួរ «សន្និដ្ឋាន» គណនាពី BMI តាមកម្រិតខាងក្រោម (កែបាន)។ នេះជាការប៉ាន់ស្មានទូទៅ មិនមែនតារាង BMI តាមអាយុរបស់ WHO ទេ — សូមផ្ទៀងផ្ទាត់តាមការណែនាំរបស់ក្រសួង។</div>
   <div class="bar" style="margin:8px 0 0">កម្រិត BMI៖
@@ -711,7 +730,7 @@ function sum(){const rec=(D.p||{})[perKey()]||{};const c=[0,0,0,0],cf=[0,0,0,0];
   students.forEach(s=>{const f=/ស្រី|^f/i.test(s.sex||'');if(f)fem++;const r=rec[s.id]||{},k=catIdx(bmi(r.w,r.h));if(k>=0){c[k]++;if(f)cf[k]++}});
   document.getElementById('sum').innerHTML='<span>សិស្សសរុប '+students.length+' នាក់ ស្រី '+fem+' នាក់</span>'+CATS.map((x,k)=>'<span><i class="dot sq" style="background:'+x.c+'"></i>'+x.t+' '+c[k]+' នាក់ ស្រី '+cf[k]+' នាក់</span>').join('')}
 function draw(){
-  const al=document.getElementById('ageLbl');if(al)al.textContent='គិតត្រឹមថ្ងៃទី '+asOfTxt();
+  const al=document.getElementById('ageLbl');if(al)al.textContent='គិតត្រឹមថ្ងៃទី '+asOfTxt();const ac=document.getElementById('ageCap');if(ac)ac.textContent='អាយុតាមខែវាស់ · គិតត្រឹមថ្ងៃទី '+asOfTxt();
   const t=th();['t1','t2','t3'].forEach((id,i)=>document.getElementById(id).value=[t.lo,t.mid,t.hi][i]);
   const rec=(D.p||{})[perKey()]||{};
   document.getElementById('tb').innerHTML=students.map((s,i)=>{const r=rec[s.id]||{};
