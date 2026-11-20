@@ -415,6 +415,38 @@ table.etb th:nth-child(1),table.etb td:nth-child(1){position:sticky;left:0;width
 table.etb th:nth-child(2),table.etb td:nth-child(2){position:sticky;left:44px;min-width:140px;white-space:nowrap;z-index:1;box-shadow:2px 0 4px rgba(0,0,0,.06)}
 table.etb th:nth-child(-n+2){background:var(--surface);z-index:3}
 </style>
+<style id="pgSize">@page{size:210mm 297mm;margin:0}</style>
+<style id="psStyle">
+.pspop{position:fixed;z-index:90;width:min(580px,calc(100vw - 16px));max-height:calc(100vh - 90px);overflow:auto;background:#26292f;color:#e8eaed;border:1px solid #3a3f48;border-radius:22px;box-shadow:0 18px 50px rgba(0,0,0,.55);padding:20px 24px 18px}
+.pspop .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.pspop .ph b{font-size:19px}
+.pspop .prs{display:inline-flex;align-items:center;gap:6px;background:none;border:0;color:#aeb4bd;font-size:14px;cursor:pointer;font-family:inherit}
+.pspop .prs:hover{color:#fff}
+.pspop .pse{display:flex;align-items:center;gap:8px;color:#aeb4bd;font-weight:700;font-size:14px;margin:6px 0 12px}
+.pspop .pse::after{content:'';flex:1;height:1px;background:#3a3f48;margin-left:6px}
+.pspop .ic{width:17px;height:17px}
+.pgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:10px}
+.ptile{min-height:72px;border-radius:14px;border:1px solid #3a3f48;background:#33373e;color:#d7dbe0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:inherit;font-size:15px;padding:6px 4px}
+.ptile b{font-size:17px}
+.ptile small{font-size:12px;color:#9aa1ab}
+.ptile .ic{width:20px;height:20px}
+.ptile.on{background:#0a84c6;border-color:#3aa6e0;color:#fff}
+.ptile.on small{color:#d6eefb}
+.prow{display:flex;align-items:center;gap:10px;margin:12px 0;flex-wrap:wrap}
+.prow .pl{min-width:56px;color:#aeb4bd;font-size:15px}
+.pst{width:42px;height:42px;border-radius:12px;border:0;background:#383c44;color:#e8eaed;font-size:20px;cursor:pointer;line-height:1}
+.pst:hover{background:#444952}
+.pbox{display:flex;align-items:center;justify-content:center;gap:6px;width:132px;height:46px;border-radius:12px;background:#33373e}
+.pbox input{width:62px;background:none;border:0;color:#fff;font-size:17px;text-align:center;font-family:inherit;outline:none;-moz-appearance:textfield}
+.pbox input::-webkit-outer-spin-button,.pbox input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.pbox span{color:#8b929c;font-size:14px}
+.pbox.auto input{color:#9aa1ab}
+.prow .pn{color:#8b929c;font-size:14px;cursor:default}
+.prow .pn.lk{cursor:pointer;text-decoration:underline dotted}
+.pspop .pft{border-top:1px solid #3a3f48;margin-top:14px;padding-top:14px;font-size:15px;color:#cfd4da}
+.pspop .pft b{color:#8fa8ff;font-size:17px;margin-right:4px}
+@media(max-width:520px){.pspop{padding:16px}.pbox{width:112px}.pbox input{width:50px}}
+</style>
 <style id="bmiPaper">
 body.view-paper{background:#4a4f55;padding:0 0 40px}
 .tbar{position:sticky;top:0;z-index:60;background:#25282e;padding:10px 14px;display:flex;flex-direction:column;gap:10px;color:#e8eaed}
@@ -438,9 +470,9 @@ body.view-paper{background:#4a4f55;padding:0 0 40px}
 .tpanel input[type=text],.tpanel select{height:36px;border-radius:9px;border:1px solid #4a515b;background:#25282e;color:#e8eaed;padding:0 10px;font-family:inherit;font-size:13px;min-width:0}
 .tpanel input[type=text]{width:200px}
 .wrap{padding:16px}
-#papers{--tf:12pt;--rh:8.4mm;--mg:12mm;zoom:var(--z,1);padding-top:22px}
-.pg{width:210mm;height:297mm;padding:var(--mg);box-sizing:border-box;background:#fff;color:#000;margin:0 auto 22px;box-shadow:0 4px 20px rgba(0,0,0,.45);overflow:hidden;position:relative;font-family:'Khmer OS Battambang','Battambang',sans-serif}
-.pgi{height:calc(297mm - 2 * var(--mg));position:relative}
+#papers{--tf:12pt;--rh:8.4mm;--mg:10mm;--pw:210mm;--ph:297mm;zoom:var(--z,1);padding-top:22px}
+.pg{width:var(--pw);height:var(--ph);padding:var(--mg);box-sizing:border-box;background:#fff;color:#000;margin:0 auto 22px;box-shadow:0 4px 20px rgba(0,0,0,.45);overflow:hidden;position:relative;font-family:'Khmer OS Battambang','Battambang',sans-serif}
+.pgi{height:calc(var(--ph) - 2 * var(--mg));position:relative}
 .hd1{font-family:'Moul','Khmer OS Muol Light','Battambang',serif;font-size:19pt;text-align:center;line-height:1.55;font-weight:400}
 .hd2{font-family:'Moul','Khmer OS Muol Light','Battambang',serif;font-size:14pt;text-align:center;line-height:1.5;font-weight:400}
 .hd3{display:flex;align-items:center;justify-content:center;gap:8px;margin:2px 0 8px;font-size:13pt}
@@ -474,12 +506,11 @@ table.lg td.cc{width:50%}
 .lf .sgn{padding-left:0}
 @media(max-width:700px){.tbar{position:static}}
 @media print{
-  @page{size:A4 portrait;margin:0}
   html,body{background:#fff!important;padding:0!important}
-  .tbar,.tpanel,.toast,#entryView,#body,.noprint{display:none!important}
+  .tbar,.tpanel,.pspop,.toast,#entryView,#body,.noprint{display:none!important}
   #paperView{display:block!important}
   #papers{zoom:1!important;padding:0!important}
-  .pg{margin:0!important;box-shadow:none!important;height:296mm;page-break-after:always;break-after:page}
+  .pg{margin:0!important;box-shadow:none!important;height:calc(var(--ph) - 1mm);page-break-after:always;break-after:page}
   .pg:last-child{page-break-after:auto;break-after:auto}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
@@ -519,15 +550,31 @@ table.lg td.cc{width:50%}
   <button class="tbtn" onclick="dlExcel()"><svg class="ic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>ទាញយក Excel</button>
   <span class="sgrp"><span class="tlbl">ថ្ងៃអ្នកធ្វើចុះហត្ថលេខា</span><input class="tdate" type="date" id="sdT" onchange="onSD()"></span>
   <span class="sgrp"><span class="tlbl">ថ្ងៃនាយកចុះហត្ថលេខា</span><input class="tdate" type="date" id="sdD" onchange="onSD()"></span>
-  <button class="tbtn" id="psBtn" onclick="togPanel('psPanel')"><svg class="ic" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>កំណត់ទំព័រ</button>
+  <button class="tbtn" id="psBtn" onclick="togPS(event)"><svg class="ic" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>កំណត់ទំព័រ</button>
   <button class="tbtn" onclick="dlPdf()"><svg class="ic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>ទាញយក PDF</button>
   <button class="tbtn pri" onclick="window.print()"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>បោះពុម្ព</button>
  </div>
 </div>
-<div class="tpanel" id="psPanel">
-  <label>ទំហំអក្សរតារាង <select id="psTf" onchange="onPS()"><option value="10">10pt</option><option value="11">11pt</option><option value="12">12pt</option><option value="13">13pt</option><option value="14">14pt</option></select></label>
-  <label>កម្ពស់ជួរ <select id="psRh" onchange="onPS()"><option value="7">ទាប</option><option value="7.8">តូច</option><option value="8.4">ធម្មតា</option><option value="9.2">ខ្ពស់</option><option value="10">ខ្ពស់ណាស់</option></select></label>
-  <label>គែមទំព័រ <select id="psMg" onchange="onPS()"><option value="8">8mm</option><option value="10">10mm</option><option value="12">12mm</option><option value="15">15mm</option><option value="18">18mm</option></select></label>
+<div class="pspop" id="psPanel" style="display:none" onclick="event.stopPropagation()">
+ <div class="ph"><b>ការរៀបចំទំព័រ</b><button class="prs" onclick="psReset()"><svg class="ic" viewBox="0 0 24 24"><path d="M1 4v6h6M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>ដើមវិញ</button></div>
+ <div class="pse"><svg class="ic" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M8 13h8M8 17h8"/></svg>ក្រដាស</div>
+ <div class="pgrid">
+  <button class="ptile" data-paper="A4" onclick="setPaper('A4')"><b>A4</b><small>210×297</small></button>
+  <button class="ptile" data-paper="F4" onclick="setPaper('F4')"><b>F4</b><small>216×330</small></button>
+  <button class="ptile" data-or="p" onclick="setOrient('p')"><svg class="ic" viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/></svg><span>បញ្ឈរ</span></button>
+  <button class="ptile" data-or="l" onclick="setOrient('l')"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10" rx="2"/></svg><span>ផ្តេក</span></button>
+ </div>
+ <div class="pgrid">
+  <button class="ptile" data-mg="2" onclick="setMg(2)"><span>តូច</span><small>2</small></button>
+  <button class="ptile" data-mg="5" onclick="setMg(5)"><span>មធ្យម</span><small>5</small></button>
+  <button class="ptile" data-mg="10" onclick="setMg(10)"><span>ធំ</span><small>10</small></button>
+  <button class="ptile" data-mg="15" onclick="setMg(15)"><span>ធំបំផុត</span><small>15</small></button>
+ </div>
+ <div class="prow"><span class="pl">គែម</span><button class="pst" onclick="stepMg(-1)">−</button><div class="pbox"><input id="psMgV" type="number" step="1" onchange="setMg(this.value)"><span>mm</span></div><button class="pst" onclick="stepMg(1)">+</button><span class="pn" id="psUse"></span></div>
+ <div class="pse"><svg class="ic" viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>អក្សរ និងក្រឡា</div>
+ <div class="prow"><span class="pl">អក្សរ</span><button class="pst" onclick="stepFs(-5)">−</button><div class="pbox"><input id="psFsV" type="number" step="5" onchange="setFs(this.value)"><span>%</span></div><button class="pst" onclick="stepFs(5)">+</button><span class="pn" id="psFsN"></span></div>
+ <div class="prow"><span class="pl">កម្ពស់ជួរ</span><button class="pst" onclick="stepRh(-0.2)">−</button><div class="pbox" id="psRhB"><input id="psRhV" type="number" step="0.2" onchange="setRh(this.value)"><span>mm</span></div><button class="pst" onclick="stepRh(0.2)">+</button><span class="pn lk" id="psRhN" onclick="rhAutoOn()"></span></div>
+ <div class="pft"><b id="psSheets">1</b>សន្លឹក</div>
 </div>
 <div id="papers"></div>
 </div>
@@ -744,8 +791,8 @@ function draw(){
 }
 
 /* ===== 📄 ទម្រង់ឯកសារ A4 (មើលមុនបោះពុម្ព) ===== */
-const PS_KEY='krou_bmi_ps',INFO_KEY='krou_bmi_info';
-let PS={tf:12,rh:8.4,mg:12},INFO={teacher:'',place:'',year:'',title:'',stamp:true},SD={t:'',d:''};
+const PS_KEY='krou_bmi_ps2',INFO_KEY='krou_bmi_info';
+let PS={paper:'A4',orient:'p',mg:10,fs:100,rh:null},INFO={teacher:'',place:'',year:'',title:'',stamp:true},SD={t:'',d:''};
 try{Object.assign(PS,JSON.parse(localStorage.getItem(PS_KEY)||'{}'))}catch(e){}
 try{Object.assign(INFO,JSON.parse(localStorage.getItem(INFO_KEY)||'{}'))}catch(e){}
 const CATS=[{t:'ខ្វះទម្ងន់',s:'សិស្សខ្វះទម្ងន់',c:'#F4B183'},{t:'ទម្ងន់ធម្មតា',s:'សិស្សទម្ងន់ធម្មតា',c:'#00B050'},{t:'លើសទម្ងន់',s:'សិស្សលើសទម្ងន់',c:'#FFFF00'},{t:'លើសទម្ងន់ខ្លាំង',s:'សិស្សលើសទម្ងន់ខ្លាំង',c:'#FF0000'}];
@@ -827,7 +874,10 @@ function footHtml(rows){
 function buildPaper(){
   const root=document.getElementById('papers');if(!root)return;
   root.style.setProperty('--z',1);
-  root.style.setProperty('--tf',PS.tf+'pt');root.style.setProperty('--rh',PS.rh+'mm');root.style.setProperty('--mg',PS.mg+'mm');
+  const dim=pageDim();
+  root.style.setProperty('--pw',dim.w+'mm');root.style.setProperty('--ph',dim.h+'mm');
+  root.style.setProperty('--tf',(12*PS.fs/100).toFixed(2)+'pt');root.style.setProperty('--rh',rhMM()+'mm');root.style.setProperty('--mg',PS.mg+'mm');
+  const pgs=document.getElementById('pgSize');if(pgs)pgs.textContent='@page{size:'+dim.w+'mm '+dim.h+'mm;margin:0}';
   root.innerHTML='';
   const rows=paperRows();
   function mkPage(first,withTable){
@@ -849,11 +899,11 @@ function buildPaper(){
     inn.appendChild(fe);
     if(over(inn)){inn.removeChild(fe);inn=mkPage(false,false);inn.appendChild(fe)}
   });
-  fitZoom();
+  fitZoom();psRender();
 }
 function fitZoom(){
   const root=document.getElementById('papers');if(!root)return;
-  const w=210*96/25.4,z=Math.min(1,(document.documentElement.clientWidth-16)/w);
+  const w=pageDim().w*96/25.4,z=Math.min(1,(document.documentElement.clientWidth-16)/w);
   root.style.setProperty('--z',z>0?z.toFixed(4):1);
 }
 window.addEventListener('resize',fitZoom);
@@ -890,11 +940,45 @@ function onPm(){
 function togPanel(id){
   ['psPanel'].forEach(x=>{const e=document.getElementById(x);e.classList.toggle('show',x===id&&!e.classList.contains('show'))});
 }
-function onPS(){
-  PS={tf:+document.getElementById('psTf').value,rh:+document.getElementById('psRh').value,mg:+document.getElementById('psMg').value};
-  try{localStorage.setItem(PS_KEY,JSON.stringify(PS))}catch(e){}
-  buildPaper();
+function pageDim(){const b=PS.paper==='F4'?{w:216,h:330}:{w:210,h:297};return PS.orient==='l'?{w:b.h,h:b.w}:b}
+function rhMM(){return PS.rh==null?+(8.4*PS.fs/100).toFixed(1):PS.rh}
+function psSave(){try{localStorage.setItem(PS_KEY,JSON.stringify(PS))}catch(e){}buildPaper()}
+function setPaper(v){PS.paper=v;psSave()}
+function setOrient(v){PS.orient=v;psSave()}
+function clampN(v,a,b){v=parseFloat(v);if(!isFinite(v))v=a;return Math.min(b,Math.max(a,v))}
+function setMg(v){PS.mg=clampN(v,0,30);psSave()}
+function stepMg(d){setMg(PS.mg+d)}
+function setFs(v){PS.fs=clampN(v,60,150);psSave()}
+function stepFs(d){setFs(PS.fs+d)}
+function setRh(v){PS.rh=+clampN(v,4,25).toFixed(1);psSave()}
+function stepRh(d){setRh(rhMM()+d)}
+function rhAutoOn(){if(PS.rh!=null){PS.rh=null;psSave()}}
+function psReset(){PS={paper:'A4',orient:'p',mg:10,fs:100,rh:null};psSave()}
+function psRender(){
+  const q=(sel)=>document.querySelectorAll(sel);
+  q('#psPanel [data-paper]').forEach(e=>e.classList.toggle('on',e.dataset.paper===PS.paper));
+  q('#psPanel [data-or]').forEach(e=>e.classList.toggle('on',e.dataset.or===PS.orient));
+  q('#psPanel [data-mg]').forEach(e=>e.classList.toggle('on',+e.dataset.mg===PS.mg));
+  const d=pageDim(),set=(id,v)=>{const e=document.getElementById(id);if(e&&document.activeElement!==e)e.value=v};
+  set('psMgV',PS.mg);set('psFsV',PS.fs);set('psRhV',rhMM());
+  const t=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  t('psUse','ផ្ទៃប្រើ '+(d.w-2*PS.mg)+'×'+(d.h-2*PS.mg)+'mm');
+  t('psFsN',PS.fs===100?'ធម្មតា':PS.fs<100?'តូចជាងធម្មតា':'ធំជាងធម្មតា');
+  t('psRhN',PS.rh==null?'តាមអក្សរ':'កំណត់ដោយដៃ · ចុចដើម្បីតាមអក្សរ');
+  const rb=document.getElementById('psRhB');if(rb)rb.classList.toggle('auto',PS.rh==null);
+  t('psSheets',document.querySelectorAll('#papers .pg').length||1);
 }
+function togPS(ev){
+  if(ev)ev.stopPropagation();
+  const pn=document.getElementById('psPanel');
+  if(pn.style.display!=='none'){pn.style.display='none';return}
+  pn.style.display='block';psRender();
+  const r=document.getElementById('psBtn').getBoundingClientRect(),w=pn.offsetWidth;
+  pn.style.top=(r.bottom+8)+'px';pn.style.left=Math.max(8,Math.min(r.left,window.innerWidth-w-8))+'px';
+}
+document.addEventListener('click',e=>{const pn=document.getElementById('psPanel');if(pn&&pn.style.display!=='none'&&!e.target.closest('#psPanel')&&!e.target.closest('#psBtn'))pn.style.display='none'});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const pn=document.getElementById('psPanel');if(pn)pn.style.display='none'}});
+window.addEventListener('resize',()=>{const pn=document.getElementById('psPanel');if(pn)pn.style.display='none'});
 function onSD(){SD.t=document.getElementById('sdT').value;SD.d=document.getElementById('sdD').value;buildPaper()}
 function dlPdf(){toast('ក្នុងផ្ទាំងបោះពុម្ព សូមជ្រើស «រក្សាទុកជា PDF»');setTimeout(()=>window.print(),600)}
 function dlExcel(){
@@ -906,7 +990,6 @@ function dlExcel(){
   a.download='BMI_'+curClass+'_'+perKey()+'.xls';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
 }
 (function(){
-  document.getElementById('psTf').value=String(PS.tf);document.getElementById('psRh').value=String(PS.rh);document.getElementById('psMg').value=String(PS.mg);
   document.getElementById('sdT').value=SD.t;buildPm();
 })();
 
