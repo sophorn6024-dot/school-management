@@ -770,6 +770,12 @@
       .sv-tdesk { width:78px; font-size:11px; }
     }
 </style>
+<style id="undoToastCss">
+#undoToast{position:fixed;top:14px;right:16px;z-index:9998;display:flex;align-items:center;gap:14px;background:var(--surface,#fff);color:var(--text,#0f172a);border:1px solid var(--border,#e2e8f0);border-radius:16px;padding:12px 18px;box-shadow:0 12px 34px rgba(15,23,42,.22);font-weight:700;font-size:15px;opacity:0;transform:translateY(-14px);pointer-events:none;transition:opacity .22s,transform .22s;font-family:inherit}
+#undoToast.show{opacity:1;transform:none;pointer-events:auto}
+#undoToast .ut-btn{display:inline-flex;align-items:center;gap:6px;border:0;background:none;color:var(--primary,#0369a1);font:inherit;font-weight:800;cursor:pointer;padding:4px 2px}
+@media(max-width:640px){#undoToast{left:12px;right:12px;top:10px;justify-content:space-between;font-size:14px}}
+</style>
 </head>
 
 <body>
@@ -2649,6 +2655,7 @@ exports.default = {
 
     async function loadDailyAttendanceData() {
       if (!currentClassName) return;
+      try { hideUndoToast(); } catch (e) {}
 
       // 🌟 ផ្ទុកថ្ងៃឈប់សម្រាករបស់ថ្នាក់នេះ (ឆ្នាំ + ថ្នាក់ ប្តូរទើបផ្ទុកថ្មី)
       await ensureHolidays();
@@ -2954,10 +2961,41 @@ exports.default = {
 
     function setBulkDailyStatus(code) {
       if (holidayBlocked()) return;
+      var snap = Object.assign({}, dailyAttendanceState), n = rawStudentsData.length;
       rawStudentsData.forEach(function(s) { dailyAttendanceState[s.id] = code; });
       renderDailyList();
       updateStatsCounters();
       triggerDebouncedSave();
+      showUndoToast('បានសម្គាល់ ' + n + ' នាក់ ជា' + (code === 'P' ? 'វត្តមាន' : code === 'A' ? 'អវត្តមាន' : ''), function () {
+        dailyAttendanceState = snap;
+        renderDailyList();
+        updateStatsCounters();
+        triggerDebouncedSave();
+        try { hintFlash('បានត្រឡប់មកដូចមុនវិញ', 2500); } catch (e) {}
+      });
+    }
+
+    /* ↩ ការជូនដំណឹង «បានសម្គាល់ N នាក់» + ប៊ូតុង «ត្រឡប់» (មិនស្រង់វិញ) */
+    var undoToastTimer = null, undoToastFn = null;
+    function hideUndoToast() {
+      clearTimeout(undoToastTimer); undoToastFn = null;
+      var t = document.getElementById('undoToast'); if (t) t.classList.remove('show');
+    }
+    function showUndoToast(msg, fn) {
+      var t = document.getElementById('undoToast');
+      if (!t) {
+        t = document.createElement('div'); t.id = 'undoToast';
+        t.innerHTML = '<span class="ut-msg"></span><button type="button" class="ut-btn"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>ត្រឡប់</button>';
+        document.body.appendChild(t);
+        t.querySelector('.ut-btn').addEventListener('click', function () {
+          var f = undoToastFn; hideUndoToast(); if (f) f();
+        });
+      }
+      t.querySelector('.ut-msg').textContent = msg;
+      undoToastFn = fn;
+      t.classList.add('show');
+      clearTimeout(undoToastTimer);
+      undoToastTimer = setTimeout(hideUndoToast, 8000);
     }
 
     function openStatusActionSheet(sid, name) {
