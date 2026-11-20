@@ -551,7 +551,7 @@ table.lg td.cc{width:50%}
   <span class="sgrp"><span class="tlbl">ថ្ងៃអ្នកធ្វើចុះហត្ថលេខា</span><input class="tdate" type="date" id="sdT" onchange="onSD()"></span>
   <span class="sgrp"><span class="tlbl">ថ្ងៃនាយកចុះហត្ថលេខា</span><input class="tdate" type="date" id="sdD" onchange="onSD()"></span>
   <button class="tbtn" id="psBtn" onclick="togPS(event)"><svg class="ic" viewBox="0 0 24 24"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>កំណត់ទំព័រ</button>
-  <button class="tbtn" onclick="dlPdf()"><svg class="ic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>ទាញយក PDF</button>
+  <button class="tbtn" id="pdfBtn" onclick="dlPdf()"><svg class="ic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>ទាញយក PDF</button>
   <button class="tbtn pri" onclick="window.print()"><svg class="ic" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z"/></svg>បោះពុម្ព</button>
  </div>
 </div>
@@ -980,7 +980,35 @@ document.addEventListener('click',e=>{const pn=document.getElementById('psPanel'
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){const pn=document.getElementById('psPanel');if(pn)pn.style.display='none'}});
 window.addEventListener('resize',()=>{const pn=document.getElementById('psPanel');if(pn)pn.style.display='none'});
 function onSD(){SD.t=document.getElementById('sdT').value;SD.d=document.getElementById('sdD').value;buildPaper()}
-function dlPdf(){toast('ក្នុងផ្ទាំងបោះពុម្ព សូមជ្រើស «រក្សាទុកជា PDF»');setTimeout(()=>window.print(),600)}
+function loadScript(src){return new Promise((res,rej)=>{const e=document.createElement('script');e.src=src;e.onload=res;e.onerror=()=>rej(new Error('load '+src));document.head.appendChild(e)})}
+async function dlPdf(){
+  if(dlPdf._b)return;dlPdf._b=true;
+  const btn=document.getElementById('pdfBtn'),root=document.getElementById('papers'),z0=root.style.getPropertyValue('--z');
+  if(btn)btn.style.opacity='.6';
+  try{
+    toast('⏳ កំពុងបង្កើត PDF …');
+    if(!window.html2canvas)await loadScript('https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js');
+    if(!(window.jspdf&&window.jspdf.jsPDF))await loadScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js');
+    try{await document.fonts.ready}catch(e){}
+    buildPaper();root.style.setProperty('--z',1);
+    await new Promise(r=>setTimeout(r,150));
+    const d=pageDim(),pgs=[...root.querySelectorAll('.pg')],ori=d.w>d.h?'l':'p';
+    const pdf=new window.jspdf.jsPDF({orientation:ori,unit:'mm',format:[d.w,d.h],compress:true});
+    for(let i=0;i<pgs.length;i++){
+      const cv=await window.html2canvas(pgs[i],{scale:2,backgroundColor:'#ffffff',useCORS:true,logging:false});
+      if(i)pdf.addPage([d.w,d.h],ori);
+      pdf.addImage(cv.toDataURL('image/jpeg',.95),'JPEG',0,0,d.w,d.h);
+    }
+    pdf.save(('BMI_'+curClass+'_'+perKey()).replace(/[^\w\u1780-\u17FF-]+/g,'_')+'.pdf');
+    toast('✅ បានទាញយក PDF');
+  }catch(e){
+    console.warn('pdf',e);
+    toast('❌ បង្កើត PDF មិនបាន — សូមប្រើ «បោះពុម្ព» រួចជ្រើស «រក្សាទុកជា PDF»');
+  }finally{
+    root.style.setProperty('--z',z0||1);fitZoom();
+    if(btn)btn.style.opacity='';dlPdf._b=false;
+  }
+}
 function dlExcel(){
   const rows=paperRows();
   let h='<html><head><meta charset="UTF-8"></head><body><table border="1"><tr><th>ល.រ</th><th>គោត្តនាម-នាម</th><th>ភេទ</th><th>អាយុ</th><th>ទម្ងន់(Kg)</th><th>កម្ពស់(m)</th><th>BMI</th><th>សន្និដ្ឋាន</th><th>ផ្សេងៗ</th></tr>';
