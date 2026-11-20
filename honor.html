@@ -271,6 +271,25 @@ async function stRows(grades){
     .student-name-text {
       font-weight: normal; text-align: center; white-space: nowrap; user-select: none;
     }
+    /* 🎨 ពុម្ពអក្សរ & ពណ៌ ដែលអ្នកប្រើជ្រើស (ទុកតម្លៃដើមបើមិនជ្រើស) */
+    .honor-paper[data-tf] .main-title-text { font-family: var(--tf) !important; }
+    .honor-paper[data-nf] .student-name-text { font-family: var(--nf) !important; }
+    .honor-paper[data-nc] .student-name-text { color: var(--nc) !important; }
+    #ddStyle { width: 300px; max-width: calc(100vw - 24px); max-height: 70vh; padding: 10px; }
+    @media (max-width: 700px) {
+      #ddStyle { position: fixed !important; left: 12px !important; right: 12px !important; width: auto; max-width: none; }
+    }
+    #ddStyle h6 { margin: 8px 2px 6px; font-size: 12.5px; color: #475569; font-weight: 800; }
+    #ddStyle h6:first-child { margin-top: 0; }
+    .fnt-list { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .fnt-it { border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 8px 6px; text-align: center; font-size: 15px; color: #0f172a; background: #fff; cursor: pointer; line-height: 1.5; }
+    .fnt-it:hover { background: #f1f5f9; }
+    .fnt-it.on { border-color: #0284c7; background: #e0f2fe; color: #0284c7; }
+    .clr-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .clr-sw { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1.5px #cbd5e1; cursor: pointer; padding: 0; }
+    .clr-sw.on { box-shadow: 0 0 0 3px #0284c7; }
+    #ddStyle input[type=color] { width: 40px; height: 32px; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0; background: #fff; cursor: pointer; }
+    .clr-reset { margin-top: 8px; width: 100%; height: 36px; border-radius: 10px; border: 0; background: #f1f5f9; color: #0f172a; font-weight: 700; cursor: pointer; font-family: inherit; }
     .r-color-1 { color: #b91c1c; } /* លេខ១ ក្រហម */
     .r-color-2 { color: #1d4ed8; } /* លេខ២ ខៀវ */
     .r-color-3 { color: #15803d; } /* លេខ៣ បៃតង */
@@ -547,6 +566,15 @@ async function stRows(grades){
       </div>
 
       <div class="tb-group">
+        <!-- 🔤 ពុម្ពអក្សរ & ពណ៌ឈ្មោះសិស្ស -->
+        <div class="dd-wrap">
+          <button type="button" class="tb-btn" onclick="toggleDropdown('ddStyle'); posStylePanel(this)">
+            <i class="fa-solid fa-font" style="color:#fbbf24;"></i>
+            <span>ពុម្ពអក្សរ &amp; ពណ៌</span>
+            <i class="fa-solid fa-chevron-down" style="font-size:11px;"></i>
+          </button>
+          <div class="dd-popup" id="ddStyle" style="right:0; left:auto;" onclick="event.stopPropagation()"></div>
+        </div>
         <!-- 📅 ប៊ូតុងបើកប្រតិទិនខ្មែរ -->
         <button type="button" class="tb-btn" onclick="openKhmerCalendar()">
           <i class="fa-regular fa-calendar-days" style="color:#60a5fa;"></i>
@@ -1864,6 +1892,81 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
 
       renderActiveTemplate();
     }
+
+    /* ══════════════ 🔤 ពុម្ពអក្សរ & ពណ៌ឈ្មោះសិស្ស ══════════════ */
+    const FONT_OPTS = [
+      ['ម៉ូល (ដើម)', "'Khmer OS Muol Light','Moul',cursive", ''],
+      ['ម៉ូលពាលី', "'Moulpali',cursive", 'Moulpali'],
+      ['បាយ័ន', "'Bayon',cursive", 'Bayon'],
+      ['កូឡេន', "'Koulen',cursive", 'Koulen'],
+      ['អង្គរ', "'Angkor',cursive", 'Angkor'],
+      ['ដង្រែក', "'Dangrek',cursive", 'Dangrek'],
+      ['ចេនឡា', "'Chenla',cursive", 'Chenla'],
+      ['បូកោ', "'Bokor',cursive", 'Bokor'],
+      ['មេតាល់', "'Metal',cursive", 'Metal'],
+      ['តាព្រហ្ម', "'Taprom',cursive", 'Taprom'],
+      ['ហាណូមាន', "'Hanuman',serif", 'Hanuman'],
+      ['បាត់ដំបង', "'Battambang',sans-serif", 'Battambang'],
+      ['សៀមរាប', "'Siemreap',sans-serif", 'Siemreap'],
+      ['Content', "'Content',cursive", 'Content'],
+      ['Noto Serif', "'Noto Serif Khmer',serif", 'Noto+Serif+Khmer'],
+      ['Kantumruy', "'Kantumruy Pro',sans-serif", 'Kantumruy+Pro'],
+      ['Fasthand', "'Fasthand',cursive", 'Fasthand'],
+      ['Freehand', "'Freehand',cursive", 'Freehand']
+    ];
+    const NAME_COLORS = ['#b91c1c', '#1d4ed8', '#15803d', '#7e22ce', '#000000', '#b45309', '#be185d', '#0f766e', '#1e3a8a'];
+    let STY = { tf: 0, nf: 0, nc: '' };   /* tf/nf = លេខ index ក្នុង FONT_OPTS · 0 = ដើម */
+    try { const o = JSON.parse(localStorage.getItem('honor_style') || 'null'); if (o) STY = Object.assign(STY, o); } catch (e) {}
+    function loadGFont(i) {
+      const f = FONT_OPTS[i]; if (!f || !f[2]) return Promise.resolve();
+      const id = 'gf_' + f[2];
+      if (!document.getElementById(id)) {
+        const l = document.createElement('link'); l.id = id; l.rel = 'stylesheet';
+        l.href = 'https://fonts.googleapis.com/css2?family=' + f[2] + '&display=swap';
+        document.head.appendChild(l);
+      }
+      try { return document.fonts.load('20px ' + f[1], 'ក').catch(() => {}); } catch (e) { return Promise.resolve(); }
+    }
+    function applyStyle() {
+      const paper = document.getElementById('honorPaper');
+      const set = (k, v) => { if (v) { paper.dataset[k] = '1'; } else { delete paper.dataset[k]; } };
+      set('tf', STY.tf > 0); if (STY.tf > 0) paper.style.setProperty('--tf', FONT_OPTS[STY.tf][1]);
+      set('nf', STY.nf > 0); if (STY.nf > 0) paper.style.setProperty('--nf', FONT_OPTS[STY.nf][1]);
+      set('nc', !!STY.nc);   if (STY.nc) paper.style.setProperty('--nc', STY.nc);
+      fitNames();
+    }
+    function posStylePanel(btn) {
+      const box = document.getElementById('ddStyle');
+      if (!box || window.innerWidth > 700) { if (box) { box.style.top = ''; box.style.maxHeight = ''; } return; }
+      const r = btn.getBoundingClientRect();
+      box.style.top = (r.bottom + 6) + 'px';
+      box.style.maxHeight = Math.max(200, window.innerHeight - r.bottom - 18) + 'px';
+    }
+    function saveStyle() { try { localStorage.setItem('honor_style', JSON.stringify(STY)); } catch (e) {} }
+    async function pickFont(which, i) {
+      STY[which] = i; saveStyle(); renderStylePanel();
+      await loadGFont(i); applyStyle();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNames);
+    }
+    function pickColor(c) { STY.nc = c; saveStyle(); renderStylePanel(); applyStyle(); }
+    function renderStylePanel() {
+      const box = document.getElementById('ddStyle'); if (!box) return;
+      const list = (which) => '<div class="fnt-list">' + FONT_OPTS.map((f, i) =>
+        '<div class="fnt-it' + (STY[which] === i ? ' on' : '') + '" style="font-family:' + f[1].replace(/"/g, "'") + ';" onclick="pickFont(\'' + which + '\',' + i + ')">' + f[0] + '</div>').join('') + '</div>';
+      box.innerHTML =
+        '<h6>🏆 ពុម្ពអក្សរ «តារាងកិត្តិយស»</h6>' + list('tf') +
+        '<h6>👤 ពុម្ពអក្សរឈ្មោះសិស្ស</h6>' + list('nf') +
+        '<h6>🎨 ពណ៌ឈ្មោះសិស្ស</h6><div class="clr-row">' +
+        NAME_COLORS.map(c => '<button type="button" class="clr-sw' + (STY.nc === c ? ' on' : '') + '" style="background:' + c + ';" onclick="pickColor(\'' + c + '\')" aria-label="' + c + '"></button>').join('') +
+        '<input type="color" value="' + (STY.nc || '#b91c1c') + '" oninput="pickColor(this.value)" title="ជ្រើសពណ៌ផ្សេង"></div>' +
+        '<button type="button" class="clr-reset" onclick="pickColor(\'\')">↺ ពណ៌ដើម (តាមចំណាត់ថ្នាក់)</button>' +
+        '<button type="button" class="clr-reset" onclick="STY={tf:0,nf:0,nc:\'\'};saveStyle();renderStylePanel();applyStyle()">↺ កំណត់ពុម្ពអក្សរ & ពណ៌ទាំងអស់ឡើងវិញ</button>';
+    }
+    (async function initStyle() {
+      renderStylePanel();
+      await Promise.all([loadGFont(STY.tf), loadGFont(STY.nf)]);
+      applyStyle();
+    })();
 
     function goBack() {
       if (window.parent && window.parent !== window) {
