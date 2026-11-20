@@ -4657,32 +4657,67 @@ var n=0,done=false,t=setInterval(function(){n++;try{
     try{var r=await fetchLv('pending');var b=document.getElementById('leaveBadge');if(!b)return;
       b.textContent=r.length;b.style.display=r.length?'inline-block':'none'}catch(e){}
   };
+  var LT=[['pending','កំពុងរង់ចាំ'],['all','ទាំងអស់'],['approved','យល់ព្រម'],['rejected','បដិសេធ']],ddOpen=false;
+  async function fetchTab(t){
+    if(t!=='all')return fetchLv(t);
+    var a=await Promise.all([fetchLv('pending'),fetchLv('approved'),fetchLv('rejected')]);
+    return [].concat(a[0],a[1],a[2]).sort(function(x,y){return (y.id||0)-(x.id||0)});
+  }
+  function lvCss(){
+    if(document.getElementById('leaveCss'))return;
+    var st=document.createElement('style');st.id='leaveCss';
+    st.textContent='#leaveBg{position:fixed;inset:0;z-index:9999;background:rgba(15,23,42,.45);backdrop-filter:blur(3px);display:flex;align-items:flex-start;justify-content:center;padding:0}'+
+    '#leaveBox{width:100%;height:100%;overflow:auto;padding:18px 16px 24px;background:var(--surface,#fff);color:var(--text,#0f172a);font-family:inherit}'+
+    '@media(min-width:700px){#leaveBox{max-width:760px;height:auto;max-height:90vh;margin-top:5vh;border-radius:22px;box-shadow:0 20px 60px rgba(0,0,0,.25)}}'+
+    '.lv-head{display:flex;align-items:center;justify-content:space-between;gap:10px}'+
+    '.lv-title{display:flex;align-items:center;gap:10px;min-width:0;flex-wrap:wrap}'+
+    '.lv-title svg{flex:none;color:var(--primary,#0284c7)}'+
+    '.lv-title b{font-size:22px;font-weight:800;color:var(--primary,#0284c7);font-family:"Khmer OS Muol Light","Moul",inherit}'+
+    '.lv-title small{font-size:15px;opacity:.65}'+
+    '.lv-dd{position:relative;flex:none}'+
+    '.lv-btn{display:flex;align-items:center;gap:8px;height:42px;padding:0 14px;border-radius:12px;border:2px solid var(--primary,#22d3ee);background:var(--surface-card,#fff);color:var(--text,#0f172a);font:inherit;font-weight:700;cursor:pointer;box-shadow:0 0 0 4px rgba(34,211,238,.18)}'+
+    '.lv-pop{position:absolute;right:0;top:48px;min-width:170px;background:var(--surface-card,#fff);border:1px solid var(--border,#e2e8f0);border-radius:16px;padding:8px;box-shadow:0 12px 34px rgba(0,0,0,.18);z-index:3}'+
+    '.lv-it{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 14px;border-radius:12px;font-weight:700;cursor:pointer;color:var(--text,#1e293b)}'+
+    '.lv-it:hover{background:rgba(127,127,127,.12)}.lv-it.on{background:rgba(2,132,199,.15);color:var(--primary,#0284c7)}.lv-it.on::after{content:"✓"}'+
+    '.lv-card{margin-top:16px;border-radius:22px;border:1px solid var(--border,#e2e8f0);background:var(--surface-card,var(--surface,#fff));box-shadow:0 6px 18px rgba(15,23,42,.10);padding:14px 16px}'+
+    '.lv-empty{min-height:110px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:17px;opacity:.75}'+
+    '.lv-x{border:0;background:transparent;font-size:22px;cursor:pointer;color:inherit;position:absolute;right:14px;top:10px;display:none}';
+    document.head.appendChild(st);
+  }
   window.openLeaveReq=async function(){
+    lvCss();
     var bg=document.getElementById('leaveBg');
     if(!bg){bg=document.createElement('div');bg.id='leaveBg';
-      bg.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:14px';
       bg.onclick=function(e){if(e.target===bg)bg.remove()};document.body.appendChild(bg)}
-    bg.innerHTML='<div style="background:var(--surface,#fff);color:var(--text,#111);border-radius:16px;max-width:560px;width:100%;max-height:88vh;overflow:auto;padding:16px;font-family:inherit"><div style="text-align:center;padding:30px">⏳ កំពុងទាញយក...</div></div>';
-    rows=await fetchLv(tab);draw();
+    bg.innerHTML='<div id="leaveBox"><div class="lv-empty">⏳ កំពុងទាញយក...</div></div>';
+    ddOpen=false;rows=await fetchTab(tab);draw();
   };
+  window.leaveDD=function(e){if(e)e.stopPropagation();ddOpen=!ddOpen;draw()};
   function draw(){
-    var bg=document.getElementById('leaveBg');if(!bg)return;
-    var tabs=[['pending','⏳ រង់ចាំ'],['approved','✅ អនុម័ត'],['rejected','❌ បដិសេធ']].map(function(t){
-      return '<button onclick="leaveTab(\''+t[0]+'\')" style="border:1px solid var(--border,#ccc);border-radius:99px;padding:6px 12px;cursor:pointer;font-family:inherit;background:'+(tab===t[0]?'var(--primary,#2563eb)':'transparent')+';color:'+(tab===t[0]?'#fff':'inherit')+'">'+t[1]+'</button>'}).join(' ');
+    var bg=document.getElementById('leaveBg'),box=document.getElementById('leaveBox');if(!bg||!box)return;
+    var cur=LT.filter(function(t){return t[0]===tab})[0]||LT[0],cls='';
+    try{cls=(typeof currentClassName!=='undefined'&&currentClassName)?' · ថ្នាក់ទី '+__kc(currentClassName):''}catch(e){}
+    var pop=ddOpen?'<div class="lv-pop">'+LT.map(function(t){return '<div class="lv-it'+(t[0]===tab?' on':'')+'" onclick="leaveTab(\''+t[0]+'\')">'+t[1]+'</div>'}).join('')+'</div>':'';
+    var ic='<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/></svg>';
+    var head='<div class="lv-head"><div class="lv-title">'+ic+'<b>សំណើសុំច្បាប់សិស្ស</b><small>'+E(cls)+'</small></div><div class="lv-dd"><button class="lv-btn" onclick="leaveDD(event)">'+cur[1]+' <span style="font-size:12px">'+(ddOpen?'▲':'▼')+'</span></button>'+pop+'</div></div>';
     var list=rows.length?rows.map(function(r){
-      return '<div style="border:1px solid var(--border,#ddd);border-radius:12px;padding:10px 12px;margin-top:10px"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+E(r.student_name)+'</b><small>ថ្នាក់ '+E(String(r.grade||'').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/,''))+'</small></div>'+
-      '<div style="margin:4px 0">📅 '+fd(r.from)+(r.to!==r.from?' → '+fd(r.to):'')+'</div><div style="opacity:.8">'+E(r.reason)+'</div>'+
+      var stc=r.status==='approved'?['#16a34a','យល់ព្រម']:r.status==='rejected'?['#dc2626','បដិសេធ']:['#d97706','កំពុងរង់ចាំ'];
+      return '<div class="lv-card"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>'+E(r.student_name)+'</b><span style="font-size:12px;font-weight:700;color:'+stc[0]+';border:1px solid '+stc[0]+';border-radius:99px;padding:2px 10px;white-space:nowrap">'+stc[1]+'</span></div>'+
+      '<div style="font-size:13px;opacity:.7;margin-top:2px">ថ្នាក់ '+E(String(r.grade||'').replace(/^(ថ្នាក់ទី|ថ្នាក់)\s*/,''))+'</div>'+
+      '<div style="margin:6px 0">📅 '+fd(r.from)+(r.to!==r.from?' → '+fd(r.to):'')+'</div><div style="opacity:.85">'+E(r.reason)+'</div>'+
       (r.note?'<div style="opacity:.8;margin-top:4px">💬 '+E(r.note)+'</div>':'')+
-      (r.status==='pending'?'<div style="display:flex;gap:8px;margin-top:10px"><button onclick="leaveDecide('+r.id+',true)" style="flex:1;border:0;border-radius:10px;padding:8px;background:#16a34a;color:#fff;cursor:pointer;font-family:inherit;font-weight:700">✅ អនុម័ត</button><button onclick="leaveDecide('+r.id+',false)" style="flex:1;border:0;border-radius:10px;padding:8px;background:#dc2626;color:#fff;cursor:pointer;font-family:inherit;font-weight:700">❌ បដិសេធ</button></div>':'')+'</div>'}).join(''):'<div style="text-align:center;padding:26px;opacity:.7">មិនមានពាក្យសុំទេ</div>';
-    bg.firstChild.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:16px">📝 ពាក្យសុំច្បាប់របស់សិស្ស</b><button onclick="document.getElementById(\'leaveBg\').remove()" style="border:0;background:transparent;font-size:20px;cursor:pointer;color:inherit">✕</button></div><div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">'+tabs+'</div>'+list;
+      (r.status==='pending'?'<div style="display:flex;gap:8px;margin-top:10px"><button onclick="leaveDecide('+r.id+',true)" style="flex:1;border:0;border-radius:12px;padding:10px;background:#16a34a;color:#fff;cursor:pointer;font-family:inherit;font-weight:700">✅ យល់ព្រម</button><button onclick="leaveDecide('+r.id+',false)" style="flex:1;border:0;border-radius:12px;padding:10px;background:#dc2626;color:#fff;cursor:pointer;font-family:inherit;font-weight:700">❌ បដិសេធ</button></div>':'')+'</div>'}).join('')
+      :'<div class="lv-card lv-empty">'+(tab==='pending'?'គ្មានសំណើដែលរង់ចាំ។':'គ្មានសំណើទេ។')+'</div>';
+    box.innerHTML=head+list;
+    box.onclick=function(){if(ddOpen){ddOpen=false;draw()}};
   }
-  window.leaveTab=async function(t){tab=t;rows=await fetchLv(t);draw()};
+  window.leaveTab=async function(t){tab=t;ddOpen=false;rows=await fetchTab(t);draw()};
   window.leaveDecide=async function(id,ok){
     var note='';if(!ok){note=prompt('មូលហេតុបដិសេធ (អាចទុកទទេ)','')||''}
     var r=await stRpc('staff_leave_decide',{p_id:id,p_approve:ok,p_note:note});
     if(r.error){alert('❌ '+(r.error.message||'កំហុស'));return}
     if(r.data&&r.data.error){alert(r.data.error==='done'?'ពាក្យសុំនេះត្រូវបានសម្រេចរួចហើយ':'❌ '+r.data.error)}
-    rows=await fetchLv(tab);draw();refreshLeaveBadge();
+    rows=await fetchTab(tab);draw();refreshLeaveBadge();
     if(ok){try{await loadDailyAttendanceData();if(typeof loadAttendanceSummary==='function')loadAttendanceSummary()}catch(e){}}
   };
   setTimeout(refreshLeaveBadge,2500);
