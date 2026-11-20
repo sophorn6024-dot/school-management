@@ -2440,7 +2440,7 @@ exports.default = {
     var saveDebounceTimer = null;
 
     /* 🌟 ការកំណត់ព្រមាន/ឆ្នាំសិក្សា (កែបានតាមចិត្ត) */
-    var SCHOOL_YEAR_START_MONTH = 10;   // ឆ្នាំសិក្សាចាប់ផ្តើមខែតុលា (10) រហូតដល់ខែកញ្ញា
+    var SCHOOL_YEAR_START_MONTH = 11;   // ឆ្នាំសិក្សាចាប់ផ្តើមខែវិច្ឆិកា (11) រហូតដល់ខែតុលា
     var ABS_WARN_COUNT = 5;             // ⚠ អវត្តមានគ្មានច្បាប់ ≥ ៥ ដង
     var ABS_DANGER_COUNT = 10;          // 🔴 អវត្តមានគ្មានច្បាប់ ≥ ១០ ដង
 
@@ -3097,6 +3097,12 @@ exports.default = {
       };
     }
 
+    /* ឆ្នាំ (គ.ស.) នៃខែមួយ តាមឆ្នាំសិក្សា៖ វិច្ឆិកា–ធ្នូ = ឆ្នាំចាប់ផ្តើម, មករា–តុលា = ឆ្នាំបន្ទាប់ */
+    function yearForSchoolMonth(mIdx) {
+      var startY = parseInt(getSchoolYearRange(selectedDate).from, 10);
+      return (mIdx + 1 >= SCHOOL_YEAR_START_MONTH) ? startY : startY + 1;
+    }
+
     /* ទាញវត្តមានតាមចន្លោះកាលបរិច្ឆេទ (ទាញម្តង ១០០០ ជួរ រហូតគ្រប់) */
     async function fetchAttendanceRows(fromStr, toStr, curPure) {
       var out = [], step = 1000, from = 0;
@@ -3327,7 +3333,7 @@ exports.default = {
     function renderHolidayCalendarDays() {
       var mName = document.getElementById('rptMonthSelect').value;
       var mIdx = KHMER_MONTHS.indexOf(mName);
-      var currentYear = selectedDate.getFullYear();
+      var currentYear = mIdx >= 0 ? yearForSchoolMonth(mIdx) : selectedDate.getFullYear();
       document.getElementById('holidayCalTitle').textContent = mName + " " + currentYear;
       var grid = document.getElementById('holidayCalDaysGrid');
       grid.innerHTML = '';
@@ -3402,7 +3408,7 @@ exports.default = {
       try { if (rawStudentsData && rawStudentsData.length) { renderDailyList(); updateStatsCounters(); } } catch (e) {}
       var mName = document.getElementById('rptMonthSelect').value;
       var container = document.getElementById('holidayTagsContainer');
-      var list = holidaysFor(mName, selectedDate.getFullYear());
+      var list = holidaysFor(mName, yearForSchoolMonth(Math.max(0,KHMER_MONTHS.indexOf(mName))));
       if (list.length === 0) {
         container.innerHTML = '<span style="font-size:11.5px; color:var(--text-muted); font-style:italic;">មិនទាន់មានថ្ងៃឈប់សម្រាកសម្រាប់ខែនេះទេ</span>';
         return;
@@ -3680,9 +3686,9 @@ exports.default = {
     /* 9. របាយការណ៍ប្រចាំខែ (កាត់សិស្សបោះបង់ឆមាសទី១ ចេញពីខែនៃឆមាសទី២) */
     async function renderMonthlyPrintReport() {
       var mName = document.getElementById('rptMonthSelect').value;
-      var currentYear = selectedDate.getFullYear();
       var mIdx = KHMER_MONTHS.indexOf(mName);
       if (mIdx === -1) mIdx = selectedDate.getMonth();
+      var currentYear = yearForSchoolMonth(mIdx);
 
       var endOfMonthDate = new Date(currentYear, mIdx + 1, 0);
       var khDate = getFullKhmerDateString(endOfMonthDate);
