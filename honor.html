@@ -1915,7 +1915,22 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       ['Freehand', "'Freehand',cursive", 'Freehand']
     ];
     const NAME_COLORS = ['#b91c1c', '#1d4ed8', '#15803d', '#7e22ce', '#000000', '#b45309', '#be185d', '#0f766e', '#1e3a8a'];
-    let STY = { tf: 0, nf: 0, nc: '' };   /* tf/nf = លេខ index ក្នុង FONT_OPTS · 0 = ដើម */
+    const R3 = (a, b, c, dash) => `<rect x="5" y="5" width="760" height="1089" rx="4" stroke="${a}" stroke-width="4.5"/><rect x="12" y="12" width="746" height="1075" rx="3" stroke="${b}" stroke-width="3"/><rect x="18" y="18" width="734" height="1063" rx="2" stroke="${c}" stroke-width="2"${dash ? ' stroke-dasharray="8 5"' : ''}/>`;
+    const FRAMES = [
+      ['ដើម (ក្រហម-បៃតង-មាស)', null],
+      ['មាស', R3('#b45309', '#f59e0b', '#fbbf24', true)],
+      ['ខៀវ', R3('#1e3a8a', '#3b82f6', '#93c5fd', true)],
+      ['បៃតង', R3('#166534', '#22c55e', '#86efac', true)],
+      ['ស្វាយ', R3('#581c87', '#a855f7', '#d8b4fe', true)],
+      ['បន្ទាត់ក្រហមមួយ', '<rect x="8" y="8" width="754" height="1083" rx="4" stroke="#b91c1c" stroke-width="6"/>'],
+      ['បន្ទាត់ទ្វេរខ្មៅ', '<rect x="6" y="6" width="758" height="1087" rx="3" stroke="#111" stroke-width="3.5"/><rect x="14" y="14" width="742" height="1071" rx="2" stroke="#111" stroke-width="1.5"/>'],
+      ['គ្មានស៊ុម', '']
+    ];
+    function frameMarkup() {
+      if (STY.fc) return R3(STY.fc, STY.fc, STY.fc, true);
+      const f = FRAMES[STY.fr || 0]; return f ? f[1] : null;
+    }
+    let STY = { tf: 0, nf: 0, nc: '', fr: 0, fc: '' };   /* tf/nf = លេខ index ក្នុង FONT_OPTS · 0 = ដើម */
     try { const o = JSON.parse(localStorage.getItem('honor_style') || 'null'); if (o) STY = Object.assign(STY, o); } catch (e) {}
     function loadGFont(i) {
       const f = FONT_OPTS[i]; if (!f || !f[2]) return Promise.resolve();
@@ -1933,6 +1948,11 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       set('tf', STY.tf > 0); if (STY.tf > 0) paper.style.setProperty('--tf', FONT_OPTS[STY.tf][1]);
       set('nf', STY.nf > 0); if (STY.nf > 0) paper.style.setProperty('--nf', FONT_OPTS[STY.nf][1]);
       set('nc', !!STY.nc);   if (STY.nc) paper.style.setProperty('--nc', STY.nc);
+      const svg = document.querySelector('.floral-frame-svg');
+      if (svg) {
+        if (!svg.dataset.orig) svg.dataset.orig = svg.innerHTML;
+        const m = frameMarkup(); svg.innerHTML = (m === null) ? svg.dataset.orig : m;
+      }
       fitNames();
     }
     function posStylePanel(btn) {
@@ -1948,6 +1968,8 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       await loadGFont(i); applyStyle();
       if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitNames);
     }
+    function pickFrame(i) { STY.fr = i; STY.fc = ''; saveStyle(); renderStylePanel(); applyStyle(); }
+    function pickFrameColor(c) { STY.fc = c; saveStyle(); renderStylePanel(); applyStyle(); }
     function pickColor(c) { STY.nc = c; saveStyle(); renderStylePanel(); applyStyle(); }
     function renderStylePanel() {
       const box = document.getElementById('ddStyle'); if (!box) return;
@@ -1956,11 +1978,14 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       box.innerHTML =
         '<h6>🏆 ពុម្ពអក្សរ «តារាងកិត្តិយស»</h6>' + list('tf') +
         '<h6>👤 ពុម្ពអក្សរឈ្មោះសិស្ស</h6>' + list('nf') +
+        '<h6>🖼️ ស៊ុមជុំវិញសន្លឹក (គំរូ «ទម្រង់ដើម» ប៉ុណ្ណោះ)</h6><div class="fnt-list">' +
+        FRAMES.map((f, i) => '<div class="fnt-it' + (!STY.fc && (STY.fr || 0) === i ? ' on' : '') + '" onclick="pickFrame(' + i + ')">' + f[0] + '</div>').join('') + '</div>' +
+        '<div class="clr-row" style="margin-top:8px"><span style="font-size:13px;font-weight:700;color:#0f172a">ពណ៌ស៊ុមផ្ទាល់ខ្លួន</span><input type="color" value="' + (STY.fc || '#b91c1c') + '" oninput="pickFrameColor(this.value)"></div>' +
         '<h6>🎨 ពណ៌ឈ្មោះសិស្ស</h6><div class="clr-row">' +
         NAME_COLORS.map(c => '<button type="button" class="clr-sw' + (STY.nc === c ? ' on' : '') + '" style="background:' + c + ';" onclick="pickColor(\'' + c + '\')" aria-label="' + c + '"></button>').join('') +
         '<input type="color" value="' + (STY.nc || '#b91c1c') + '" oninput="pickColor(this.value)" title="ជ្រើសពណ៌ផ្សេង"></div>' +
         '<button type="button" class="clr-reset" onclick="pickColor(\'\')">↺ ពណ៌ដើម (តាមចំណាត់ថ្នាក់)</button>' +
-        '<button type="button" class="clr-reset" onclick="STY={tf:0,nf:0,nc:\'\'};saveStyle();renderStylePanel();applyStyle()">↺ កំណត់ពុម្ពអក្សរ & ពណ៌ទាំងអស់ឡើងវិញ</button>';
+        '<button type="button" class="clr-reset" onclick="STY={tf:0,nf:0,nc:\'\',fr:0,fc:\'\'};saveStyle();renderStylePanel();applyStyle()">↺ កំណត់ពុម្ពអក្សរ & ពណ៌ទាំងអស់ឡើងវិញ</button>';
     }
     (async function initStyle() {
       renderStylePanel();
