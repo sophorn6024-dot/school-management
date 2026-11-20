@@ -67,7 +67,7 @@ button,input,select{font-family:inherit}
 .dlg{background:var(--surface);border-radius:22px;padding:22px;max-width:380px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.35)}
 .dlg h3{margin:6px 0}.dlg p{color:var(--muted);white-space:pre-line;margin-bottom:16px}
 .dlg .acts{display:flex;gap:10px}.dlg .acts button{flex:1;height:44px;border-radius:12px;border:0;font-weight:800;font-size:15px;cursor:pointer;background:rgba(127,127,127,.14);color:var(--text)}
-.dlg .acts .pri{background:var(--primary);color:#fff}.dlg.danger .acts .pri{background:var(--danger)}
+.dlg .acts .pri{background:var(--primary);color:#fff}.dlg.pg{max-width:440px}.dlg.danger .acts .pri{background:var(--danger)}
 .pm-list{max-height:34vh;overflow:auto;border:1px solid var(--border);border-radius:12px;margin:8px 0}
 .pm-row{display:flex;align-items:center;gap:10px;padding:7px 12px;border-bottom:1px solid var(--border);cursor:pointer}
 .pm-row:last-child{border-bottom:0}.pm-row input{width:20px;height:20px;flex-shrink:0}
@@ -145,7 +145,7 @@ function uiAlert(msg){return new Promise(res=>{const bg=document.createElement('
 let USER=null; try{USER=JSON.parse(localStorage.getItem('krou_supabase_user')||'null')}catch(e){}
 const IS_ADMIN=String(USER&&USER.role||'').toLowerCase().trim()==='admin';
 function pw(){try{return localStorage.getItem('krou_pw')||''}catch(e){return ''}}
-const ERR={bad_op:'សកម្មភាពមិនត្រឹមត្រូវ',no_data:'សូមជ្រើសថ្នាក់ទិសដៅឱ្យត្រឹមត្រូវ',auth:'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ សូមចូលប្រព័ន្ធឡើងវិញ',forbidden:'គ្មានសិទ្ធិ',has_students:'ថ្នាក់នេះមានសិស្សរួចហើយ — មិនអាចលុប ឬប្តូរឈ្មោះបានទេ (ត្រូវផ្ទេរ ឬលុបសិស្សសិន)',no_name:'សូមបញ្ចូលឈ្មោះថ្នាក់',not_found:'រកមិនឃើញថ្នាក់'};
+const ERR={bad_op:'សកម្មភាពមិនត្រឹមត្រូវ',no_data:'សូមជ្រើសថ្នាក់ទិសដៅឱ្យត្រឹមត្រូវ',auth:'ពាក្យសម្ងាត់មិនត្រឹមត្រូវ សូមចូលប្រព័ន្ធឡើងវិញ',forbidden:'គ្មានសិទ្ធិ',has_students:'ថ្នាក់នេះមានសិស្សរួចហើយ — មិនអាចលុប ឬប្តូរឈ្មោះបានទេ (ត្រូវផ្ទេរ ឬលុបសិស្សសិន)',no_name:'សូមបញ្ចូលឈ្មោះថ្នាក់',not_found:'រកមិនឃើញថ្នាក់',confirm_mismatch:'ឈ្មោះថ្នាក់ដែលបានសរសេរមិនត្រូវ'};
 async function rpc(fn,args){
   const {data,error}=await sb.rpc(fn,Object.assign({p_u:USER.username,p_p:pw()},args||{}));
   if(error){ if(/duplicate|unique/i.test(error.message||''))throw new Error('ថ្នាក់នេះមានរួចហើយក្នុងឆ្នាំសិក្សាដដែល'); throw error; }
@@ -295,10 +295,28 @@ async function saveCls(){
   }catch(e){ uiAlert('❌ '+(e.message||e)); }
   finally{ b.disabled=false; b.textContent=t; }
 }
+const normCls=t=>String(t==null?'':t).toLowerCase().replace(/[០-៩]/g,d=>'០១២៣៤៥៦៧៨៩'.indexOf(d)).replace(/^(ថ្នាក់ទី|ថ្នាក់)/,'').replace(/[\s()（）]/g,'');
+function purgeDlg(c,info){return new Promise(res=>{
+  const nm='ថ្នាក់ទី'+toKh(c.name), st=+info.students||0, sc=+info.scores||0, ad=+info.att_days||0;
+  const need=!info.shared&&st>0;
+  const bg=document.createElement('div');bg.className='dlg-bg';
+  bg.innerHTML='<div class="dlg danger pg"><h3 style="font-size:18px;font-weight:700;line-height:1.5;margin:4px 0 12px">លុបថ្នាក់ «'+esc(nm)+'» ជាអចិន្ត្រៃយ៍?</h3>'
+    +'<p style="color:var(--text);margin-bottom:14px;line-height:1.7">សិស្ស '+toKh(st)+' នាក់ · ពិន្ទុ '+toKh(sc)+' · វត្តមាន '+toKh(ad)+' ថ្ងៃ'+(+info.accounts?' · គណនីសិស្ស '+toKh(info.accounts):'')+'<br>'
+    +(info.shared?'<span style="color:#b45309;font-size:13px">មានថ្នាក់ផ្សេង '+toKh(info.other)+' (ឆ្នាំសិក្សា ឬគ្រូផ្សេង) ប្រើឈ្មោះដូចគ្នា។ ទិន្នន័យសិស្ស ពិន្ទុ វត្តមាន នឹងត្រូវរក្សា ហើយលុបតែថ្នាក់នេះចេញពីបញ្ជី។</span>':'ទិន្នន័យនេះនឹងបាត់ទាំងស្រុង យកមកវិញមិនបានទេ។')+'</p>'
+    +(need?'<div style="font-size:14px;color:var(--muted);margin-bottom:8px">សរសេរ «'+esc(nm)+'» ដើម្បីបញ្ជាក់</div><input type="text" id="pgIn" autocomplete="off" style="width:100%;height:46px;border-radius:14px;border:1.5px solid #f87171;background:var(--surface);color:var(--text);font-size:16px;padding:0 14px;margin-bottom:14px;text-align:center">':'')
+    +'<div class="acts"><button data-v="0">បោះបង់</button><button class="pri" id="pgOk" data-v="1"'+(need?' disabled style="opacity:.45"':'')+'>លុបជាអចិន្ត្រៃយ៍</button></div></div>';
+  const ok=bg.querySelector('#pgOk'),inp=bg.querySelector('#pgIn');
+  if(inp)inp.oninput=()=>{const m=normCls(inp.value)===normCls(c.name);ok.disabled=!m;ok.style.opacity=m?1:.45;bg._v=inp.value};
+  bg.addEventListener('click',e=>{const b=e.target.closest('button');if(b){if(b.disabled)return;bg.remove();res(b.dataset.v==='1'?{ok:true,confirm:inp?inp.value:''}:null)}else if(e.target===bg){bg.remove();res(null)}});
+  document.body.appendChild(bg);if(inp)setTimeout(()=>inp.focus(),50)})}
 async function delCls(id){
   const c=ROWS.find(x=>x.id===id); if(!c)return;
-  if(!await uiConfirm('លុប «ថ្នាក់ទី'+c.name+'» ?',{danger:true,okText:'លុប',title:'លុបថ្នាក់'}))return;
-  try{ await rpc('staff_class_write',{p_op:'delete',p_id:id,p_data:null}); toast('🗑️ បានលុបថ្នាក់'); await refreshUser(); await load(); }
+  let info;
+  try{ info=await rpc('staff_class_purge_info',{p_id:id}); }
+  catch(e){ uiAlert('❌ '+(e.message||e)+(/purge_info|function/i.test(String(e.message))?'\n(ត្រូវ run class_purge.sql ក្នុង Supabase ជាមុន)':'')); return; }
+  const r=await purgeDlg(c,info); if(!r)return;
+  try{ const d=await rpc('staff_class_purge',{p_id:id,p_confirm:r.confirm});
+    toast(d&&d.kept_data?'🗑️ បានលុបថ្នាក់ពីបញ្ជី (ទិន្នន័យត្រូវបានរក្សា)':'🗑️ បានលុបថ្នាក់ និងទិន្នន័យទាំងអស់'); await refreshUser(); await load(); }
   catch(e){ uiAlert('❌ '+(e.message||e)); }
 }
 /* ធ្វើឱ្យ localStorage + ទំព័រមេ ដឹងពីថ្នាក់កំពុងប្រើថ្មី (assigned_classes) */
