@@ -44,6 +44,16 @@ th{background:var(--in);color:var(--muted)}.sc{overflow:auto;max-height:60vh}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:50;padding:14px}
 .modal .box{background:var(--card);border-radius:16px;padding:18px;width:100%;max-width:360px}
 .hide{display:none!important}
+/* មើលជាមុនមុនបោះពុម្ព */
+#pv{position:fixed;inset:0;z-index:60000;background:rgba(10,18,32,.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:14px}
+.pvbox{background:var(--card);border:1px solid var(--line);border-radius:16px;width:min(980px,100%);max-height:94vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.pvhd{display:flex;gap:8px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.pvhd .sub{color:var(--muted);font-size:13px}
+#pvBody{overflow:auto;padding:14px;background:var(--bg);display:flex;flex-direction:column;gap:6px;align-items:center}
+.pvlbl{color:var(--muted);font-size:12.5px;margin-top:8px}
+.pvsheet{background:#fff;width:100%;max-width:860px;aspect-ratio:297/210;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(2,1fr);box-shadow:0 6px 22px rgba(0,0,0,.25);padding:.6%}
+.pvcell{display:flex;align-items:center;justify-content:center;outline:1px dashed #c9c9c9;outline-offset:-1px;overflow:hidden;padding:1%}
+.pvcell img{max-width:100%;max-height:100%;object-fit:contain;display:block}
 /* បោះពុម្ពកាត */
 #printArea{display:none}
 @page{size:A4 landscape;margin:0}
@@ -116,7 +126,7 @@ function qrStampLogo(box){
           <button class="btn" onclick="renameSel()">🔤 ប្ដូរឈ្មោះគណនីទៅអង់គ្លេស (ដែលបានជ្រើស)</button>
           <button class="btn" onclick="resetSel()">🔑 កំណត់ពាក្យសម្ងាត់ថ្មី (ដែលបានជ្រើស)</button>
           <button class="btn" onclick="resetQrSel()">♻ QR + ពាក្យសម្ងាត់ថ្មី (ដែលបានជ្រើស)</button>
-          <button class="btn" onclick="printSlips()">🖨 បោះពុម្ពកាត</button>
+          <button class="btn" onclick="printSlips()">👁 មើលជាមុន / 🖨 បោះពុម្ពកាត</button>
           <button class="btn" onclick="dlAllQr()">⬇ QR ទាំងអស់ (PNG)</button>
           <button class="btn" onclick="csv()">⬇ CSV</button>
         </div>
@@ -154,6 +164,17 @@ function qrStampLogo(box){
   <input id="ap" type="password" class="in" style="width:100%" onkeydown="if(event.key==='Enter')okAuth()">
   <div id="ae" style="color:var(--bad);font-size:13px;margin-top:6px"></div>
   <div class="row" style="margin-top:10px;justify-content:flex-end"><button class="btn" onclick="cancelAuth()">បោះបង់</button><button class="btn pri" onclick="okAuth()">បញ្ជាក់</button></div>
+</div></div>
+
+<!-- 👁 មើលជាមុនមុនបោះពុម្ពកាត -->
+<div id="pv" class="hide"><div class="pvbox">
+  <div class="pvhd">
+    <b>👁 មើលជាមុនមុនបោះពុម្ព</b><span class="sub" id="pvInfo"></span>
+    <span style="flex:1"></span>
+    <button class="btn" onclick="closePv()">✕ បិទ</button>
+    <button class="btn pri" onclick="pvPrint()">🖨 បោះពុម្ព</button>
+  </div>
+  <div id="pvBody"></div>
 </div></div>
 
 <div id="printArea"></div>
@@ -254,10 +275,16 @@ function tab(n){cur=n;[1,2].forEach(i=>{$('t'+i).classList.toggle('on',i===n);$(
 function onCls(){loadPub();if(cur===1)loadList();else loadDocs()}
 
 /* ── គណនី ── */
+/* តម្រៀបឈ្មោះសិស្សតាមលំដាប់អក្ខរក្រមខ្មែរ (ក → អ) */
+function sortList(){
+  let col;try{col=new Intl.Collator('km',{numeric:true,sensitivity:'base'})}catch(e){col=new Intl.Collator(undefined,{numeric:true})}
+  LIST.sort((a,b)=>col.compare(String(a.student_name||'').trim(),String(b.student_name||'').trim()));
+}
 async function loadList(){
   const c=$('cls').value;if(!c)return;
   $('tbl').innerHTML='<tr><td>⏳ កំពុងទាញយក...</td></tr>';
   try{LIST=await staff('staff_list_student_accounts',{p_class:c})}catch(e){$('tbl').innerHTML=`<tr><td style="color:var(--bad)">${esc(e.message)}</td></tr>`;return}
+  sortList();
   const n=LIST.filter(x=>x.has_account).length;$('info').textContent=`សិស្ស ${LIST.length} នាក់ · មានគណនី ${n}`;
   drawList();
 }
@@ -285,7 +312,7 @@ function romanKhmer(str){
   const t=[...String(str||'').normalize('NFC')];let out='';
   for(let i=0;i<t.length;i++){
     const c=t[i];
-    if(c===' '||c==='​'){out+=' ';continue}
+    if(c===' '||c==='\u200b'){out+=' ';continue}
     if(KIND[c]){out+=KIND[c];continue}
     if(!isC(c)){if(/[A-Za-z0-9]/.test(c))out+=c;continue}
     // សិលារ៉ូម៉ាង: ព្យញ្ជនៈដើម + coeng
@@ -449,22 +476,44 @@ function csv(){
   const rows=LIST.filter(s=>s.has_account);if(!rows.length){uiAlert('មិនទាន់មានគណនី');return}
   const q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
   const out=[['ឈ្មោះ','ថ្នាក់','ឈ្មោះគណនី','ពាក្យសម្ងាត់ដើម','តំណ QR'],...rows.map(s=>[s.student_name,$('cls').value,s.username,GEN[s.pk]||'',qrUrl(s.qr_token)])].map(r=>r.map(q).join(',')).join('\r\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+out],{type:'text/csv;charset=utf-8'}));a.download=`student_accounts_${$('cls').value}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+out],{type:'text/csv;charset=utf-8'}));a.download=`student_accounts_${$('cls').value}.csv`;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);
 }
 function qrUrl(t){return t?new URL('student_portal.html?qr='+t,location.href).href:''}
+
+/* ── 👁 មើលជាមុន រួចបោះពុម្ពកាត ── */
 async function printSlips(){
   const rows=LIST.filter(s=>s.has_account&&s.is_active);if(!rows.length){uiAlert('មិនទាន់មានគណនី');return}
-  const pa=$('printArea');pa.innerHTML='';
+  $('info').textContent='⏳ កំពុងបង្កើតកាត '+rows.length+' ...';
   let imgs=[];
-  for(const s of rows){const u=await qrCard(s);if(!u){uiAlert('❌ មិនអាចបង្កើតរូប QR (ត្រូវការអ៊ីនធឺណិតដើម្បីផ្ទុក library)');return}imgs.push(u)}
+  for(const s of rows){const u=await qrCard(s);if(!u){uiAlert('❌ មិនអាចបង្កើតរូប QR (ត្រូវការអ៊ីនធឺណិតដើម្បីផ្ទុក library)');loadInfoTxt();return}imgs.push(u)}
+  loadInfoTxt();
+  /* ផ្ទាំងបោះពុម្ពពិត (លាក់ លើអេក្រង់) */
+  const pa=$('printArea');pa.innerHTML='';
   for(let i=0;i<imgs.length;i+=8){
     const sh=document.createElement('div');sh.className='sheet';
     imgs.slice(i,i+8).forEach(u=>{const d=document.createElement('div');d.className='cardcell';d.innerHTML=`<img src="${u}" alt="">`;sh.appendChild(d)});
     pa.appendChild(sh);
   }
-  await Promise.all([...pa.querySelectorAll('img')].map(im=>im.decode?im.decode().catch(()=>{}):0));
-  setTimeout(()=>window.print(),300);
+  /* ផ្ទាំងមើលជាមុន */
+  const pv=$('pvBody');pv.innerHTML='';const pages=Math.ceil(imgs.length/8);
+  for(let i=0;i<imgs.length;i+=8){
+    const lb=document.createElement('div');lb.className='pvlbl';lb.textContent=`សន្លឹកទី ${i/8+1} / ${pages}`;pv.appendChild(lb);
+    const sh=document.createElement('div');sh.className='pvsheet';
+    imgs.slice(i,i+8).forEach((u,k)=>{const d=document.createElement('div');d.className='pvcell';d.innerHTML=`<img src="${u}" alt="${esc(rows[i+k].student_name)}" title="${esc(rows[i+k].student_name)}">`;sh.appendChild(d)});
+    pv.appendChild(sh);
+  }
+  $('pvInfo').textContent=`កាត ${imgs.length} · ${pages} សន្លឹក (A4 ផ្ដេក · ៨ កាត/សន្លឹក)`;
+  $('pv').classList.remove('hide');pv.scrollTop=0;
 }
+function loadInfoTxt(){const n=LIST.filter(x=>x.has_account).length;$('info').textContent=`សិស្ស ${LIST.length} នាក់ · មានគណនី ${n}`}
+function closePv(){$('pv').classList.add('hide')}
+async function pvPrint(){
+  const pa=$('printArea');
+  await Promise.all([...pa.querySelectorAll('img')].map(im=>im.decode?im.decode().catch(()=>{}):0));
+  window.print();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('pv').classList.contains('hide'))closePv()});
+$('pv').addEventListener('click',e=>{if(e.target===$('pv'))closePv()});
 
 /* ── ឯកសារ ── */
 async function loadDocs(){
