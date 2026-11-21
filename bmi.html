@@ -1021,7 +1021,12 @@ function dlExcel(){
   document.getElementById('sdT').value=SD.t;buildPm();
 })();
 
-init();
+/* ពីរបាយការណ៍ (index → openInTab('bmi','rpt')) → បើកផ្ទាំងតារាងបោះពុម្ពតែម្តង */
+(function(){
+  var rpt=false;try{rpt=new URLSearchParams(location.search).get('view')==='rpt'}catch(e){}
+  var done=function(){if(rpt){try{parent.postMessage({type:'VIEW_READY'},'*')}catch(e){}}};
+  init().then(function(){if(rpt&&students.length){showPaper(true)}}).catch(function(){}).then(done);
+})();
 </script>
 <!-- 🔤 AUTO-SELECT : ប្តូរ <select> ធម្មតា ទៅជាបញ្ជីជ្រើសរើស font Battambang (បញ្ជីរបស់ browser មិនប្រើ font ទំព័រ) -->
 <style id="asStyle">
