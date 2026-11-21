@@ -339,6 +339,7 @@ async function stRows(){
       display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 12px;
       border-radius: 10px; cursor: pointer; font-size: 14.5px; color: #1e293b; border-bottom: 1px solid #f1f5f9;
     }
+    .font-dd-popup { max-height: min(70vh, 460px); overflow-y: auto; }
     .font-dd-item:last-child { border-bottom: none; }
     .font-dd-item:hover { background: #f8fafc; color: #0284c7; }
     .font-dd-item.active { background: #e0f2fe; color: #0284c7; }
@@ -2349,10 +2350,36 @@ exports.default = {
     const DOC_FONTS = [
       { id: 'default',    label: 'ពុម្ពអក្សរដើម (បច្ចុប្បន្ន)', family: "'Noto Serif Khmer','Kantumruy Pro','Noto Sans Khmer',sans-serif" },
       { id: 'cn',         label: 'Khmer CN Battambang',          family: "'Khmer CN Battambang','Battambang',sans-serif" },
-      { id: 'battambang', label: 'Battambang',                   family: "'Battambang',sans-serif" },
-      { id: 'fasthand',   label: 'Khmer OS Fasthand',            family: "'Khmer OS Fasthand','Fasthand',cursive" },
-      { id: 'koulen',     label: 'Kh Koulen',                    family: "'Kh Koulen','Koulen',sans-serif" }
+      { id: 'battambang', label: 'Battambang',                   family: "'Battambang',sans-serif", gf: 'Battambang' },
+      { id: 'fasthand',   label: 'Khmer OS Fasthand',            family: "'Khmer OS Fasthand','Fasthand',cursive", gf: 'Fasthand' },
+      { id: 'koulen',     label: 'Kh Koulen',                    family: "'Kh Koulen','Koulen',sans-serif", gf: 'Koulen' },
+      { id: 'moul',       label: 'ម៉ូល (Moul)',                  family: "'Khmer OS Muol Light','Moul',cursive", gf: 'Moul' },
+      { id: 'moulpali',   label: 'ម៉ូលពាលី (Moulpali)',           family: "'Moulpali',cursive", gf: 'Moulpali' },
+      { id: 'bayon',      label: 'បាយ័ន (Bayon)',                family: "'Bayon',cursive", gf: 'Bayon' },
+      { id: 'angkor',     label: 'អង្គរ (Angkor)',               family: "'Angkor',cursive", gf: 'Angkor' },
+      { id: 'dangrek',    label: 'ដង្រែក (Dangrek)',             family: "'Dangrek',cursive", gf: 'Dangrek' },
+      { id: 'chenla',     label: 'ចេនឡា (Chenla)',               family: "'Chenla',cursive", gf: 'Chenla' },
+      { id: 'bokor',      label: 'បូកោ (Bokor)',                 family: "'Bokor',cursive", gf: 'Bokor' },
+      { id: 'metal',      label: 'មេតាល់ (Metal)',               family: "'Metal',cursive", gf: 'Metal' },
+      { id: 'taprom',     label: 'តាព្រហ្ម (Taprom)',            family: "'Taprom',cursive", gf: 'Taprom' },
+      { id: 'hanuman',    label: 'ហាណូមាន (Hanuman)',            family: "'Hanuman',serif", gf: 'Hanuman' },
+      { id: 'siemreap',   label: 'សៀមរាប (Siemreap)',            family: "'Siemreap',sans-serif", gf: 'Siemreap' },
+      { id: 'content',    label: 'Content',                      family: "'Content',cursive", gf: 'Content' },
+      { id: 'notoserif',  label: 'Noto Serif Khmer',             family: "'Noto Serif Khmer',serif", gf: 'Noto+Serif+Khmer' },
+      { id: 'notosans',   label: 'Noto Sans Khmer',              family: "'Noto Sans Khmer',sans-serif", gf: 'Noto+Sans+Khmer' },
+      { id: 'kantumruy',  label: 'Kantumruy Pro',                family: "'Kantumruy Pro',sans-serif", gf: 'Kantumruy+Pro' },
+      { id: 'freehand',   label: 'Freehand',                     family: "'Freehand',cursive", gf: 'Freehand' }
     ];
+    function loadDocFont(f) {
+      if (!f || !f.gf) return Promise.resolve();
+      const id = 'gfd_' + f.gf;
+      if (!document.getElementById(id)) {
+        const l = document.createElement('link'); l.id = id; l.rel = 'stylesheet';
+        l.href = 'https://fonts.googleapis.com/css2?family=' + f.gf + '&display=swap';
+        document.head.appendChild(l);
+      }
+      try { return document.fonts.load('16px ' + f.family, 'ក').catch(() => {}); } catch (e) { return Promise.resolve(); }
+    }
     const DOC_FONT_KEY = 'rankDocFont_v1';
 
     function getSavedFontId() {
@@ -2362,6 +2389,7 @@ exports.default = {
     function applyDocFont(id) {
       const f = DOC_FONTS.find(x => x.id === id) || DOC_FONTS[0];
       const page = document.getElementById('printPage');
+      loadDocFont(f);
       if (page) page.style.fontFamily = f.family;
       const lbl = document.getElementById('fontLabel');
       if (lbl) lbl.textContent = f.label;
@@ -2388,6 +2416,7 @@ exports.default = {
         const item = document.createElement('div');
         item.className = 'font-dd-item' + (f.id === cur ? ' active' : '');
         item.innerHTML = '<span>' + f.label + '</span><i class="fa-solid fa-check"></i>';
+        if (f.gf) { loadDocFont(f); item.firstChild.style.fontFamily = f.family; }
         item.onclick = (ev) => { ev.stopPropagation(); applyDocFont(f.id); closeFontPicker(); };
         list.appendChild(item);
       });
@@ -2404,7 +2433,7 @@ exports.default = {
       if (!e.target.closest('#fontPopup') && !e.target.closest('#fontBtn')) closeFontPicker();
     });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeFontPicker(); });
-    window.addEventListener('scroll', closeFontPicker, true);
+    window.addEventListener('scroll', (e) => { if (e.target && e.target.closest && e.target.closest('#fontPopup')) return; closeFontPicker(); }, true);
 
     window.addEventListener('DOMContentLoaded', async () => {
       if (!checkAuthentication()) return;
