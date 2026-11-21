@@ -205,28 +205,29 @@ async function stRows(){
     .school-info { position: absolute; left: 0; top: 25px; text-align: center; font-size: 12px; line-height: 1.6; }
     .nation-info { text-align: center; width: 100%; }
 
-    table.data-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 8px; table-layout: fixed; background: #ffffff !important; }
+    table.data-table { width: 100%; border-collapse: collapse; font-size: var(--fs-body,12px); margin-top: 8px; table-layout: fixed; background: #ffffff !important; }
     table.data-table th, table.data-table td {
       border: 1px solid #000 !important; padding: 6px 3px; text-align: center; vertical-align: middle;
       line-height: 1.35; overflow-wrap: break-word; background: #ffffff !important; color: #000000;
     }
     table.data-table th { background-color: #f1f5f9 !important; font-size: 11px; padding: 7px 2px; font-weight: 700; color: #000000 !important; }
-    table.data-table td.col-name { text-align: left; padding-left: 8px; font-weight: 600; font-size: 12.5px; white-space: nowrap; }
+    table.data-table th { font-size: var(--fs-head,11px) !important; }
+    table.data-table td.col-name { text-align: left; padding-left: 8px; font-weight: 600; font-size: var(--fs-name,12.5px); white-space: nowrap; }
 
     .rank-layout { display: none; width: 100%; }
     .rank-layout.active { display: block; }
     .rank-two-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; align-items: start; }
-    .rank-two-columns table.data-table { font-size: 10.5px; margin-top: 4px; table-layout: fixed; }
-    .rank-two-columns table.data-table th { font-size: 9.5px; padding: 5px 1px; }
+    .rank-two-columns table.data-table { font-size: var(--fs2-body,10.5px); margin-top: 4px; table-layout: fixed; }
+    .rank-two-columns table.data-table th { font-size: var(--fs2-head,9.5px) !important; padding: 5px 1px; }
     .rank-two-columns table.data-table td { padding: 4px 1px; }
-    .rank-two-columns table.data-table td.col-name { font-size: 10px; padding-left: 4px; white-space: normal; line-height: 1.25; }
+    .rank-two-columns table.data-table td.col-name { font-size: var(--fs2-name,10px); padding-left: 4px; white-space: normal; line-height: 1.25; }
 
     .blank-row td { border: none !important; background: transparent !important; color: transparent !important; }
 
     .summary-boxes { display: flex; gap: 12px; width: 100%; margin-top: 10px; border-top: 1px solid #000; padding-top: 8px; }
     .summary-box-left, .summary-box-right {
       flex: 1; border: 1.5px dashed #16a34a; border-radius: 6px; padding: 8px 12px;
-      font-size: 11.5px; font-weight: 500; line-height: 1.9; color: #000; white-space: nowrap; background: #ffffff !important;
+      font-size: var(--fs-sum,11.5px); font-weight: 500; line-height: 1.9; color: #000; white-space: nowrap; background: #ffffff !important;
     }
     .summary-box-left span, .summary-box-right span { font-weight: 700; color: #16a34a; }
     .grade-percent { font-weight: 700; }
@@ -335,6 +336,25 @@ async function stRows(){
       border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35); padding: 6px;
     }
     .font-dd-popup.show { display: block; }
+    .ts-btn { display:inline-flex; align-items:center; gap:7px; height:32px; padding:4px 12px; font-family:inherit; font-size:13px; font-weight:700; color:var(--text-main); background:var(--input-bg); border:1.5px solid var(--input-border); border-radius:8px; cursor:pointer; }
+    .ts-btn:hover, .ts-btn.open { border-color: var(--input-focus); box-shadow: 0 0 0 3px rgba(2,132,199,.15); }
+    #tsPopup { display:none; position:fixed; z-index:99999; width:330px; max-width:calc(100vw - 16px); background:#fff; color:#0f172a; border:1px solid #e2e8f0; border-radius:16px; box-shadow:0 14px 40px rgba(0,0,0,.35); padding:14px; max-height:calc(100vh - 24px); overflow-y:auto; }
+    #tsPopup.show { display:block; }
+    #tsPopup * { font-family:'Khmer OS Battambang','Battambang',sans-serif; }
+    .ts-h { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; font-weight:700; font-size:16px; }
+    .ts-reset { border:0; background:none; color:#64748b; cursor:pointer; font-size:13px; font-weight:600; }
+    .ts-sec { font-size:12.5px; color:#64748b; font-weight:700; margin:10px 0 6px; }
+    .ts-pre { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; }
+    .ts-pre button { border:1.5px solid #e2e8f0; background:#f1f5f9; border-radius:10px; padding:7px 2px; cursor:pointer; font-size:12.5px; font-weight:700; color:#0f172a; line-height:1.3; }
+    .ts-pre button small { display:block; font-weight:500; color:#64748b; font-size:11px; }
+    .ts-pre button.on { background:#0891b2; border-color:#22d3ee; color:#fff; } .ts-pre button.on small { color:#e0f2fe; }
+    .ts-row { display:flex; align-items:center; gap:6px; margin:6px 0; }
+    .ts-row > label { flex:1; font-size:13.5px; font-weight:600; }
+    .ts-row .st { width:34px; height:34px; border:0; border-radius:10px; background:#f1f5f9; cursor:pointer; font-size:18px; font-weight:700; color:#0f172a; }
+    .ts-row .st:active { background:#e0f2fe; }
+    .ts-row input { width:62px; height:34px; text-align:center; border:1.5px solid #e2e8f0; border-radius:10px; font-weight:700; font-size:14px; background:#f8fafc; color:#0f172a; }
+    .ts-row .u { width:22px; font-size:12px; color:#64748b; }
+    .ts-note { font-size:12px; color:#64748b; margin-top:8px; line-height:1.6; }
     .font-dd-item {
       display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 12px;
       border-radius: 10px; cursor: pointer; font-size: 14.5px; color: #1e293b; border-bottom: 1px solid #f1f5f9;
@@ -495,6 +515,8 @@ try{const pr=window.parent&&window.parent!==window&&window.parent.document.docum
           </button>
         </div>
 
+        <button type="button" class="ts-btn" id="tsBtn" onclick="toggleTblSet(event)" title="កំណត់ទំហំអក្សរក្នុងតារាង"><i class="fa-solid fa-text-height" style="color:#0284c7;"></i> កំណត់តារាង</button>
+
         <div class="layout-switcher">
           <button id="layout1Btn" class="layout-btn active" onclick="setRankLayout(1)">ទម្រង់ទី ១</button>
           <button id="layout2Btn" class="layout-btn" onclick="setRankLayout(2)">ទម្រង់ទី ២</button>
@@ -578,6 +600,26 @@ try{const pr=window.parent&&window.parent!==window&&window.parent.document.docum
   </div>
 
   <!-- 🔤 POPUP ជ្រើសរើសពុម្ពអក្សរ -->
+  <div class="no-print" id="tsPopup" onclick="event.stopPropagation()">
+    <div class="ts-h"><span>កំណត់តារាង</span><button type="button" class="ts-reset" onclick="tsReset()"><i class="fa-solid fa-rotate-left"></i> ដើមវិញ</button></div>
+    <div class="ts-sec"><i class="fa-solid fa-text-height"></i> ទំហំអក្សរទាំងមូល</div>
+    <div class="ts-pre" id="tsPre">
+      <button type="button" data-p="90" onclick="tsPreset(90)">តូច<small>90%</small></button>
+      <button type="button" data-p="100" onclick="tsPreset(100)">ដើម<small>100%</small></button>
+      <button type="button" data-p="115" onclick="tsPreset(115)">ធំ<small>115%</small></button>
+      <button type="button" data-p="130" onclick="tsPreset(130)">ធំបំផុត<small>130%</small></button>
+    </div>
+    <div class="ts-row"><label>ទាំងមូល</label><button type="button" class="st" onclick="tsStep('all',-5)">−</button><input id="tsIn_all" inputmode="decimal" onchange="tsSet('all',this.value)"><span class="u">%</span><button type="button" class="st" onclick="tsStep('all',5)">+</button></div>
+    <div class="ts-sec"><i class="fa-solid fa-table"></i> ទម្រង់ទី ១ (pt)</div>
+    <div class="ts-row"><label>ឈ្មោះសិស្ស</label><button type="button" class="st" onclick="tsStep('name',-.5)">−</button><input id="tsIn_name" inputmode="decimal" onchange="tsSet('name',this.value)"><span class="u">pt</span><button type="button" class="st" onclick="tsStep('name',.5)">+</button></div>
+    <div class="ts-row"><label>ទិន្នន័យក្នុងតារាង</label><button type="button" class="st" onclick="tsStep('body',-.5)">−</button><input id="tsIn_body" inputmode="decimal" onchange="tsSet('body',this.value)"><span class="u">pt</span><button type="button" class="st" onclick="tsStep('body',.5)">+</button></div>
+    <div class="ts-row"><label>ក្បាលតារាង</label><button type="button" class="st" onclick="tsStep('head',-.5)">−</button><input id="tsIn_head" inputmode="decimal" onchange="tsSet('head',this.value)"><span class="u">pt</span><button type="button" class="st" onclick="tsStep('head',.5)">+</button></div>
+    <div class="ts-row"><label>ប្រអប់សរុប (បៃតង)</label><button type="button" class="st" onclick="tsStep('sum',-.5)">−</button><input id="tsIn_sum" inputmode="decimal" onchange="tsSet('sum',this.value)"><span class="u">pt</span><button type="button" class="st" onclick="tsStep('sum',.5)">+</button></div>
+    <div class="ts-sec"><i class="fa-solid fa-table-columns"></i> ទម្រង់ទី ២ (pt)</div>
+    <div class="ts-row"><label>អក្សរតារាង ២ ជួរ</label><button type="button" class="st" onclick="tsStep('two',-.5)">−</button><input id="tsIn_two" inputmode="decimal" onchange="tsSet('two',this.value)"><span class="u">pt</span><button type="button" class="st" onclick="tsStep('two',.5)">+</button></div>
+    <div class="ts-note">ទំហំត្រូវបានចងចាំ។ ប្រសិនបើអក្សរធំពេក តារាងអាចវែងលើសមួយទំព័រ។ សូមមើលជាមុនពេលបោះពុម្ព។</div>
+  </div>
+
   <div class="font-dd-popup no-print" id="fontPopup">
     <div id="fontList"></div>
   </div>
@@ -2396,6 +2438,49 @@ exports.default = {
       try { localStorage.setItem(DOC_FONT_KEY, f.id); } catch(e) {}
     }
 
+    /* ── 🔠 កំណត់ទំហំអក្សរតារាង ── */
+    const TS_KEY = 'rankTblFs_v1';
+    const TS_DEF = { all: 100, name: 9.4, body: 9, head: 8.3, sum: 8.6, two: 7.9 };
+    let TS = Object.assign({}, TS_DEF);
+    try { const o = JSON.parse(localStorage.getItem(TS_KEY) || 'null'); if (o) Object.keys(TS_DEF).forEach(k => { if (isFinite(o[k]) && o[k] > 0) TS[k] = +o[k]; }); } catch (e) {}
+    function tsApply() {
+      const el = document.getElementById('printPage'); if (!el) return;
+      const px = v => (v * TS.all / 100 * 96 / 72).toFixed(2) + 'px';
+      el.style.setProperty('--fs-name', px(TS.name));
+      el.style.setProperty('--fs-body', px(TS.body));
+      el.style.setProperty('--fs-head', px(TS.head));
+      el.style.setProperty('--fs-sum', px(TS.sum));
+      el.style.setProperty('--fs2-body', px(TS.two));
+      el.style.setProperty('--fs2-name', px(TS.two * .95));
+      el.style.setProperty('--fs2-head', px(TS.two * .9));
+      Object.keys(TS_DEF).forEach(k => { const i = document.getElementById('tsIn_' + k); if (i && document.activeElement !== i) i.value = (k === 'all' ? Math.round(TS[k]) : (+TS[k].toFixed(1))); });
+      document.querySelectorAll('#tsPre button').forEach(b => b.classList.toggle('on', +b.dataset.p === Math.round(TS.all)));
+      try { localStorage.setItem(TS_KEY, JSON.stringify(TS)); } catch (e) {}
+    }
+    function tsSet(k, v) {
+      v = parseFloat(v); if (!isFinite(v)) { tsApply(); return; }
+      const lim = k === 'all' ? [50, 200] : [4, 20];
+      TS[k] = Math.max(lim[0], Math.min(lim[1], v)); tsApply();
+    }
+    function tsStep(k, d) { tsSet(k, Math.round((TS[k] + d) * 10) / 10); }
+    function tsPreset(p) { TS.all = p; tsApply(); }
+    function tsReset() { TS = Object.assign({}, TS_DEF); tsApply(); }
+    function closeTblSet() { document.getElementById('tsPopup')?.classList.remove('show'); document.getElementById('tsBtn')?.classList.remove('open'); }
+    function toggleTblSet(e) {
+      if (e) e.stopPropagation();
+      const pop = document.getElementById('tsPopup'), btn = document.getElementById('tsBtn');
+      if (pop.classList.contains('show')) { closeTblSet(); return; }
+      closeFontPicker(); try { closeSelPicker(); closeCalPopup(); } catch (x) {}
+      tsApply();
+      const r = btn.getBoundingClientRect(), w = Math.min(330, window.innerWidth - 16);
+      pop.style.left = Math.max(8, Math.min(r.left, window.innerWidth - w - 8)) + 'px';
+      pop.style.top = Math.max(8, r.bottom + 6) + 'px';
+      pop.classList.add('show'); btn.classList.add('open');
+    }
+    document.addEventListener('click', (e) => { if (!e.target.closest('#tsPopup') && !e.target.closest('#tsBtn')) closeTblSet(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeTblSet(); });
+    window.addEventListener('scroll', (e) => { if (e.target && e.target.closest && e.target.closest('#tsPopup')) return; closeTblSet(); }, true);
+
     function closeFontPicker() {
       document.getElementById('fontPopup')?.classList.remove('show');
       document.getElementById('fontBtn')?.classList.remove('open');
@@ -2439,6 +2524,7 @@ exports.default = {
       if (!checkAuthentication()) return;
 
       applyDocFont(getSavedFontId());
+      tsApply();
       CUSTOM_SELECTS.forEach(buildCustomSelect);
 
       const now = new Date();
