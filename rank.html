@@ -710,6 +710,7 @@ try{const pr=window.parent&&window.parent!==window&&window.parent.document.docum
     <!-- Summary Box -->
     <div class="summary-boxes">
       <div class="summary-box-left">
+        • សិស្សសរុប ៖ <span id="stTotal">0</span> នាក់ (ស្រី <span id="stTotalFemale">0</span>)<br>
         • សិស្សជាប់មធ្យមភាគ ៖ <span id="stPass">0</span> នាក់ (ស្រី <span id="stPassFemale">0</span>) <span id="pPass" class="grade-percent">0.00%</span><br>
         • សិស្សធ្លាក់មធ្យមភាគ ៖ <span id="stFail">0</span> នាក់ (ស្រី <span id="stFailFemale">0</span>) <span id="pFail" class="grade-percent">0.00%</span>
       </div>
@@ -2841,6 +2842,11 @@ exports.default = {
       const counts = { A:0, B:0, C:0, D:0, E:0, F:0 };
       const females = { A:0, B:0, C:0, D:0, E:0, F:0 };
 
+      let totalAll = data.length, totalFemaleAll = 0;
+      data.forEach(s => { if (String(s.sex || '').trim() === 'ស្រី' || String(s.sex || '').toUpperCase() === 'F') totalFemaleAll++; });
+      document.getElementById('stTotal').textContent = totalAll;
+      document.getElementById('stTotalFemale').textContent = totalFemaleAll;
+
       data.forEach(s => {
         const avg = Number(s.avg);
         if (avg <= 0) return;
@@ -2907,7 +2913,7 @@ exports.default = {
     }
 
     function resetSummary() {
-      ['stPass','stPassFemale','stFail','stFailFemale'].forEach(id => document.getElementById(id).textContent = '0');
+      ['stTotal','stTotalFemale','stPass','stPassFemale','stFail','stFailFemale'].forEach(id => document.getElementById(id).textContent = '0');
       ['pPass','pFail'].forEach(id => document.getElementById(id).textContent = '0.00%');
       ['A','B','C','D','E','F'].forEach(g => {
         document.getElementById('c' + g).textContent = '0';
