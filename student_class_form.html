@@ -70,7 +70,7 @@ table.kv td{padding:6px 10px;text-align:center}
 @media print{.warn{display:none}}
 .foot{margin-top:18px;display:flex;justify-content:space-between;align-items:flex-start}
 .sign-l{min-width:200px;margin-left:30px}
-.kit-stamp{display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}.kit-sig{max-height:100%;max-width:60%;object-fit:contain}
+.kit-stamp{zoom:var(--kz,1);display:flex;justify-content:center;margin-top:-10mm;position:relative;z-index:1;pointer-events:none}.kit-circle{position:relative;width:34mm;height:34mm;flex:none}.kit-circle img{position:absolute;max-width:none;max-height:none;height:auto}.kit-sig{max-height:100%;max-width:60%;object-fit:contain}
 .sign .kit-stamp{margin-top:-6mm}
 .sign{text-align:center;font-size:13px;line-height:2.1;min-width:0;white-space:nowrap}
 .sign .ed{min-width:120px}
@@ -102,7 +102,7 @@ table.kv td{padding:6px 10px;text-align:center}
   @page{size:297mm 210mm;margin:0}
   body{background:#fff;padding:0}.tb,.banner,.tip,.ov,.toast{display:none!important}
   html,body{height:auto;overflow:visible}
-  .stage{padding:0;display:block;overflow:visible}.page{box-shadow:none;border-radius:0;margin:0 auto;min-height:0!important;height:210mm;overflow:hidden;padding:8mm 8mm 6mm;page-break-after:avoid;break-after:avoid}
+  .stage{padding:0;display:block;overflow:visible}.pgs{display:block!important;gap:0!important}.page{box-shadow:none;border-radius:0;margin:0 auto;min-height:0!important;height:210mm;overflow:hidden;padding:8mm 8mm 6mm;page-break-after:avoid;break-after:avoid}
   .ed{border-bottom:0}.ed:empty:before{content:''}
   td.nm.lk:after{display:none}th.clk{text-decoration:none}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -436,7 +436,7 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
   <span class="pill"><label>ថ្នាក់</label><select class="fc" id="selClass" onchange="reload()"></select></span>
   <span class="pill"><label>អាយុគិតត្រឹម</label><input type="hidden" id="asOf"><button type="button" class="fc" id="asOfBtn" onclick="openCal('asof')" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px">📅 <span></span></button></span>
   <span class="sp"></span>
-    <button class="btn" id="btnSheet2" onclick="toggleSheet2()" title="រុញ ២.(ខ២) និងហត្ថលេខា ទៅសន្លឹកទី ២">📄 ២.(ខ២) សន្លឹកបន្ទាប់</button>
+    <button class="btn" id="btnSheet2" onclick="toggleSheet2()" style="display:none" title="រុញ ២.(ខ២) និងហត្ថលេខា ទៅសន្លឹកទី ២">📄 ២.(ខ២) សន្លឹកបន្ទាប់</button>
     <button class="btn" onclick="doPrint()">🖨️ បោះពុម្ព</button>
   <button class="btn ok" onclick="doPdf()">⬇ PDF</button>
   <button class="btn" id="btnWord" onclick="doWord()" style="background:#dbeafe;color:#1d4ed8">⬇ Word</button>
@@ -1101,7 +1101,7 @@ function villOf(s){
   return v.replace(/^ភូមិ\s*/,'').trim();
 }
 /* ===== រៀបសន្លឹក: ២.(ខ២)+ហត្ថលេខា នៅសន្លឹកដដែល ឬសន្លឹកបន្ទាប់ ===== */
-function sheet2On(){return INFO.sheet2!==false}
+function sheet2On(){return true}   /* បោះពុម្ពជា ២ សន្លឹកជានិច្ច (ដកជម្រើស ១ សន្លឹក) */
 function layoutSheets(){
   const on=sheet2On(),rest=document.getElementById('blkRest'),p2=document.getElementById('page2');
   (on?document.getElementById('slot2'):document.getElementById('slot1')).appendChild(rest);
@@ -1431,21 +1431,22 @@ async function reload(keepAsOf){
 function visPages(){return [...document.querySelectorAll('.page')].filter(p=>!p.classList.contains('hide'))}
 function fitOnePage(){
   document.body.classList.add('pf');
-  const target=210/25.4*96-6;let zs=[];
+  const target=210/25.4*96-14;let zs=[];   /* chừa ១៤px ការពារលើសកម្ពស់ → កុំឱ្យចេញសន្លឹកទី ៣ */
   visPages().forEach(el=>{
     el.style.minHeight='0';el.style.height='auto';
-    const hAt=z=>{el.style.zoom=z;el.style.width=(297/z)+'mm';return el.scrollHeight*z};
+    /* ត្រាត្រូវមានទំហំពិត 34mm ជានិច្ច ទោះបង្រួម zoom សន្លឹក → ពង្រីកត្រាវិញ ១/z */
+    const hAt=z=>{el.style.zoom=z;el.style.width=(297/z)+'mm';el.style.setProperty('--kz',String(1/z));return el.scrollHeight*z};
     let z=1;
     if(hAt(1)>target){ /* រក zoom ធំបំផុតដែលនៅចូល ១ សន្លឹក (ស្វែងរកពាក់កណ្ដាល) */
-      let lo=.45,hi=1;
-      for(let i=0;i<14;i++){const m=(lo+hi)/2;if(hAt(m)<=target)lo=m;else hi=m}
+      let lo=.3,hi=1;
+      for(let i=0;i<16;i++){const m=(lo+hi)/2;if(hAt(m)<=target)lo=m;else hi=m}
       z=lo;
     }
     hAt(z);zs.push(z);
   });
   return Math.min(...zs,1);
 }
-function unfit(){document.body.classList.remove('pf');document.querySelectorAll('.page').forEach(el=>{el.style.zoom='';el.style.width='';el.style.minHeight='';el.style.height=''})}
+function unfit(){document.body.classList.remove('pf');document.querySelectorAll('.page').forEach(el=>{el.style.zoom='';el.style.width='';el.style.minHeight='';el.style.height='';el.style.removeProperty('--kz')})}
 
 /* ===== ព័ត៌មានសាលា/ហត្ថលេខា/ត្រា ពីគណនី (ប្រវត្តិរូបរបស់ខ្ញុំ) ===== */
 let PROF=null,PROFILE_SIG='',STAMP_META=null;
