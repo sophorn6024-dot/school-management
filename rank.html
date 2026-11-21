@@ -220,8 +220,13 @@ async function stRows(){
     .rank-two-columns table.data-table { font-size: var(--fs2-body,10.5px); margin-top: 4px; table-layout: fixed; }
     .rank-two-columns table.data-table th { font-size: var(--fs2-head,9.5px) !important; padding: 5px 1px; }
     .rank-two-columns table.data-table td { padding: 4px 1px; }
+    .rank-two-columns table.data-table td:nth-child(-n+2), .rank-two-columns table.data-table td:nth-child(4) { white-space: nowrap; }
     .rank-two-columns table.data-table td.col-name { font-size: var(--fs2-name,10px); padding-left: 4px; white-space: normal; line-height: 1.25; }
 
+    /* ចំនួន/លេខ មិនត្រូវចុះបន្ទាត់ (ការបោះពុម្ពតូចជាងអេក្រង់ ធ្វើឱ្យលេខពីរខ្ទង់បែកជាពីរជួរ) */
+    .rank-two-columns table.data-table td:not(.col-name), .rank-two-columns table.data-table th { white-space: nowrap; }
+    .rank-two-columns table.data-table td, .rank-two-columns table.data-table th { overflow: hidden; }
+    @media print { .footer-container { break-inside: avoid; page-break-inside: avoid; } }
     .blank-row td { border: none !important; background: transparent !important; color: transparent !important; }
 
     .summary-boxes { display: flex; gap: 12px; width: 100%; margin-top: 10px; border-top: 1px solid #000; padding-top: 8px; }
@@ -2786,15 +2791,15 @@ exports.default = {
 
     function getRankTableHeader() {
       return `<tr>
-        <th style="width:6%;">ល.រ</th>
-        <th style="width:8%;">អ.ល</th>
-        <th style="width:22%;">គោត្តនាម-នាម</th>
+        <th style="width:9%;">ល.រ</th>
+        <th style="width:10%;">អ.ល</th>
+        <th style="width:21%;">គោត្តនាម-នាម</th>
         <th style="width:8%;">ភេទ</th>
         <th style="width:9%;">សរុប</th>
-        <th style="width:9%;">ម.ភាគ</th>
-        <th style="width:9%;">ចំ.ថ្នាក់</th>
-        <th style="width:18%;">និទ្ទេស</th>
-        <th style="width:11%;">លទ្ធផល</th>
+        <th style="width:10%;">ម.ភាគ</th>
+        <th style="width:12%;">ចំ.ថ្នាក់</th>
+        <th style="width:11%;">និទ្ទេស</th>
+        <th style="width:10%;">លទ្ធផល</th>
       </tr>`;
     }
 
