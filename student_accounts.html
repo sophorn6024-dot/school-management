@@ -38,6 +38,12 @@ th{background:var(--in);color:var(--muted)}.sc{overflow:auto;max-height:60vh}
 .dlg .acts button:focus{outline:none}.dlg .acts button.pri:focus-visible{box-shadow:0 0 0 3px var(--acs)}
 .dlg .acts button.pri{background:var(--ac);border-color:var(--ac);color:#fff}[data-theme=dark] .dlg .acts button.pri{color:#0a1220}
 .dlg.err .acts button.pri{background:var(--bad);border-color:var(--bad);color:#fff}
+.clsbar{gap:10px 12px;padding:12px 14px}.clsbar>b{font-size:14px}
+.clsbar .as-wrap{min-width:150px;flex:0 1 190px}.clsbar .as-btn,.clsbar select{min-height:42px;padding:8px 14px;border-radius:12px;font-weight:700;font-size:14px;background:var(--in);border:1px solid var(--line);color:var(--text)}
+.clsbar .as-btn:hover{border-color:var(--ac)}
+.clsbar #clsTxt{background:var(--acs);color:var(--ac);border-radius:12px;padding:9px 16px}
+.clsbar #info{display:inline-flex;align-items:center;background:var(--acs);color:var(--ac);font-size:13px;font-weight:700;border-radius:20px;padding:6px 14px;white-space:nowrap}
+.clsbar #info:empty{display:none}
 .pubdd{position:relative}.pubdd-btn{width:100%;display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--in);color:var(--text);border-radius:12px;padding:9px 12px;cursor:pointer;font-size:13.5px;text-align:left}
 .pubdd-btn .cv{margin-left:auto;transition:transform .15s;color:var(--muted)}.pubdd.open .pubdd-btn .cv{transform:rotate(180deg)}
 .pubdd-btn .cnt{background:var(--oks);color:var(--ok);font-weight:700;border-radius:20px;padding:1px 9px;font-size:12px}
@@ -121,7 +127,7 @@ function qrStampLogo(box){
 
   <div id="main" class="hide">
     <div class="tabs"><button id="t1" class="on" onclick="tab(1)">👤 គណនីសិស្ស</button><button id="t2" onclick="tab(2)">📚 ឯកសារ</button></div>
-    <div class="card row"><b>ថ្នាក់៖</b><select id="cls" class="in" onchange="onCls()"></select><b id="clsTxt" class="hide"></b><span id="info" style="color:var(--muted)"></span></div>
+    <div class="card row clsbar"><b>ថ្នាក់៖</b><select id="cls" class="in" onchange="onCls()"></select><b id="clsTxt" class="hide"></b><span id="info"></span></div>
     <div class="card" id="pubCard"><div class="row" style="margin-bottom:8px"><b>📢 ផ្សាយលទ្ធផលដល់សិស្ស</b><span style="color:var(--muted);font-size:13px" id="pubHint"></span><span style="flex:1"></span><button class="btn" onclick="setAllPub(true)">ផ្សាយទាំងអស់</button><button class="btn" onclick="setAllPub(false)">បិទទាំងអស់</button></div><div class="pubdd" id="pubDD"><button type="button" class="pubdd-btn" onclick="togglePubDD(event)">🗓️ <span>ជ្រើសខែ/ឆមាស ដើម្បីផ្សាយ</span><span class="cnt" id="pubCnt"></span><span class="cv">▾</span></button><div class="pchips" id="pubChips"></div></div><div class="pubsum" id="pubSum"></div></div>
 
     <!-- គណនី -->
@@ -136,7 +142,6 @@ function qrStampLogo(box){
           <button class="btn" onclick="dlAllQr()">⬇ QR ទាំងអស់ (PNG)</button>
           <button class="btn" onclick="csv()">⬇ CSV</button>
         </div>
-        <div class="note">ឈ្មោះគណនី = ឈ្មោះសិស្សជាអក្សរអង់គ្លេស (បម្លែងស្វ័យប្រវត្តិ ប្រហាក់ប្រហែល អាចកែបានដោយប៊ូតុង ✏️)។ ពាក្យសម្ងាត់ជាលេខចៃដន្យ បង្ហាញតែម្តង (ក្រោយបង្កើត/កំណត់ថ្មី) ហើយមិនអាចមើលវិញបានទេ។ សិស្សចូលប្រព័ន្ធតាម <b>QR</b> បានដោយមិនបាច់ចាំពាក្យសម្ងាត់ (ស្កេនពីកាតរូបថតកាតរបស់ខ្លួន ឬផ្ទុករូប QR ឡើង)។ QR អាចបោះពុម្ព/ទាញយកឡើងវិញបានជានិច្ច។ កូដ QR អនុញ្ញាតឱ្យចូលដោយមិនបាច់ពាក្យសម្ងាត់ ដូច្នេះសូមប្រគល់ជូនសិស្សផ្ទាល់ខ្លួនប៉ុណ្ណោះ។</div>
         <div class="sc"><table id="tbl"></table></div>
       </div>
     </div>
