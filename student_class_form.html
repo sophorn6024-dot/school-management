@@ -10,6 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
+:root{--ps-w:297mm;--ps-h:210mm;--ps-m:5mm;--fs:1}
 :root{--bg:#eef2f9;--tb:rgba(255,255,255,.96);--line:#e2e8f0;--text:#0f172a;--muted:#64748b;--card:#fff;--in:#fff;--inl:#cbd5e1;--ac:#4f46e5;--acs:#e0e7ff;--ok:#059669;--oks:#d1fae5;--bad:#e11d48;--bads:#ffe4e6;color-scheme:light}
 [data-theme=dark]{--bg:#0b1220;--tb:rgba(15,23,42,.95);--line:#1e293b;--text:#f1f5f9;--muted:#9aa3b2;--card:#111e33;--in:#162642;--inl:#2b4468;--ac:#a5b4fc;--acs:#27306b;--ok:#34d399;--oks:#12392f;--bad:#fb7185;--bads:#3b1520;color-scheme:dark}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -30,8 +31,8 @@ body{background:var(--bg);color:var(--text);font-family:'Battambang','Kantumruy 
 .banner{display:none;margin:10px 14px 0;padding:12px 14px;border-radius:14px;background:#fef3c7;color:#92400e;font-size:13px;line-height:1.7;border:1px solid #fcd34d}
 .banner button{margin-left:8px;background:#f59e0b;color:#fff;border:0;border-radius:9px;padding:4px 12px;font:700 12px 'Kantumruy Pro',sans-serif;cursor:pointer}
 .stage{padding:16px;display:flex;justify-content:center;overflow-x:auto}
-.page{width:297mm;min-height:210mm;background:#fff;color:#0f172a;padding:9mm 9mm 12mm;box-shadow:0 12px 44px rgba(15,23,42,.18);position:relative;flex-shrink:0;border-radius:4px}
-.logo{position:absolute;right:9mm;top:6mm;width:56px;height:56px;border:2.5px solid #3730a3;border-radius:50%;display:flex;align-items:center;justify-content:center;font:italic 700 20px Georgia,serif;color:#3730a3}
+.page{width:var(--ps-w);min-height:var(--ps-h);background:#fff;color:#0f172a;padding:var(--ps-m);box-shadow:0 12px 44px rgba(15,23,42,.18);position:relative;flex-shrink:0;border-radius:4px}
+.logo{position:absolute;right:var(--ps-m);top:var(--ps-m);width:56px;height:56px;border:2.5px solid #3730a3;border-radius:50%;display:flex;align-items:center;justify-content:center;font:italic 700 20px Georgia,serif;color:#3730a3}
 .ttl{font-family:'Moul',serif;text-align:center;font-size:21px;color:#1e3a8a;line-height:1.8;padding:0 60px}
 .sub{font-family:'Moul',serif;text-align:center;font-size:15px;color:#1e3a8a}
 .info{margin:14px 6px 12px;display:flex;flex-direction:column;gap:8px;font-size:14px;color:#475569}
@@ -102,7 +103,7 @@ table.kv td{padding:6px 10px;text-align:center}
   @page{size:297mm 210mm;margin:0}
   body{background:#fff;padding:0}.tb,.banner,.tip,.ov,.toast{display:none!important}
   html,body{height:auto;overflow:visible}
-  .stage{padding:0;display:block;overflow:visible}.pgs{display:block!important;gap:0!important}.page{box-shadow:none;border-radius:0;margin:0 auto;min-height:0!important;height:210mm;overflow:hidden;padding:8mm 8mm 6mm;page-break-after:avoid;break-after:avoid}
+  .stage{padding:0;display:block;overflow:visible}.pgs{display:block!important;gap:0!important}.page{box-shadow:none;border-radius:0;margin:0 auto;min-height:0!important;height:var(--ps-h);overflow:hidden;padding:var(--ps-m);page-break-after:avoid;break-after:avoid}
   .ed{border-bottom:0}.ed:empty:before{content:''}
   td.nm.lk:after{display:none}th.clk{text-decoration:none}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
@@ -364,7 +365,7 @@ table.kv td,table.kv .ed,table.kv .csb,table.kv .edu-b{font-size:14px}
 .pf .ed{border-bottom:0!important;background:none!important}
 .pf .ed:empty:before{content:''!important}
 .pf .tip,.pf .banner,.pf .warn,.pf .toast{display:none!important}
-.pf .page{padding:6mm 8mm 4mm!important}
+.pf .page{padding:var(--ps-m)!important}
 .pf .ttl{line-height:1.5;padding:0 60px}
 .pf .info{margin:4px 6px 6px!important;gap:3px!important}
 .pf .sec>h3{padding:4px 10px!important;line-height:1.45!important}
@@ -437,6 +438,7 @@ window.addEventListener('storage',e=>{if(e.key==='krou_theme_manual'&&e.newValue
   <span class="pill"><label>អាយុគិតត្រឹម</label><input type="hidden" id="asOf"><button type="button" class="fc" id="asOfBtn" onclick="openCal('asof')" style="cursor:pointer;display:inline-flex;align-items:center;gap:6px">📅 <span></span></button></span>
   <span class="sp"></span>
     <button class="btn" id="btnSheet2" onclick="toggleSheet2()" style="display:none" title="រុញ ២.(ខ២) និងហត្ថលេខា ទៅសន្លឹកទី ២">📄 ២.(ខ២) សន្លឹកបន្ទាប់</button>
+    <button class="btn" id="btnPS" type="button" onclick="PS.toggle(event)" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" y1="4" x2="14" y2="4"/><line x1="10" y1="4" x2="3" y2="4"/><line x1="21" y1="12" x2="12" y2="12"/><line x1="8" y1="12" x2="3" y2="12"/><line x1="21" y1="20" x2="16" y2="20"/><line x1="12" y1="20" x2="3" y2="20"/><line x1="14" y1="2" x2="14" y2="6"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="16" y1="18" x2="16" y2="22"/></svg>កំណត់ទំព័រ</button>
     <button class="btn" onclick="doPrint()">🖨️ បោះពុម្ព</button>
   <button class="btn ok" onclick="doPdf()">⬇ PDF</button>
   <button class="btn" id="btnWord" onclick="doWord()" style="background:#dbeafe;color:#1d4ed8">⬇ Word</button>
@@ -1431,11 +1433,16 @@ async function reload(keepAsOf){
 function visPages(){return [...document.querySelectorAll('.page')].filter(p=>!p.classList.contains('hide'))}
 function fitOnePage(){
   document.body.classList.add('pf');
-  const target=210/25.4*96-14;let zs=[];   /* chừa ១៤px ការពារលើសកម្ពស់ → កុំឱ្យចេញសន្លឹកទី ៣ */
+  const D=(window.PSDIM&&window.PSDIM())||{W:297,H:210,fit:true};   /* ទំហំក្រដាសពី «កំណត់ទំព័រ» */
+  if(!D.fit){   /* មិនបង្រួម: ទំហំអក្សរតាមការកំណត់ពិត · សន្លឹកអាចវែងជាង ១ ទំព័រ */
+    visPages().forEach(el=>{el.style.zoom='';el.style.width=D.W+'mm';el.style.minHeight='';el.style.height='auto';el.style.overflow='visible';el.style.setProperty('--kz','1')});
+    return 1;
+  }
+  const target=D.H/25.4*96-14;let zs=[];   /* chừa ១៤px ការពារលើសកម្ពស់ → កុំឱ្យចេញសន្លឹកទី ៣ */
   visPages().forEach(el=>{
     el.style.minHeight='0';el.style.height='auto';
     /* ត្រាត្រូវមានទំហំពិត 34mm ជានិច្ច ទោះបង្រួម zoom សន្លឹក → ពង្រីកត្រាវិញ ១/z */
-    const hAt=z=>{el.style.zoom=z;el.style.width=(297/z)+'mm';el.style.setProperty('--kz',String(1/z));return el.scrollHeight*z};
+    const hAt=z=>{el.style.zoom=z;el.style.width=(D.W/z)+'mm';el.style.setProperty('--kz',String(1/z));return el.scrollHeight*z};
     let z=1;
     if(hAt(1)>target){ /* រក zoom ធំបំផុតដែលនៅចូល ១ សន្លឹក (ស្វែងរកពាក់កណ្ដាល) */
       let lo=.3,hi=1;
@@ -1443,8 +1450,8 @@ function fitOnePage(){
       z=lo;
     }
     hAt(z);zs.push(z);
-    /* កម្ពស់សន្លឹកថេរ (≈209.4mm បន្ទាប់ពី zoom) → ខ្លឹមសារមិនអាចហៀរទៅបង្កើតសន្លឹកទទេបានទេ */
-    el.style.height=(208.5/z)+'mm';el.style.overflow='hidden';
+    /* កម្ពស់សន្លឹកថេរ (≈ H-1.5mm បន្ទាប់ពី zoom) → ខ្លឹមសារមិនអាចហៀរទៅបង្កើតសន្លឹកទទេបានទេ */
+    el.style.height=((D.H-1.5)/z)+'mm';el.style.overflow='hidden';
   });
   return Math.min(...zs,1);
 }
@@ -1576,13 +1583,26 @@ async function doPdf(){
   try{
     if(document.fonts&&document.fonts.ready)await document.fonts.ready;
     fitOnePage();                       /* ទំហំដូចពេលព្រីន (អក្សរធំល្មម · ១ សន្លឹក) */
-    const {jsPDF}=window.jspdf;const pdf=new jsPDF('l','mm','a4');
+    const D=PSDIM();const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:D.W>D.H?'l':'p',unit:'mm',format:[Math.min(D.W,D.H),Math.max(D.W,D.H)]});let firstPg=true;
     for(let i=0;i<pages.length;i++){
       const el=pages[i],z=parseFloat(el.style.zoom)||1;
-      el.style.zoom='1';el.style.width=(297/z)+'mm';el.style.height=(210/z)+'mm';el.style.minHeight='0';el.style.overflow='hidden';el.style.boxShadow='none';el.style.borderRadius='0';
+      el.style.zoom='1';el.style.width=(D.W/z)+'mm';
+      if(D.fit){el.style.height=(D.H/z)+'mm';el.style.minHeight='0';el.style.overflow='hidden'}
+      el.style.boxShadow='none';el.style.borderRadius='0';
       const c=await html2canvas(el,{scale:3,backgroundColor:'#fff',useCORS:true});
-      if(i)pdf.addPage();
-      pdf.addImage(c.toDataURL('image/jpeg',.96),'JPEG',0,0,297,210,undefined,'FAST'); /* ពេញក្រដាស A4 */
+      if(D.fit){   /* ១ សន្លឹក = ១ ទំព័រ ពេញក្រដាស */
+        if(!firstPg)pdf.addPage();firstPg=false;
+        pdf.addImage(c.toDataURL('image/jpeg',.96),'JPEG',0,0,D.W,D.H,undefined,'FAST');
+      }else{       /* មិនបង្រួម: កាត់តាមកម្ពស់ក្រដាស បើវែងជាង ១ ទំព័រ */
+        const sliceH=Math.floor(c.width*D.H/D.W),n=Math.max(1,Math.ceil((c.height-4)/sliceH));
+        for(let k=0;k<n;k++){
+          const y=k*sliceH,h=Math.min(sliceH,c.height-y);
+          const sc=document.createElement('canvas');sc.width=c.width;sc.height=h;
+          const g=sc.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,sc.width,h);g.drawImage(c,0,y,c.width,h,0,0,c.width,h);
+          if(!firstPg)pdf.addPage();firstPg=false;
+          pdf.addImage(sc.toDataURL('image/jpeg',.96),'JPEG',0,0,D.W,h*D.W/c.width,undefined,'FAST');
+        }
+      }
     }
     pdf.save('តារាងចំនួនសិស្សតាមថ្នាក់_'+CUR.cls+'.pdf');
   }catch(err){toast('❌ PDF៖ '+err.message)}
@@ -1741,13 +1761,13 @@ async function doWord(){
     const zs=pages.map(p=>p.style.zoom);pages.forEach(p=>p.style.zoom='1');
     if(document.fonts&&document.fonts.ready)await document.fonts.ready;
     WDIMG.length=0;let body='';
-    pages.forEach((pg,i)=>{WD.maxW=Math.min(1030,pg.getBoundingClientRect().width-70);body+=wxBlocks(pg);if(i<pages.length-1)body+='<w:p><w:r><w:br w:type="page"/></w:r></w:p>'});
+    pages.forEach((pg,i)=>{WD.maxW=Math.min(PSWordMaxW(),pg.getBoundingClientRect().width-70);body+=wxBlocks(pg);if(i<pages.length-1)body+='<w:p><w:r><w:br w:type="page"/></w:r></w:p>'});
     const files=[];const rels=[];
     for(const m of WDIMG){const d=await wzImgData(m.im);if(!d){body=body.replace(new RegExp('<w:r><w:drawing>(?:(?!</w:drawing>).)*?r:embed="rIdImg'+m.id+'".*?</w:drawing></w:r>','s'),'');continue}
       files.push({name:'word/media/image'+m.id+'.png',data:d});rels.push('<Relationship Id="rIdImg'+m.id+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/image'+m.id+'.png"/>')}
     pages.forEach((p,i)=>p.style.zoom=zs[i]);
     const doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><w:body>'+body
-      +'<w:sectPr><w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/><w:pgMar w:top="567" w:right="567" w:bottom="567" w:left="567" w:header="283" w:footer="283" w:gutter="0"/></w:sectPr></w:body></w:document>';
+      +PSWordSect()+'</w:body></w:document>';
     files.unshift(
       {name:'[Content_Types].xml',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>'},
       {name:'_rels/.rels',data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>'},
@@ -1878,5 +1898,247 @@ async function doWord(){
   window.__autoSelectScan=scan;
 })();
 </script>
+<!-- ═════════ ⚙️ កំណត់ទំព័រ (Page Setup) ═════════ -->
+<style id="psStyle">
+:root{--ps-ac:#0891b2;--ps-ac2:#22d3ee}
+/* ---- ប៊ូតុងលើ toolbar ---- */
+#btnPS svg{width:18px;height:18px;flex:none}
+#btnPS.ps-open{border-color:var(--ps-ac)!important;color:var(--ps-ac)}
+/* ---- ផ្ទាំងកំណត់ ---- */
+#psBd{position:fixed;inset:0;z-index:3590;display:none;background:transparent}
+#psBd.show{display:block}
+#psPop{--ps-tile:color-mix(in srgb,var(--muted,#64748b) 11%,var(--card,#fff));position:fixed;z-index:3600;display:none;box-sizing:border-box;background:var(--card,#fff);color:var(--text,#0f172a);border:1px solid var(--line,#e2e8f0);border-radius:24px;box-shadow:0 24px 60px rgba(15,23,42,.28);padding:20px 18px 18px;overflow:auto;overscroll-behavior:contain;font-family:'Battambang','Kantumruy Pro',sans-serif;line-height:1.5}
+#psPop.show{display:block;animation:popIn .15s ease-out}
+#psPop *{box-sizing:border-box}
+.ps-hd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.ps-hd h4{font-size:22px;font-weight:800;line-height:1.4}
+.ps-reset{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--muted,#64748b);font:600 14.5px 'Battambang',sans-serif;cursor:pointer;padding:6px 8px;border-radius:10px}
+.ps-reset:hover{color:var(--text);background:var(--ps-tile)}
+.ps-reset svg,.ps-sec svg{width:18px;height:18px;flex:none}
+.ps-sec{display:flex;align-items:center;gap:8px;color:var(--muted,#64748b);font-size:14.5px;margin:14px 0 10px}
+.ps-sec:after{content:'';flex:1;height:1px;background:var(--line,#e2e8f0)}
+.ps-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:10px}
+.ps-t{min-height:64px;border:2px solid transparent;border-radius:16px;background:var(--ps-tile);color:var(--text,#0f172a);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:600 15px 'Battambang',sans-serif;padding:6px 4px;transition:background .15s,border-color .15s,transform .1s}
+.ps-t b{font:800 17px 'Kantumruy Pro','Battambang',sans-serif}
+.ps-t small{font-size:13px;color:var(--muted,#64748b);font-weight:500}
+.ps-t svg{width:24px;height:24px}
+.ps-t:active{transform:scale(.97)}
+.ps-t.on{background:var(--ps-ac);border-color:var(--ps-ac2);color:#fff}
+.ps-t.on small{color:rgba(255,255,255,.85)}
+.ps-row{display:flex;align-items:center;gap:8px;margin:10px 0}
+.ps-row>label{flex:0 0 60px;font-size:17px;font-weight:700}
+.ps-st{flex:0 0 46px;height:48px;border:0;border-radius:14px;background:var(--ps-tile);color:var(--text,#0f172a);font-size:24px;font-weight:600;cursor:pointer;line-height:1;font-family:'Kantumruy Pro',sans-serif}
+.ps-st:active{transform:scale(.95)}
+.ps-val{flex:1;min-width:0;height:48px;border-radius:14px;background:var(--ps-tile);display:flex;align-items:center;justify-content:center;gap:6px;color:var(--muted,#64748b);font-size:15px}
+.ps-val:focus-within{outline:2px solid var(--ps-ac)}
+.ps-val input{width:5ch;border:0;background:transparent;text-align:right;font:800 19px 'Kantumruy Pro','Battambang',sans-serif;color:var(--text,#0f172a);outline:none;padding:0;min-width:0;-moz-appearance:textfield;appearance:textfield}
+.ps-val input.auto{width:9ch;text-align:center;font:500 15px 'Battambang',sans-serif}
+.ps-val input::-webkit-outer-spin-button,.ps-val input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.ps-val input::placeholder{color:var(--muted,#64748b);font-weight:500;opacity:.85}
+.ps-hint{flex:0 1 auto;max-width:34%;font-size:13.5px;color:var(--muted,#64748b);line-height:1.35}
+.ps-sw{display:flex;align-items:center;gap:12px;width:100%;border:0;background:var(--ps-tile);border-radius:16px;padding:12px 14px;cursor:pointer;color:var(--text,#0f172a);font:600 15px 'Battambang',sans-serif;text-align:left}
+.ps-sw .t{flex:1;line-height:1.45}
+.ps-sw small{display:block;color:var(--muted,#64748b);font-weight:500;font-size:12.5px}
+.ps-sw i{flex:0 0 46px;height:26px;border-radius:99px;background:var(--inl,#cbd5e1);position:relative;transition:background .2s}
+.ps-sw i:after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.ps-sw.on i{background:var(--ps-ac)}.ps-sw.on i:after{transform:translateX(20px)}
+@media(max-width:420px){.ps-hint{max-width:30%;font-size:12.5px}.ps-row>label{flex-basis:50px;font-size:16px}.ps-st{flex-basis:40px}}
+@media print{#psPop,#psBd{display:none!important}}
+
+/* ---- 🔠 ទំហំអក្សរ (មេគុណ --fs) ---- */
+.ttl{font-size:calc(21px*var(--fs))}
+.sub{font-size:calc(15px*var(--fs))}
+.page>div[style*="font-size:12px"]{font-size:calc(12px*var(--fs))!important}
+.info{font-size:calc(14px*var(--fs))}
+.sec>h3{font-size:calc(15px*var(--fs))}
+.page>.cols .col:first-child .sec>h3{font-size:calc(14.5px*var(--fs))}
+.sec h3 small{font-size:calc(11px*var(--fs))}
+.tip{font-size:calc(13px*var(--fs))}
+.page table{font-size:calc(14px*var(--fs))}
+.vt thead th{font-size:calc(13px*var(--fs))}
+.vt td.c{font-size:calc(14.5px*var(--fs))}
+#kgT,#kgT thead th{font-size:calc(13px*var(--fs))}
+#kgT td.nm{font-size:calc(13.5px*var(--fs))}
+#kgT td.ec .ed{font-size:calc(14px*var(--fs))}
+table.kv{font-size:calc(14px*var(--fs))}
+table.kv th{font-size:calc(13.5px*var(--fs))}
+table.kv td,table.kv .ed,table.kv .csb,table.kv .edu-b{font-size:calc(14px*var(--fs))}
+.page td.nm[style*="font-size:11.5px"]{font-size:calc(11.5px*var(--fs))!important}
+.sign{font-size:calc(13px*var(--fs))}
+.pg2h{font-size:calc(12px*var(--fs))}
+
+/* ---- ↕ កម្ពស់ជួរថេរ (ពេលបញ្ចូលលេខ mm) ---- */
+body.ps-rh .page td.c,body.ps-rh .page td.ec,body.ps-rh .page td.nm,body.ps-rh .page table.kv th,body.ps-rh .page table.kv td{height:var(--ps-rh)!important;padding-top:0!important;padding-bottom:0!important;line-height:1.3}
+body.ps-rh .page td.ec .ed{min-height:0!important;padding-top:0!important;padding-bottom:0!important}
+
+/* ---- 🖨️ មិនបង្រួមស្វ័យប្រវត្តិ (សន្លឹកអាចវែងជាង ១ ទំព័រ) ---- */
+@media print{
+  body.ps-nofit .page{height:auto!important;min-height:calc(var(--ps-h) - 1.5mm)!important;overflow:visible!important;break-inside:auto!important;page-break-inside:auto!important}
+}
+</style>
+<style id="psPageRule">@page{size:297mm 210mm;margin:0}</style>
+
+<div id="psBd"></div>
+<div id="psPop" role="dialog" aria-label="ការរៀបចំទំព័រ">
+  <div class="ps-hd">
+    <h4>ការរៀបចំទំព័រ</h4>
+    <button type="button" class="ps-reset" id="psReset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>ដើមវិញ</button>
+  </div>
+
+  <div class="ps-sec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>ក្រដាស</div>
+  <div class="ps-grid">
+    <button type="button" class="ps-t" data-paper="A4"><b>A4</b><small>210×297</small></button>
+    <button type="button" class="ps-t" data-paper="F4"><b>F4</b><small>216×330</small></button>
+    <button type="button" class="ps-t" data-ori="portrait"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/></svg><span>បញ្ឈរ</span></button>
+    <button type="button" class="ps-t" data-ori="landscape"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2.5" y="6" width="19" height="12" rx="2.5"/></svg><span>ផ្ដេក</span></button>
+  </div>
+  <div class="ps-grid">
+    <button type="button" class="ps-t" data-m="2"><span>តូច</span><small>2</small></button>
+    <button type="button" class="ps-t" data-m="5"><span>មធ្យម</span><small>5</small></button>
+    <button type="button" class="ps-t" data-m="10"><span>ធំ</span><small>10</small></button>
+    <button type="button" class="ps-t" data-m="15"><span>ធំបំផុត</span><small>15</small></button>
+  </div>
+  <div class="ps-row">
+    <label>គែម</label>
+    <button type="button" class="ps-st" data-step="m" data-dir="-1" aria-label="-">−</button>
+    <div class="ps-val"><input id="psM" type="number" inputmode="decimal" min="0" max="30" step="1"><span>mm</span></div>
+    <button type="button" class="ps-st" data-step="m" data-dir="1" aria-label="+">+</button>
+    <span class="ps-hint" id="psUsable"></span>
+  </div>
+
+  <div class="ps-sec"><svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17" fill="none" stroke-linecap="round"/><polyline points="2 12 12 17 22 12" fill="none" stroke-linecap="round"/></svg>អក្សរ និងក្រឡា</div>
+  <div class="ps-row">
+    <label>អក្សរ</label>
+    <button type="button" class="ps-st" data-step="fs" data-dir="-1" aria-label="-">−</button>
+    <div class="ps-val"><input id="psFs" type="number" inputmode="numeric" min="50" max="200" step="5"><span>%</span></div>
+    <button type="button" class="ps-st" data-step="fs" data-dir="1" aria-label="+">+</button>
+    <span class="ps-hint" id="psFsHint"></span>
+  </div>
+  <div class="ps-row">
+    <label>កម្ពស់ជួរ</label>
+    <button type="button" class="ps-st" data-step="rh" data-dir="-1" aria-label="-">−</button>
+    <div class="ps-val"><input id="psRh" type="number" inputmode="decimal" min="3" max="30" step="0.5" placeholder="តាមអក្សរ"><span>mm</span></div>
+    <button type="button" class="ps-st" data-step="rh" data-dir="1" aria-label="+">+</button>
+    <span class="ps-hint" id="psRhHint"></span>
+  </div>
+
+  <div class="ps-sec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>ការបោះពុម្ព</div>
+  <button type="button" class="ps-sw" id="psFit" role="switch" aria-checked="true"><span class="t">បង្រួមឱ្យចូល ១ សន្លឹកស្វ័យប្រវត្តិ<small>បិទ = ទំហំអក្សរតាមការកំណត់ពិត ហើយអាចហៀរទៅសន្លឹកបន្ទាប់</small></span><i></i></button>
+</div>
+
+<script id="psScript">
+(function(){
+  const KEY='kpl_class_form_pagesetup_v1';
+  const PAPER={A4:[210,297],F4:[216,330]};           /* [ទទឹង, កម្ពស់] ជាបញ្ឈរ (mm) */
+  const DEF={paper:'A4',ori:'landscape',m:5,fs:100,rh:null,fit:true};
+  const LIM={m:[0,30,1],fs:[50,200,5],rh:[3,30,.5]};  /* [min, max, step] */
+  const RH_START=8;                                    /* កម្ពស់ជួរចាប់ផ្ដើម (mm) ពេលចុច ± ពី «តាមអក្សរ» */
+  const $=id=>document.getElementById(id);
+  const fmt=n=>String(Math.round(n*100)/100);
+  const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+  const KEYS={psM:'m',psFs:'fs',psRh:'rh'};
+
+  function sane(o){
+    const r={...DEF,...o};
+    r.paper=PAPER[r.paper]?r.paper:'A4';
+    r.ori=r.ori==='portrait'?'portrait':'landscape';
+    r.m=(r.m===null||r.m==='')||!isFinite(+r.m)?DEF.m:clamp(+r.m,LIM.m[0],LIM.m[1]);
+    r.fs=(r.fs===null||r.fs==='')||!isFinite(+r.fs)?DEF.fs:clamp(+r.fs,LIM.fs[0],LIM.fs[1]);
+    r.rh=(r.rh===null||r.rh===undefined||r.rh===''||!isFinite(+r.rh))?null:clamp(+r.rh,LIM.rh[0],LIM.rh[1]);
+    r.fit=r.fit!==false;
+    return r;
+  }
+  let S=sane({});
+  try{const j=JSON.parse(localStorage.getItem(KEY)||'null');if(j&&typeof j==='object')S=sane(j)}catch(e){}
+
+  /* ទំហំក្រដាសបច្ចុប្បន្ន (mm) បន្ទាប់ពីគិតទិសដៅ — ប្រើដោយ fitOnePage / PDF / Word */
+  function dim(){const p=PAPER[S.paper],L=S.ori==='landscape';return{W:L?p[1]:p[0],H:L?p[0]:p[1],m:S.m,fit:S.fit}}
+  window.PSDIM=dim;
+  window.PSWordMaxW=function(){const D=dim();return Math.max(300,Math.floor((D.W-2*D.m)/25.4*96)-17)};
+  window.PSWordSect=function(){
+    const D=dim(),tw=mm=>Math.round(mm*56.6929),m=tw(D.m),hf=Math.min(283,m);
+    return '<w:sectPr><w:pgSz w:w="'+tw(D.W)+'" w:h="'+tw(D.H)+'"'+(D.W>D.H?' w:orient="landscape"':'')+'/><w:pgMar w:top="'+m+'" w:right="'+m+'" w:bottom="'+m+'" w:left="'+m+'" w:header="'+hf+'" w:footer="'+hf+'" w:gutter="0"/></w:sectPr>';
+  };
+
+  const pop=$('psPop'),bd=$('psBd'),btn=$('btnPS');
+
+  function sync(keep){
+    const D=dim();
+    pop.querySelectorAll('[data-paper]').forEach(b=>b.classList.toggle('on',b.dataset.paper===S.paper));
+    pop.querySelectorAll('[data-ori]').forEach(b=>b.classList.toggle('on',b.dataset.ori===S.ori));
+    pop.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',+b.dataset.m===S.m));
+    const setV=(id,v)=>{const el=$(id);if(el&&keep!==id)el.value=v};
+    setV('psM',fmt(S.m));setV('psFs',fmt(S.fs));setV('psRh',S.rh==null?'':fmt(S.rh));
+    $('psRh').classList.toggle('auto',$('psRh').value==='');
+    $('psUsable').textContent='ផ្ទៃប្រើ '+fmt(D.W-2*S.m)+'×'+fmt(D.H-2*S.m)+'mm';
+    $('psFsHint').textContent=S.fs===100?'ធម្មតា':(S.fs<100?'តូចជាងធម្មតា':'ធំជាងធម្មតា');
+    $('psRhHint').textContent=S.rh==null?'តាមអក្សរ':'ថេរ';
+    const sw=$('psFit');sw.classList.toggle('on',S.fit);sw.setAttribute('aria-checked',S.fit?'true':'false');
+  }
+  function apply(opt){
+    opt=opt||{};
+    const D=dim(),R=document.documentElement,B=document.body;
+    R.style.setProperty('--ps-w',D.W+'mm');R.style.setProperty('--ps-h',D.H+'mm');
+    R.style.setProperty('--ps-m',S.m+'mm');R.style.setProperty('--fs',String(S.fs/100));
+    if(S.rh!=null)R.style.setProperty('--ps-rh',S.rh+'mm');else R.style.removeProperty('--ps-rh');
+    B.classList.toggle('ps-rh',S.rh!=null);B.classList.toggle('ps-nofit',!S.fit);
+    $('psPageRule').textContent='@page{size:'+D.W+'mm '+D.H+'mm;margin:0}';
+    sync(opt.keep);
+    if(!opt.noSave){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+  }
+  function step(key,dir){
+    const [lo,hi,st]=LIM[key];
+    let v=S[key];if(key==='rh'&&v==null)v=RH_START;
+    v=clamp(Math.round((v+dir*st)*100)/100,lo,hi);
+    S[key]=v;apply();
+  }
+  function place(){
+    if(!btn)return;
+    const b=btn.getBoundingClientRect(),vw=innerWidth,vh=innerHeight;
+    const w=Math.min(440,vw-20);pop.style.width=w+'px';
+    let left=Math.min(Math.max(10,b.right-w),vw-w-10);if(vw<=560)left=10;
+    const top=Math.max(8,Math.min(b.bottom+8,vh-140));
+    pop.style.left=left+'px';pop.style.top=top+'px';pop.style.maxHeight=(vh-top-10)+'px';
+  }
+  function open(){bd.classList.add('show');pop.classList.add('show');btn&&btn.classList.add('ps-open');place();sync()}
+  function close(){bd.classList.remove('show');pop.classList.remove('show');btn&&btn.classList.remove('ps-open')}
+  function toggle(e){if(e&&e.stopPropagation)e.stopPropagation();pop.classList.contains('show')?close():open()}
+
+  pop.addEventListener('click',e=>{
+    const t=e.target.closest('button');if(!t||!pop.contains(t))return;
+    if(t.dataset.paper)S.paper=t.dataset.paper;
+    else if(t.dataset.ori)S.ori=t.dataset.ori;
+    else if(t.dataset.m!==undefined)S.m=+t.dataset.m;
+    else if(t.dataset.step){step(t.dataset.step,+t.dataset.dir);return}
+    else if(t.id==='psFit')S.fit=!S.fit;
+    else if(t.id==='psReset')S=sane({});
+    else return;
+    apply();
+  });
+  Object.keys(KEYS).forEach(id=>{
+    const el=$(id),key=KEYS[id],lim=LIM[key];
+    el.addEventListener('input',()=>{
+      const raw=el.value.trim();
+      if(raw===''){if(key==='rh'){S.rh=null;apply({keep:id});el.classList.add('auto')}return}
+      el.classList.remove('auto');
+      const v=parseFloat(raw);if(!isFinite(v)||v<lim[0]||v>lim[1])return;   /* រង់ចាំរហូតដល់លេខត្រឹមត្រូវ */
+      S[key]=v;apply({keep:id});
+    });
+    el.addEventListener('change',()=>{
+      const v=parseFloat(el.value);
+      if(!isFinite(v)){if(key==='rh')S.rh=null}else S[key]=clamp(v,lim[0],lim[1]);
+      apply();
+    });
+    el.addEventListener('keydown',e=>{if(e.key==='Enter')el.blur()});
+  });
+  bd.addEventListener('click',close);
+  addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+  addEventListener('resize',()=>{if(pop.classList.contains('show'))place()});
+
+  window.PS={open,close,toggle,reset:()=>{S=sane({});apply()},get:()=>({...S})};
+  apply({noSave:true});
+})();
+</script>
+
 </body>
 </html>
