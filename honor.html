@@ -1968,16 +1968,16 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     const F_KBACH = (() => {
       const red = '#9f1239', gold = '#d4a017', deep = '#7c2d12';
       const leaf = (rot, len, w, fill) => `<g transform="rotate(${rot})"><path d="M0 0 C ${w} ${-len * .28} ${w} ${-len * .7} 0 ${-len} C ${-w} ${-len * .7} ${-w} ${-len * .28} 0 0Z" fill="${fill}" stroke="${deep}" stroke-width="1.6"/><path d="M0 ${-len * .12} C ${w * .3} ${-len * .4} ${w * .3} ${-len * .66} 0 ${-len * .88}" stroke="#fff3" stroke-width="1.4"/></g>`;
-      const k = `<g transform="translate(26 26)">
+      const k = `<g transform="translate(20 20)">
           <g transform="rotate(135)">${leaf(0, 72, 11, gold)}</g>
           <g transform="rotate(115)">${leaf(0, 52, 8.5, red)}</g>
           <g transform="rotate(155)">${leaf(0, 52, 8.5, red)}</g>
           <g transform="rotate(95)">${leaf(0, 34, 6, gold)}</g>
           <g transform="rotate(175)">${leaf(0, 34, 6, gold)}</g>
           <circle r="10" fill="${red}" stroke="${deep}" stroke-width="2"/><circle r="4" fill="${gold}"/></g>`;
-      const dots = (() => { let o = ''; for (let x = 150; x <= 620; x += 40) o += `<circle cx="${x}" cy="14" r="2.6" fill="${gold}"/><circle cx="${x}" cy="1085" r="2.6" fill="${gold}"/>`; for (let y = 160; y <= 940; y += 40) o += `<circle cx="14" cy="${y}" r="2.6" fill="${gold}"/><circle cx="756" cy="${y}" r="2.6" fill="${gold}"/>`; return o; })();
-      return `<rect x="22" y="22" width="726" height="1055" rx="4" stroke="${red}" stroke-width="4"/>
-        <rect x="29" y="29" width="712" height="1041" rx="3" stroke="${gold}" stroke-width="1.8"/>` + dots + CORNERS(k) + EDGEMID(red, gold);
+      const dots = (() => { let o = ''; for (let x = 150; x <= 620; x += 40) o += `<circle cx="${x}" cy="5" r="2.2" fill="${gold}"/><circle cx="${x}" cy="1094" r="2.2" fill="${gold}"/>`; for (let y = 160; y <= 940; y += 40) o += `<circle cx="5" cy="${y}" r="2.2" fill="${gold}"/><circle cx="765" cy="${y}" r="2.2" fill="${gold}"/>`; return o; })();
+      return `<rect x="12" y="12" width="746" height="1075" rx="4" stroke="${red}" stroke-width="4"/>
+        <rect x="19" y="19" width="732" height="1061" rx="3" stroke="${gold}" stroke-width="1.8"/>` + dots + CORNERS(k) + EDGEMID(red, gold);
     })();
     /* ក្បាច់ឈូក៖ ពណ៌ខៀវ-មាស មុំបត់ខ្វាត់ + ផ្កា */
     const F_LOTUS = (() => {
