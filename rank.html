@@ -399,13 +399,12 @@ async function stRows(){
       }
       .no-print { display: none !important; }
       body { padding: 0 !important; background: white !important; }
-      #printPage { width: auto !important; zoom: 1 !important; transform: none !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; }
+      /* បោះពុម្ព = ដូចអេក្រង់ (ទំព័រទទឹង 1050px) បង្រួមឱ្យចុះក្នុងទំព័រ A4 ដោយ --pz (គណនាពេលចុចបោះពុម្ព) */
+      #printPage { width: 1050px !important; zoom: var(--pz, 0.698) !important; transform: none !important; padding: 20px 30px 20px !important; margin: 0 !important; box-shadow: none !important; }
       table.data-table { page-break-inside: auto; break-inside: auto; }
       table.data-table tr { page-break-inside: avoid !important; break-inside: avoid !important; }
       table.data-table thead { display: table-header-group; }
       table.data-table tbody { display: table-row-group; }
-      .school-info { font-size: 11.5pt !important; top: 25px !important; }
-      .nation-info .khmer-moul { font-size: 13pt !important; }
       
       .summary-boxes { gap: 10pt !important; border-top: 1px solid #000 !important; }
       .summary-box-left, .summary-box-right {
@@ -2142,7 +2141,22 @@ exports.default = {
         if (prevTheme) document.documentElement.setAttribute('data-theme', prevTheme);
         window.removeEventListener('afterprint', onAfterPrint);
       });
-      setTimeout(() => window.print(), 150);
+      const el = document.getElementById('printPage');
+      const restore = () => { if (el) { el.style.removeProperty('--pz'); } };
+      window.addEventListener('afterprint', function onAP() { restore(); window.removeEventListener('afterprint', onAP); });
+      setTimeout(() => {
+        try {
+          /* គណនាកម្រិតបង្រួម៖ ឱ្យទំហំទទឹង + កម្ពស់ ចុះក្នុង A4 (គែម 8mm) ដូចអ្វីដែលឃើញលើអេក្រង់ */
+          const sv = { z: el.style.zoom, w: el.style.width, pb: el.style.paddingBottom };
+          el.style.zoom = '1'; el.style.width = '1050px'; el.style.paddingBottom = '20px';
+          const h = el.scrollHeight;
+          el.style.zoom = sv.z; el.style.width = sv.w; el.style.paddingBottom = sv.pb;
+          const availW = (210 - 16) / 25.4 * 96, availH = (297 - 16) / 25.4 * 96 - 6;
+          const z = Math.max(0.35, Math.min(availW / 1050, availH / h));
+          el.style.setProperty('--pz', z.toFixed(4));
+        } catch (e) {}
+        window.print();
+      }, 150);
     }
 
     function setPeriodType(type) {
