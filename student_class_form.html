@@ -386,7 +386,7 @@ td.ec{padding:0;height:26px}
 td.ec .ed{display:block;min-height:22px;text-align:center;border:0;padding:3px;min-width:0}
 .pg2h{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#475569;margin-bottom:8px}
 .btn.on{background:#4f46e5;color:#fff}
-@media print{.page{page-break-after:always;break-after:page}.page:last-of-type,.page.last{page-break-after:avoid;break-after:avoid}}
+@media print{.page{page-break-after:always;break-after:page;page-break-inside:avoid;break-inside:avoid}.page:last-of-type,.page.last{page-break-after:avoid!important;break-after:avoid!important}html,body{height:auto!important;min-height:0!important}.stage{min-height:0!important}}
 </style>
 <script id="stRowsJs">
 /* 🔒 អានសិស្សតាមមុខងារ staff_student_list (គ្រូឃើញតែថ្នាក់ខ្លួន ក្នុងសាលាខ្លួន · Admin ឃើញទាំងអស់) */
@@ -1443,10 +1443,12 @@ function fitOnePage(){
       z=lo;
     }
     hAt(z);zs.push(z);
+    /* កម្ពស់សន្លឹកថេរ (≈209.4mm បន្ទាប់ពី zoom) → ខ្លឹមសារមិនអាចហៀរទៅបង្កើតសន្លឹកទទេបានទេ */
+    el.style.height=(208.5/z)+'mm';el.style.overflow='hidden';
   });
   return Math.min(...zs,1);
 }
-function unfit(){document.body.classList.remove('pf');document.querySelectorAll('.page').forEach(el=>{el.style.zoom='';el.style.width='';el.style.minHeight='';el.style.height='';el.style.removeProperty('--kz')})}
+function unfit(){document.body.classList.remove('pf');document.querySelectorAll('.page').forEach(el=>{el.style.zoom='';el.style.width='';el.style.minHeight='';el.style.height='';el.style.overflow='';el.style.removeProperty('--kz')})}
 
 /* ===== ព័ត៌មានសាលា/ហត្ថលេខា/ត្រា ពីគណនី (ប្រវត្តិរូបរបស់ខ្ញុំ) ===== */
 let PROF=null,PROFILE_SIG='',STAMP_META=null;
@@ -1567,7 +1569,7 @@ function applyKit(){
 }
 window.addEventListener('beforeprint',fitOnePage);
 window.addEventListener('afterprint',unfit);
-function doPrint(){window.focus();setTimeout(()=>{try{window.print()}catch(e){window.parent.print()}},100)}
+function doPrint(){window.focus();try{fitOnePage()}catch(e){}setTimeout(()=>{try{window.print()}catch(e){window.parent.print()}},100)}
 async function doPdf(){
   if(!window.html2canvas||!window.jspdf){toast('មិនអាចផ្ទុក library PDF បានទេ');return}
   const pages=visPages();
