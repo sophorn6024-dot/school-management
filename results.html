@@ -78,8 +78,11 @@ button,input,select{font-family:inherit;font-size:inherit;color:inherit}
 .bars .n{font-weight:700;font-size:14px;margin-bottom:3px}
 .bars .b{height:5px;border-radius:4px;transition:height .25s}
 .bars .lb{font-size:12px;color:var(--muted);margin-top:4px}
-.c-good{color:var(--good)} .c-ok{color:var(--ok)} .c-mid{color:var(--mid)} .c-bad{color:var(--bad)}
-.bg-good{background:var(--good)} .bg-ok{background:var(--ok)} .bg-mid{background:var(--mid)} .bg-bad{background:var(--bad)}
+.c-good,.c-A{color:var(--good)} .c-ok,.c-B{color:var(--ok)} .c-mid,.c-C{color:var(--mid)} .c-bad,.c-E{color:var(--bad)} .c-D{color:#ea580c} .c-F{color:var(--muted)}
+.bg-good,.bg-A{background:var(--good)} .bg-ok,.bg-B{background:var(--ok)} .bg-mid,.bg-C{background:var(--mid)} .bg-bad,.bg-E{background:var(--bad)} .bg-D{background:#ea580c} .bg-F{background:#94a3b8}
+.badge.A{background:rgba(5,150,105,.14);color:var(--good)}.badge.B{background:rgba(37,99,235,.14);color:var(--ok)}.badge.C{background:rgba(217,119,6,.15);color:var(--mid)}.badge.D{background:rgba(234,88,12,.15);color:#ea580c}.badge.E{background:rgba(220,38,38,.14);color:var(--bad)}.badge.F{background:rgba(100,116,139,.18);color:var(--muted)}
+.bars.six{grid-template-columns:repeat(6,1fr)}
+.langb{display:inline-flex;align-items:center;gap:7px}
 .list{overflow:hidden}
 .list .hd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;background:var(--surface);border-bottom:1px solid var(--border)}
 .list .hd b{font-size:15px}
@@ -116,6 +119,7 @@ button,input,select{font-family:inherit;font-size:inherit;color:inherit}
     <div class="tools">
       <select class="sel" id="selCls" onchange="onCls()" style="display:none"></select>
       <select class="sel" id="selPer" onchange="onPer()"></select>
+      <button class="btn langb" id="btnLang" onclick="toggleGrade()" title="ប្តូរនិទ្ទេស ខ្មែរ / A–F"><i class="fa-solid fa-language"></i><span id="lblLang"></span></button>
       <button class="btn pri" onclick="exportCsv()"><i class="fa-solid fa-file-export"></i> នាំចេញ</button>
     </div>
   </div>
@@ -169,9 +173,17 @@ const IS_ADMIN=String(USER&&USER.role||'').toLowerCase().trim()==='admin';
 function goBack(){try{if(window.parent&&window.parent!==window){window.parent.postMessage({type:'NAVIGATE',page:'dashboard'},'*');return}}catch(e){}location.href='index.html'}
 
 /* និទ្ទេស ៤ ក្រុម */
-function band(v){v=Number(v);if(!(v>0))return null;if(v>=8)return'good';if(v>=6)return'ok';if(v>=5)return'mid';return'bad'}
-const BANDN={good:'ល្អ',ok:'ល្អបង្គួរ',mid:'មធ្យម',bad:'ខ្សោយ'};
-const BANDS=['good','ok','mid','bad'];
+/* ប្តូរនិទ្ទេស៖ ខ្មែរ (៤ក្រុម) ↔ A–F (៦ក្រុម ដូច rank.html) */
+let GMODE='kh';try{GMODE=localStorage.getItem('res_grade_mode')==='af'?'af':'kh'}catch(e){}
+function letter(v){v=Number(v);if(!(v>0))return null;if(v>=9)return'A';if(v>=8)return'B';if(v>=7)return'C';if(v>=6)return'D';if(v>=5)return'E';return'F'}
+function band(v){
+  const L=letter(v);if(!L)return null;
+  if(GMODE==='af')return L;
+  return (L==='A'||L==='B')?'good':(L==='C'||L==='D')?'ok':L==='E'?'mid':'bad';
+}
+const BANDN={good:'ល្អ',ok:'ល្អបង្គួរ',mid:'មធ្យម',bad:'ខ្សោយ',A:'A',B:'B',C:'C',D:'D',E:'E',F:'F'};
+const bandList=()=>GMODE==='af'?['A','B','C','D','E','F']:['good','ok','mid','bad'];
+function toggleGrade(){GMODE=GMODE==='af'?'kh':'af';try{localStorage.setItem('res_grade_mode',GMODE)}catch(e){}$('lblLang').textContent=GMODE==='af'?'A–F':'ខ្មែរ';if(SD.length)render()}
 
 /* ═══ ទិន្នន័យ ═══ */
 let CLS='',ST=[],SC=[],PER='auto';
@@ -186,10 +198,13 @@ async function stRows(){
 async function allScores(cls){
   const PS=1000;let out=[],from=0;
   for(;;){
-    let r=await tbq('scores').select('student_id, score_type, period, average').eq('assigned_class',cls).order('id',{ascending:true}).range(from,from+PS-1);
-    if(r.error&&from===0)r=await tbq('scores').select('student_id, score_type, period, average').eq('assigned_class',cls).range(from,from+PS-1);
+    const q=()=>tbq('scores').select('student_id, score_type, period, average').eq('assigned_class',cls);
+    let r=await (from===0?q().range(0,PS-1):q().order('id',{ascending:true}).range(from,from+PS-1));
     if(r.error)throw new Error(r.error.message||'កំហុស');
-    const d=r.data||[];out=out.concat(d);if(d.length<PS)break;from+=PS;
+    let d=r.data||[];
+    if(from===0&&d.length>=PS){ /* ច្រើនជាង ១០០០ ជួរ → ទាញតាមលំដាប់ id ដើម្បីកុំឱ្យច្រលំទំព័រ */
+      const r2=await q().order('id',{ascending:true}).range(0,PS-1);if(!r2.error)d=r2.data||d;}
+    out=out.concat(d);if(d.length<PS)break;from+=PS;
   }
   return out;
 }
@@ -240,17 +255,17 @@ function fillPeriods(){
   sel.value=PER;
 }
 function onPer(){PER=$('selPer').value;render()}
-async function onCls(){CLS=$('selCls').value;await load()}
+async function onCls(){CLS=$('selCls').value;try{sessionStorage.setItem('res_last_cls_'+USER.username,CLS)}catch(e){}await load()}
 
 function kpiHtml(list,p){
   const vals=list.map(s=>valOf(s,p)).filter(v=>v>0);
-  const n=list.length,e=vals.length,pass=vals.filter(v=>v>=5).length,weak=vals.filter(v=>v<5).length;
+  const n=list.length,e=vals.length,pass=vals.filter(v=>v>=5).length,weak=vals.filter(v=>v<7).length;
   const avg=e?vals.reduce((a,b)=>a+b,0)/e:0;
   const card=(bg,ic,v,l)=>'<div class="card kpi"><div class="ic" style="background:'+bg+'"><i class="fa-solid '+ic+'"></i></div><div><div class="v">'+v+'</div><div class="l">'+l+'</div></div></div>';
   return card('#e11d48','fa-user-group',n,'សិស្សសរុប · បានដាក់ '+e)
    +card('#059669','fa-circle-check',pass+'/'+e,'ជាប់ · '+(e?Math.round(pass*100/e):0)+'%')
    +card('#0284c7','fa-arrow-trend-up',e?avg.toFixed(2):'—','មធ្យមភាគ · /10')
-   +card('#ef4444','fa-triangle-exclamation',weak,'សិស្សខ្សោយ · ក្រោម 5');
+   +card('#ef4444','fa-triangle-exclamation',weak,'សិស្សខ្សោយ · band D–F');
 }
 function trendHtml(){
   const pts=MONTHS.map(m=>{const v=SD.map(s=>s.mon[m]).filter(x=>x>0);return v.length?{m,v:v.reduce((a,b)=>a+b,0)/v.length}:null}).filter(Boolean);
@@ -267,11 +282,11 @@ function trendHtml(){
 const DS={m:null,e:null,s:null};
 function distBlock(title,sel,p){
   const vals=SD.map(s=>valOf(s,p)).filter(v=>v>0);
-  const cnt={good:0,ok:0,mid:0,bad:0};vals.forEach(v=>cnt[band(v)]++);
+  const BL=bandList(),cnt={};BL.forEach(b=>cnt[b]=0);vals.forEach(v=>cnt[band(v)]++);
   const mx=Math.max(1,...Object.values(cnt));
   let body;
   if(!vals.length)body='<div class="empty" style="padding:18px 0">មិនទាន់មាន</div>';
-  else body='<div class="bars">'+BANDS.map(b=>'<div><div class="n c-'+b+'">'+cnt[b]+'</div><div class="b bg-'+b+'" style="height:'+(cnt[b]?Math.max(8,Math.round(cnt[b]/mx*64)):4)+'px;opacity:'+(cnt[b]?1:.35)+'"></div><div class="lb">'+BANDN[b]+'</div></div>').join('')+'</div>';
+  else body='<div class="bars'+(GMODE==='af'?' six':'')+'">'+BL.map(b=>'<div><div class="n c-'+b+'">'+cnt[b]+'</div><div class="b bg-'+b+'" style="height:'+(cnt[b]?Math.max(8,Math.round(cnt[b]/mx*64)):4)+'px;opacity:'+(cnt[b]?1:.35)+'"></div><div class="lb">'+BANDN[b]+'</div></div>').join('')+'</div>';
   return '<div class="dist"><div class="hd"><span>'+title+'</span>'+(sel||'')+'<span class="cnt">'+(vals.length?vals.length+' នាក់':'')+'</span></div>'+body+'</div>';
 }
 function selHtml(id,opts,cur){return '<select id="'+id+'" onchange="onDist()">'+opts.map(o=>'<option value="'+esc(o[0])+'"'+(o[0]===cur?' selected':'')+'>'+esc(o[1])+'</option>').join('')+'</select>'}
@@ -304,14 +319,15 @@ function detHtml(s){
 }
 function renderList(){
   const q=$('q').value.trim().toLowerCase();
-  const L=ranked().filter(o=>!q||String(o.s.name).toLowerCase().includes(q));
-  if(!L.length){$('rows').innerHTML='<div class="empty">'+(SD.length?'រកមិនឃើញ':'ថ្នាក់នេះមិនទាន់មានសិស្ស')+'</div>';return}
+  const all=ranked().filter(o=>o.v>0);
+  const L=all.filter(o=>!q||String(o.s.name).toLowerCase().includes(q));
+  if(!L.length){$('rows').innerHTML='<div class="empty">'+(all.length?'រកមិនឃើញ':(SD.length?'មិនទាន់មានពិន្ទុសម្រាប់រយៈពេលនេះ':'ថ្នាក់នេះមិនទាន់មានសិស្ស'))+'</div>';return}
   $('rows').innerHTML=L.map(o=>{
     const b=band(o.v),rk=o.rk,cls=rk===1?'':rk===2?' r2':rk===3?' r3':' rn';
     const open=OPEN.has(o.s.id);
     return '<div class="row'+(open?' open':'')+'" onclick="tg(\''+esc(o.s.id)+'\')"><div class="rk'+(rk?cls:' rn')+'">'+(rk||'–')+'</div><div class="nm"><b>'+esc(o.s.name)+'</b><small>'+esc(o.s.sex)+'</small></div>'
-      +(b?'<span class="badge '+b+'">'+BANDN[b]+'</span>':'<span class="badge none">មិនទាន់មាន</span>')
-      +'<div class="av">'+(o.v>0?o.v.toFixed(2):'—')+'</div><i class="fa-solid fa-chevron-right cv"></i></div>'
+      +'<span class="badge '+b+'">'+BANDN[b]+'</span>'
+      +'<div class="av">'+o.v.toFixed(2)+'</div><i class="fa-solid fa-chevron-right cv"></i></div>'
       +'<div class="det'+(open?' show':'')+'">'+detHtml(o.s)+'</div>';
   }).join('');
 }
@@ -325,38 +341,59 @@ function render(){
   $('dist').innerHTML=distHtml();
   renderList();
 }
+let ALLST=null,ALLST_P=null;
+function getStudents(){return ALLST?Promise.resolve(ALLST):(ALLST_P||(ALLST_P=stRows().then(r=>(ALLST=r)).catch(e=>{ALLST_P=null;throw e})))}
+const CK=c=>'res_cache_'+(USER&&USER.username)+'_'+c;
+function readCache(c){try{return JSON.parse(sessionStorage.getItem(CK(c))||'null')}catch(e){return null}}
+function writeCache(c,st,sc){try{sessionStorage.setItem(CK(c),JSON.stringify({st:st,sc:sc}))}catch(e){}}
+let LOADSEQ=0;
 async function load(){
-  ['kpis'].forEach(i=>$(i).innerHTML='');
-  $('trend').innerHTML=$('rows').innerHTML='<div class="loading">កំពុងទាញយក…</div>';
+  const my=++LOADSEQ,cls=CLS;
+  const ch=readCache(cls);
+  if(ch&&ch.st){ /* បង្ហាញភ្លាមពីអង្គចាំ រួចធ្វើឱ្យថ្មីនៅផ្ទៃក្រោយ */
+    ST=ch.st;SC=ch.sc||[];SD=buildStudents();DS.m=DS.e=DS.s=null;OPEN.clear();fillPeriods();render();
+  }else{
+    $('kpis').innerHTML='';
+    $('trend').innerHTML=$('rows').innerHTML='<div class="loading"><i class="fa-solid fa-spinner fa-spin"></i> កំពុងទាញយក…</div>';
+  }
   try{
-    const all=await stRows();
-    ST=all.filter(s=>cleanGrade(s.grade)===CLS);
-    SC=ST.length?await allScores(CLS):[];
-    SD=buildStudents();
-    DS.m=DS.e=DS.s=null;OPEN.clear();
-    fillPeriods();render();
+    /* ទាញសិស្ស និងពិន្ទុ ព្រមគ្នា (មិនរង់ចាំម្តងមួយ) */
+    const [all,sc]=await Promise.all([getStudents(),allScores(cls)]);
+    if(my!==LOADSEQ)return;
+    const st=all.filter(s=>cleanGrade(s.grade)===cls);
+    writeCache(cls,st,st.length?sc:[]);
+    const fresh=!(ch&&ch.st);
+    ST=st;SC=st.length?sc:[];SD=buildStudents();
+    if(fresh){DS.m=DS.e=DS.s=null;OPEN.clear();fillPeriods()}
+    render();
   }catch(e){
-    $('trend').innerHTML=$('rows').innerHTML='<div class="empty" style="color:var(--bad)">❌ '+esc(e.message||e)+'</div>';
+    if(my!==LOADSEQ)return;
+    if(!(ch&&ch.st))$('trend').innerHTML=$('rows').innerHTML='<div class="empty" style="color:var(--bad)">❌ '+esc(e.message||e)+'</div>';
   }
 }
 async function init(){
   if(!USER||!USER.username){$('app').innerHTML='<div class="empty">សូមចូលប្រព័ន្ធជាមុន</div>';return}
-  let classes=[];
-  try{
-    const all=await stRows();
-    const mine=String(USER.assigned_classes||USER.assigned_class||'').split(/[,،;]/).map(cleanGrade).filter(Boolean);
-    const set=[...new Set(all.map(s=>cleanGrade(s.grade)).filter(Boolean))];
-    classes=IS_ADMIN?set:(mine.length?mine:set);
-    if(!classes.length)classes=set;
-  }catch(e){
+  $('lblLang').textContent=GMODE==='af'?'A–F':'ខ្មែរ';
+  const sel=$('selCls');
+  const mine=String(USER.assigned_classes||USER.assigned_class||'').split(/[,،;]/).map(cleanGrade).filter(Boolean);
+  const fill=cl=>{sel.innerHTML=cl.map(c=>'<option value="'+esc(c)+'">ថ្នាក់ទី '+esc(c)+'</option>').join('');sel.style.display=cl.length>1?'':'none'};
+  let first=null;
+  if(!IS_ADMIN&&mine.length){ /* គ្រូ៖ ស្គាល់ថ្នាក់ហើយ → ចាប់ផ្តើមទាញភ្លាម ព្រមជាមួយបញ្ជីសិស្ស */
+    fill(mine);CLS=mine[0];sel.value=CLS;first=load();
+  }
+  let all;
+  try{all=await getStudents()}catch(e){
     $('kpis').innerHTML='';$('trend').innerHTML=$('rows').innerHTML='<div class="empty" style="color:var(--bad)">❌ '+esc(e.message||e)+'</div>';return;
   }
-  if(!classes.length){$('rows').innerHTML=$('trend').innerHTML='<div class="empty">⚠️ គណនីរបស់អ្នកមិនទាន់មានថ្នាក់</div>';return}
-  const sel=$('selCls');
-  sel.innerHTML=classes.map(c=>'<option value="'+esc(c)+'">ថ្នាក់ទី '+esc(c)+'</option>').join('');
-  sel.style.display=classes.length>1?'':'none';
-  CLS=classes[0];sel.value=CLS;
-  await load();
+  const set=[...new Set(all.map(s=>cleanGrade(s.grade)).filter(Boolean))];
+  if(IS_ADMIN||!mine.length){
+    const classes=set;
+    if(!classes.length){$('rows').innerHTML=$('trend').innerHTML='<div class="empty">⚠️ គណនីរបស់អ្នកមិនទាន់មានថ្នាក់</div>';return}
+    fill(classes);
+    let last='';try{last=sessionStorage.getItem('res_last_cls_'+USER.username)||''}catch(e){}
+    CLS=classes.includes(last)?last:classes[0];sel.value=CLS;
+    await load();
+  }else await first;
 }
 /* នាំចេញ CSV */
 function exportCsv(){
