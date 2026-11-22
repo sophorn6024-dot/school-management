@@ -140,6 +140,8 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .login-btn{position:relative;width:100%;height:50px;border:0;border-radius:14px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;font-size:14px;font-weight:700;cursor:pointer;overflow:hidden;box-shadow:0 12px 24px rgba(37,99,235,.25);transition:transform .15s;display:flex;align-items:center;justify-content:center;gap:8px}
 .login-btn:active{transform:scale(.98)}.login-btn:disabled{opacity:.7;cursor:not-allowed}
 .login-footer{text-align:center;margin-top:18px;color:#94a3b8;font-size:11px}
+.login-credit{text-align:center;margin-top:6px;color:#94a3b8;font-size:11.5px}.login-credit b{color:var(--primary,#0284c7);font-weight:700}
+@media (max-width:480px){.login-credit{margin-top:8px;font-size:11px}}
 .app-layout{display:flex;width:100%;height:100%;height:100dvh;overflow:hidden;position:relative}
 .sidebar{width:var(--sidebar-w);height:100%;height:100dvh;background:var(--sidebar-navy)!important;color:#fff;display:flex;flex-direction:column;flex-shrink:0;z-index:60;box-shadow:6px 0 25px rgba(0,0,0,.3);border-right:1px solid var(--sidebar-border);transition:width var(--anim-speed) cubic-bezier(.4,0,.2,1),transform var(--anim-speed) cubic-bezier(.4,0,.2,1),background .35s ease}
 .sidebar.collapsed{width:var(--sidebar-w-collapsed)}
@@ -349,6 +351,25 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .pv-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .pv-section-block{background:var(--surface-elevated);border:1px solid var(--border);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:10px}
 .pv-block-title{font-size:13.5px;font-weight:700;color:var(--primary);display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:4px}
+.pvt-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.pvt-st{border:1px solid var(--border);background:var(--surface-elevated);border-radius:12px;padding:8px 10px;min-width:0}
+.pvt-st small{display:block;font-size:11px;color:var(--text-muted);line-height:1.3}
+.pvt-st b{font-size:18px;line-height:1.2}
+.pvt-st.ok b{color:#16a34a}.pvt-st.rp b{color:#ea580c}.pvt-st.cur b{color:var(--primary)}
+.pvt-wrap{overflow-x:auto;padding:14px 2px 6px;-webkit-overflow-scrolling:touch}
+.pvt-line{display:flex;align-items:flex-start;min-width:740px}
+.pvt-node{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;padding:0 2px}
+.pvt-node:not(:last-child)::after{content:"";position:absolute;top:16px;left:calc(50% + 20px);right:calc(-50% + 20px);height:2px;background:var(--border)}
+.pvt-node.done:not(:last-child)::after{background:var(--text-muted);opacity:.55}
+.pvt-dot{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);display:grid;place-items:center;font-size:13px;font-weight:700;color:var(--text-muted);background:var(--surface);position:relative;z-index:1}
+.pvt-node.done .pvt-dot{border-color:var(--text-muted)}
+.pvt-node.cur .pvt-dot{border-color:var(--primary);background:var(--primary-soft);color:var(--primary);box-shadow:0 0 0 4px var(--primary-soft)}
+.pvt-x{position:absolute;top:-9px;right:-11px;background:#0f172a;color:#fff;border-radius:10px;font-size:10px;padding:1px 5px;font-weight:700;z-index:2}
+.pvt-lb{font-size:11px;color:var(--text-muted);margin-top:6px;line-height:1.35}
+.pvt-node.cur .pvt-lb{color:var(--text);font-weight:700}
+.pvt-yr{white-space:nowrap;font-size:10.5px;color:var(--text-muted);line-height:1.35}
+.pvt-now{display:inline-block;margin-top:4px;font-size:10.5px;font-weight:700;color:var(--primary);border:1px solid var(--primary);border-radius:10px;padding:1px 8px}
+@media (max-width:560px){.pvt-stats{grid-template-columns:repeat(2,1fr)}}
 .pvh-card{border:1px solid var(--border);border-radius:14px;padding:10px 12px;margin-top:8px}
 .pvh-head{font-weight:800;font-size:13.5px;margin-bottom:6px}
 .pvh-sub{font-size:11.5px;color:var(--text-muted)}
@@ -1334,6 +1355,7 @@ window.hideSoloSplash=function(){var e=document.getElementById('soloSplash');if(
           <button type="button" class="lg-dd-btn" id="lgDdBtn" onclick="lgDdToggle(event)"><span id="lgDdTxt">👩‍🏫  គ្រូ / Admin</span></button>
           <div class="lg-dd-menu" id="lgDdMenu"><button type="button" data-v="teacher" onclick="lgDdPick('teacher')">👩‍🏫  គ្រូ / Admin</button><button type="button" data-v="student" onclick="lgDdPick('student')">🎓  សិស្ស</button></div></div></div>
       <div class="login-footer">© <span id="loginYear"></span> សាលាបឋមសិក្សាកំពង់ល្ពៅ</div>
+      <div class="login-credit">បង្កើតដោយ ៖ <b>សេង សុភាន់</b></div>
     </section>
   </div>
 </div>
@@ -4299,6 +4321,31 @@ function renderSelectedStudentProfile(idx) {
   document.getElementById('pvMotherJob').innerText = s.mother_job || s.motherJob || '-';
   loadStudentHistory(s);
 }
+function pvTimeline(s, rows) {
+  const g = v => { const m = String(v == null ? '' : v).match(/\d+/); return m ? parseInt(m[0], 10) : 0; };
+  const curG = g(typeof cleanGrade === 'function' ? cleanGrade(s.grade) : s.grade);
+  const years = {}; let up = 0, rp = 0;
+  (rows || []).forEach(r => {
+    const c = g(r.class); if (!c) return;
+    (years[c] = years[c] || []).push(r.school_year || '');
+    const t = g(r.moved_to); if (t && t > c) up++; else if (t && t === c) rp++;
+  });
+  if (curG) (years[curG] = years[curG] || []).push(CLASS_YEAR || '');
+  const kh = n => String(n).replace(/[0-9]/g, d => '០១២៣៤៥៦៧៨៩'.charAt(d));
+  const e = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const total = (rows || []).length + (curG ? 1 : 0);
+  const nodes = [['ម','មត្តេយ្យ','កម្រិតទាប'],['ម','មត្តេយ្យ','កម្រិតមធ្យម'],['ម','មត្តេយ្យ','កម្រិតខ្ពស់']].map(a => '<div class="pvt-node"><div class="pvt-dot">' + a[0] + '</div><div class="pvt-lb">' + a[1] + '<br>' + a[2] + '</div></div>').join('');
+  let html = '';
+  for (let c = 1; c <= 6; c++) {
+    const ys = years[c] || [], isCur = c === curG;
+    html += '<div class="pvt-node' + (isCur ? ' cur' : (ys.length || c < curG ? ' done' : '')) + '"><div class="pvt-dot">' + kh(c)
+      + (ys.length > 1 ? '<span class="pvt-x">×' + kh(ys.length) + '</span>' : '') + '</div><div class="pvt-lb">ថ្នាក់ទី' + kh(c) + '</div>'
+      + ys.filter(Boolean).map(y => '<div class="pvt-yr">' + e(kh(y)) + '</div>').join('') + (isCur ? '<span class="pvt-now">បច្ចុប្បន្ន</span>' : '') + '</div>';
+  }
+  return '<div class="pv-block-title"><span>🎓</span><span>ដំណើរការសិក្សា</span></div>'
+    + '<div class="pvt-stats"><div class="pvt-st"><small>ឆ្នាំបានកត់ត្រា</small><b>' + kh(total) + '</b></div><div class="pvt-st ok"><small>ឡើងថ្នាក់</small><b>' + kh(up) + '</b></div><div class="pvt-st rp"><small>ត្រួតថ្នាក់</small><b>' + kh(rp) + '</b></div><div class="pvt-st cur"><small>កំពុងសិក្សា</small><b>' + kh(curG ? 1 : 0) + '</b></div></div>'
+    + '<div class="pvt-wrap"><div class="pvt-line">' + nodes + html + '</div></div><div style="height:10px"></div>';
+}
 let _pvHistSeq = 0;
 async function loadStudentHistory(s) {
   const box = document.getElementById('pvHistory'); if (!box) return;
@@ -4313,7 +4360,7 @@ async function loadStudentHistory(s) {
     rows = (data && data.rows) || [];
   } catch (e) { err = String(e.message || e); }
   if (seq !== _pvHistSeq) return;
-  const title = '<div class="pv-block-title"><span>📁</span><span>ប្រវត្តិឆ្នាំចាស់</span></div>';
+  const title = (rows === null ? '' : pvTimeline(s, rows)) + '<div class="pv-block-title"><span>📁</span><span>ប្រវត្តិឆ្នាំចាស់</span></div>';
   if (rows === null) { box.innerHTML = title + '<div class="pvh-sub">មិនអាចទាញប្រវត្តិបានទេ' + (/function|does not exist|schema cache/i.test(err) ? ' (ត្រូវ run year_promotion.sql និង student_history.sql ក្នុង Supabase)' : '') + '</div>'; return; }
   if (!rows.length) { box.innerHTML = title + '<div class="pvh-sub">មិនទាន់មានប្រវត្តិឆ្នាំចាស់ (មានតែពេលគ្រូបានដំឡើងថ្នាក់ចុងឆ្នាំ)</div>'; return; }
   const esc2 = t => String(t == null ? '' : t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
