@@ -718,7 +718,6 @@ body.dc-lock{overflow:hidden}
 .collapse-arrow-btn{position:fixed;top:30px;left:calc(var(--sidebar-w) - 16px);transform:translateY(-50%);width:32px;height:32px;font-size:17px;z-index:70;background:var(--sidebar-navy);border:1px solid var(--sidebar-border);color:#e2e8f0;box-shadow:0 4px 14px rgba(0,0,0,.35);transition:left var(--anim-speed,.3s) cubic-bezier(.4,0,.2,1),background .2s ease}
 .collapse-arrow-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
 .sidebar.collapsed .collapse-arrow-btn{left:calc(var(--sidebar-w-collapsed) - 16px);margin:0}
-.sidebar.collapsed:hover .collapse-arrow-btn{left:calc(var(--sidebar-w) - 16px)}
 [data-theme="light"] .collapse-arrow-btn{background:#fff;border-color:rgba(15,23,42,.15);color:#475569}
 [data-theme="light"] .collapse-arrow-btn:hover{background:var(--primary);color:#fff}
 }
@@ -1161,6 +1160,7 @@ body.solo .iframe-container{bottom:0!important}
   .sidebar.collapsed .sidebar-theme-btn .nav-text,.sidebar.collapsed .sidebar-logout-btn .nav-text{opacity:0}
 }
 @media (min-width:769px) and (hover:hover) and (pointer:fine){
+  .sidebar.collapsed:hover .collapse-arrow-btn{left:calc(var(--sidebar-w) - 16px)}
   /* rail ពង្រីកស្វ័យប្រវត្តិពេល hover (មិនរុញខ្លឹមសារ) */
   .sidebar.collapsed:hover{width:var(--sidebar-w);margin-right:calc(var(--sidebar-w-collapsed) - var(--sidebar-w));box-shadow:14px 0 40px rgba(0,0,0,.35)}
   .sidebar.collapsed:hover .nav-text{opacity:1;max-width:220px;transform:none}
