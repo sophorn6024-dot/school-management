@@ -13,6 +13,10 @@
 <style>
 :root,[data-theme="light"]{--bg:#eef5f1;--surface:#fff;--elev:#f1f5f9;--border:#cfdcd5;--text:#0f172a;--muted:#5b6b80;--primary:#15803d;--primary-d:#166534;--soft:rgba(21,128,61,.1);--warn:#d97706;--danger:#dc2626;--inp:#fff;--hd:#e7f3ec}
 [data-theme="dark"]{--bg:#0b1411;--surface:#13201a;--elev:#192a22;--border:#27413a;--text:#e6f2ec;--muted:#93aaa0;--primary:#34d399;--primary-d:#10b981;--soft:rgba(52,211,153,.12);--warn:#fbbf24;--danger:#f87171;--inp:#0f1b16;--hd:#1b3128}
+@supports (background:color-mix(in srgb,red,blue)){
+[data-theme="light"]{--hd:color-mix(in srgb,var(--primary) 13%,#fff);--bg:color-mix(in srgb,var(--primary) 7%,#f6f8f9);--border:color-mix(in srgb,var(--primary) 22%,#d3dbe0)}
+[data-theme="dark"]{--bg:color-mix(in srgb,var(--primary) 6%,#0a1016);--surface:color-mix(in srgb,var(--primary) 7%,#111a22);--elev:color-mix(in srgb,var(--primary) 11%,#16212b);--inp:color-mix(in srgb,var(--primary) 5%,#0e161d);--hd:color-mix(in srgb,var(--primary) 20%,#101a22);--border:color-mix(in srgb,var(--primary) 26%,#243038)}
+}
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--bg);color:var(--text);font-family:'Battambang','Khmer OS Battambang',sans-serif;font-size:14px;min-height:100vh}
@@ -147,18 +151,27 @@ function uiConfirm(msg,{okText='យល់ព្រម',title='សូមបញ្
   });
 }
 (function theme(){
-  var R=document.documentElement;
+  /* 🎨 ទទួល theme + ពណ៌ចម្បង ពីទំព័រមេ (ដូចទំព័រផ្សេងៗ) */
+  var R=document.documentElement,HEX=/^#[0-9a-fA-F]{6}$/;
+  function hov(h){var n=parseInt(h.slice(1),16),r=n>>16,g=n>>8&255,b=n&255;return '#'+[r,g,b].map(function(v){return ('0'+Math.round(v*0.82).toString(16)).slice(-2)}).join('')}
   function ap(t){R.setAttribute('data-theme',t==='dark'?'dark':'light')}
+  function setP(v,h){if(!HEX.test(v||''))return;var n=parseInt(v.slice(1),16),st=R.style;
+    st.setProperty('--primary',v);st.setProperty('--primary-d',HEX.test(h||'')?h:hov(v));
+    st.setProperty('--soft','rgba('+(n>>16)+','+(n>>8&255)+','+(n&255)+',.12)')}
   function det(){var t=null;
     try{t=new URLSearchParams(location.search).get('theme')}catch(e){}
     if(!t){try{if(window.parent&&window.parent!==window)t=window.parent.document.documentElement.getAttribute('data-theme')}catch(e){}}
     if(!t){try{if(localStorage.getItem('krou_theme_auto')==='1'){var h=new Date().getHours();t=(h>=6&&h<18)?'light':'dark'}else t=localStorage.getItem('krou_theme_manual')}catch(e){}}
     return t||'light'}
   ap(det());
+  var q=null,sp='',pr='';
+  try{q=new URLSearchParams(location.search)}catch(e){}
+  try{sp=localStorage.getItem('krou_theme_primary')||''}catch(e){}
+  try{if(window.parent&&window.parent!==window)pr=(window.parent.document.documentElement.style.getPropertyValue('--primary')||'').trim()}catch(e){}
+  setP(sp);setP(q&&q.get('primary'));setP(pr);
   window.addEventListener('message',function(e){var d=e.data;if(!d||(d.type!=='THEME_CHANGE'&&!d.theme))return;
-    ap(d.theme||d);
-    if(d.primary){R.style.setProperty('--primary',d.primary);R.style.setProperty('--primary-d',d.primaryHover||d.primary);if(d.primarySoft)R.style.setProperty('--soft',d.primarySoft)}});
-  window.addEventListener('storage',function(e){if(e.key==='krou_theme_manual'||e.key==='krou_theme_auto')ap(det())});
+    ap(d.theme||d);if(d.primary)setP(d.primary,d.primaryHover)});
+  window.addEventListener('storage',function(e){if(e.key==='krou_theme_manual'||e.key==='krou_theme_auto')ap(det());if(e.key==='krou_theme_primary')setP(e.newValue)});
 })();
 function goBack(){if(dirty){uiConfirm('មានទិន្នន័យមិនទាន់រក្សាទុក។ ចាកចេញ?',{okText:'ចាកចេញ'}).then(v=>{if(v)leave()})}else leave()}
 function leave(){dirty=false;try{window.close()}catch(e){}setTimeout(()=>{location.href='index.html'},150)}
@@ -178,6 +191,7 @@ function ddmm(d){const m=String(d||'').match(/^\d{4}-(\d\d)-(\d\d)$/);return m?m
 function isF(s){return /ស្រី|^f|female|girl/i.test(String(s.gender||''))}
 
 /* ───────── ស្ថានភាព ───────── */
+const KMC=(function(){try{return new Intl.Collator('km',{numeric:true,sensitivity:'base'})}catch(e){return{compare:(a,b)=>a<b?-1:a>b?1:0}}})();
 let STU=[];            // សិស្សថ្នាក់បច្ចុប្បន្ន
 let ALL=[];            // សិស្សទាំងអស់ដែលមានសិទ្ធិ
 let COLS=[];           // [{id,w,d}]
@@ -238,7 +252,7 @@ async function loadSheet(){
   const card=document.getElementById('card');
   if(!cls){card.innerHTML='<div class="empty">គ្មានថ្នាក់ទទួលបន្ទុក។ សូមទាក់ទង Admin។</div>';return}
   card.innerHTML='<div class="empty">កំពុងផ្ទុក…</div>';
-  STU=ALL.filter(s=>gKey(s.grade)===gKey(cls)).sort((a,b)=>(+a.id||0)-(+b.id||0));
+  STU=ALL.filter(s=>gKey(s.grade)===gKey(cls)).sort((a,b)=>KMC.compare(String(a.student_name||'').trim(),String(b.student_name||'').trim())||((+a.id||0)-(+b.id||0))); /* តម្រៀបឈ្មោះតាមលំដាប់អក្សរខ្មែរ */
   const r=await fetchSheet(cls,ym);
   if(seq!==loadSeq)return;
   if(r.error){card.innerHTML='<div class="empty">⚠️ '+esc(r.error.message)+'<br><small>(បើជាលើកដំបូង សូម Run savings_setup.sql ក្នុង Supabase)</small></div>';return}
