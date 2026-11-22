@@ -403,7 +403,7 @@ function exportCsv(){
   const f=v=>v>0?v.toFixed(2):'';
   const rows=L.map(o=>{const s=o.s,b=band(o.v);return [o.rk||'',s.name,s.sex,p,f(o.v),b?BANDN[b]:''].concat(MONTHS.map(m=>f(s.mon[m])),[f(s.ex1),f(s.ex2),f(s.s1),f(s.s2),f(s.year)])});
   const csv='﻿'+[head].concat(rows).map(r=>r.map(c=>'"'+String(c).replace(/"/g,'""')+'"').join(',')).join('\r\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='លទ្ធផលសិក្សា_ថ្នាក់'+CLS+'.csv';
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=('លទ្ធផលសិក្សា_ថ្នាក់'+CLS+'_'+p).replace(/[\\\/:*?"<>|\s]+/g,'_')+'.csv';
   document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);toast('✅ បាននាំចេញ');
 }
 init();
