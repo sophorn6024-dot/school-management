@@ -715,7 +715,7 @@ body.dc-lock{overflow:hidden}
 .mnav-ico{width:28px;height:28px}
 /* ប៊ូតុងបង្រួម/ពង្រីក៖ ចំកណ្ដាលគែម sidebar (desktop) */
 @media (min-width:769px){
-.collapse-arrow-btn{position:fixed;top:50%;left:calc(var(--sidebar-w) - 16px);transform:translateY(-50%);width:32px;height:32px;font-size:17px;z-index:70;background:var(--sidebar-navy);border:1px solid var(--sidebar-border);color:#e2e8f0;box-shadow:0 4px 14px rgba(0,0,0,.35);transition:left var(--anim-speed,.3s) cubic-bezier(.4,0,.2,1),background .2s ease}
+.collapse-arrow-btn{position:fixed;top:30px;left:calc(var(--sidebar-w) - 16px);transform:translateY(-50%);width:32px;height:32px;font-size:17px;z-index:70;background:var(--sidebar-navy);border:1px solid var(--sidebar-border);color:#e2e8f0;box-shadow:0 4px 14px rgba(0,0,0,.35);transition:left var(--anim-speed,.3s) cubic-bezier(.4,0,.2,1),background .2s ease}
 .collapse-arrow-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
 .sidebar.collapsed .collapse-arrow-btn{left:calc(var(--sidebar-w-collapsed) - 16px);margin:0}
 .sidebar.collapsed:hover .collapse-arrow-btn{left:calc(var(--sidebar-w) - 16px)}
@@ -3586,6 +3586,7 @@ function renderSidebarProfile() {
   const teacherNav = document.getElementById('teacherAdminNav');
   if (teacherNav) teacherNav.style.display = IS_ADMIN ? 'flex' : 'none';
   try { renderHeroPhoto(); } catch (e) {}
+  setTimeout(alignCollapseBtn, 50); setTimeout(alignCollapseBtn, 700);
 }
 let CLASS_YEAR = '';
 function closeClsMenu() { const m = document.getElementById('clsMenu'); if (m) m.remove(); }
@@ -3843,7 +3844,16 @@ window.addEventListener('hashchange', () => {
   const h = window.location.hash.replace('#', '');
   if (h && h !== currentPage && CURRENT_USER && CURRENT_USER.username) navigate(h, null);
 });
-function toggleSidebarCollapse() { var c = document.getElementById('sidebar').classList.toggle('collapsed'); try { localStorage.setItem('krou_sb_collapsed', c ? '1' : '0'); } catch (e) {} }
+function alignCollapseBtn() {
+  try {
+    var b = document.getElementById('collapseArrowBtn'), a = document.getElementById('sidebarAvatar');
+    if (!b || !a || window.innerWidth <= 768) return;
+    var r = a.getBoundingClientRect(); if (r.height) b.style.top = Math.round(r.top + r.height / 2) + 'px';
+  } catch (e) {}
+}
+window.addEventListener('resize', alignCollapseBtn);
+window.addEventListener('load', function(){ alignCollapseBtn(); setTimeout(alignCollapseBtn, 600); });
+function toggleSidebarCollapse() { var c = document.getElementById('sidebar').classList.toggle('collapsed'); try { localStorage.setItem('krou_sb_collapsed', c ? '1' : '0'); } catch (e) {} [0, 120, 400, 800].forEach(function(t){ setTimeout(alignCollapseBtn, t); }); }
 
 /* ===== 📱 MORE SHEET ===== */
 const MORE_ITEMS = [
