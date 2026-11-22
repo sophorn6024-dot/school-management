@@ -2992,7 +2992,7 @@ function googleWait(session) {
   document.getElementById('gwCancel').onclick = async function () { googleWaitStop(); await authSignOut(); };
   let busy = false;
   _gwTimer = setInterval(async function () {
-    if (busy) return; busy = true;
+    if (busy || document.hidden) return; busy = true;
     try {
       const { data, error } = await sb.rpc('google_login');
       if (error) return;
@@ -3054,7 +3054,7 @@ function googlePay(session, info) {
   };
   var busy = false;
   _gwTimer = setInterval(async function () {   // ប្រសិន admin អនុម័តពេលកំពុងនៅទំព័រនេះ
-    if (busy) return; busy = true;
+    if (busy || document.hidden) return; busy = true;
     try {
       var r = await sb.rpc('google_login');
       var d = r.data || {};
@@ -4800,8 +4800,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   var base = {}, seen = {}, dismissedSig = {}, busy = false;
   function sig(t){ var h=0; for (var i=0;i<t.length;i++){ h=(h*31+t.charCodeAt(i))|0; } return t.length+':'+h; }
   async function fetchSig(url, mode){
-    var u = mode === 'cached' ? url : url + (url.indexOf('?') < 0 ? '?' : '&') + '_v=' + Date.now();
-    var r = await fetch(u, mode === 'cached' ? { cache: 'force-cache' } : { cache: 'no-store' });
+    /* 'fresh' = សួរ server ដោយ ETag (304 តូចបើមិនប្ដូរ) · 'cached' = កំណែដែលកំពុងបង្ហាញក្នុង cache */
+    var r = await fetch(url, mode === 'cached' ? { cache: 'force-cache' } : { cache: 'no-cache' });
     if (!r.ok) throw 0;
     return sig(await r.text());
   }
@@ -4814,7 +4814,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     return list;
   }
   async function check(){
-    if (busy) return; busy = true;
+    if (busy || document.hidden) return; busy = true;
     try {
       var t = targets();
       for (var k = 0; k < t.length; k++) {
@@ -4851,7 +4851,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   };
   window.checkForUpdate = check;
   check();
-  setInterval(check, 30000);
+  setInterval(check, 60000);
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) check(); });
   window.addEventListener('focus', check);
   window.addEventListener('online', check);
@@ -4876,18 +4876,19 @@ setInterval(function () { const el = document.getElementById('dashRoleTopTag'); 
   var MN=['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
   var DW=['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
   var lastDay=-1;
+  function kh(v){ return String(v).replace(/[0-9]/g,function(d){ return '០១២៣៤៥៦៧៨៩'.charAt(d); }); }
   function tick(){
     var el=document.getElementById('ckHm'); if(!el)return;
     var n=new Date(),h=n.getHours(),h12=h%12||12;
-    el.textContent=h12+':'+String(n.getMinutes()).padStart(2,'0');
-    document.getElementById('ckS').textContent=String(n.getSeconds()).padStart(2,'0');
+    el.textContent=kh(h12)+':'+kh(String(n.getMinutes()).padStart(2,'0'));
+    document.getElementById('ckS').textContent=kh(String(n.getSeconds()).padStart(2,'0'));
     document.getElementById('ckP').textContent=h<12?'ព្រឹក':(h<17?'រសៀល':(h<19?'ល្ងាច':'យប់'));
     if(lastDay!==n.getDate()){
       lastDay=n.getDate();
-      document.getElementById('ckSolar').textContent='ថ្ងៃទី'+n.getDate()+' ខែ'+MN[n.getMonth()]+' ឆ្នាំ'+n.getFullYear();
+      document.getElementById('ckSolar').textContent='ថ្ងៃទី'+kh(n.getDate())+' ខែ'+MN[n.getMonth()]+' ឆ្នាំ'+kh(n.getFullYear());
       try{
         var k=momentkh.fromGregorian(n.getFullYear(),n.getMonth()+1,n.getDate()).khmer;
-        document.getElementById('ckLunar').textContent='ថ្ងៃ'+DW[n.getDay()]+' '+k.day+(k.moonPhase===0?'កើត':'រោច')+' ខែ'+(LMc[k.monthIndex]||k.monthName)+' ឆ្នាំ'+k.animalYearName+' '+k.sakName+' ពុទ្ធសករាជ '+k.beYear;
+        document.getElementById('ckLunar').textContent='ថ្ងៃ'+DW[n.getDay()]+' '+kh(k.day)+(k.moonPhase===0?'កើត':'រោច')+' ខែ'+(LMc[k.monthIndex]||k.monthName)+' ឆ្នាំ'+k.animalYearName+' '+k.sakName+' ពុទ្ធសករាជ '+kh(k.beYear);
       }catch(e){}
     }
   }

@@ -1,5 +1,5 @@
 /* Service worker: network-first (ទំព័រថ្មីជានិច្ច) → ប្រើ cache ពេលគ្មានអ៊ីនធឺណិត */
-const CACHE = 'kpl-v2';   /* v2: សម្អាត cache ចាស់ (មុនមាន ?v=Date.now ធ្វើឱ្យ cache ប៉ោង) */
+const CACHE = 'kpl-v3';   /* v3: ទំព័រ html ត្រូវសួរ server ជានិច្ច (no-cache) មិនយក HTTP cache ចាស់ */
 self.addEventListener('install', e => { self.skipWaiting(); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
@@ -10,11 +10,14 @@ self.addEventListener('fetch', e => {
   const u = new URL(r.url);
   if (u.origin !== location.origin) return;          // Supabase / CDN មិនប៉ះពាល់
   const key = u.origin + u.pathname;                 // មិនរាប់ ?theme=… ដើម្បី cache មិនប៉ោង
+  /* ទំព័រ html: បង្ខំឱ្យសួរ server ម្ដងទៀត (304 បើមិនប្ដូរ) — កុំឱ្យ HTTP cache របស់ browser ផ្ដល់ទំព័រចាស់ */
+  const isDoc = r.mode === 'navigate' || r.destination === 'document' || r.destination === 'iframe' || /\.html?$/.test(u.pathname) || /\/$/.test(u.pathname);
+  const req = isDoc ? new Request(r, { cache: 'no-cache' }) : r;
   e.respondWith(
-    fetch(r).then(res => {
+    fetch(req).then(res => {
       if (res && res.ok) { const c = res.clone(); caches.open(CACHE).then(ch => ch.put(key, c)); }
       return res;
-    }).catch(() => caches.match(key).then(m => m || caches.match('index.html')))
+    }).catch(() => caches.match(key).then(m => m || (isDoc ? caches.match('index.html') : undefined)).then(m => m || Response.error()))
   );
 });
 
