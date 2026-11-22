@@ -713,6 +713,21 @@ body.dc-lock{overflow:hidden}
 .m-nav-item:not(.active) .mnav-ico .ico3{opacity:.92}
 .m-nav-item.active .mnav-ico .ico3{animation:icoBob 2.4s ease-in-out infinite}
 .mnav-ico{width:28px;height:28px}
+/* ប៊ូតុងបង្រួម/ពង្រីក៖ ចំកណ្ដាលគែម sidebar (desktop) */
+@media (min-width:769px){
+.collapse-arrow-btn{position:fixed;top:50%;left:calc(var(--sidebar-w) - 16px);transform:translateY(-50%);width:32px;height:32px;font-size:17px;z-index:70;background:var(--sidebar-navy);border:1px solid var(--sidebar-border);color:#e2e8f0;box-shadow:0 4px 14px rgba(0,0,0,.35);transition:left var(--anim-speed,.3s) cubic-bezier(.4,0,.2,1),background .2s ease}
+.collapse-arrow-btn:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+.sidebar.collapsed .collapse-arrow-btn{left:calc(var(--sidebar-w-collapsed) - 16px);margin:0}
+.sidebar.collapsed:hover .collapse-arrow-btn{left:calc(var(--sidebar-w) - 16px)}
+[data-theme="light"] .collapse-arrow-btn{background:#fff;border-color:rgba(15,23,42,.15);color:#475569}
+[data-theme="light"] .collapse-arrow-btn:hover{background:var(--primary);color:#fff}
+}
+.hero-building-icon.has-photo{cursor:pointer}
+/* រូប profile ក្នុងកាតដើម */
+.hero-building-icon.has-photo{border-radius:50%!important;overflow:hidden;width:70px;height:70px;border:3px solid rgba(255,255,255,.85)!important;box-shadow:0 6px 16px rgba(0,0,0,.25)!important;background:var(--primary)!important;animation:none!important}
+.hero-building-icon.has-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-building-icon.has-photo .hp-ch{font-size:28px;font-weight:700;color:#fff;line-height:1}
+@media (max-width:480px){.hero-building-icon.has-photo{width:54px;height:54px}.hero-building-icon.has-photo .hp-ch{font-size:22px}}
 /* 3D school */
 .hero-building-icon{background:transparent!important;box-shadow:none!important;width:70px;height:70px;border-radius:20px}
 .hero-building-icon::after{display:none}
@@ -1555,7 +1570,7 @@ document.addEventListener('DOMContentLoaded',function(){ var f=document.getEleme
   </main>
 </div>
 
-<div class="upd-toast" id="updToast" role="status"><span class="ui">⟳</span><div style="flex:1;min-width:0"><b>កំណែថ្មីមានហើយ</b><small>ចុច «ផ្ទុកឡើងវិញ» ដើម្បីទទួលបានការកែប្រែថ្មីៗ</small></div><button class="ub" type="button" onclick="location.reload()">ផ្ទុកឡើងវិញ</button><button class="ux" type="button" onclick="dismissUpdate()" aria-label="បិទ">✕</button></div>
+<div class="upd-toast" id="updToast" role="status"><span class="ui">⟳</span><div style="flex:1;min-width:0"><b>កំណែថ្មីមានហើយ</b><small>ចុច «ផ្ទុកឡើងវិញ» ដើម្បីទទួលបានការកែប្រែថ្មីៗ</small></div><button class="ub" type="button" onclick="applyUpdate()">ផ្ទុកឡើងវិញ</button><button class="ux" type="button" onclick="dismissUpdate()" aria-label="បិទ">✕</button></div>
 <div class="push-ask" id="pushAsk" role="dialog"><div class="pa-t"><b>🔔 បើកការជូនដំណឹងសារ</b>ទទួលដំណឹងសារថ្មី ទោះបិទ browser</div><button class="pa-y" type="button" onclick="pushEnable()">បើក</button><button class="pa-n" type="button" onclick="pushLater()">ពេលក្រោយ</button></div>
 <div class="login-toast" id="loginToast" role="status" aria-live="polite"><span class="lt-ic">✓</span><div style="min-width:0"><b>ចូលប្រព័ន្ធបានជោគជ័យ</b><small id="loginToastName"></small></div></div>
 <div class="chat-toast" id="chatToast" onclick="openChatFromToast()">
@@ -3538,6 +3553,17 @@ async function verifySession() {
   } catch (err) { console.warn('Verify session error:', err); return true; }
 }
 
+function renderHeroPhoto() {
+  const url = (typeof TEACHER_PHOTO_URL !== 'undefined' && TEACHER_PHOTO_URL) ? String(TEACHER_PHOTO_URL).trim() : '';
+  document.querySelectorAll('.hero-building-icon').forEach(el => {
+    if (!url) { if (el.classList.contains('has-photo')) { el.classList.remove('has-photo'); el.onclick = null; el.removeAttribute('title'); delete el.dataset.src; el.innerHTML = SCHOOL3D; } return; }
+    if (el.classList.contains('has-photo') && el.dataset.src === url) return;
+    el.classList.add('has-photo'); el.dataset.src = url; el.innerHTML = ''; el.title = 'ព័ត៌មានផ្ទាល់ខ្លួន'; el.onclick = () => navigate('my_profile');
+    const im = new Image(); im.alt = 'photo'; im.src = url;
+    im.onerror = () => { el.classList.remove('has-photo'); delete el.dataset.src; el.innerHTML = SCHOOL3D; };
+    el.appendChild(im);
+  });
+}
 function renderSidebarProfile() {
   const nameEl = document.getElementById('sidebarTeacherName');
   const roleEl = document.getElementById('sidebarTeacherRole');
@@ -3559,6 +3585,7 @@ function renderSidebarProfile() {
   }
   const teacherNav = document.getElementById('teacherAdminNav');
   if (teacherNav) teacherNav.style.display = IS_ADMIN ? 'flex' : 'none';
+  try { renderHeroPhoto(); } catch (e) {}
 }
 let CLASS_YEAR = '';
 function closeClsMenu() { const m = document.getElementById('clsMenu'); if (m) m.remove(); }
@@ -3761,7 +3788,7 @@ function navigate(page, el) {
   overlay.classList.add('show');
   const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
   const themeConfig = DAY_THEMES[new Date().getDay()] || DAY_THEMES[6];
-  frame.src = `${page}.html?theme=${encodeURIComponent(currentTheme)}&primary=${encodeURIComponent(softPalette(themeConfig, currentTheme === 'dark').primary)}${(PENDING_VIEW && page === PENDING_PAGE) ? '&view=' + encodeURIComponent(PENDING_VIEW) : ''}`;
+  frame.src = `${page}.html?theme=${encodeURIComponent(currentTheme)}&primary=${encodeURIComponent(softPalette(themeConfig, currentTheme === 'dark').primary)}${(PENDING_VIEW && page === PENDING_PAGE) ? '&view=' + encodeURIComponent(PENDING_VIEW) : ''}${(function(){try{var b=sessionStorage.getItem('krou_bust');return b?'&_v='+b:''}catch(e){return ''}})()}`;
   if (!SOLO) PENDING_VIEW = '';   /* tab របាយការណ៍ (SOLO) រក្សាទុក ព្រោះ navigate ត្រូវបានហៅច្រើនដង */
   /* លាក់ «កំពុងផ្ទុក» ភ្លាមពេលទំព័រកូនអាចប្រើបាន (មិនរង់ចាំ font/CDN ចប់) */
   const want = page + '.html';
@@ -4760,38 +4787,65 @@ window.addEventListener('DOMContentLoaded', async () => {
 /* ===== 🔄 ពិនិត្យកំណែថ្មី (index + ទំព័រកូនដែលកំពុងបើក) ===== */
 (function(){
   if (!/^https?:/.test(location.protocol)) return;
-  var base = {}, seen = {}, dismissedSig = {};
+  var base = {}, seen = {}, dismissedSig = {}, busy = false;
   function sig(t){ var h=0; for (var i=0;i<t.length;i++){ h=(h*31+t.charCodeAt(i))|0; } return t.length+':'+h; }
-  async function fetchSig(path){
-    var r = await fetch(location.origin + path + '?_v=' + Date.now(), { cache: 'no-store' });
+  async function fetchSig(url, mode){
+    var u = mode === 'cached' ? url : url + (url.indexOf('?') < 0 ? '?' : '&') + '_v=' + Date.now();
+    var r = await fetch(u, mode === 'cached' ? { cache: 'force-cache' } : { cache: 'no-store' });
     if (!r.ok) throw 0;
     return sig(await r.text());
   }
   function targets(){
-    var list = [location.pathname];
+    var list = [{ key: location.pathname, url: location.pathname }];
     try {
-      var f = document.getElementById('pageFrame'), p = f && f.contentWindow && f.contentWindow.location.pathname;
-      if (p && /\.html$/.test(p) && p !== location.pathname) list.push(p);
+      var f = document.getElementById('pageFrame'), lc = f && f.contentWindow && f.contentWindow.location, p = lc && lc.pathname;
+      if (p && /\.html$/.test(p) && p !== location.pathname) list.push({ key: p, url: p + (lc.search || '') });
     } catch(e) {}
     return list;
   }
   async function check(){
-    var t = targets();
-    for (var k = 0; k < t.length; k++) {
-      try {
-        var s = await fetchSig(t[k]);
-        if (base[t[k]] === undefined) { base[t[k]] = s; continue; }
-        seen[t[k]] = s;
-        if (s !== base[t[k]] && s !== dismissedSig[t[k]]) document.getElementById('updToast').classList.add('show');
-      } catch(e) {}
-    }
+    if (busy) return; busy = true;
+    try {
+      var t = targets();
+      for (var k = 0; k < t.length; k++) {
+        var key = t[k].key;
+        try {
+          var fresh = await fetchSig(t[k].url.split('?')[0], 'fresh');
+          if (base[key] === undefined) {
+            /* កំណែដែលកំពុងបង្ហាញពិតប្រាកដ = ច្បាប់ចម្លងក្នុង cache (មិនមែនកំណែថ្មីបំផុត) */
+            var cur = fresh;
+            try { cur = await fetchSig(t[k].url, 'cached'); } catch(e) {}
+            base[key] = cur;
+          }
+          seen[key] = fresh;
+          if (fresh !== base[key] && fresh !== dismissedSig[key]) document.getElementById('updToast').classList.add('show');
+        } catch(e) {}
+      }
+    } finally { busy = false; }
   }
   window.dismissUpdate = function(){ for (var k in seen) dismissedSig[k] = seen[k]; document.getElementById('updToast').classList.remove('show'); };
+  window.applyUpdate = async function(){
+    try { if (window.caches) { var ks = await caches.keys(); await Promise.all(ks.map(function(k){ return caches.delete(k); })); } } catch(e) {}
+    try { if (navigator.serviceWorker) { var rs = await navigator.serviceWorker.getRegistrations(); await Promise.all(rs.map(function(r){ return r.update().catch(function(){}); })); } } catch(e) {}
+    try { sessionStorage.setItem('krou_bust', String(Date.now())); } catch(e) {}
+    var idxChanged = seen[location.pathname] !== undefined && seen[location.pathname] !== base[location.pathname];
+    var fr = document.getElementById('pageFrame'), fp = ''; try { fp = fr.contentWindow.location.pathname; } catch(e) {}
+    if (idxChanged || !fp || !/\.html$/.test(fp)) { location.reload(); return; }
+    /* ទំព័រកូនប្តូរតែមួយ: ផ្ទុកទំព័រកូនឡើងវិញ ដោយមិនបោះបង់ទំព័រមេ */
+    try {
+      var u = new URL(fr.contentWindow.location.href); u.searchParams.set('_v', String(Date.now()));
+      delete base[fp]; delete seen[fp]; delete dismissedSig[fp];
+      fr.src = u.pathname + u.search + u.hash;
+      document.getElementById('updToast').classList.remove('show');
+    } catch(e) { location.reload(); }
+  };
   window.checkForUpdate = check;
   check();
-  setInterval(check, 60000);
+  setInterval(check, 30000);
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) check(); });
   window.addEventListener('focus', check);
+  window.addEventListener('online', check);
+  window.addEventListener('pageshow', function(e){ if (e.persisted) check(); });
   var pf = document.getElementById('pageFrame');
   if (pf) pf.addEventListener('load', function(){ setTimeout(check, 800); });
 })();
@@ -5027,6 +5081,7 @@ function setAccent(el, key) {
 function applyIcons() {
   const set = (sel, key) => document.querySelectorAll(sel).forEach(el => { el.innerHTML = ICONS[key]; });
   document.querySelectorAll('.hero-building-icon').forEach(el => { el.innerHTML = SCHOOL3D; });
+  try { renderHeroPhoto(); } catch (e) {}
   set('.chip.g', 'users'); set('.chip.a', 'clock'); set('.dc-ico', 'calendar');
   const navMap = { dashboard: 'dashboard', addStudent: 'student', card: 'idcard', group: 'group', seating: 'seating', schedule: 'schedule', book: 'book', attendance: 'attendance', score: 'score', chat: 'chat', reportsHub: 'report', teacher: 'teacher' };
   document.querySelectorAll('.nav-link-btn[data-page]').forEach(b => { const k = navMap[b.dataset.page]; const box = b.querySelector('.nav-icon-box'); if (k && box) { box.innerHTML = ico3d(k); setAccent(b, k); } });
