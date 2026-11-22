@@ -1426,7 +1426,7 @@ document.addEventListener('DOMContentLoaded',function(){ var f=document.getEleme
           <div class="shortcuts-pill-grid">
             <div class="shortcut-pill-btn" onclick="navigate('score', null)"><span>📋</span><span>ពិន្ទុខែ</span></div>
             <div class="shortcut-pill-btn" onclick="navigate('attendance', null)"><span>📅</span><span>វត្តមាន</span></div>
-            <div class="shortcut-pill-btn" onclick="navigate('rank', null)"><span>📊</span><span>លទ្ធផល</span></div>
+            <div class="shortcut-pill-btn" onclick="navigate('results', null)"><span>📊</span><span>លទ្ធផល</span></div>
             <div class="shortcut-pill-btn" onclick="navigate('addStudent', null)"><span>👥</span><span>សិស្ស</span></div>
             <div class="shortcut-pill-btn" onclick="showMyQr()"><span>📱</span><span>QR ចូលប្រព័ន្ធ</span></div>
             <div class="shortcut-pill-btn" onclick="openStudentProfileViewer()"><span>🕒</span><span>ប្រវត្តិរូបសិស្ស</span></div>
@@ -5031,7 +5031,7 @@ function applyIcons() {
   const navMap = { dashboard: 'dashboard', addStudent: 'student', card: 'idcard', group: 'group', seating: 'seating', schedule: 'schedule', book: 'book', attendance: 'attendance', score: 'score', chat: 'chat', reportsHub: 'report', teacher: 'teacher' };
   document.querySelectorAll('.nav-link-btn[data-page]').forEach(b => { const k = navMap[b.dataset.page]; const box = b.querySelector('.nav-icon-box'); if (k && box) { box.innerHTML = ico3d(k); setAccent(b, k); } });
   { const sn = document.getElementById('savingsNav'); const sb2 = sn && sn.querySelector('.nav-icon-box'); if (sb2) { sb2.innerHTML = ico3d('savings'); setAccent(sn, 'savings'); } }
-  const sc = { "navigate('score', null)": 'score', "navigate('attendance', null)": 'attendance', "navigate('rank', null)": 'rank', "navigate('addStudent', null)": 'student', 'openStudentProfileViewer()': 'history' };
+  const sc = { "navigate('score', null)": 'score', "navigate('attendance', null)": 'attendance', "navigate('results', null)": 'rank', "navigate('addStudent', null)": 'student', 'openStudentProfileViewer()': 'history' };
   document.querySelectorAll('.shortcut-pill-btn').forEach(b => { const k = sc[b.getAttribute('onclick')]; const sp = b.querySelector('span'); if (k && sp) { sp.innerHTML = ico3d(k); setAccent(b, k); } });
   document.querySelectorAll('.task-icon-purple').forEach(el => { el.innerHTML = ico3d('score'); });
   const lo = document.querySelector('.sidebar-logout-btn > span:first-child'); if (lo) lo.innerHTML = ico3d('logout');
