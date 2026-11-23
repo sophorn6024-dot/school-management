@@ -199,9 +199,9 @@ const CL=n=>isK(n)?String(n):'ថ្នាក់ទី'+toKh(n);
 const cg=s=>String(s==null?'':s).replace(/^ថ្នាក់ទី\s*/,'').trim();
 
 async function load(){
-  if(!ROWS.length)document.getElementById('grid').innerHTML='<div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div>';
+  if(!ROWS.length){let n=0;try{n=Math.min(12,+localStorage.getItem('krou_cls_cnt_'+(USER&&USER.username))||0)}catch(e){}document.getElementById('grid').innerHTML=new Array(n+1).join('<div class="sk"></div>')}
   try{
-    const d=await rpc('staff_class_list'); ROWS=d.rows||[]; ACTIVE=cg(d.active); render();
+    const d=await rpc('staff_class_list'); ROWS=d.rows||[]; ACTIVE=cg(d.active); try{localStorage.setItem('krou_cls_cnt_'+USER.username,String(ROWS.length))}catch(e){} render();
   }catch(e){ document.getElementById('grid').innerHTML=''; uiAlert('❌ ទាញទិន្នន័យមិនបាន៖ '+(e.message||e)+'\n(បើនៅមិនទាន់ run classes_multi.sql សូម run វាក្នុង Supabase សិន)'); }
 }
 function render(){
