@@ -337,7 +337,11 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .profile-viewer-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:10005;align-items:center;justify-content:center;padding:14px}
 .profile-viewer-box{width:100%;max-width:680px;max-height:94vh;background:var(--surface);border:1.5px solid var(--border);border-radius:24px;box-shadow:0 25px 60px rgba(0,0,0,.3);display:flex;flex-direction:column;overflow:hidden;color:var(--text)}
 .pv-top-bar{padding:14px 18px;background:var(--surface-elevated);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-.pv-selector-group{display:flex;align-items:center;gap:8px;flex:1;min-width:250px}
+.pv-selector-group{display:flex;align-items:center;gap:8px;flex:1;min-width:250px;flex-wrap:wrap}
+.pv-selector-group .as-wrap:has(#pvClassSelect){flex:0 0 auto!important;width:auto!important;max-width:none!important;min-width:128px!important}
+.pv-selector-group .as-wrap:has(#pvClassSelect) .as-lb{overflow:visible;text-overflow:clip}
+.pv-selector-group .as-wrap:has(#pvStudentSelect){flex:1 1 180px!important;min-width:0!important;width:auto!important}
+.pv-selector-group .as-wrap:has(#pvStudentSelect) .as-lb{text-overflow:ellipsis}
 .pv-dropdown-select{flex:1;height:38px;border-radius:12px;background:var(--surface);border:1.5px solid var(--border);color:var(--text);font-size:13px;font-weight:700;padding:0 12px;outline:none;cursor:pointer}
 .pv-nav-arrow-btn{width:38px;height:38px;border-radius:12px;background:var(--surface);border:1.5px solid var(--border);color:var(--primary);font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
 .pv-close-btn{width:32px;height:32px;border-radius:50%;background:var(--surface-elevated);border:1px solid var(--border);color:var(--text-muted);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -1611,7 +1615,7 @@ document.addEventListener('DOMContentLoaded',function(){ var f=document.getEleme
   <div class="profile-viewer-box">
     <div class="pv-top-bar">
       <div class="pv-selector-group">
-        <select class="pv-dropdown-select" id="pvClassSelect" style="max-width:130px;" onchange="onPvClassChange()"><option value="">គ្រប់ថ្នាក់</option></select>
+        <select class="pv-dropdown-select" id="pvClassSelect" onchange="onPvClassChange()"><option value="">គ្រប់ថ្នាក់</option></select>
         <select class="pv-dropdown-select" id="pvStudentSelect" onchange="onPvStudentSelect(this.value)"><option value="">កំពុងទាញបញ្ជីឈ្មោះ...</option></select>
         <button class="pv-nav-arrow-btn" onclick="prevStudentProfile()" title="សិស្សមុន">‹</button>
         <button class="pv-nav-arrow-btn" onclick="nextStudentProfile()" title="សិស្សបន្ទាប់">›</button>
@@ -5122,7 +5126,22 @@ const ART = (() => {
   return key => { const f = make[key]; return f ? f('a' + (++n)) : null; };
 })();
 
-function ico3d(key){ return ART(key) || ico3dTile(key); }
+/* ===== 🎨 ICON សាមញ្ញ: ប្រអប់មូលពណ៌ត្រង់ + រូបសាមញ្ញពណ៌ស (ចំណាំងាយតាមពណ៌) ===== */
+const FLAT = {
+  dashboard:['#60a5fa','#2563eb'], student:['#fb923c','#ea580c'], idcard:['#2dd4bf','#0d9488'], group:['#a78bfa','#7c3aed'], seating:['#a3e635','#65a30d'], schedule:['#22d3ee','#0891b2'],
+  book:['#4ade80','#16a34a'], attendance:['#fb7185','#e11d48'], score:['#fbbf24','#d97706'], chat:['#38bdf8','#0284c7'], savings:['#facc15','#ca8a04'],
+  report:['#818cf8','#4f46e5'], teacher:['#f472b6','#db2777'], history:['#2dd4bf','#0f766e'], rank:['#fcd34d','#f59e0b'],
+  logout:['#f87171','#dc2626'], users:['#34d399','#059669'], menu:['#94a3b8','#475569']
+};
+let _fl = 0;
+function icoFlat(key) {
+  const g = ICONS[key] || ICONS.dashboard, c = FLAT[key] || FLAT.dashboard, id = 'fl' + (++_fl);
+  const inner = g.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
+  return `<svg class="ico3" viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient></defs>
+<rect x="1" y="1" width="26" height="26" rx="8.5" fill="url(#${id})"/>
+<g transform="translate(5 5) scale(.75)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">${inner}</g></svg>`;
+}
+function ico3d(key){ return icoFlat(key); }
 const SCHOOL3D = `<svg class="school3" viewBox="0 0 64 64" aria-hidden="true"><defs>
 <linearGradient id="sc1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fef3c7"/><stop offset="1" stop-color="#fcd34d"/></linearGradient>
 <linearGradient id="sc2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fda4af"/><stop offset="1" stop-color="#fb7185"/></linearGradient>
