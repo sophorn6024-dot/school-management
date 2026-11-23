@@ -1307,9 +1307,18 @@ body.solo .iframe-container{bottom:0!important}
 @keyframes sbPulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.55)}100%{box-shadow:0 0 0 16px rgba(255,255,255,0)}}
 .collapse-arrow-btn.pulse{animation:sbPulse .8s ease-out}
 @keyframes sbItem{from{opacity:0;transform:translateX(-14px) scale(.94)}to{opacity:1;transform:none}}
-.sidebar.sb-anim .nav-link-btn,.sidebar.sb-anim .sidebar-theme-btn,.sidebar.sb-anim .sidebar-logout-btn{animation:sbItem .6s cubic-bezier(.22,.8,.3,1) both;animation-delay:calc(var(--k,0)*55ms + 120ms)}
+#mainAppLayout .sidebar.sb-anim .nav-link-btn,#mainAppLayout .sidebar.sb-anim .sidebar-theme-btn,#mainAppLayout .sidebar.sb-anim .sidebar-logout-btn{animation:sbItem .6s cubic-bezier(.22,.8,.3,1) both;animation-delay:calc(var(--k,0)*55ms + 120ms)}
 @keyframes sbAvatar{0%{transform:scale(.8)}60%{transform:scale(1.1)}100%{transform:none}}
 .sidebar.sb-anim #sidebarAvatar{animation:sbAvatar .7s cubic-bezier(.34,1.5,.5,1)}
+
+/* ✨ របាចំហៀងលេចឡើងម្តងមួយៗ (ពេលបើកកម្មវិធី) */
+@keyframes sbIntroDown{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:none}}
+@keyframes sbIntroItem{from{opacity:0;transform:translateX(-26px) scale(.92)}to{opacity:1;transform:none}}
+.sidebar.sb-intro .sidebar-user-header{animation:sbIntroDown .9s cubic-bezier(.22,.8,.3,1) both}
+.sidebar.sb-intro .class-year-pill-box{animation:sbIntroDown .9s .2s cubic-bezier(.22,.8,.3,1) both}
+#mainAppLayout .sidebar.sb-intro .nav-link-btn,#mainAppLayout .sidebar.sb-intro .sidebar-theme-btn,#mainAppLayout .sidebar.sb-intro .sidebar-logout-btn{animation:sbIntroItem .85s cubic-bezier(.22,.8,.3,1) both;animation-delay:calc(var(--k,0)*130ms + 350ms)}
+.sidebar.sb-intro .nav-link-btn .nav-icon-box,.sidebar.sb-intro .nav-link-btn .ico3{animation:icPopS .9s cubic-bezier(.34,1.4,.5,1) both;animation-delay:calc(var(--k,0)*130ms + 650ms)}
+@keyframes icPopS{0%{opacity:0;transform:scale(.3) rotate(-18deg)}60%{opacity:1;transform:scale(1.15) rotate(4deg)}100%{opacity:1;transform:none}}
 </style>
 <script>
 /* ដាក់ logo សាលាចំកណ្ដាល QR (ត្រូវប្រើ correctLevel H ដើម្បីនៅតែស្កេនបាន) */
@@ -2998,7 +3007,7 @@ function showAuthScreen() {
   document.getElementById('mainAppLayout').style.display = 'none';
   try { setLoginRole(LOGIN_ROLE); } catch(e) {}
 }
-function showAppScreen(pageToOpen) {
+function showAppScreen(pageToOpen) { try{setTimeout(playSidebarIntro,120)}catch(e){}
   setTimeout(function () { try { payGate(); } catch (e) {} }, 0);
   document.getElementById('authView').style.display = 'none';
   document.getElementById('mainAppLayout').style.display = 'flex';
@@ -3931,6 +3940,16 @@ function alignCollapseBtn() {
 }
 window.addEventListener('resize', alignCollapseBtn);
 window.addEventListener('load', function(){ alignCollapseBtn(); setTimeout(alignCollapseBtn, 600); });
+
+function playSidebarIntro(){
+  try{
+    var sbEl=document.getElementById('sidebar'); if(!sbEl||window.innerWidth<=768) return;
+    sbEl.querySelectorAll('.nav-link-btn,.sidebar-theme-btn,.sidebar-logout-btn').forEach(function(el,k){el.style.setProperty('--k',k)});
+    sbEl.classList.remove('sb-intro'); void sbEl.offsetWidth; sbEl.classList.add('sb-intro');
+    clearTimeout(playSidebarIntro._t); playSidebarIntro._t=setTimeout(function(){sbEl.classList.remove('sb-intro')},4200);
+  }catch(e){}
+}
+window.addEventListener('load',function(){setTimeout(playSidebarIntro,150)});
 function toggleSidebarCollapse() { var sbEl = document.getElementById('sidebar'); var c = sbEl.classList.toggle('collapsed');
   try { var items = sbEl.querySelectorAll('.nav-link-btn,.sidebar-theme-btn,.sidebar-logout-btn'); items.forEach(function(el, k){ el.style.setProperty('--k', k); });
     sbEl.classList.remove('sb-anim'); void sbEl.offsetWidth; sbEl.classList.add('sb-anim'); clearTimeout(toggleSidebarCollapse._t); toggleSidebarCollapse._t = setTimeout(function(){ sbEl.classList.remove('sb-anim'); }, 1900);
