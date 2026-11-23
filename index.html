@@ -4866,7 +4866,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     var list = [{ key: location.pathname, url: location.pathname }];
     try {
       var f = document.getElementById('pageFrame'), lc = f && f.contentWindow && f.contentWindow.location, p = lc && lc.pathname;
-      if (p && /\.html$/.test(p) && p !== location.pathname) list.push({ key: p, url: p + (lc.search || '') });
+      if (p && p !== 'blank' && p !== location.pathname && lc.origin === location.origin) list.push({ key: p, url: p + (lc.search || '') });
     } catch(e) {}
     return list;
   }
@@ -4897,7 +4897,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     try { sessionStorage.setItem('krou_bust', String(Date.now())); } catch(e) {}
     var idxChanged = seen[location.pathname] !== undefined && seen[location.pathname] !== base[location.pathname];
     var fr = document.getElementById('pageFrame'), fp = ''; try { fp = fr.contentWindow.location.pathname; } catch(e) {}
-    if (idxChanged || !fp || !/\.html$/.test(fp)) { location.reload(); return; }
+    if (idxChanged || !fp || fp === 'blank') { location.reload(); return; }
     /* ទំព័រកូនប្តូរតែមួយ: ផ្ទុកទំព័រកូនឡើងវិញ ដោយមិនបោះបង់ទំព័រមេ */
     try {
       var u = new URL(fr.contentWindow.location.href); u.searchParams.set('_v', String(Date.now()));
