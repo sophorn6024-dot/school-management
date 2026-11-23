@@ -105,7 +105,7 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .stars{position:absolute;inset:0;pointer-events:none;opacity:.45;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:42px 42px}
 .login-wrap{width:min(92vw,430px);position:relative;z-index:2;margin:auto}
 .mascot{height:112px;display:flex;justify-content:center;align-items:flex-end;position:relative;margin-bottom:-18px;z-index:3}
-.husky{width:112px;height:88px;position:relative;animation:float 3s ease-in-out infinite}
+.husky{width:112px;height:88px;position:relative;animation:float 5.4s ease-in-out infinite}
 .ear{position:absolute;top:4px;width:36px;height:42px;background:#cbd5e1;border:4px solid #e2e8f0;transform:rotate(28deg);border-radius:10px 24px 8px 22px;z-index:0}
 .ear.left{left:11px}.ear.right{right:11px;transform:scaleX(-1) rotate(28deg)}
 .head{position:absolute;left:12px;top:17px;width:88px;height:68px;border-radius:48% 48% 44% 44%;background:linear-gradient(180deg,#e5e7eb,#94a3b8);border:4px solid #e2e8f0;box-shadow:0 10px 24px rgba(0,0,0,.22);overflow:hidden}
@@ -113,9 +113,9 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .muzzle{position:absolute;left:25px;bottom:6px;width:38px;height:27px;border-radius:50%;background:#f8fafc}
 .nose{position:absolute;left:14px;top:3px;width:10px;height:7px;border-radius:50%;background:#111827}
 .eye{position:absolute;top:27px;width:14px;height:14px;border-radius:50%;background:#f8fafc;border:3px solid #0f172a;overflow:hidden;animation:blink 4.5s infinite}
-.eye:after{content:"";position:absolute;width:5px;height:5px;border-radius:50%;background:#0f172a;left:3px;top:3px;animation:look 2.4s ease-in-out infinite}
+.eye:after{content:"";position:absolute;width:5px;height:5px;border-radius:50%;background:#0f172a;left:3px;top:3px;animation:look 4.32s ease-in-out infinite}
 .eye.left{left:21px}.eye.right{right:21px}
-.paw{position:absolute;bottom:-8px;width:31px;height:25px;background:#e2e8f0;border:3px solid #cbd5e1;border-radius:50%;z-index:4;animation:paw 2.2s ease-in-out infinite}
+.paw{position:absolute;bottom:-8px;width:31px;height:25px;background:#e2e8f0;border:3px solid #cbd5e1;border-radius:50%;z-index:4;animation:paw 3.96s ease-in-out infinite}
 .paw.left{left:17px;transform:rotate(10deg)}
 .paw.right{right:17px;transform:rotate(-10deg);animation-name:pawRight;animation-delay:.15s}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
@@ -187,8 +187,8 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .nav-icon-box{font-size:18px;width:24px;text-align:center;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .sidebar.collapsed .nav-text{display:none}
 .nav-badge{display:none;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:#ef4444;color:#fff;font-size:10.5px;font-weight:800;line-height:1;border:2px solid var(--surface);box-sizing:border-box}
-.nav-badge.show{display:flex;animation:badgePulse 1.8s infinite}
-.nav-badge.bump{animation:badgePop .5s cubic-bezier(.34,1.56,.64,1),badgePulse 1.8s .5s infinite}
+.nav-badge.show{display:flex;animation:badgePulse 2.88s infinite}
+.nav-badge.bump{animation:badgePop .5s cubic-bezier(.34,1.56,.64,1),badgePulse 2.88s .5s infinite}
 .nav-link-btn .nav-badge{margin-left:auto;border-color:transparent}
 .sidebar.collapsed .nav-link-btn .nav-badge{position:absolute;top:4px;right:8px;min-width:16px;height:16px;font-size:9.5px;margin:0}
 .sidebar-footer{padding:10px 10px max(12px,env(safe-area-inset-bottom));border-top:1px solid var(--sidebar-border);display:flex;flex-direction:column;gap:6px;flex-shrink:0}
@@ -302,7 +302,7 @@ html,body{width:100%;height:100%;height:100dvh;background:var(--bg);color:var(--
 .mnav-lbl{line-height:1.1;white-space:nowrap}
 .m-nav-item:active .mnav-ico{transform:scale(.84)}
 .m-nav-item.active{color:var(--primary);font-weight:700}
-.m-nav-item.active .mnav-ico{animation:icoPop .55s cubic-bezier(.34,1.56,.64,1)}
+.m-nav-item.active .mnav-ico{animation:icoPop 0.99s cubic-bezier(.34,1.56,.64,1)}
 .mnav-ico .nav-badge{position:absolute;top:-8px;right:-12px}
 @keyframes mnavIn{from{transform:translate(-50%,150%);opacity:0}to{transform:translate(-50%,0);opacity:1}}
 @keyframes icoPop{0%{transform:scale(.7) translateY(2px)}55%{transform:scale(1.2) translateY(-3px)}100%{transform:scale(1) translateY(0)}}
@@ -604,7 +604,7 @@ body.chat-page .iframe-container{top:0;bottom:0}
 .dc-modal{display:none;position:fixed;inset:0;z-index:100000;background:rgba(8,12,24,.6);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center}
 .dc-modal.show{display:flex}
 body.dc-lock{overflow:hidden}
-.dc-sheet{display:block;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;border-radius:26px 26px 0 0;padding:16px 14px calc(18px + env(safe-area-inset-bottom));animation:dcUp .28s ease}
+.dc-sheet{display:block;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;border-radius:26px 26px 0 0;padding:16px 14px calc(18px + env(safe-area-inset-bottom));animation:dcUp 0.45s ease}
 .dc-sheet .dc-x{display:inline-block}
 .dc-sheet .dc-day{min-height:46px;height:auto;overflow:visible}
 .dc-sheet .dc-day .n{font-size:16px}.dc-sheet .dc-day .l{font-size:9.5px}.dc-sheet .dc-day .sil{font-size:8px}
@@ -619,7 +619,7 @@ body.dc-lock{overflow:hidden}
 /* ── POPUP ស្អាត (ជំនួស alert/confirm/prompt របស់ browser) ── */
 .dlg-bg{position:fixed;inset:0;z-index:200000;background:rgba(10,18,32,.55);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px;animation:dlgF .15s ease-out}
 @keyframes dlgF{from{opacity:0}to{opacity:1}}
-.dlg{width:min(400px,100%);background:var(--surface-card,#fff);color:var(--text,#0f172a);border:1px solid var(--border,#e2e8f0);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.4);padding:26px 22px 18px;text-align:center;animation:dcUp .22s ease both}
+.dlg{width:min(400px,100%);background:var(--surface-card,#fff);color:var(--text,#0f172a);border:1px solid var(--border,#e2e8f0);border-radius:24px;box-shadow:0 30px 80px rgba(0,0,0,.4);padding:26px 22px 18px;text-align:center;animation:dcUp 0.35s ease both}
 .dlg .ic{width:62px;height:62px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:30px;background:color-mix(in srgb,var(--primary) 15%,transparent)}
 .dlg.ok .ic{background:rgba(16,185,129,.16)}.dlg.err .ic{background:rgba(239,68,68,.15)}.dlg.warn .ic{background:rgba(245,158,11,.18)}
 .dlg h3{margin:0 0 6px;font-size:17px}.dlg p{margin:0;color:var(--text-muted,#64748b);font-size:14px;line-height:1.7;white-space:pre-line;word-break:break-word}
@@ -680,36 +680,36 @@ body.dc-lock{overflow:hidden}
 /* ===== 🎨 ICONS + ANIMATIONS ===== */
 .ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block;overflow:visible}
 .nav-icon-box .ico{width:21px;height:21px}
-.nav-link-btn:hover .nav-icon-box .ico{animation:icoWiggle .6s ease}
-.nav-link-btn.active .nav-icon-box .ico{animation:icoBreath 2.6s ease-in-out infinite}
+.nav-link-btn:hover .nav-icon-box .ico{animation:icoWiggle 1.08s ease}
+.nav-link-btn.active .nav-icon-box .ico{animation:icoBreath 4.68s ease-in-out infinite}
 .nav-link-btn .nav-icon-box{transition:transform .25s}
 .nav-link-btn:hover .nav-icon-box{transform:scale(1.12)}
 @keyframes icoWiggle{0%{transform:rotate(0)}25%{transform:rotate(-12deg) scale(1.1)}55%{transform:rotate(9deg) scale(1.1)}100%{transform:rotate(0) scale(1)}}
 @keyframes icoBreath{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
 /* hero school icon */
-.hero-building-icon{position:relative;animation:heroFloat 4.5s ease-in-out infinite}
-.hero-building-icon::after{content:"";position:absolute;inset:-6px;border-radius:22px;border:2px solid rgba(16,185,129,.45);animation:heroRing 2.8s ease-out infinite;pointer-events:none}
+.hero-building-icon{position:relative;animation:heroFloat 8.1s ease-in-out infinite}
+.hero-building-icon::after{content:"";position:absolute;inset:-6px;border-radius:22px;border:2px solid rgba(16,185,129,.45);animation:heroRing 5.04s ease-out infinite;pointer-events:none}
 .hero-building-icon .ico{width:32px;height:32px;stroke:#fff;stroke-width:1.7}
-.hero-building-icon .flag{transform-origin:12px 3px;animation:flagWave 1.8s ease-in-out infinite}
+.hero-building-icon .flag{transform-origin:12px 3px;animation:flagWave 3.42s ease-in-out infinite}
 @keyframes heroFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 @keyframes heroRing{0%{transform:scale(.92);opacity:.8}100%{transform:scale(1.22);opacity:0}}
 @keyframes flagWave{0%,100%{transform:skewY(0) scaleX(1)}50%{transform:skewY(-9deg) scaleX(.82)}}
 /* chips */
 .chip .ico{width:20px;height:20px}
-.chip.g .ico{animation:icoBreath 2.8s ease-in-out infinite}
+.chip.g .ico{animation:icoBreath 5.04s ease-in-out infinite}
 .chip.a .hand{transform-origin:12px 12px;animation:handSpin 12s linear infinite}
 @keyframes handSpin{to{transform:rotate(360deg)}}
 .dc-ico .ico{width:22px;height:22px}
-.dc-day.today{animation:todayGlow 2.6s ease-in-out infinite}
+.dc-day.today{animation:todayGlow 4.68s ease-in-out infinite}
 @keyframes todayGlow{0%,100%{box-shadow:0 6px 14px rgba(16,185,129,.35)}50%{box-shadow:0 6px 22px rgba(16,185,129,.6)}}
 /* shortcuts + tasks + more sheet */
 .shortcut-pill-btn .ico{width:20px;height:20px;color:var(--primary);transition:transform .25s}
-.shortcut-pill-btn:hover .ico{animation:icoWiggle .6s ease}
+.shortcut-pill-btn:hover .ico{animation:icoWiggle 1.08s ease}
 .task-icon-purple .ico{width:26px;height:26px;stroke:#fff}
-.task-action-card:hover .task-icon-purple .ico{animation:icoWiggle .6s ease}
+.task-action-card:hover .task-icon-purple .ico{animation:icoWiggle 1.08s ease}
 .ms-ico .ico{width:26px;height:26px;color:var(--primary)}
 .ms-item.danger .ms-ico .ico{color:#ef4444}
-.ms-item:active .ms-ico .ico{animation:icoWiggle .5s}
+.ms-item:active .ms-ico .ico{animation:icoWiggle 0.9s}
 /* entrance */
 @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 #dashboardView.active .hero-banner-card,#dashboardView.active .section-headline-group,#dashboardView.active .today-tasks-grid>*,#dashboardView.active .shortcuts-pill-grid>*,#dashboardView.active .admin-classes-panel{animation:fadeUp .55s cubic-bezier(.2,.8,.3,1) both}
@@ -723,10 +723,14 @@ body.dc-lock{overflow:hidden}
 .report-card-item{animation:fadeUp .45s both}
 .report-card-item:nth-child(2){animation-delay:.05s}.report-card-item:nth-child(3){animation-delay:.1s}.report-card-item:nth-child(4){animation-delay:.15s}.report-card-item:nth-child(5){animation-delay:.2s}
 .mnav-ico svg{transition:transform .3s}
-.m-nav-item.active .mnav-ico svg{animation:icoBreath 2.6s ease-in-out infinite .6s}
+.m-nav-item.active .mnav-ico svg{animation:icoBreath 4.68s ease-in-out infinite .6s}
 @media (prefers-reduced-motion:reduce){.hero-building-icon,.hero-building-icon::after,.hero-building-icon .flag,.ico,.chip .hand,.dc-day.today,.report-card-item,#dashboardView.active *{animation:none!important}}
 /* ===== 🧊 3D ICON STYLES ===== */
 .ico3{width:30px;height:30px;display:block;transition:transform .2s ease}
+.ico3 .ig{filter:drop-shadow(0 0 2.4px var(--g))}
+.nav-link-btn.active .ico3 .ig{animation:digGlow 4.56s ease-in-out infinite}
+@keyframes digGlow{0%,100%{filter:drop-shadow(0 0 2px var(--g))}50%{filter:drop-shadow(0 0 5px var(--g))}}
+@media (prefers-reduced-motion:reduce){.nav-link-btn.active .ico3 .ig{animation:none}}
 .nav-icon-box{width:30px!important;height:30px}
 .nav-link-btn:hover .ico3{transform:scale(1.08)}
 .nav-link-btn.active .ico3{animation:none}
@@ -742,7 +746,7 @@ body.dc-lock{overflow:hidden}
 .sidebar-logout-btn .ico3{width:24px;height:24px}
 .mnav-ico .ico3{width:28px;height:28px;filter:drop-shadow(0 3px 4px rgba(0,0,0,.28))}
 .m-nav-item:not(.active) .mnav-ico .ico3{opacity:.92}
-.m-nav-item.active .mnav-ico .ico3{animation:icoBob 2.4s ease-in-out infinite}
+.m-nav-item.active .mnav-ico .ico3{animation:icoBob 4.56s ease-in-out infinite}
 .mnav-ico{width:28px;height:28px}
 /* ប៊ូតុងបង្រួម/ពង្រីក៖ ចំកណ្ដាលគែម sidebar (desktop) */
 @media (min-width:769px){
@@ -762,7 +766,7 @@ body.dc-lock{overflow:hidden}
 .hero-building-icon{background:transparent!important;box-shadow:none!important;width:70px;height:70px;border-radius:20px}
 .hero-building-icon::after{display:none}
 .school3{width:70px;height:70px;display:block;filter:drop-shadow(0 8px 10px rgba(0,0,0,.28))}
-.school3 .flag{transform-origin:32px 6px;animation:flagWave 1.8s ease-in-out infinite}
+.school3 .flag{transform-origin:32px 6px;animation:flagWave 3.42s ease-in-out infinite}
 @media (max-width:480px){.hero-building-icon{width:54px;height:54px}.school3{width:54px;height:54px}}
 
 /* ===== 🌤️ LIGHT SIDEBAR ===== */
@@ -836,10 +840,10 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
 /* ===== LOGIN WELCOME ===== */
 .login-welcome{text-align:center;margin:0 0 20px;position:relative;z-index:3}
-.lw-hi{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e0e7ff;font-size:13px;font-weight:700;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:lwIn .7s .1s both cubic-bezier(.2,.9,.3,1.2)}
-.lw-hi .wave{display:inline-block;transform-origin:70% 70%;animation:wave 2.2s ease-in-out infinite 1s}
-.lw-t{font-family:'Khmer OS Muol Light','Moul',cursive;font-weight:normal;font-size:clamp(17px,5.4vw,23px);line-height:1.8;margin-top:10px;background:linear-gradient(90deg,#fde68a,#fbcfe8,#a5f3fc,#fde68a);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:lwIn .8s .25s both cubic-bezier(.2,.9,.3,1.2),lwShine 6s linear infinite}
-.lw-s{font-size:12.5px;color:#c7d2fe;margin-top:2px;animation:lwIn .8s .4s both}
+.lw-hi{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:#e0e7ff;font-size:13px;font-weight:700;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:lwIn 0.98s .1s both cubic-bezier(.2,.9,.3,1.2)}
+.lw-hi .wave{display:inline-block;transform-origin:70% 70%;animation:wave 3.96s ease-in-out infinite 1s}
+.lw-t{font-family:'Khmer OS Muol Light','Moul',cursive;font-weight:normal;font-size:clamp(17px,5.4vw,23px);line-height:1.8;margin-top:10px;background:linear-gradient(90deg,#fde68a,#fbcfe8,#a5f3fc,#fde68a);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:lwIn 1.12s .25s both cubic-bezier(.2,.9,.3,1.2),lwShine 6s linear infinite}
+.lw-s{font-size:12.5px;color:#c7d2fe;margin-top:2px;animation:lwIn 1.12s .4s both}
 @keyframes lwIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 @keyframes lwShine{to{background-position:250% 0}}
 @keyframes wave{0%,60%,100%{transform:rotate(0)}10%,30%{transform:rotate(16deg)}20%,40%{transform:rotate(-10deg)}50%{transform:rotate(8deg)}}
@@ -1060,9 +1064,9 @@ body:not(.is-admin) [data-admin-only]{display:none!important}
 
 /* ===== 🖼 រូបភាពក្រោមសារស្វាគមន៍ (desktop/tablet ធំ + ទូរស័ព្ទ) ===== */
 @media (min-width:1px){
-  .lw-tags{display:flex;align-items:center;gap:12px;margin-top:14px;color:#c7d2fe;font-weight:600;font-size:15px;animation:lwIn .8s .5s both}
+  .lw-tags{display:flex;align-items:center;gap:12px;margin-top:14px;color:#c7d2fe;font-weight:600;font-size:15px;animation:lwIn 1.12s .5s both}
   .lw-tags i{font-style:normal;color:#f472b6;font-size:9px}
-  .lw-shot{display:block;margin-top:clamp(12px,2.6vh,22px);width:min(100%,500px,calc((100vh - 300px) * 1.6));min-width:300px;animation:lwIn .9s .6s both}
+  .lw-shot{display:block;margin-top:clamp(12px,2.6vh,22px);width:min(100%,500px,calc((100vh - 300px) * 1.6));min-width:300px;animation:lwIn 1.26s .6s both}
   .lw-shot-frame{position:relative;padding:8px;border-radius:20px;background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.18);box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 60px rgba(99,102,241,.25);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
   .lw-shot-frame:before,.lw-shot-frame:after{content:"";position:absolute;width:22px;height:22px;border:2.5px solid #a5b4fc;opacity:.8;pointer-events:none}
   .lw-shot-frame:before{left:-6px;top:-6px;border-right:0;border-bottom:0;border-radius:12px 0 0 0}
@@ -4964,23 +4968,25 @@ refreshAutoThemeUI();
 
 /* ===== 🎨 ICON LIBRARY (SVG line icons) ===== */
 const ICONS = {
-  savings:'<svg class="ico" viewBox="0 0 24 24"><ellipse cx="12" cy="6.5" rx="7" ry="3"/><path d="M5 6.5v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/><path d="M5 11.5v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/></svg>',
-  school:'<svg class="ico" viewBox="0 0 24 24"><path class="flag" d="M12 2.8V6.2l3.2-1.3L12 3.6" fill="rgba(255,255,255,.35)"/><path d="M12 6v1.6"/><path d="M3.5 21V11.2L12 7.6l8.5 3.6V21"/><path d="M2.5 21h19"/><path d="M9.6 21v-4.2a2.4 2.4 0 0 1 4.8 0V21"/><circle cx="12" cy="11.6" r="1.1"/><path d="M6 14.2h.01M18 14.2h.01"/></svg>',
-  dashboard:'<svg class="ico" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="7" height="9" rx="2"/><rect x="13.5" y="3.5" width="7" height="5" rx="2"/><rect x="13.5" y="11.5" width="7" height="9" rx="2"/><rect x="3.5" y="15.5" width="7" height="5" rx="2"/></svg>',
-  student:'<svg class="ico" viewBox="0 0 24 24"><circle cx="10" cy="8" r="3.4"/><path d="M3.5 20c0-3.5 2.9-6 6.5-6 1.2 0 2.3.3 3.2.8"/><path d="M15.5 20.5l.5-2.6 4.1-4.1a1.4 1.4 0 0 1 2 2l-4.1 4.1z"/></svg>',
-  idcard:'<svg class="ico" viewBox="0 0 24 24"><rect x="2.8" y="5" width="18.4" height="14" rx="3"/><circle cx="8.6" cy="11" r="2.1"/><path d="M5.6 16c.4-1.6 1.7-2.5 3-2.5s2.6.9 3 2.5"/><path d="M14.5 10h4M14.5 13.5h3"/></svg>',
-  group:'<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="7.6" r="3"/><circle cx="5.6" cy="10" r="2.3"/><circle cx="18.4" cy="10" r="2.3"/><path d="M6.8 19.5c0-3 2.4-5 5.2-5s5.2 2 5.2 5"/><path d="M1.8 18.5c.1-2.2 1.6-3.7 3.6-3.9M22.2 18.5c-.1-2.2-1.6-3.7-3.6-3.9"/></svg>',
-  book:'<svg class="ico" viewBox="0 0 24 24"><path d="M12 6.5C10 5 7 4.5 3.5 5v13c3.5-.5 6.5 0 8.5 1.5 2-1.5 5-2 8.5-1.5V5C17 4.5 14 5 12 6.5z"/><path d="M12 6.5v13"/></svg>',
-  attendance:'<svg class="ico" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17"/><path d="M9 15l2.2 2.2L15.5 13"/></svg>',
-  score:'<svg class="ico" viewBox="0 0 24 24"><rect x="5" y="4.5" width="14" height="16.5" rx="3"/><rect x="9" y="2.5" width="6" height="4" rx="1.5"/><path d="M9 17v-3M12 17v-6M15 17v-4"/></svg>',
-  chat:'<svg class="ico" viewBox="0 0 24 24"><path d="M20.5 11.5a7.5 7.5 0 0 1-10.9 6.7L4 20l1.7-4.9A7.5 7.5 0 1 1 20.5 11.5z"/><path d="M9 11.5h.01M12.5 11.5h.01M16 11.5h.01"/></svg>',
-  report:'<svg class="ico" viewBox="0 0 24 24"><path d="M14 3H7.5A2.5 2.5 0 0 0 5 5.5v13A2.5 2.5 0 0 0 7.5 21h9a2.5 2.5 0 0 0 2.5-2.5V8z"/><path d="M14 3v5h5"/><path d="M9 17v-2.5M12 17v-4.5M15 17v-3"/></svg>',
-  teacher:'<svg class="ico" viewBox="0 0 24 24"><rect x="2.8" y="3.5" width="18.4" height="10" rx="2"/><path d="M12 13.5v2.5M8 21l4-5 4 5"/><circle cx="12" cy="8.5" r="1.8"/></svg>',
-  history:'<svg class="ico" viewBox="0 0 24 24"><path d="M3.8 12a8.2 8.2 0 1 0 2.5-5.9L3.8 8.6"/><path d="M3.8 4v4.6h4.6"/><path d="M12 7.8V12l2.8 1.8"/></svg>',
-  rank:'<svg class="ico" viewBox="0 0 24 24"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 5.5H4.5v1.2a3 3 0 0 0 3 3M17 5.5h2.5v1.2a3 3 0 0 1-3 3"/><path d="M12 13v4M8.5 20.5h7M9.5 17h5"/></svg>',
-  logout:'<svg class="ico" viewBox="0 0 24 24"><path d="M9.5 20.5H6A2.5 2.5 0 0 1 3.5 18V6A2.5 2.5 0 0 1 6 3.5h3.5"/><path d="M16 16.5l4.5-4.5L16 7.5M20.5 12h-11"/></svg>',
-  menu:'<svg class="ico" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.2"/><circle cx="12" cy="12" r="1.2"/><circle cx="18" cy="12" r="1.2"/></svg>',
-  users:'<svg class="ico" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.2 2.7-5.5 6-5.5s6 2.3 6 5.5"/><path d="M16 5.2a3 3 0 0 1 0 5.6M18 14.8c1.8.7 3 2.4 3 5.2"/></svg>',
+  seating:'<svg class="ico" viewBox="0 0 24 24"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M5 18v2"/><path d="M19 18v2"/></svg>',
+  schedule:'<svg class="ico" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>',
+  savings:'<svg class="ico" viewBox="0 0 24 24"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2h0V5z"/><path d="M2 9v1c0 1.1.9 2 2 2h1"/><path d="M16 11h.01"/></svg>',
+  school:'<svg class="ico" viewBox="0 0 24 24"><path d="m4 6 8-4 8 4"/><path d="m18 10 4 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8l4-2"/><path d="M14 22v-4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v4"/><path d="M18 5v17"/><path d="M6 5v17"/><circle cx="12" cy="9" r="2"/></svg>',
+  dashboard:'<svg class="ico" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>',
+  student:'<svg class="ico" viewBox="0 0 24 24"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>',
+  idcard:'<svg class="ico" viewBox="0 0 24 24"><path d="M16 10h2"/><path d="M16 14h2"/><path d="M6.17 15a3 3 0 0 1 5.66 0"/><circle cx="9" cy="11" r="2"/><rect x="2" y="5" width="20" height="14" rx="2"/></svg>',
+  group:'<svg class="ico" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+  book:'<svg class="ico" viewBox="0 0 24 24"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>',
+  attendance:'<svg class="ico" viewBox="0 0 24 24"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg>',
+  score:'<svg class="ico" viewBox="0 0 24 24"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>',
+  chat:'<svg class="ico" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/></svg>',
+  report:'<svg class="ico" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
+  teacher:'<svg class="ico" viewBox="0 0 24 24"><circle cx="18" cy="15" r="3"/><circle cx="9" cy="7" r="4"/><path d="M10 15H6a4 4 0 0 0-4 4v2"/><path d="m21.7 16.4-.9-.3"/><path d="m15.2 13.9-.9-.3"/><path d="m16.6 18.7.3-.9"/><path d="m19.1 12.2.3-.9"/><path d="m19.6 18.7-.4-1"/><path d="m16.8 12.3-.4-1"/><path d="m14.3 16.6 1-.4"/><path d="m20.7 13.8 1-.4"/></svg>',
+  history:'<svg class="ico" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>',
+  rank:'<svg class="ico" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>',
+  logout:'<svg class="ico" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>',
+  menu:'<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>',
+  users:'<svg class="ico" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
   clock:'<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><g class="hand"><path d="M12 12V7.5"/></g><path d="M12 12l3 2"/></svg>',
   calendar:'<svg class="ico" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg>'
 };
@@ -5139,8 +5145,11 @@ let _fl = 0;
 function icoFlat(key) {
   const g = ICONS[key] || ICONS.dashboard, c = FLAT[key] || FLAT.dashboard;
   const inner = g.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
-  return `<svg class="ico3" viewBox="0 0 28 28" aria-hidden="true"><rect x="1" y="1" width="26" height="26" rx="8" fill="${c[1]}"/>
-<g transform="translate(5 5) scale(.75)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">${inner}</g></svg>`;
+  /* 💠 ស្ទីល DIGITAL: ប្រអប់ងងឹត + គែមពន្លឺ + រូបគូសពណ៌ neon */
+  return `<svg class="ico3" viewBox="0 0 28 28" aria-hidden="true"><rect x="1" y="1" width="26" height="26" rx="8" fill="#0b1426"/>
+<rect x="1.6" y="1.6" width="24.8" height="24.8" rx="7.4" fill="${c[1]}" fill-opacity=".22" stroke="${c[0]}" stroke-opacity=".7" stroke-width="1"/>
+<path d="M5 8.2A3.2 3.2 0 0 1 8.2 5" fill="none" stroke="${c[0]}" stroke-width="1.6" stroke-linecap="round" opacity=".9"/><path d="M23 19.8A3.2 3.2 0 0 1 19.8 23" fill="none" stroke="${c[0]}" stroke-width="1.6" stroke-linecap="round" opacity=".9"/>
+<g class="ig" style="--g:${c[0]}" transform="translate(4.8 4.8) scale(.76)" fill="none" stroke="${c[0]}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</g></svg>`;
 }
 function ico3d(key){ return icoFlat(key); }
 const SCHOOL3D = `<svg class="school3" viewBox="0 0 64 64" aria-hidden="true"><defs>
@@ -5438,7 +5447,7 @@ applyIcons();
 .as-btn.open .as-ch{transform:rotate(180deg)}
 .as-btn:disabled{opacity:.55;cursor:not-allowed}
 .as-pop{display:none;position:fixed;z-index:2147483000;background:#fff;border:1px solid #e2e8f0;border-radius:14px;box-shadow:0 14px 35px rgba(0,0,0,.35);padding:6px;overflow-y:auto;max-height:300px;box-sizing:border-box}
-.as-pop.show{display:block;animation:asIn .14s ease-out}
+.as-pop.show{display:block;animation:asIn 0.22s ease-out}
 @keyframes asIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .as-it{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:700;color:#1e293b;cursor:pointer;font-family:'Khmer OS Battambang','Battambang',sans-serif !important;line-height:1.35}
 .as-it:hover{background:#f1f5f9}
