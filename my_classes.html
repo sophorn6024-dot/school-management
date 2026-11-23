@@ -77,6 +77,29 @@ button,input,select{font-family:inherit}
 .pm-seg button.on{border-color:var(--primary);background:rgba(5,122,85,.12);color:var(--primary)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:11px 18px;border-radius:14px;font-weight:700;z-index:100001;display:none}
 .auth{display:none;text-align:center;padding:80px 16px}
+/* ===== ✨ ANIMATION ===== */
+@keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes boxIn{from{opacity:0;transform:translateY(18px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,14px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes shimmer{0%{background-position:-220px 0}100%{background-position:220px 0}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.card{animation:cardIn .42s cubic-bezier(.2,.8,.25,1) backwards;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease}
+.card.active{animation:cardIn .42s cubic-bezier(.2,.8,.25,1) backwards,glow 2.4s ease-in-out .5s infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 3px rgba(5,122,85,.18),var(--shadow)}50%{box-shadow:0 0 0 6px rgba(5,122,85,.10),var(--shadow)}}
+@media (hover:hover){.card:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(15,23,42,.14)}}
+.btn,.ib,.go,.go2,.cc-acts button,.dlg .acts button,.pm-seg button{transition:transform .15s ease,filter .15s ease,background .2s ease,box-shadow .2s ease}
+.btn:active,.ib:active,.go:active,.go2:active,.cc-acts button:active,.dlg .acts button:active,.pm-seg button:active{transform:scale(.95)}
+@media (hover:hover){.btn:hover,.go:hover,.cc-acts button:hover{filter:brightness(1.06)}.ib:hover{background:rgba(127,127,127,.22)}}
+.cc-bg,.dlg-bg{animation:fadeIn .2s ease both}
+.cc-box,.dlg{animation:boxIn .3s cubic-bezier(.2,.9,.3,1.15) both}
+.toast{animation:toastIn .28s ease both}
+.empty .big{display:inline-block;animation:floaty 3s ease-in-out infinite}
+.sk{height:104px;border-radius:14px;border:1.5px solid var(--border);background:linear-gradient(100deg,rgba(127,127,127,.08) 30%,rgba(127,127,127,.2) 50%,rgba(127,127,127,.08) 70%);background-size:440px 100%;animation:shimmer 1.2s linear infinite}
+.as-pop{transform-origin:top center}
+@keyframes asIn{from{opacity:0;transform:translateY(-6px) scaleY(.92)}to{opacity:1;transform:none}}
+.pm-row{transition:background .15s}.pm-row:hover{background:rgba(127,127,127,.08)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
@@ -159,6 +182,7 @@ const toKh=s=>String(s==null?'':s).replace(/[0-9]/g,d=>'០១២៣៤៥៦៧
 const cg=s=>String(s==null?'':s).replace(/^ថ្នាក់ទី\s*/,'').trim();
 
 async function load(){
+  if(!ROWS.length)document.getElementById('grid').innerHTML='<div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div>';
   try{
     const d=await rpc('staff_class_list'); ROWS=d.rows||[]; ACTIVE=cg(d.active); render();
   }catch(e){ document.getElementById('grid').innerHTML=''; uiAlert('❌ ទាញទិន្នន័យមិនបាន៖ '+(e.message||e)+'\n(បើនៅមិនទាន់ run classes_multi.sql សូម run វាក្នុង Supabase សិន)'); }
@@ -166,10 +190,10 @@ async function load(){
 function render(){
   document.getElementById('cnt').textContent='សរុប '+toKh(ROWS.length)+' ថ្នាក់';
   document.getElementById('empty').style.display=ROWS.length?'none':'block';
-  document.getElementById('grid').innerHTML=ROWS.map(c=>{
+  document.getElementById('grid').innerHTML=ROWS.map((c,i)=>{
     const act=!IS_ADMIN&&cg(c.name).toLowerCase()===ACTIVE.toLowerCase();
     const lv=c.level||(String(c.name).match(/^[0-9០-៩]+/)||[''])[0];
-    return '<div class="card'+(act?' active':'')+'"><div class="top"><div class="ico">🏫</div><div class="nm">ថ្នាក់ទី'+esc(toKh(c.name))+(act?'<span class="badge">កំពុងប្រើ</span>':'')+'</div>'
+    return '<div class="card'+(act?' active':'')+'" style="animation-delay:'+Math.min(i*45,450)+'ms"><div class="top"><div class="ico">🏫</div><div class="nm">ថ្នាក់ទី'+esc(toKh(c.name))+(act?'<span class="badge">កំពុងប្រើ</span>':'')+'</div>'
       +'<button class="ib" title="កែ" onclick="openCls('+c.id+')">✏️</button><button class="ib" title="លុប" onclick="delCls('+c.id+')">🗑️</button></div>'
       +'<div class="sub">'+(lv?'ថ្នាក់ទី '+esc(toKh(lv))+' · ':'')+'ឆ្នាំសិក្សា '+esc(toKh(c.school_year||'—'))+' · សិស្ស '+toKh(c.students||0)+' នាក់'+(IS_ADMIN&&c.owner?'<br><span class="own">👤 '+esc(c.owner)+'</span>':'')+'</div>'
       +'<button class="go" onclick="goStudents('+c.id+')">👥 សិស្ស →</button>'+'</div>';
