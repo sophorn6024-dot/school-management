@@ -38,7 +38,8 @@ button,input,select{font-family:inherit}
 .top{display:flex;align-items:center;gap:8px}
 .ico{width:30px;height:30px;border-radius:9px;background:rgba(37,99,235,.12);display:flex;align-items:center;justify-content:center;font-size:15px}
 .nm{flex:1;font-size:15px;font-weight:800;min-width:0}
-.ib{width:28px;height:28px;border-radius:8px;border:0;background:rgba(127,127,127,.1);cursor:pointer;font-size:12px}
+.ib{width:28px;height:28px;border-radius:8px;border:0;background:rgba(127,127,127,.1);cursor:pointer;font-size:12px;color:var(--text)}
+.ib.back{width:40px;height:40px;border-radius:50%;font-size:26px;line-height:1;padding:0 0 3px;background:var(--surface);border:1.5px solid var(--border);color:var(--text);font-weight:700;box-shadow:var(--shadow);display:inline-flex;align-items:center;justify-content:center}
 .sub{color:var(--muted);margin:6px 0 8px;font-size:12px}
 .badge{display:inline-block;font-size:10.5px;font-weight:800;color:#fff;background:var(--primary);border-radius:10px;padding:2px 9px;margin-left:6px;vertical-align:middle}
 .own{font-size:12.5px;color:var(--blue);font-weight:700}
@@ -106,7 +107,7 @@ button,input,select{font-family:inherit}
 <div class="auth" id="auth"><h2>🔒 សូមចូលប្រព័ន្ធជាមុន</h2></div>
 <div id="main">
   <div class="head">
-    <div style="display:flex;align-items:center;gap:12px"><button class="ib" style="border-radius:50%" onclick="goHub()" title="ត្រឡប់">‹</button><div class="cnt" id="cnt">សរុប 0 ថ្នាក់</div></div>
+    <div style="display:flex;align-items:center;gap:12px"><button class="ib back" onclick="goHub()" title="ត្រឡប់" aria-label="ត្រឡប់">‹</button><div class="cnt" id="cnt">សរុប 0 ថ្នាក់</div></div>
     <div class="hbtns"><button class="btn up" onclick="openPromote()">⬆️ ដំឡើងថ្នាក់</button><button class="btn" onclick="openCls()">＋ បង្កើតថ្នាក់</button></div>
   </div>
   <div class="grid" id="grid"></div>
