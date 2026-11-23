@@ -120,8 +120,9 @@ button,input,select{font-family:inherit}
     <div class="cc-sec"><h5>១ · កម្រិត និងឆ្នាំសិក្សា</h5>
       <div class="cc-school" style="font-size:13px;margin-bottom:10px;padding:8px 10px;border-radius:10px;background:rgba(59,130,246,.08);line-height:1.6">🏫 សាលា៖ <b id="ccSchool">…</b><div style="font-size:11.5px;opacity:.75">ថ្នាក់មិនអាចជាន់ឈ្មោះគ្នា (ឈ្មោះ + ឆ្នាំសិក្សា) ក្នុងសាលានេះ · ប្តូរឈ្មោះសាលាបានក្នុង «ប្រវត្តិរូបរបស់ខ្ញុំ»</div></div>
       <div class="cc-grid">
-        <div><label>កម្រិតថ្នាក់</label><select id="ccLevel" onchange="ccUpdate()"><option value="1">១</option><option value="2">២</option><option value="3">៣</option><option value="4">៤</option><option value="5">៥</option><option value="6">៦</option></select></div>
+        <div><label>កម្រិតថ្នាក់</label><select id="ccLevel" onchange="ccLvChg()"><option value="K">មត្តេយ្យ</option><option value="1">១</option><option value="2">២</option><option value="3">៣</option><option value="4">៤</option><option value="5">៥</option><option value="6">៦</option></select></div>
         <div><label>ឆ្នាំសិក្សា</label><select id="ccYear"></select></div>
+        <div id="ccKRow" style="display:none"><label>កម្រិតមត្តេយ្យ</label><select id="ccK" onchange="ccUpdate()"><option value="ទាប">ថ្នាក់កម្រិតទាប · ៣ ឆ្នាំ</option><option value="មធ្យម">ថ្នាក់កម្រិតមធ្យម · ៤ ឆ្នាំ</option><option value="ខ្ពស់">ថ្នាក់កម្រិតខ្ពស់ · ៥ ឆ្នាំ</option></select></div>
       </div></div>
     <div class="cc-sec"><h5>២ · ឈ្មោះថ្នាក់</h5>
       <div class="cc-grid">
@@ -180,6 +181,8 @@ async function rpc(fn,args){
 let ROWS=[], ACTIVE='', editId=null, customOn=false;
 const KM=['ក','ខ','គ','ឃ','ង','ច','ឆ','ជ'], LA=['A','B','C','D','E','F','G','H'];
 const toKh=s=>String(s==null?'':s).replace(/[0-9]/g,d=>'០១២៣៤៥៦៧៨៩'[d]), toLa=s=>String(s==null?'':s).replace(/[០-៩]/g,d=>'០១២៣៤៥៦៧៨៩'.indexOf(d));
+const isK=n=>/^មត្តេយ្យ/.test(String(n==null?'':n).trim());
+const CL=n=>isK(n)?String(n):'ថ្នាក់ទី'+toKh(n);
 const cg=s=>String(s==null?'':s).replace(/^ថ្នាក់ទី\s*/,'').trim();
 
 async function load(){
@@ -194,7 +197,7 @@ function render(){
   document.getElementById('grid').innerHTML=ROWS.map((c,i)=>{
     const act=!IS_ADMIN&&cg(c.name).toLowerCase()===ACTIVE.toLowerCase();
     const lv=c.level||(String(c.name).match(/^[0-9០-៩]+/)||[''])[0];
-    return '<div class="card'+(act?' active':'')+'" style="animation-delay:'+Math.min(i*120,960)+'ms"><div class="top"><div class="ico">🏫</div><div class="nm">ថ្នាក់ទី'+esc(toKh(c.name))+(act?'<span class="badge">កំពុងប្រើ</span>':'')+'</div>'
+    return '<div class="card'+(act?' active':'')+'" style="animation-delay:'+Math.min(i*120,960)+'ms"><div class="top"><div class="ico">🏫</div><div class="nm">'+esc(CL(c.name))+(act?'<span class="badge">កំពុងប្រើ</span>':'')+'</div>'
       +'<button class="ib" title="កែ" onclick="openCls('+c.id+')">✏️</button><button class="ib" title="លុប" onclick="delCls('+c.id+')">🗑️</button></div>'
       +'<div class="sub">'+(lv?'ថ្នាក់ទី '+esc(toKh(lv))+' · ':'')+'ឆ្នាំសិក្សា '+esc(toKh(c.school_year||'—'))+' · សិស្ស '+toKh(c.students||0)+' នាក់'+(IS_ADMIN&&c.owner?'<br><span class="own">👤 '+esc(c.owner)+'</span>':'')+'</div>'
       +'<button class="go" onclick="goStudents('+c.id+')">👥 សិស្ស →</button>'+'</div>';
@@ -206,7 +209,7 @@ function goHub(){try{parent.postMessage({type:'NAVIGATE',page:'classes'},'*')}ca
 let PM={cls:null,stu:[],mode:'up'};
 function pmFill(sel){return;const a=KM;document.getElementById('pmLetter').innerHTML=a.map(x=>'<option'+(x===sel?' selected':'')+'>'+x+'</option>').join('')}
 function pmDest(){return document.getElementById('pmDestSel').value}
-function pmUpd(){const d=pmDest();document.getElementById('pmPrev').textContent=d?'ថ្នាក់ទី'+toKh(d):'—';pmSum()}
+function pmUpd(){const d=pmDest();document.getElementById('pmPrev').textContent=d?CL(d):'—';pmSum()}
 function pmMode(m){PM.mode=m;document.getElementById('pmModeUp').classList.toggle('on',m==='up');document.getElementById('pmModeGrad').classList.toggle('on',m==='grad');document.getElementById('pmDestSec').style.display=m==='up'?'block':'none';pmSum()}
 function pmChecked(){return [...document.querySelectorAll('#pmList input:checked')].map(i=>+i.dataset.id)}
 function pmAllChg(v){document.querySelectorAll('#pmList input').forEach(i=>i.checked=v);pmSum()}
@@ -215,7 +218,7 @@ async function openPromote(id){
   const list=ROWS.filter(x=>(x.students||0)>0);
   if(!list.length){uiAlert('មិនទាន់មានថ្នាក់ណាមានសិស្សសម្រាប់ដំឡើងទេ');return}
   const sel=document.getElementById('pmSrc');
-  sel.innerHTML=list.map(x=>'<option value="'+x.id+'">ថ្នាក់ទី'+esc(toKh(x.name))+' ('+toKh(x.students||0)+' នាក់)'+(IS_ADMIN&&x.owner?' · '+esc(x.owner):'')+'</option>').join('');
+  sel.innerHTML=list.map(x=>'<option value="'+x.id+'">'+esc(CL(x.name))+' ('+toKh(x.students||0)+' នាក់)'+(IS_ADMIN&&x.owner?' · '+esc(x.owner):'')+'</option>').join('');
   let pick=id&&list.find(x=>x.id===id)?id:null;
   if(!pick){const a=list.find(x=>cg(x.name).toLowerCase()===ACTIVE.toLowerCase());pick=(a||list[0]).id}
   sel.value=String(pick);
@@ -236,11 +239,11 @@ async function pmLoadSrc(id,show){
   all.forEach(x=>{const k=cg(x.name).toLowerCase();if(!seen.has(k)){seen.add(k);opts.push(cg(x.name))}
     if(x.owner&&String(x.owner).toLowerCase()!==String(USER.username).toLowerCase())(own[k]=own[k]||[]).push(x.owner)});
   opts.sort((a,b)=>a.localeCompare(b,'km',{numeric:true}));
-  const m=String(c.name).match(/^(\d+)/),nextLv=m?String((+m[1])+1):'';
+  const m=String(c.name).match(/^(\d+)/),nextLv=m?String((+m[1])+1):(isK(c.name)&&/ខ្ពស់/.test(c.name)?'1':'');
   const ds=document.getElementById('pmDestSel');
-  ds.innerHTML=opts.length?opts.map(o=>'<option value="'+esc(o)+'">ថ្នាក់ទី'+esc(toKh(o))+(own[o.toLowerCase()]?' · 👤 '+esc(own[o.toLowerCase()].join(', ')):'')+'</option>').join(''):'<option value="">(គ្មានថ្នាក់ផ្សេង — សូមបង្កើតថ្នាក់ជាមុន)</option>';
+  ds.innerHTML=opts.length?opts.map(o=>'<option value="'+esc(o)+'">'+esc(CL(o))+(own[o.toLowerCase()]?' · 👤 '+esc(own[o.toLowerCase()].join(', ')):'')+'</option>').join(''):'<option value="">(គ្មានថ្នាក់ផ្សេង — សូមបង្កើតថ្នាក់ជាមុន)</option>';
   const pref=opts.find(o=>nextLv&&o.startsWith(nextLv));if(pref)ds.value=pref;
-  document.getElementById('pmTitle').textContent='⬆️ ដំឡើងថ្នាក់ទី'+toKh(c.name);
+  document.getElementById('pmTitle').textContent='⬆️ ដំឡើង'+CL(c.name);
   document.getElementById('pmAll').checked=true;
   document.getElementById('pmList').innerHTML=stu.map((s,i)=>'<label class="pm-row"><input type="checkbox" checked data-id="'+s.id+'" onchange="pmSum()"><span>'+(i+1)+'. '+esc(s.student_name||'គ្មានឈ្មោះ')+'</span></label>').join('');
   pmMode(m&&+m[1]>=6?'grad':'up');pmUpd();
@@ -251,7 +254,7 @@ async function doPromote(){
   const c=PM.cls,ids=pmChecked(),dest=pmDest();
   if(PM.mode==='grad'){
     if(!ids.length){toast('⚠️ សូមធីកសិស្សយ៉ាងតិច ១ នាក់');return}
-    if(!await uiConfirm('ដាក់សិស្ស '+toKh(ids.length)+' នាក់ ថ្នាក់ទី'+toKh(c.name)+' ជា «បានបញ្ចប់»\n\nទិន្នន័យ ពិន្ទុ វត្តមាន នៅដដែល។ មើលបានក្នុង ព័ត៌មានសិស្ស → ស្ថានភាព «បានបញ្ចប់»។',{okText:'បញ្ជាក់',title:'បញ្ជាក់ការបញ្ចប់ការសិក្សា'}))return;
+    if(!await uiConfirm('ដាក់សិស្ស '+toKh(ids.length)+' នាក់ '+CL(c.name)+' ជា «បានបញ្ចប់»\n\nទិន្នន័យ ពិន្ទុ វត្តមាន នៅដដែល។ មើលបានក្នុង ព័ត៌មានសិស្ស → ស្ថានភាព «បានបញ្ចប់»។',{okText:'បញ្ជាក់',title:'បញ្ជាក់ការបញ្ចប់ការសិក្សា'}))return;
     const b=document.getElementById('pmGo');b.disabled=true;const t=b.textContent;let ok=0,fail=0;
     try{
       for(let i=0;i<ids.length;i+=8){
@@ -266,11 +269,11 @@ async function doPromote(){
   if(!dest){toast('⚠️ សូមជ្រើសថ្នាក់ទិសដៅ');return}
   if(cg(dest).toLowerCase()===cg(c.name).toLowerCase()){toast('⚠️ ថ្នាក់ទិសដៅដូចថ្នាក់ចាស់');return}
   if(!ids.length){toast('⚠️ សូមធីកសិស្សយ៉ាងតិច ១ នាក់');return}
-  if(!await uiConfirm('ចម្លងសិស្ស '+toKh(ids.length)+' នាក់ ពីថ្នាក់ទី'+toKh(c.name)+' ទៅថ្នាក់ទី'+toKh(dest)+'\n\nថ្នាក់ចាស់រក្សាសិស្ស ពិន្ទុ និងវត្តមាននៅដដែល។',{okText:'បញ្ជាក់ ដំឡើង',title:'បញ្ជាក់ការដំឡើងថ្នាក់'}))return;
+  if(!await uiConfirm('ចម្លងសិស្ស '+toKh(ids.length)+' នាក់ ពី'+CL(c.name)+' ទៅ'+CL(dest)+'\n\nថ្នាក់ចាស់រក្សាសិស្ស ពិន្ទុ និងវត្តមាននៅដដែល។',{okText:'បញ្ជាក់ ដំឡើង',title:'បញ្ជាក់ការដំឡើងថ្នាក់'}))return;
   const b=document.getElementById('pmGo');b.disabled=true;const t=b.textContent;b.textContent='⏳ កំពុងធ្វើ...';
   try{
     const d=await rpc('staff_class_promote_copy',{p_class_id:c.id,p_to:dest,p_ids:ids});
-    closePm();await uiAlert('✅ បានដំឡើងថ្នាក់រួចរាល់\nបានចម្លង '+(d.copied||0)+' នាក់ ទៅថ្នាក់ទី'+dest+(d.skipped?'\nរំលង '+d.skipped+' នាក់ (មានក្នុងថ្នាក់នោះរួចហើយ)':'')+'\nថ្នាក់ចាស់នៅរក្សាទិន្នន័យទាំងអស់');
+    closePm();await uiAlert('✅ បានដំឡើងថ្នាក់រួចរាល់\nបានចម្លង '+(d.copied||0)+' នាក់ ទៅ'+CL(dest)+(d.skipped?'\nរំលង '+d.skipped+' នាក់ (មានក្នុងថ្នាក់នោះរួចហើយ)':'')+'\nថ្នាក់ចាស់នៅរក្សាទិន្នន័យទាំងអស់');
     await load();
   }catch(e){uiAlert('❌ '+(e.message||e)+(/promote_copy|function/i.test(String(e.message))?'\n(ត្រូវ run year_promotion_copy.sql ក្នុង Supabase ជាមុន)':''))}
   finally{b.disabled=false;b.textContent=t}
@@ -284,9 +287,15 @@ async function goStudents(id){
   }
   try{parent.postMessage({type:'NAVIGATE',page:'addStudent'},'*')}catch(e){ location.href='addStudent.html'; }
 }
-function ccFill(sel){const a=document.getElementById('ccScript').value==='la'?LA:KM;document.getElementById('ccLetter').innerHTML=a.map(x=>'<option'+(x===sel?' selected':'')+'>'+x+'</option>').join('')}
-function ccVal(){return customOn?toLa(cg(document.getElementById('ccCustomIn').value)):document.getElementById('ccLevel').value+document.getElementById('ccLetter').value}
-function ccUpdate(){document.getElementById('ccPreview').textContent='ថ្នាក់ទី'+(toKh(ccVal())||'—')}
+function ccIsK(){return document.getElementById('ccLevel').value==='K'}
+function ccFill(sel){const a=document.getElementById('ccScript').value==='la'?LA:KM;const def=sel!==undefined?sel:(ccIsK()?'':a[0]);
+  document.getElementById('ccLetter').innerHTML=['',...a].map(x=>'<option value="'+x+'"'+(x===def?' selected':'')+'>'+(x||'គ្មានអក្សរ')+'</option>').join('')}
+function ccLvChg(){document.getElementById('ccKRow').style.display=ccIsK()?'block':'none';ccFill();ccUpdate()}
+function ccVal(){if(customOn)return toLa(cg(document.getElementById('ccCustomIn').value));
+  const L=document.getElementById('ccLetter').value;
+  if(ccIsK())return 'មត្តេយ្យកម្រិត'+document.getElementById('ccK').value+(L?'('+L+')':'');
+  return document.getElementById('ccLevel').value+L}
+function ccUpdate(){document.getElementById('ccPreview').textContent=ccVal()?CL(ccVal()):'—'}
 function ccCustom(){customOn=!customOn;document.getElementById('ccCustomWrap').style.display=customOn?'block':'none';if(customOn)document.getElementById('ccCustomIn').focus();ccUpdate()}
 let SCHOOL_NAME='';
 async function loadSchoolName(){
@@ -301,17 +310,20 @@ function openCls(id){ loadSchoolName();
   editId=id||null; customOn=false; document.getElementById('ccCustomWrap').style.display='none'; document.getElementById('ccCustomIn').value='';
   const now=new Date(),y0=now.getMonth()>=9?now.getFullYear():now.getFullYear()-1;
   let yr=y0+'-'+(y0+1), lv='1', letter='ក', script='km', c=null;
-  if(editId){ c=ROWS.find(x=>x.id===editId); if(c){ yr=c.school_year||yr; const m=String(c.name).match(/^(\d+)([^\d].*)$/); if(m&&/^[A-Za-z]$/.test(m[2]))script='la'; if(m&&(m[2].length===1)){lv=m[1];letter=m[2]}else{customOn=true;document.getElementById('ccCustomWrap').style.display='block';document.getElementById('ccCustomIn').value=c.name} } }
+  if(editId){ c=ROWS.find(x=>x.id===editId); if(c){ yr=c.school_year||yr; const m=String(c.name).match(/^(\d+)([^\d].*)$/); const km=String(c.name).match(/^មត្តេយ្យកម្រិត(ទាប|មធ្យម|ខ្ពស់)(?:\((.+)\))?$/);
+      if(km){lv='K';letter=km[2]||'';document.getElementById('ccK').value=km[1];if(/^[A-Za-z]$/.test(letter))script='la'}
+      else if(/^\d$/.test(String(c.name))){lv=String(c.name);letter=''}
+      else{ if(m&&/^[A-Za-z]$/.test(m[2]))script='la'; if(m&&(m[2].length===1)){lv=m[1];letter=m[2]}else{customOn=true;document.getElementById('ccCustomWrap').style.display='block';document.getElementById('ccCustomIn').value=c.name} } } }
   const yrs=[y0-1,y0,y0+1].map(a=>a+'-'+(a+1)); if(!yrs.includes(yr))yrs.push(yr);
   document.getElementById('ccYear').innerHTML=yrs.map(a=>'<option value="'+a+'"'+(a===yr?' selected':'')+'>'+toKh(a)+'</option>').join('');
-  document.getElementById('ccLevel').value=lv; document.getElementById('ccScript').value=script; ccFill(letter); ccUpdate();
+  document.getElementById('ccLevel').value=lv; document.getElementById('ccKRow').style.display=lv==='K'?'block':'none'; if(lv==='K'&&!editId)document.getElementById('ccK').value='ទាប'; document.getElementById('ccScript').value=script; ccFill(editId?letter:undefined); ccUpdate();
   document.getElementById('ccTitle').textContent=editId?'✏️ កែប្រែថ្នាក់':'＋ បង្កើតថ្នាក់ថ្មី'; document.getElementById('ccSave').textContent=editId?'រក្សាទុក':'បង្កើត';
   document.getElementById('ccBg').style.display='flex';
 }
 function closeCls(){document.getElementById('ccBg').style.display='none'}
 async function saveCls(){
   const name=ccVal(); if(!name){toast('⚠️ សូមបញ្ចូលឈ្មោះថ្នាក់');return}
-  const lvl=customOn?(name.match(/^[0-9]+/)||[''])[0]:document.getElementById('ccLevel').value;
+  const lvl=customOn?(name.match(/^[0-9]+/)||[''])[0]:(ccIsK()?'':document.getElementById('ccLevel').value);
   const data={name:name,level:lvl,school_year:document.getElementById('ccYear').value};
   const b=document.getElementById('ccSave'); b.disabled=true; const t=b.textContent; b.textContent='⏳ ...';
   try{
@@ -322,7 +334,7 @@ async function saveCls(){
 }
 const normCls=t=>String(t==null?'':t).toLowerCase().replace(/[០-៩]/g,d=>'០១២៣៤៥៦៧៨៩'.indexOf(d)).replace(/^(ថ្នាក់ទី|ថ្នាក់)/,'').replace(/[\s()（）]/g,'');
 function purgeDlg(c,info){return new Promise(res=>{
-  const nm='ថ្នាក់ទី'+toKh(c.name), st=+info.students||0, sc=+info.scores||0, ad=+info.att_days||0;
+  const nm=CL(c.name), st=+info.students||0, sc=+info.scores||0, ad=+info.att_days||0;
   const need=!info.shared&&st>0;
   const bg=document.createElement('div');bg.className='dlg-bg';
   bg.innerHTML='<div class="dlg danger pg"><h3 style="font-size:18px;font-weight:700;line-height:1.5;margin:4px 0 12px">លុបថ្នាក់ «'+esc(nm)+'» ជាអចិន្ត្រៃយ៍?</h3>'
