@@ -1269,6 +1269,12 @@ body.solo .iframe-container{bottom:0!important}
 @media (min-width:1101px){.rg-last{column-count:3;column-gap:24px;display:block}.rg-last .rg-title{column-span:all}.rg-last .rg-row{break-inside:avoid;width:100%}}
 @media (min-width:641px) and (max-width:1100px){.rg-last{column-count:2;column-gap:24px;display:block}.rg-last .rg-row{break-inside:avoid;width:100%}}
 [data-theme="dark"] .mnav-indicator{background:linear-gradient(145deg,rgba(255,255,255,.2),rgba(255,255,255,.05) 55%,rgba(255,255,255,.12));border-color:rgba(255,255,255,.25);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.35),0 6px 16px rgba(0,0,0,.35)}
+
+/* GLASS indicator */
+.mnav-indicator{background:radial-gradient(120% 90% at 30% 0%,rgba(255,255,255,.42),rgba(255,255,255,0) 55%),linear-gradient(180deg,rgba(120,150,190,.05),rgba(255,255,255,.05))!important;border:1px solid rgba(255,255,255,.7)!important;border-radius:18px!important;box-shadow:inset 0 1.5px 0 rgba(255,255,255,.95),inset 0 -2px 5px rgba(255,255,255,.45),inset 0 0 10px rgba(255,255,255,.12),0 0 0 1px rgba(30,60,100,.10),0 8px 20px rgba(30,60,100,.16)!important;-webkit-backdrop-filter:blur(6px) saturate(1.6);backdrop-filter:blur(6px) saturate(1.6)}
+.mnav-indicator::after{content:"";position:absolute;left:12%;right:12%;top:3px;height:34%;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.65),rgba(255,255,255,0));pointer-events:none}
+[data-theme="dark"] .mnav-indicator{background:radial-gradient(120% 90% at 30% 0%,rgba(255,255,255,.28),rgba(255,255,255,0) 55%),linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.1))!important;border-color:rgba(255,255,255,.32)!important;box-shadow:inset 0 1.5px 0 rgba(255,255,255,.5),inset 0 0 14px rgba(255,255,255,.12),0 0 0 1px rgba(0,0,0,.3),0 8px 20px rgba(0,0,0,.4)!important}
+[data-theme="dark"] .mnav-indicator::after{background:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,0))}
 </style>
 <script>
 /* ដាក់ logo សាលាចំកណ្ដាល QR (ត្រូវប្រើ correctLevel H ដើម្បីនៅតែស្កេនបាន) */
@@ -3754,7 +3760,7 @@ function updateMobileNavIndicator() {
   const first = !ind.dataset.placed;
   if (first) ind.classList.add('no-anim');
   const a0 = act.style.getPropertyValue('--a0'), a1 = act.style.getPropertyValue('--a1');
-  if (a0 && a1) { ind.style.background = 'linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.03) 60%,rgba(255,255,255,.09))'; ind.style.boxShadow = 'inset 0 1px 1px rgba(255,255,255,.6), inset 0 0 0 1px rgba(255,255,255,.2), 0 0 0 3px rgba(0,0,0,.05), 0 6px 16px rgba(0,0,0,.1)'; ind.style.borderColor = 'rgba(255,255,255,.45)'; }
+  if (a0 && a1) {  }
   ind.style.width = (act.offsetWidth - 6) + 'px';
   ind.style.transform = 'translateX(' + (act.offsetLeft + 3) + 'px)';
   if (first) { void ind.offsetWidth; ind.classList.remove('no-anim'); ind.dataset.placed = '1'; }
