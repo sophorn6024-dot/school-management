@@ -726,16 +726,16 @@ body.dc-lock{overflow:hidden}
 .m-nav-item.active .mnav-ico svg{animation:icoBreath 2.6s ease-in-out infinite .6s}
 @media (prefers-reduced-motion:reduce){.hero-building-icon,.hero-building-icon::after,.hero-building-icon .flag,.ico,.chip .hand,.dc-day.today,.report-card-item,#dashboardView.active *{animation:none!important}}
 /* ===== 🧊 3D ICON STYLES ===== */
-.ico3{width:30px;height:30px;display:block;filter:drop-shadow(0 4px 6px rgba(15,23,42,.18));transition:transform .25s cubic-bezier(.3,1.5,.5,1),filter .25s}
+.ico3{width:30px;height:30px;display:block;transition:transform .2s ease}
 .nav-icon-box{width:30px!important;height:30px}
-.nav-link-btn:hover .ico3{transform:translateY(-2px) scale(1.12) rotate(-4deg);filter:drop-shadow(0 7px 8px rgba(0,0,0,.35))}
-.nav-link-btn.active .ico3{animation:icoBob 2.6s ease-in-out infinite}
+.nav-link-btn:hover .ico3{transform:scale(1.08)}
+.nav-link-btn.active .ico3{animation:none}
 @keyframes icoBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px) scale(1.06)}}
 .shortcut-pill-btn .ico3{width:28px;height:28px}
-.shortcut-pill-btn:hover .ico3{transform:translateY(-2px) scale(1.14) rotate(-5deg)}
+.shortcut-pill-btn:hover .ico3{transform:scale(1.08)}
 .task-icon-purple{background:transparent!important;width:54px;height:54px}
 .task-icon-purple .ico3{width:52px;height:52px}
-.task-action-card:hover .task-icon-purple .ico3{transform:translateY(-3px) scale(1.08) rotate(-5deg)}
+.task-action-card:hover .task-icon-purple .ico3{transform:scale(1.06)}
 .ms-ico{background:transparent!important;width:56px;height:56px}
 .ms-ico .ico3{width:52px;height:52px}
 .ms-item:active .ms-ico .ico3{transform:scale(.9)}
@@ -3588,11 +3588,11 @@ async function verifySession() {
 function renderHeroPhoto() {
   const url = (typeof TEACHER_PHOTO_URL !== 'undefined' && TEACHER_PHOTO_URL) ? String(TEACHER_PHOTO_URL).trim() : '';
   document.querySelectorAll('.hero-building-icon').forEach(el => {
-    if (!url) { if (el.classList.contains('has-photo')) { el.classList.remove('has-photo'); el.onclick = null; el.removeAttribute('title'); delete el.dataset.src; el.innerHTML = SCHOOL3D; } return; }
+    if (!url) { if (el.classList.contains('has-photo')) { el.classList.remove('has-photo'); el.onclick = null; el.removeAttribute('title'); delete el.dataset.src; el.innerHTML = ICONS.school; } return; }
     if (el.classList.contains('has-photo') && el.dataset.src === url) return;
     el.classList.add('has-photo'); el.dataset.src = url; el.innerHTML = ''; el.title = 'ព័ត៌មានផ្ទាល់ខ្លួន'; el.onclick = () => navigate('my_profile');
     const im = new Image(); im.alt = 'photo'; im.src = url;
-    im.onerror = () => { el.classList.remove('has-photo'); delete el.dataset.src; el.innerHTML = SCHOOL3D; };
+    im.onerror = () => { el.classList.remove('has-photo'); delete el.dataset.src; el.innerHTML = ICONS.school; };
     el.appendChild(im);
   });
 }
@@ -5131,14 +5131,15 @@ const FLAT = {
   dashboard:['#60a5fa','#2563eb'], student:['#fb923c','#ea580c'], idcard:['#2dd4bf','#0d9488'], group:['#a78bfa','#7c3aed'], seating:['#a3e635','#65a30d'], schedule:['#22d3ee','#0891b2'],
   book:['#4ade80','#16a34a'], attendance:['#fb7185','#e11d48'], score:['#fbbf24','#d97706'], chat:['#38bdf8','#0284c7'], savings:['#facc15','#ca8a04'],
   report:['#818cf8','#4f46e5'], teacher:['#f472b6','#db2777'], history:['#2dd4bf','#0f766e'], rank:['#fcd34d','#f59e0b'],
-  logout:['#f87171','#dc2626'], users:['#34d399','#059669'], menu:['#94a3b8','#475569']
+  logout:['#f87171','#dc2626'], users:['#34d399','#059669'], menu:['#94a3b8','#475569'],
+  school:['#38bdf8','#0369a1'], accounts:['#a78bfa','#6d28d9']
 };
+ICONS.accounts = ICONS.users;
 let _fl = 0;
 function icoFlat(key) {
-  const g = ICONS[key] || ICONS.dashboard, c = FLAT[key] || FLAT.dashboard, id = 'fl' + (++_fl);
+  const g = ICONS[key] || ICONS.dashboard, c = FLAT[key] || FLAT.dashboard;
   const inner = g.replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
-  return `<svg class="ico3" viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c[0]}"/><stop offset="1" stop-color="${c[1]}"/></linearGradient></defs>
-<rect x="1" y="1" width="26" height="26" rx="8.5" fill="url(#${id})"/>
+  return `<svg class="ico3" viewBox="0 0 28 28" aria-hidden="true"><rect x="1" y="1" width="26" height="26" rx="8" fill="${c[1]}"/>
 <g transform="translate(5 5) scale(.75)" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">${inner}</g></svg>`;
 }
 function ico3d(key){ return icoFlat(key); }
@@ -5163,10 +5164,10 @@ function setAccent(el, key) {
 }
 function applyIcons() {
   const set = (sel, key) => document.querySelectorAll(sel).forEach(el => { el.innerHTML = ICONS[key]; });
-  document.querySelectorAll('.hero-building-icon').forEach(el => { el.innerHTML = SCHOOL3D; });
+  document.querySelectorAll('.hero-building-icon').forEach(el => { el.innerHTML = ICONS.school; });
   try { renderHeroPhoto(); } catch (e) {}
   set('.chip.g', 'users'); set('.chip.a', 'clock'); set('.dc-ico', 'calendar');
-  const navMap = { dashboard: 'dashboard', addStudent: 'student', card: 'idcard', group: 'group', seating: 'seating', schedule: 'schedule', book: 'book', attendance: 'attendance', score: 'score', chat: 'chat', reportsHub: 'report', teacher: 'teacher' };
+  const navMap = { dashboard: 'dashboard', addStudent: 'student', card: 'idcard', group: 'group', seating: 'seating', schedule: 'schedule', book: 'book', attendance: 'attendance', score: 'score', chat: 'chat', reportsHub: 'report', teacher: 'teacher', classes: 'school', student_accounts: 'accounts' };
   document.querySelectorAll('.nav-link-btn[data-page]').forEach(b => { const k = navMap[b.dataset.page]; const box = b.querySelector('.nav-icon-box'); if (k && box) { box.innerHTML = ico3d(k); setAccent(b, k); } });
   { const sn = document.getElementById('savingsNav'); const sb2 = sn && sn.querySelector('.nav-icon-box'); if (sb2) { sb2.innerHTML = ico3d('savings'); setAccent(sn, 'savings'); } }
   const sc = { "navigate('score', null)": 'score', "navigate('attendance', null)": 'attendance', "navigate('results', null)": 'rank', "navigate('addStudent', null)": 'student', 'openStudentProfileViewer()': 'history' };
