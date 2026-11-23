@@ -27,6 +27,20 @@ h1{font-size:18px;font-weight:800}
 .card.soon{opacity:.62}
 .card.soon .ar{font-size:11px;font-weight:800;opacity:1;background:rgba(127,127,127,.18);padding:3px 9px;border-radius:9px;white-space:nowrap}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:11px 18px;border-radius:14px;font-weight:700;z-index:100001;display:none}
+/* ✨ ANIMATION: កាតលោតឡើងម្តងមួយៗ (យឺត រលូន) */
+@keyframes hIn{from{opacity:0;transform:translateY(22px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes hDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+@keyframes icPop{0%{opacity:0;transform:scale(.4) rotate(-14deg)}60%{opacity:1;transform:scale(1.12) rotate(4deg)}100%{opacity:1;transform:none}}
+@keyframes arIn{from{opacity:0;transform:translateX(-8px)}to{opacity:.6;transform:none}}
+@keyframes bdIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+h1{animation:hDown .8s cubic-bezier(.22,.8,.3,1) both}
+.sub{animation:hDown .8s .12s cubic-bezier(.22,.8,.3,1) both}
+.card{animation:hIn .95s cubic-bezier(.22,.8,.3,1) both;animation-delay:calc(var(--i,0)*170ms + 250ms);transition:transform .35s ease,box-shadow .35s ease}
+.card .ic{animation:icPop .9s cubic-bezier(.34,1.4,.5,1) both;animation-delay:calc(var(--i,0)*170ms + 600ms)}
+.card .ar{animation:arIn .8s ease both;animation-delay:calc(var(--i,0)*170ms + 800ms)}
+.card.soon .ar{animation:none}
+.tx i.new{animation:bdIn .6s cubic-bezier(.34,1.4,.5,1) both}
+@media (hover:hover){.card:hover{box-shadow:0 14px 30px rgba(15,23,42,.14)}}
 </style>
 </head>
 <body>
@@ -60,9 +74,17 @@ const CARDS=[
 ];
 const BADGE={};
 function render(){
-  document.getElementById('grid').innerHTML=CARDS.map(c=>{
+  const g=document.getElementById('grid');
+  if(g.children.length){ /* កុំសង់ឡើងវិញ ដើម្បីកុំឱ្យ animation ចាប់ផ្តើមម្តងទៀត៖ ធ្វើបច្ចុប្បន្នភាពតែ badge */
+    CARDS.forEach((c,k)=>{const tx=g.children[k]&&g.children[k].querySelector('.tx');if(!tx)return;let el=tx.querySelector('i');const b=BADGE[c[0]];
+      if(!b){if(el)el.remove();return}
+      if(!el){el=document.createElement('i');el.className='new';tx.appendChild(el)}
+      el.textContent=b});
+    return;
+  }
+  g.innerHTML=CARDS.map((c,k)=>{
     const soon=!c[5],badge=BADGE[c[0]];
-    return '<button type="button" class="card'+(soon?' soon':'')+'" style="--c:'+c[1]+'" onclick="'+(soon?"toast('⏳ មុខងារនេះនឹងមកដល់ឆាប់ៗ')":"go('"+c[5]+"')")+'">'
+    return '<button type="button" class="card'+(soon?' soon':'')+'" style="--c:'+c[1]+';--i:'+k+'" onclick="'+(soon?"toast('⏳ មុខងារនេះនឹងមកដល់ឆាប់ៗ')":"go('"+c[5]+"')")+'">'
      +'<div class="ic">'+c[2]+'</div><div class="tx"><b>'+esc(c[3])+'</b><span>'+esc(c[4])+'</span>'+(badge?'<i>'+esc(badge)+'</i>':'')+'</div>'
      +'<div class="ar">'+(soon?'ឆាប់ៗ':'›')+'</div></button>';
   }).join('');

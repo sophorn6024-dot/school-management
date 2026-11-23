@@ -100,7 +100,20 @@ button,input,select{font-family:inherit}
 .as-pop{transform-origin:top center}
 @keyframes asIn{from{opacity:0;transform:translateY(-8px) scaleY(.9)}to{opacity:1;transform:none}}
 .pm-row{transition:background .15s}.pm-row:hover{background:rgba(127,127,127,.08)}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* ✨ ANIMATION បន្ថែម (ដំណើរការទោះទូរស័ព្ទបិទចលនាក៏ដោយ) */
+@keyframes slideR{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+@keyframes dropIn{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+@keyframes icPop{0%{opacity:0;transform:scale(.3) rotate(-18deg)}60%{opacity:1;transform:scale(1.15) rotate(5deg)}100%{opacity:1;transform:none}}
+@keyframes txIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+.head .ib.back{animation:slideR .8s cubic-bezier(.22,.8,.3,1) both}
+.head .cnt{animation:slideR .8s .1s cubic-bezier(.22,.8,.3,1) both}
+.hbtns .btn{animation:dropIn .8s cubic-bezier(.22,.8,.3,1) both}
+.hbtns .btn:nth-child(1){animation-delay:.15s}.hbtns .btn:nth-child(2){animation-delay:.3s}
+.card{animation:cardIn 1s cubic-bezier(.22,.8,.3,1) both}
+.card .ico{animation:icPop .9s cubic-bezier(.34,1.4,.5,1) both;animation-delay:calc(var(--d,0ms) + 450ms)}
+.card .nm,.card .sub,.card .go{animation:txIn .8s ease both}
+.card .nm{animation-delay:calc(var(--d,0ms) + 500ms)}.card .sub{animation-delay:calc(var(--d,0ms) + 650ms)}.card .go{animation-delay:calc(var(--d,0ms) + 800ms)}
 </style>
 </head>
 <body>
@@ -197,7 +210,7 @@ function render(){
   document.getElementById('grid').innerHTML=ROWS.map((c,i)=>{
     const act=!IS_ADMIN&&cg(c.name).toLowerCase()===ACTIVE.toLowerCase();
     const lv=c.level||(String(c.name).match(/^[0-9០-៩]+/)||[''])[0];
-    return '<div class="card'+(act?' active':'')+'" style="animation-delay:'+Math.min(i*120,960)+'ms"><div class="top"><div class="ico">🏫</div><div class="nm">'+esc(CL(c.name))+(act?'<span class="badge">កំពុងប្រើ</span>':'')+'</div>'
+    return '<div class="card'+(act?' active':'')+'" style="animation-delay:'+Math.min(i*220,1500)+'ms;--d:'+Math.min(i*220,1500)+'ms"><div class="top"><div class="ico">🏫</div><div class="nm">'+esc(CL(c.name))+(act?'<span class="badge">កំពុងប្រើ</span>':'')+'</div>'
       +'<button class="ib" title="កែ" onclick="openCls('+c.id+')">✏️</button><button class="ib" title="លុប" onclick="delCls('+c.id+')">🗑️</button></div>'
       +'<div class="sub">'+(lv?'ថ្នាក់ទី '+esc(toKh(lv))+' · ':'')+'ឆ្នាំសិក្សា '+esc(toKh(c.school_year||'—'))+' · សិស្ស '+toKh(c.students||0)+' នាក់'+(IS_ADMIN&&c.owner?'<br><span class="own">👤 '+esc(c.owner)+'</span>':'')+'</div>'
       +'<button class="go" onclick="goStudents('+c.id+')">👥 សិស្ស →</button>'+'</div>';
