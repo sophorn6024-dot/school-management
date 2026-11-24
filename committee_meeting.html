@@ -1734,12 +1734,6 @@ function openSet(){
    <div class="psrow"><label>អក្សរ</label><div class="stp"><button type="button" onclick="psFz(-5)">−</button><div class="val"><b id="psFv"></b><span>%</span></div><button type="button" onclick="psFz(5)">+</button></div><div class="note" id="psFn"></div></div>
    <div class="psrow"><label>កម្ពស់ជួរ</label><div class="stp"><button type="button" onclick="psLh(-10)">−</button><div class="val"><b id="psLv"></b><span id="psLu">%</span></div><button type="button" onclick="psLh(10)">+</button></div><div class="note" id="psLn"></div></div>
    <div class="pscnt"><b id="psCnt"></b></div>
-   <details class="psinfo"><summary>ព័ត៌មានក្បាលក្រដាស</summary>
-   <div><label>ការិយាល័យ</label><input class="fc" id="sOff" value="${esc(p.office)}" oninput="psInfo()"></div>
-   <div><label>ឈ្មោះសាលា</label><input class="fc" id="sSch" value="${esc(p.school)}" oninput="psInfo()"></div>
-   <div class="row2"><div><label>ទីតាំងធ្វើនៅ</label><input class="fc" id="sPlc" value="${esc(p.place)}" oninput="psInfo()"></div><div><label>ឈ្មោះនាយកសាលា</label><input class="fc" id="sPri" value="${esc(p.principal)}" oninput="psInfo()"></div></div>
-   <div><label>ឈ្មោះគ្រូទទួលបន្ទុកថ្នាក់ (ទុកទទេ = ទាញពី Database)</label><input class="fc" id="sTea" value="${esc(D.teacher||'')}" placeholder="${esc(teacherOf(CUR.cls,{teacher:''}))}" oninput="psInfo()"></div>
-   </details>
   </div><div class="ft"><button class="btn pri" onclick="closeMd()">យល់ព្រម</button></div>`;
   $('ov').classList.add('show');psRefresh();
 }
@@ -1750,7 +1744,6 @@ function psMar(m){const p=GL.page;p.mt=p.mb=p.ms=m;psCommit()}
 function psMarStep(d){const p=GL.page,m=Math.min(40,Math.max(0,(p.mt===p.mb&&p.mb===p.ms?p.mt:p.ms)+d));p.mt=p.mb=p.ms=m;psCommit()}
 function psFz(d){const p=GL.page;p.fz=Math.min(140,Math.max(70,p.fz+d));psCommit()}
 function psLh(d){const p=GL.page;let v=p.lh||175;v+=d;p.lh=v<110?0:Math.min(260,v);psCommit()}
-function psInfo(){const p=GL.page;p.office=$('sOff').value.trim();p.school=$('sSch').value.trim();p.place=$('sPlc').value.trim()||PAGE0.place;p.principal=$('sPri').value.trim();D.teacher=$('sTea').value.trim();psCommit()}
 function psCount(){
   const p=GL.page,mm=96/25.4,usable=(pgDim(p)[1]-p.mt-p.mb)*mm;let n=0;
   document.querySelectorAll('#pvz .sheet').forEach(sh=>{if(sh.classList.contains('one')){n++;return}const inn=sh.querySelector('.inner');n+=Math.max(1,Math.ceil((inn?inn.scrollHeight:usable)/usable-.02))});
