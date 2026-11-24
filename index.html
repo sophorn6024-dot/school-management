@@ -1364,6 +1364,12 @@ body.solo .iframe-container{bottom:0!important}
 /* ឈ្មោះសាលា លើឈ្មោះអ្នកបង្កើត (បង្ហាញជានិច្ច) */
 .login-footer{display:block!important;margin-top:12px!important;font-size:12px;font-weight:600;color:#94a3b8}
 .login-credit{margin-top:3px}
+/* ប៊ូតុង Dark/Light ស្ទីល digital */
+#themeIcon{display:flex;align-items:center;justify-content:center;width:24px;height:24px;flex-shrink:0}
+#themeIcon .ico3{width:24px;height:24px}
+.sidebar-theme-btn:hover #themeIcon .ico3{transform:scale(1.1) rotate(-8deg)}
+.ms-ib#msTheme{display:flex;align-items:center;justify-content:center;padding:0}
+.ms-ib#msTheme .ico3{width:30px;height:30px}
 </style>
 <script>
 /* ដាក់ logo សាលាចំកណ្ដាល QR (ត្រូវប្រើ correctLevel H ដើម្បីនៅតែស្កេនបាន) */
@@ -3788,7 +3794,11 @@ function refreshAutoThemeUI() {
   const ic = auto ? '🕒' : (dark ? '🌙' : '☀️');
   const tx = auto ? 'តាមម៉ោង (Auto)' : (dark ? 'ងងឹត (Dark)' : 'ពន្លឺ (Light)');
   const a = document.getElementById('themeIcon'), b = document.getElementById('themeText'), c = document.getElementById('msTheme');
-  if (a) a.textContent = ic; if (b) b.textContent = tx; if (c) c.textContent = ic;
+  var k = auto ? 'themeauto' : (dark ? 'moon' : 'sun'), h = null;
+  try { h = ico3d(k); } catch (e) { h = null; }   /* ICONS មិនទាន់ត្រៀម → ប្រើ emoji សិន */
+  if (a) { if (h) a.innerHTML = h; else a.textContent = ic; }
+  if (b) b.textContent = tx;
+  if (c) { if (h) c.innerHTML = h; else c.textContent = ic; }
 }
 function setThemeAuto(on) {
   try { localStorage.setItem('krou_theme_auto', on ? '1' : '0'); } catch (e) {}
@@ -5265,6 +5275,10 @@ const FLAT = {
   school:['#38bdf8','#0369a1'], accounts:['#a78bfa','#6d28d9']
 };
 ICONS.accounts = ICONS.users;
+ICONS.sun='<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M18.7 5.3l-1.6 1.6M6.9 17.1l-1.6 1.6"/></svg>';
+ICONS.moon='<svg class="ico" viewBox="0 0 24 24"><path d="M20.5 13.2A8.6 8.6 0 1 1 10.8 3.5a6.8 6.8 0 0 0 9.7 9.7z"/><path d="M16.5 4.2v2.6M15.2 5.5h2.6"/></svg>';
+ICONS.themeauto=ICONS.clock;
+FLAT.sun=['#fcd34d','#f59e0b']; FLAT.moon=['#a5b4fc','#6366f1']; FLAT.themeauto=['#2dd4bf','#0f766e'];
 let _fl = 0;
 function icoFlat(key) {
   const g = ICONS[key] || ICONS.dashboard, c = FLAT[key] || FLAT.dashboard;
@@ -5311,6 +5325,7 @@ function applyIcons() {
   Object.keys(bar).forEach(id => { setAccent(document.getElementById(id), bar[id]); const ic = document.querySelector('#' + id + ' .mnav-ico'); if (!ic) return; const badge = ic.querySelector('.nav-badge'); ic.innerHTML = ico3d(bar[id]); if (badge) ic.appendChild(badge); });
 }
 applyIcons();
+try { refreshAutoThemeUI(); } catch (e) {}
 
 /* ===== 📱 លាក់/បង្ហាញ របារខាងក្រោម តាមការ scroll ===== */
 (function(){
