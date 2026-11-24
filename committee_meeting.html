@@ -1571,7 +1571,7 @@ function signBlock(cls,d,opts){
   opts=opts||{};
   const p=GL.page,sd=d.signDate||todayIso(),sp=isoParts(sd),pp=isoParts(GL.pDate);
   const tn=teacherOf(cls,d);
-  const left=`<div class="sg" style="min-width:34%">
+  const left=`<div class="sg" style="min-width:34%;margin-top:.9em">
     <div style="visibility:hidden" aria-hidden="true">${esc(lunarOf(sd))}</div>
     <div>${pp?esc(solarTxt(pp)):esc(solarBlank())}</div>
     <div class="tt" style="color:#1d4ed8">${opts.pTitle||dirTitleTxt()}</div>${gapP('4.4em')}
