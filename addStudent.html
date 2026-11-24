@@ -978,6 +978,12 @@
     .tr-foot button.pri{background:#0284c7;border-color:#0284c7;color:#fff}
     .tr-foot button:disabled{opacity:.5;cursor:not-allowed}
 
+    /* 🖥️ កុំព្យូទ័រ៖ ពេលចាក់សោ បង្ហាញតែទិន្នន័យ មិនមានប្រអប់ */
+    @media (min-width: 769px) {
+      .table-container.is-locked .table-input,
+      .table-container.is-locked .date-picker-trigger { border-color: transparent; background: transparent; box-shadow: none; opacity: 1; }
+      .table-container.is-locked .date-picker-trigger .cal-icon { display: none; }
+    }
     /* 📱 ទូរស័ព្ទ៖ បង្រួមតែទំហំ font ក្នុងតារាង (មិនប៉ះរចនាបថផ្សេង) */
     @media (max-width: 768px) {
       thead th { font-size: 10.5px; }
