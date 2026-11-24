@@ -990,6 +990,19 @@
       button.gender-pill, .gender-pill { font-size: 8.5px; }
       .table-photo-box { font-size: 8.5px; }
       .id-sort-btn { font-size: 8.5px; }
+      /* ប្រអប់តូចតាម font */
+      tbody tr { height: 34px; }
+      tbody td { padding: 2px 3px; }
+      thead th { padding: 4px 3px; }
+      .table-input, .date-picker-trigger { height: 24px; border-radius: 5px; padding: 0 4px; }
+      .date-picker-trigger { padding: 0 5px; }
+      button.gender-pill { height: 20px; width: 38px; padding: 1px 0; }
+      .table-photo-box { width: 28px; height: 28px; }
+      .rowchk input { width: 14px; height: 14px; }
+      /* 🔒 ចាក់សោ៖ បង្ហាញតែទិន្នន័យ មិនមានប្រអប់ */
+      .table-container.is-locked .table-input,
+      .table-container.is-locked .date-picker-trigger { border-color: transparent; background: transparent; box-shadow: none; opacity: 1; }
+      .table-container.is-locked .date-picker-trigger .cal-icon { display: none; }
     }
 </style>
 <script id="stRowsJs">
