@@ -363,6 +363,33 @@ select{font-family:'Battambang',sans-serif!important}
 .cal-btn-ico{color:#1f2433}.cal-cell.other{opacity:.4}.cal-cell .h{font-size:8px}
 @keyframes popIn{from{opacity:0;transform:translate(-50%,-48%)}to{opacity:1;transform:translate(-50%,-50%)}}
 .pill-btn{border:0;border-radius:10px;padding:0 14px;font:700 13px Battambang,sans-serif;cursor:pointer;background:#eef2ff;color:#4f46e5}.pill-btn.primary{background:#4f46e5;color:#fff}
+
+/* 📅 ប្រតិទិនបែបសាមញ្ញ (តាមគំរូ) */
+.cal-modal{--cm-bg:#fff;--cm-fg:#0f172a;--cm-mu:#64748b;--cm-in:#f1f5f9;--cm-bd:#e2e8f0;--cm-ac:#c98f0a;--cm-acf:#fff;width:380px!important;max-width:calc(100vw - 24px)!important;background:var(--cm-bg)!important;color:var(--cm-fg)!important;border:1px solid var(--cm-bd);border-radius:26px!important;padding:18px 18px 14px!important;box-shadow:0 24px 60px rgba(0,0,0,.45)!important;color-scheme:light}
+[data-theme=dark] .cal-modal{--cm-bg:#151f30;--cm-fg:#f1f5f9;--cm-mu:#8b98ad;--cm-in:#1f2a3d;--cm-bd:#27344b;--cm-ac:#d19b22;--cm-acf:#fff;color-scheme:dark}
+.cal-modal .cal-btn-ico,.cal-modal .cal-monthhead,.cal-modal .cal-legend{display:none!important}
+#calRoleLbl{font-size:12px!important;font-weight:700!important;color:var(--cm-mu)!important;margin-bottom:10px!important}
+.cal-modal .cal-nav{gap:10px;margin-bottom:6px}
+.cal-modal .cal-nav select,.cal-modal .cal-nav .csb{flex:1;height:48px!important;border-radius:16px!important;border:1px solid var(--cm-bd)!important;background:var(--cm-in)!important;color:var(--cm-fg)!important;font-weight:800;font-size:16px;padding:0 14px!important;font-family:'Battambang',sans-serif!important;box-shadow:none}
+.cal-modal .cal-nav .csb .ca{border-color:var(--cm-ac)!important;opacity:1}
+.cal-modal select,.cal-modal option{color:var(--cm-fg)!important;background:var(--cm-in)!important}
+.cal-modal .cal-dow{border:0!important;padding:10px 0 4px!important;gap:0!important;font-size:13px!important;font-weight:700;color:var(--cm-mu)!important}
+.cal-modal .cal-dow div:first-child{color:var(--cm-mu)!important}
+.cal-modal .cal-grid{gap:2px 0!important}
+.cal-modal .cal-cell{min-height:50px!important;padding:0!important;border:0!important;background:transparent!important;border-radius:50%!important;justify-content:center!important;color:var(--cm-fg)!important;outline:none!important;aspect-ratio:auto}
+.cal-modal .cal-cell .g{font-size:17px!important;font-weight:800;color:var(--cm-fg)!important}
+.cal-modal .cal-cell.sun .g{color:var(--cm-fg)!important}
+.cal-modal .cal-cell .l,.cal-modal .cal-cell .h,.cal-modal .cal-cell .mo{display:none!important}
+.cal-modal .cal-cell.other{opacity:1;pointer-events:none}.cal-modal .cal-cell.other .g{visibility:hidden}
+.cal-modal .cal-cell:hover{background:var(--cm-in)!important}
+.cal-modal .cal-cell.today{box-shadow:inset 0 0 0 1.5px var(--cm-ac)}
+.cal-modal .cal-cell.sel,.cal-modal .cal-cell.sel:hover{background:var(--cm-ac)!important;box-shadow:none}
+.cal-modal .cal-cell.sel .g,.cal-modal .cal-cell.sel.sun .g{color:var(--cm-acf)!important}
+.cal-modal .cal-cell:active{transform:scale(.92)}
+.cal-modal .pill-btn,.cal-modal .pill-btn.primary{background:transparent!important;border:0!important;height:38px!important;padding:0 6px!important;font-size:15px!important;font-weight:800!important;box-shadow:none}
+.cal-modal .pill-btn:first-child{color:var(--cm-ac)!important}
+#calBtnBlank{color:var(--cm-mu)!important}
+.cal-modal .pill-btn.primary{color:var(--cm-mu)!important}
 </style>
 </head>
 <body>
@@ -1545,6 +1572,7 @@ function signBlock(cls,d,opts){
   const p=GL.page,sd=d.signDate||todayIso(),sp=isoParts(sd),pp=isoParts(GL.pDate);
   const tn=teacherOf(cls,d);
   const left=`<div class="sg" style="min-width:34%">
+    <div style="visibility:hidden" aria-hidden="true">${esc(lunarOf(sd))}</div>
     <div>${pp?esc(solarTxt(pp)):esc(solarBlank())}</div>
     <div class="tt" style="color:#1d4ed8">${opts.pTitle||dirTitleTxt()}</div>${gapP('4.4em')}
     <div style="font-weight:700">${dirNameHtml()}</div></div>`;
@@ -1882,7 +1910,7 @@ async function reload(){
   function closeAll(){pops.forEach(function(p){p.classList.remove('show')});document.querySelectorAll('.as-btn.open').forEach(function(b){b.classList.remove('open')});openPop=null}
   function skip(sel){
     if(sel._as||sel.multiple||sel.size>1||sel.hasAttribute('data-native')||sel._enh)return true;
-    if(sel.closest('.cs-wrap,.as-wrap'))return true;
+    if(sel.closest('.cs-wrap,.as-wrap,.cal-nav'))return true;
     if(sel._cs||sel._enh||sel._cdd||sel._custom)return true; /* __asOwn2 */
     if(sel.id&&document.getElementById(sel.id+'Btn'))return true; /* __asBtnFix: ទំព័រមាន custom dropdown ផ្ទាល់ខ្លួន */
     return false;
