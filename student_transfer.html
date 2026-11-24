@@ -475,8 +475,8 @@ async function stRows(grades){
     .top-toolbar .tb-inp{height:38px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text)}
     .top-toolbar .tb-inp::placeholder{color:var(--text-muted)}
     .top-toolbar .tb-inp:focus{border-color:var(--primary)}
-    .dd-stu{min-width:320px;padding:0;border-radius:18px;overflow:hidden}
-    .dd-stu #stuList{max-height:300px;overflow-y:auto;padding:6px}
+    .dd-stu{min-width:320px;padding:0;border-radius:18px;overflow:hidden;max-height:none}
+    .dd-stu #stuList{max-height:min(300px,calc(100vh - 300px));min-height:120px;overflow-y:auto;padding:6px 6px 12px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
     .dd-search{display:flex;align-items:center;gap:8px;padding:10px;border-bottom:1px solid #e2e8f0;position:sticky;top:0;background:#fff}
     .dd-search input{flex:1;height:40px;border:1.5px solid #38bdf8;border-radius:10px;padding:0 10px;font-size:13.5px;outline:none;color:#0f172a;background:#fff;font-family:'Khmer OS Battambang','Battambang',sans-serif !important}
     .dd-search i{position:absolute;left:22px;color:#64748b;font-size:13px}
@@ -2152,7 +2152,7 @@ exports.default = {
         + '<p class="tp-p">សូមលោកនាយក/នាយិកា មេត្តាទទួលនូវការគោរពដ៏ខ្ពង់ខ្ពស់ពីខ្ញុំបាទ ។</p>'
         + '<div class="tp-h" style="text-align:center;margin-top:2mm">សូមភ្ជាប់មកជាមួយនូវ</div>'
         + '<div class="tp-att">'
-        + ['សៀវភៅសិក្ខាគារិក|១ច្បាប់', 'ព្រឹត្តិបត្រពិន្ទុ|១ច្បាប់', 'លិខិតបញ្ជាក់ការសិក្សា|១ច្បាប់', 'សញ្ញាបត្របណ្ដោះអាសន្ន|២ច្បាប់'].map(x => { const p = x.split('|'); return '<div><span>- ' + p[0] + '</span><i></i><span>' + p[1] + '</span></div>'; }).join('')
+        + ['សៀវភៅសិក្ខាគារិក|១ច្បាប់', 'ព្រឹត្តិបត្រពិន្ទុ|១ច្បាប់', 'លិខិតបញ្ជាក់ការសិក្សា|១ច្បាប់'].map(x => { const p = x.split('|'); return '<div><span>- ' + p[0] + '</span><i></i><span>' + p[1] + '</span></div>'; }).join('')
         + '</div>'
         + '<p class="tp-p" style="text-indent:12mm">លេខប្រវត្តិសិក្សា៖ ' + V(d.sid, 12) + ' <span style="font-size:.85em">(សាលាទទួលបញ្ចូលលេខនេះ ភ្ជាប់ប្រវត្តិសិក្សាកន្លងមក)</span></p>'
         + '<div class="tp-sign">' + dirBlock('')
