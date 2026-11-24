@@ -2119,12 +2119,12 @@ exports.default = {
       const d = (s && s.dob) ? new Date(s.dob) : null;
       return d && !isNaN(d) ? { y: d.getFullYear(), m: d.getMonth() + 1, d: d.getDate() } : null;
     }
-    function gradeNum() { return String(currentSelectedClass || '').replace(/\s*[\(«].*$/, '').trim(); }
+    function gradeNum() { return toKhmerNum(String(currentSelectedClass || '').trim()); }
     function headBlock() {
       const L = kitHasProf() ? schoolHeadLines(PROF) : ['រដ្ឋបាលស្រុកសំឡូត', 'កម្រងសាលារៀន អូររំដួល', schoolName()];
       return '<div class="tp-hd"><div class="f-moul">ព្រះរាជាណាចក្រកម្ពុជា</div><div class="f-moul">ជាតិ សាសនា ព្រះមហាក្សត្រ</div>'
         + '<div class="tp-orn"><i></i><span>❖</span><i></i></div></div>'
-        + '<div class="tp-meta">' + L.map(x => '<div>' + esc(x) + '</div>').join('') + '<div>ថ្នាក់ទី ' + esc(currentSelectedClass) + '</div></div>';
+        + '<div class="tp-meta">' + L.map(x => '<div>' + esc(x) + '</div>').join('') + '<div>ថ្នាក់ទី ' + esc(toKhmerNum(currentSelectedClass)) + '</div></div>';
     }
     function dirBlock(label) {
       const gap = STAMP_META ? kitStamp() : '';
