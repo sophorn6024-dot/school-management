@@ -2051,7 +2051,7 @@ body{background:var(--bg)}
     async function loadStudentsFromSupabase() {
       dataLoading = true;
       const tbody = document.getElementById('tableBody');
-      tbody.innerHTML = `<tr><td colspan="22" class="status-row"><span class="spinner-dark"></span> កំពុងទាញទិន្នន័យពី Supabase...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="22" class="status-row"><span class="spinner-dark"></span> កំពុងទាញទិន្នន័យ</td></tr>`;
 
       if (!IS_ADMIN && !currentSelectedClass) {
         tbody.innerHTML = `<tr><td colspan="22" class="status-row" style="color:#f59e0b; font-weight:700;">⚠️ អ្នកមិនទាន់មានថ្នាក់ទទួលបន្ទុកនៅឡើយទេ។<div class="noclass-box"><button type="button" onclick="openCreateClass()">➕ បង្កើតថ្នាក់របស់ខ្ញុំ</button></div></td></tr>`;
