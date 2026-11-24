@@ -1319,6 +1319,17 @@ body.solo .iframe-container{bottom:0!important}
 #mainAppLayout .sidebar.sb-intro .nav-link-btn,#mainAppLayout .sidebar.sb-intro .sidebar-theme-btn,#mainAppLayout .sidebar.sb-intro .sidebar-logout-btn{animation:sbIntroItem .85s cubic-bezier(.22,.8,.3,1) both;animation-delay:calc(var(--k,0)*130ms + 350ms)}
 .sidebar.sb-intro .nav-link-btn .nav-icon-box,.sidebar.sb-intro .nav-link-btn .ico3{animation:icPopS .9s cubic-bezier(.34,1.4,.5,1) both;animation-delay:calc(var(--k,0)*130ms + 650ms)}
 @keyframes icPopS{0%{opacity:0;transform:scale(.3) rotate(-18deg)}60%{opacity:1;transform:scale(1.15) rotate(4deg)}100%{opacity:1;transform:none}}
+
+/* គ.គ.ថ dropdown */
+.rg-kkt{cursor:default}.rg-kkt:hover{background:transparent}
+.rg-dd-btn{display:inline-flex!important;align-items:center;gap:6px;height:32px;width:auto!important;padding:0 10px!important;background:color-mix(in srgb,var(--gc) 9%,transparent)!important;border:1px solid color-mix(in srgb,var(--gc) 35%,transparent)!important;font-family:inherit;font-size:13px;font-weight:700}
+.rg-dd-btn svg{width:14px!important;height:14px!important;transition:transform .25s}
+.rg-dd-btn.open svg{transform:rotate(180deg)}
+.rg-dd-menu{position:fixed;z-index:2147483000;min-width:190px;background:var(--surface);border:1px solid var(--border-subtle);border-radius:14px;box-shadow:0 14px 35px rgba(0,0,0,.3);padding:6px;display:none;font-family:inherit}
+.rg-dd-menu.show{display:block;animation:rgDdIn .3s cubic-bezier(.22,.8,.3,1)}
+@keyframes rgDdIn{from{opacity:0;transform:translateY(-6px) scale(.97)}to{opacity:1;transform:none}}
+.rg-dd-it{padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:700;color:var(--text);cursor:pointer;font-family:inherit}
+.rg-dd-it:hover,.rg-dd-it:active{background:var(--surface-elevated)}
 </style>
 <script>
 /* ដាក់ logo សាលាចំកណ្ដាល QR (ត្រូវប្រើ correctLevel H ដើម្បីនៅតែស្កេនបាន) */
@@ -1601,7 +1612,7 @@ document.addEventListener('DOMContentLoaded',function(){ var f=document.getEleme
               <div class="rg-row" onclick="openInTab('class_inventory')"><span class="rg-name">បញ្ជីសារពើភ័ណ្ឌ</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('class_inventory')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
               <div class="rg-row" onclick="openInTab('book_cover')"><span class="rg-name">ក្របសៀវភៅ</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('book_cover')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
               <div class="rg-row" onclick="openInTab('book','preview')"><span class="rg-name">សៀវភៅខ្ចីសង</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('book','preview')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
-              <div class="rg-row rg-multi"><span class="rg-name">គ.គ.ថ</span><div class="rg-btns"><button type="button" class="rg-pr" onclick="openInTab('committee_meeting','list')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t" style="display:inline">បញ្ជីរួម</span></button><button type="button" class="rg-pr" onclick="openInTab('committee_meeting','letter')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t" style="display:inline">លិខិតបង្គាប់ការ</span></button><button type="button" class="rg-pr" onclick="openInTab('committee_meeting','minutes')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t" style="display:inline">កំណត់ហេតុប្រជុំ</span></button><button type="button" class="rg-pr" onclick="openInTab('committee_meeting','chart')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t" style="display:inline">រចនាសម្ព័ន្ធ</span></button></div></div>
+              <div class="rg-row rg-kkt"><span class="rg-name">គ.គ.ថ</span><button type="button" class="rg-pr rg-dd-btn" aria-haspopup="listbox" onclick="rgDdToggle(event,this)"><span class="rg-dd-lb">ជ្រើសរើស</span><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button></div>
               <div class="rg-row" onclick="openInTab('student_transfer')"><span class="rg-name">ពាក្យសុំផ្ទេរ និងបញ្ជាក់ការសិក្សា</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('student_transfer')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
               <div class="rg-row" data-admin-only="1" onclick="openInTab('backup')"><span class="rg-name">បម្រុងទុកទិន្នន័យ (Backup)</span><button type="button" class="rg-pr" aria-label="បើក" onclick="event.stopPropagation();openInTab('backup')"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="6" rx="1.5"/><rect x="4" y="9" width="16" height="9" rx="2.5"/><rect x="7.5" y="14" width="9" height="7" rx="1.5"/></svg><span class="rg-pr-t">បើក</span></button></div>
             </div>
@@ -3941,6 +3952,21 @@ function alignCollapseBtn() {
 window.addEventListener('resize', alignCollapseBtn);
 window.addEventListener('load', function(){ alignCollapseBtn(); setTimeout(alignCollapseBtn, 600); });
 
+
+var RG_KKT=[['បញ្ជីរួម','list'],['លិខិតបង្គាប់ការ','letter'],['កំណត់ហេតុប្រជុំ','minutes'],['រចនាសម្ព័ន្ធ','chart']];
+function rgDdClose(){var m=document.getElementById('rgDdMenu');if(m)m.classList.remove('show');document.querySelectorAll('.rg-dd-btn.open').forEach(function(b){b.classList.remove('open')})}
+function rgDdToggle(ev,btn){
+  ev.stopPropagation();var m=document.getElementById('rgDdMenu');
+  if(!m){m=document.createElement('div');m.id='rgDdMenu';m.className='rg-dd-menu';m.setAttribute('role','listbox');document.body.appendChild(m);
+    m.innerHTML=RG_KKT.map(function(x){return '<div class="rg-dd-it" role="option" data-v="'+x[1]+'">'+x[0]+'</div>'}).join('');
+    m.addEventListener('click',function(e){var it=e.target.closest('.rg-dd-it');if(!it)return;e.stopPropagation();rgDdClose();openInTab('committee_meeting',it.getAttribute('data-v'))})}
+  if(m.classList.contains('show')){rgDdClose();return}
+  rgDdClose();var r=btn.getBoundingClientRect();m.classList.add('show');
+  var w=Math.max(190,m.offsetWidth),left=Math.min(Math.max(8,r.right-w),window.innerWidth-w-8),h=m.offsetHeight,top=(window.innerHeight-r.bottom>h+12)?r.bottom+6:Math.max(8,r.top-h-6);
+  m.style.left=left+'px';m.style.top=top+'px';btn.classList.add('open');
+}
+document.addEventListener('click',function(e){if(!e.target.closest||!e.target.closest('#rgDdMenu'))rgDdClose()});
+window.addEventListener('resize',rgDdClose);window.addEventListener('scroll',rgDdClose,true);
 function playSidebarIntro(){
   try{
     var sbEl=document.getElementById('sidebar'); if(!sbEl||window.innerWidth<=768) return;
