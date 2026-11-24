@@ -404,15 +404,6 @@
     }
     .table-input:focus { border-color: #0284c7; box-shadow: 0 0 0 2px rgba(2,132,199,0.2); }
     .table-input[readonly] { opacity: 0.75; cursor: not-allowed; }
-    @media (max-width:768px){
-      .table-input::placeholder{font-size:10.5px;font-weight:500;color:var(--text-muted);opacity:.55;letter-spacing:0;font-family:inherit}
-      .table-input:focus::placeholder{opacity:.3}
-      .col-id .table-input::placeholder{font-size:10px}
-      .dob-text.dob-empty{font-size:10.5px;opacity:.55;font-weight:500}
-    }
-    @media (min-width:769px){
-      .table-input[data-field="grade"]::placeholder,.table-input[data-field="phone"]::placeholder{color:transparent}
-    }
     .input-left { text-align: left; }
 
     .gender-pill:focus { outline: 2px solid #0284c7; outline-offset: 1px; }
@@ -986,6 +977,20 @@
     .tr-foot button{flex:1;border:1px solid var(--border);background:var(--surface-elevated);color:var(--text);padding:12px;border-radius:14px;cursor:pointer;font-weight:700;font-size:14.5px;font-family:inherit}
     .tr-foot button.pri{background:#0284c7;border-color:#0284c7;color:#fff}
     .tr-foot button:disabled{opacity:.5;cursor:not-allowed}
+
+    /* 📱 ទូរស័ព្ទ៖ បង្រួមតែទំហំ font ក្នុងតារាង (មិនប៉ះរចនាបថផ្សេង) */
+    @media (max-width: 768px) {
+      thead th { font-size: 8.5px; }
+      thead th.col-id { font-size: 8.5px; }
+      .th-academic, .th-pob-main, .th-addr-main, .th-parent-main { font-size: 8.5px; }
+      tbody td { font-size: 8.5px; }
+      .table-input, .col-id .table-input, .date-picker-trigger { font-size: 8.5px; }
+      .col-id .table-input { font-size: 8.5px; }
+      .date-picker-trigger .cal-icon { font-size: 8.5px; }
+      button.gender-pill, .gender-pill { font-size: 8.5px; }
+      .table-photo-box { font-size: 8.5px; }
+      .id-sort-btn { font-size: 8.5px; }
+    }
 </style>
 <script id="stRowsJs">
 /* 🔒 អានសិស្សតាមមុខងារ staff_student_list (គ្រូឃើញតែថ្នាក់ខ្លួន ក្នុងសាលាខ្លួន · Admin ឃើញទាំងអស់) */
@@ -2506,13 +2511,13 @@ body{background:var(--bg)}
             </td>
             <td class="col-info">
               <div class="date-picker-trigger ${showMissing && !formattedDob ? 'cell-missing' : ''}" onclick="openKhmerCalendarForTable(event, ${realIdx})">
-                <span class="dob-text${formattedDob?'':' dob-empty'}">${esc(fmtDMY(formattedDob)) || 'ជ្រើសរើស...'}</span>
+                <span class="dob-text">${esc(fmtDMY(formattedDob)) || 'ជ្រើសរើស...'}</span>
                 <span class="cal-icon">📅</span>
               </div>
             </td>
             <td class="col-info"><span class="age-text" style="font-weight:700;">${age}</span></td>
-            <td class="col-info"><input type="text" class="table-input" value="${esc(s.grade)}" data-field="grade" oninput="syncRowInput(this, ${realIdx})" placeholder="ថ្នាក់"></td>
-            <td class="col-info"><input type="tel" class="table-input ${showMissing && !s.phone ? 'cell-missing' : ''}" value="${esc(s.phone)}" data-field="phone" oninput="syncRowInput(this, ${realIdx})" placeholder="លេខទូរស័ព្ទ"></td>
+            <td class="col-info"><input type="text" class="table-input" value="${esc(s.grade)}" data-field="grade" oninput="syncRowInput(this, ${realIdx})"></td>
+            <td class="col-info"><input type="tel" class="table-input ${showMissing && !s.phone ? 'cell-missing' : ''}" value="${esc(s.phone)}" data-field="phone" oninput="syncRowInput(this, ${realIdx})"></td>
 
             <td class="col-pob"><input type="text" class="table-input" value="${pob.village}" data-field="pob_village" oninput="syncRowInput(this, ${realIdx})" placeholder="ភូមិ"></td>
             <td class="col-pob"><input type="text" class="table-input" value="${pob.commune}" data-field="pob_commune" oninput="syncRowInput(this, ${realIdx})" placeholder="ឃុំ"></td>
