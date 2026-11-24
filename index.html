@@ -1330,6 +1330,29 @@ body.solo .iframe-container{bottom:0!important}
 @keyframes rgDdIn{from{opacity:0;transform:translateY(-6px) scale(.97)}to{opacity:1;transform:none}}
 .rg-dd-it{padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:700;color:var(--text);cursor:pointer;font-family:inherit}
 .rg-dd-it:hover,.rg-dd-it:active{background:var(--surface-elevated)}
+
+/* 🌈 អក្សរម៉ឺនុយរបាចំហៀង៖ ពណ៌ប្រដេញគ្នា (ម៉ឺនុយនីមួយៗពណ៌ផ្សេងគ្នា) */
+@keyframes navChase{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+.sidebar .nav-link-btn:not(.active) .nav-text{background-image:linear-gradient(90deg,var(--n1,#7dd3fc),var(--n2,#a5b4fc),var(--n3,#67e8f9),var(--n1,#7dd3fc));background-size:300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;font-weight:700;animation:navChase 8s linear infinite}
+.sidebar .nav-link-btn.active .nav-text{background:none;-webkit-text-fill-color:currentColor;animation:none}
+.nav-link-btn[data-page="dashboard"]{--n1:#7dd3fc;--n2:#a5b4fc;--n3:#67e8f9}
+.nav-link-btn[data-page="classes"]{--n1:#5eead4;--n2:#7dd3fc;--n3:#86efac}
+.nav-link-btn[data-page="attendance"]{--n1:#fda4af;--n2:#fdba74;--n3:#f0abfc}
+.nav-link-btn[data-page="score"]{--n1:#fde047;--n2:#fdba74;--n3:#fca5a5}
+.nav-link-btn[data-page="chat"]{--n1:#67e8f9;--n2:#a5b4fc;--n3:#5eead4}
+.nav-link-btn[data-page="reportsHub"]{--n1:#a5b4fc;--n2:#f0abfc;--n3:#93c5fd}
+#savingsNav{--n1:#fcd34d;--n2:#86efac;--n3:#fdba74}
+.nav-link-btn[data-page="student_accounts"]{--n1:#c4b5fd;--n2:#f9a8d4;--n3:#a5b4fc}
+.nav-link-btn[data-page="teacher"]{--n1:#fda4af;--n2:#fcd34d;--n3:#c4b5fd}
+[data-theme="light"] .sidebar .nav-link-btn[data-page="dashboard"]{--n1:#0369a1;--n2:#4f46e5;--n3:#0891b2}
+[data-theme="light"] .sidebar .nav-link-btn[data-page="classes"]{--n1:#0f766e;--n2:#0369a1;--n3:#15803d}
+[data-theme="light"] .sidebar .nav-link-btn[data-page="attendance"]{--n1:#be123c;--n2:#c2410c;--n3:#a21caf}
+[data-theme="light"] .sidebar .nav-link-btn[data-page="score"]{--n1:#a16207;--n2:#c2410c;--n3:#b91c1c}
+[data-theme="light"] .sidebar .nav-link-btn[data-page="chat"]{--n1:#0e7490;--n2:#4338ca;--n3:#0f766e}
+[data-theme="light"] .sidebar .nav-link-btn[data-page="reportsHub"]{--n1:#4338ca;--n2:#a21caf;--n3:#1d4ed8}
+[data-theme="light"] .sidebar #savingsNav{--n1:#a16207;--n2:#15803d;--n3:#c2410c}
+[data-theme="light"] .sidebar .nav-link-btn[data-page="student_accounts"]{--n1:#6d28d9;--n2:#be185d;--n3:#4338ca}
+[data-theme="light"] .sidebar .nav-link-btn[data-page="teacher"]{--n1:#be123c;--n2:#a16207;--n3:#6d28d9}
 </style>
 <script>
 /* ដាក់ logo សាលាចំកណ្ដាល QR (ត្រូវប្រើ correctLevel H ដើម្បីនៅតែស្កេនបាន) */
