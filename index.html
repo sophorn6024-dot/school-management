@@ -1353,6 +1353,17 @@ body.solo .iframe-container{bottom:0!important}
 [data-theme="light"] .sidebar #savingsNav{--n1:#a16207;--n2:#15803d;--n3:#c2410c}
 [data-theme="light"] .sidebar .nav-link-btn[data-page="student_accounts"]{--n1:#6d28d9;--n2:#be185d;--n3:#4338ca}
 [data-theme="light"] .sidebar .nav-link-btn[data-page="teacher"]{--n1:#be123c;--n2:#a16207;--n3:#6d28d9}
+
+/* ប៊ូតុងពង្រីក/បង្រួម ធំជាងមុន */
+@media (min-width:769px){
+  .collapse-arrow-btn{width:42px;height:42px;font-size:23px;left:calc(var(--sidebar-w) - 21px)}
+  .sidebar.collapsed .collapse-arrow-btn{left:calc(var(--sidebar-w-collapsed) - 21px)}
+  .collapse-arrow-btn span{font-weight:800}
+}
+
+/* ឈ្មោះសាលា លើឈ្មោះអ្នកបង្កើត (បង្ហាញជានិច្ច) */
+.login-footer{display:block!important;margin-top:12px!important;font-size:12px;font-weight:600;color:#94a3b8}
+.login-credit{margin-top:3px}
 </style>
 <script>
 /* ដាក់ logo សាលាចំកណ្ដាល QR (ត្រូវប្រើ correctLevel H ដើម្បីនៅតែស្កេនបាន) */
