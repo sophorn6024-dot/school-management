@@ -499,6 +499,67 @@ async function stRows(grades){
         overflow: hidden !important;
       }
     }
+
+    /* ══════════════ 💬 ប្រអប់សារស្អាត (ជំនួស alert របស់ browser) ══════════════ */
+    .hm-back{position:fixed;inset:0;z-index:5000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(2,6,23,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+    .hm-back.show{display:flex;animation:hmFade .18s ease-out both}
+    .hm-box{width:100%;max-width:400px;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:22px;padding:26px 22px 20px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.45);font-family:'Battambang','Khmer OS Battambang',sans-serif;animation:hmPop .26s cubic-bezier(.2,.9,.3,1.2) both;--hm:#ef4444}
+    .hm-box.warn{--hm:#f59e0b}.hm-box.ok{--hm:#10b981}.hm-box.info{--hm:#0ea5e9}
+    .hm-ico{width:64px;height:64px;margin:0 auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--hm);background:color-mix(in srgb,var(--hm) 14%,transparent);box-shadow:0 0 0 8px color-mix(in srgb,var(--hm) 8%,transparent)}
+    .hm-ico svg{width:32px;height:32px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+    .hm-title{font-size:17px;font-weight:800;line-height:1.5;margin-bottom:6px;color:var(--text)}
+    .hm-msg{font-size:14px;line-height:1.75;color:var(--text-muted)}
+    .hm-tip{margin-top:12px;padding:10px 12px;border-radius:12px;font-size:12.5px;line-height:1.7;text-align:left;color:var(--text);background:color-mix(in srgb,var(--hm) 10%,transparent);border:1px dashed color-mix(in srgb,var(--hm) 45%,transparent)}
+    .hm-btn{margin-top:18px;width:100%;height:46px;border:0;border-radius:14px;font-family:inherit;font-size:15px;font-weight:700;color:#fff;background:var(--hm);cursor:pointer;transition:transform .12s,filter .15s}
+    .hm-btn:hover{filter:brightness(1.08)}.hm-btn:active{transform:scale(.97)}
+    .hm-btn:focus-visible{outline:3px solid color-mix(in srgb,var(--hm) 45%,transparent);outline-offset:2px}
+    @keyframes hmFade{from{opacity:0}to{opacity:1}}
+    @keyframes hmPop{from{opacity:0;transform:translateY(14px) scale(.92)}to{opacity:1;transform:none}}
+    @media (prefers-reduced-motion:reduce){.hm-back.show,.hm-box{animation:none}}
+
+    /* ══════════════ 📅 ប្រតិទិនសាមញ្ញ (ថ្ងៃបុណ្យពណ៌ក្រហម) ══════════════ */
+    #calModal{--cb:#151f30;--cbd:#22314a;--cfg:#f8fafc;--cmu:#94a3b8;--cin:#1e293b;--cacc:var(--primary,#d19a27);--chol:#ff6b6b;--cholbg:rgba(239,68,68,.20);--cholbd:rgba(248,113,113,.65)}
+    [data-theme="light"] #calModal{--cb:#ffffff;--cbd:#dbe5ef;--cfg:#0f172a;--cmu:#64748b;--cin:#f1f5f9;--chol:#dc2626;--cholbg:rgba(220,38,38,.10);--cholbd:rgba(220,38,38,.55)}
+    #calModal{width:400px;background:var(--cb);color:var(--cfg);border:1px solid var(--cbd);border-radius:26px;padding:22px 22px 14px;box-shadow:0 28px 70px rgba(0,0,0,.55)}
+    #calModal .cal-nav{gap:10px;margin-bottom:6px}
+    #calModal .cal-nav .cal-btn-ico{display:none}
+    #calModal .cal-nav select{flex:1;min-width:0;height:48px;padding:0 38px 0 16px;border-radius:15px;border:1px solid var(--cbd);background-color:var(--cin);color:var(--cfg);font-size:17px;font-weight:800;cursor:pointer;
+      -webkit-appearance:none;appearance:none;
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23d19a27' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'><path d='M6 9l6 6 6-6'/></svg>");
+      background-repeat:no-repeat;background-position:right 14px center}
+    #calModal .cal-nav select:focus-visible{outline:2px solid var(--cacc);outline-offset:2px}
+    #calModal .cal-monthhead{border:0;margin:0;padding:10px 6px 8px;text-align:center}
+    #calModal .cal-monthhead .m{display:none}
+    #calModal .cal-monthhead .s{margin:0;font-size:12px;font-weight:700;line-height:1.5;color:var(--cacc)}
+    #calModal .cal-dow{border:0;padding:4px 0 6px;gap:4px;font-size:13px;font-weight:700;color:var(--cmu)}
+    #calModal .cal-dow div:first-child{color:var(--cmu)}
+    #calModal .cal-grid{gap:6px 4px}
+    #calModal .cal-cell{position:relative;min-height:0;height:44px;width:44px;max-width:100%;margin:0 auto;padding:0;border:2px solid transparent;border-radius:50%;background:transparent;color:var(--cfg);display:flex;align-items:center;justify-content:center;overflow:visible!important;transition:background .12s,transform .12s,border-color .12s}
+    #calModal .cal-cell .g{font-size:18px;font-weight:800;line-height:1}
+    #calModal .cal-cell:hover{background:color-mix(in srgb,var(--cacc) 18%,transparent);border-color:transparent;transform:scale(1.06)}
+    #calModal .cal-cell.other{visibility:hidden;pointer-events:none}
+    #calModal .cal-cell.today{background:transparent;border-color:var(--cacc)}
+    /* 🔴 ថ្ងៃបុណ្យ / ថ្ងៃឈប់សម្រាក — ក្រហមច្បាស់ */
+    #calModal .cal-cell.hol{background:var(--cholbg);border-color:var(--cholbd)}
+    #calModal .cal-cell.hol .g{color:var(--chol)}
+    #calModal .cal-cell.hol::after{content:"";position:absolute;bottom:4px;left:50%;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--chol)}
+    #calModal .cal-cell.hol:hover{background:color-mix(in srgb,var(--chol) 30%,transparent)}
+    /* ថ្ងៃសីល: ចុចមាសតូច */
+    #calModal .cal-cell.sil:not(.hol)::after{content:"";position:absolute;bottom:5px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--cacc)}
+    #calModal .cal-cell.sel{background:var(--cacc)!important;border-color:var(--cacc);outline:0;box-shadow:0 6px 16px color-mix(in srgb,var(--cacc) 45%,transparent)}
+    #calModal .cal-cell.sel .g{color:#fff}
+    #calModal .cal-cell.sel.hol{border-color:var(--chol);box-shadow:0 0 0 2px var(--cb),0 0 0 4px var(--chol)}
+    #calModal .cal-cell.sel.hol::after{background:#fff}
+    #calModal .cal-legend{border:0;margin:8px 0 0;padding:8px 4px 2px;gap:16px;justify-content:center;font-size:11.5px;color:var(--cmu);border-top:1px solid var(--cbd)}
+    #calModal .cal-legend i{width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+    #calModal .cal-legend .lg-hol{background:var(--cholbg);border:2px solid var(--chol)}
+    #calModal .cal-legend .lg-sil{background:var(--cacc)}
+    #calModal .cal-foot{display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding:0 2px}
+    #calModal .cal-foot-btn{border:0;background:transparent;font-family:inherit;font-size:15px;font-weight:700;color:var(--cmu);padding:10px 12px;border-radius:12px;cursor:pointer;transition:background .12s}
+    #calModal .cal-foot-btn.today{color:var(--cacc)}
+    #calModal .cal-foot-btn:hover{background:color-mix(in srgb,var(--cfg) 8%,transparent)}
+    #calModal .cal-foot-btn:focus-visible{outline:2px solid var(--cacc)}
+    @media (max-width:440px){#calModal{padding:18px 14px 10px;border-radius:22px}#calModal .cal-cell{height:40px;width:40px}#calModal .cal-cell .g{font-size:16px}}
   </style>
 </head>
 
@@ -682,13 +743,25 @@ async function stRows(grades){
 
   </div> <!-- END #mainPageContent -->
 
+
+  <!-- ══════════════ 💬 ប្រអប់សារ ══════════════ -->
+  <div class="hm-back" id="hmBack" role="dialog" aria-modal="true" aria-labelledby="hmTitle" aria-hidden="true">
+    <div class="hm-box" id="hmBox">
+      <div class="hm-ico" id="hmIco" aria-hidden="true"></div>
+      <div class="hm-title" id="hmTitle"></div>
+      <div class="hm-msg" id="hmMsg"></div>
+      <div class="hm-tip" id="hmTip" style="display:none"></div>
+      <button type="button" class="hm-btn" id="hmOk">យល់ព្រម</button>
+    </div>
+  </div>
+
   <!-- ══════════════ 📅 KHMER CALENDAR MODAL ══════════════ -->
   <div class="cal-modal-backdrop" id="calBackdrop" onclick="closeCalendarPopup()"></div>
   <div class="cal-modal" id="calModal">
     <div class="cal-nav">
       <button class="cal-btn-ico" type="button" onclick="shiftCalendarMonth(-1)">‹</button>
-      <select id="calSelMonth" onchange="changeCalendarSelect()"></select>
-      <select id="calSelYear" onchange="changeCalendarSelect()"></select>
+      <select id="calSelMonth" data-native="1" aria-label="ខែ" onchange="changeCalendarSelect()"></select>
+      <select id="calSelYear" data-native="1" aria-label="ឆ្នាំ" onchange="changeCalendarSelect()"></select>
       <button class="cal-btn-ico" type="button" onclick="shiftCalendarMonth(1)">›</button>
     </div>
     <div class="cal-monthhead">
@@ -700,13 +773,12 @@ async function stRows(grades){
     </div>
     <div class="cal-grid" id="calGrid"></div>
     <div class="cal-legend">
-      <span><i style="background:#fde9e7"></i>ថ្ងៃឈប់សម្រាក</span>
-      <span><i style="background:#fbefd5"></i>ថ្ងៃសីល</span>
-      <span>🌕 ពេញបូណ៌មី · 🌑 ចុងខែ · 🌓🌗 ថ្ងៃសីល ៨</span>
+      <span><i class="lg-hol"></i>ថ្ងៃបុណ្យ / ឈប់សម្រាក</span>
+      <span><i class="lg-sil"></i>ថ្ងៃសីល</span>
     </div>
-    <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
-      <button type="button" class="tb-btn" style="background:#eff6ff; color:#0284c7; border:none; height:34px;" onclick="selectCalendarToday()">ថ្ងៃនេះ</button>
-      <button type="button" class="tb-btn primary" style="height:34px;" onclick="closeCalendarPopup()">បិទ</button>
+    <div class="cal-foot">
+      <button type="button" class="cal-foot-btn today" onclick="selectCalendarToday()">ថ្ងៃនេះ</button>
+      <button type="button" class="cal-foot-btn" onclick="closeCalendarPopup()">បិទ</button>
     </div>
   </div>
 
@@ -1728,15 +1800,11 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         var isToday = (calToday.y === o.y && calToday.m === o.m && calToday.d === o.d);
         var isSel = (calSel.y === o.y && calSel.m === o.m && calSel.d === o.d);
         var isSil = holy(o);
-        var cls = 'cal-cell' + (inM ? '' : ' other') + (o.dow === 0 ? ' sun' : '') + (isToday ? ' today' : '') + (isSel ? ' sel' : '') + (isSil ? ' sil' : '');
-        var mo = moon(o);
-        var lt = (isSil && !(o.kd === 1 && o.ph === 0) ? '<b>' + lunarText(o) + '</b>' : lunarText(o)) + ((o.kd === 1 && o.ph === 0) || (o.d === 1 && inM) ? ' ខែ' + o.mname : '');
+        var cls = 'cal-cell' + (inM ? '' : ' other') + (isToday ? ' today' : '') + (isSel ? ' sel' : '') + (isSil ? ' sil' : '') + (hol ? ' hol' : '');
+        var tip = kn(o.d) + ' ' + lunarText(o) + (hol ? ' · ' + hs.map(function (h) { return h.t; }).join(' · ') : '') + (isSil ? ' · ថ្ងៃសីល' : '');
 
-        html += '<button type="button" class="' + cls + '" onclick="pickCalDate(' + o.y + ',' + o.m + ',' + o.d + ')">'
+        html += '<button type="button" class="' + cls + '" title="' + tip.replace(/"/g, '&quot;') + '"' + (inM ? '' : ' tabindex="-1" aria-hidden="true"') + ' onclick="pickCalDate(' + o.y + ',' + o.m + ',' + o.d + ')">'
           + '<span class="g">' + kn(o.d) + '</span>'
-          + (mo ? '<span class="mo">' + mo + '</span>' : '')
-          + '<span class="l">' + lt + '</span>'
-          + (hol ? '<span class="h ' + hs[0].k + '">' + hs[0].t + '</span>' : '')
           + '</button>';
       }
 
@@ -2099,6 +2167,30 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
         + (FRIMG ? '<button type="button" class="clr-reset" onclick="removeFrameImg()">🗑️ លុបស៊ុមរបស់ខ្ញុំ</button>' : '')
         + '<div style="font-size:11.5px;color:#64748b;margin-top:8px;line-height:1.5">ស៊ុមរបស់ខ្ញុំ៖ រូប PNG សមាមាត្រ A4 (ឧ. 1240×1754) មានកណ្ដាលថ្លា។ ប្រព័ន្ធគ្របស៊ុមចាស់ក្នុងគំរូដោយក្រដាសស រួចដាក់ស៊ុមថ្មី។</div>';
     }
+
+    /* 💬 ប្រអប់សារស្អាត: hmAlert('error'|'warn'|'ok'|'info', ចំណងជើង, សារ, ណែនាំ?) */
+    function hmAlert(type, title, msg, tip) {
+      const back = document.getElementById('hmBack'); if (!back) { try { alert(title + (msg ? '\n' + msg : '')); } catch (e) {} return; }
+      const box = document.getElementById('hmBox');
+      const ICO = {
+        error: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M15 9l-6 6M9 9l6 6"/></svg>',
+        warn: '<svg viewBox="0 0 24 24"><path d="M10.3 3.9L2.4 17.6A2 2 0 0 0 4.1 20.6h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9.5v4.2M12 17h.01"/></svg>',
+        ok: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M7.8 12.4l2.9 2.9 5.6-6"/></svg>',
+        info: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path d="M12 11v5.2M12 7.7h.01"/></svg>'
+      };
+      box.className = 'hm-box ' + (ICO[type] ? type : 'error');
+      document.getElementById('hmIco').innerHTML = ICO[type] || ICO.error;
+      document.getElementById('hmTitle').textContent = title || '';
+      const m = document.getElementById('hmMsg'); m.textContent = msg || ''; m.style.display = msg ? '' : 'none';
+      const t = document.getElementById('hmTip'); t.textContent = tip || ''; t.style.display = tip ? '' : 'none';
+      const ok = document.getElementById('hmOk');
+      const close = () => { back.classList.remove('show'); back.setAttribute('aria-hidden', 'true'); document.removeEventListener('keydown', kd, true); };
+      const kd = (e) => { if (e.key === 'Escape' || e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); close(); } };
+      ok.onclick = close; back.onclick = (e) => { if (e.target === back) close(); };
+      document.addEventListener('keydown', kd, true);
+      back.classList.add('show'); back.setAttribute('aria-hidden', 'false');
+      setTimeout(() => { try { ok.focus(); } catch (e) {} }, 30);
+    }
     function uploadFrame(inp) {
       const f = inp.files && inp.files[0]; if (!f) return;
       const rd = new FileReader();
@@ -2109,9 +2201,9 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
           const c = document.createElement('canvas'); c.width = w; c.height = h;
           const x = c.getContext('2d'); x.drawImage(im, 0, 0, w, h);
           const px = (a, b) => x.getImageData(Math.round(a * w), Math.round(b * h), 1, 1).data[3];
-          if (px(.5, .5) > 10 || px(.5, .3) > 10) { alert('❌ ស៊ុមនេះមិនមានកណ្ដាលថ្លាទេ (វានឹងបិទគំរូទាំងមូល)។\nសូមប្រើ PNG ដែលកណ្ដាលថ្លា។'); inp.value = ''; return; }
+          if (px(.5, .5) > 10 || px(.5, .3) > 10) { hmAlert('error', 'ស៊ុមនេះមិនអាចប្រើបាន', 'ស៊ុមមិនមានកណ្ដាលថ្លាទេ ដូច្នេះវានឹងបិទគំរូទាំងមូល។', '💡 សូមប្រើរូប PNG ដែលផ្នែកកណ្ដាលថ្លា (Transparent) និងមានតែស៊ុមនៅជុំវិញគែម។'); inp.value = ''; return; }
           const url = c.toDataURL('image/png');
-          try { localStorage.setItem('honor_frame_img', url); } catch (e) { alert('⚠️ រូបធំពេកមិនអាចរក្សាទុកបាន (នឹងប្រើបានតែលើកនេះ)'); }
+          try { localStorage.setItem('honor_frame_img', url); } catch (e) { hmAlert('warn', 'រូបធំពេកមិនអាចរក្សាទុកបាន', 'ស៊ុមនេះនឹងប្រើបានតែលើកនេះប៉ុណ្ណោះ ពេលបិទទំព័រវានឹងបាត់។', '💡 សូមប្រើរូបតូចជាងនេះ (ឧ. PNG ទំហំ ១២៤០×១៧៥៤ ដែលបង្ហាប់ហើយ)។'); }
           FRIMG = url; STY.fr = 'img'; STY.fc = ''; saveStyle(); renderFramePanel(); applyStyle(); inp.value = '';
         };
         im.src = rd.result;
@@ -2155,15 +2247,59 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
     }
 
     function downloadPDF() {
-      const element = document.getElementById('honorPaper');
+      const src = document.getElementById('honorPaper');
+      if (!src) return;
+      if (typeof html2pdf !== 'function') { hmAlert('error', 'មិនអាចទាញយក PDF បាន', 'បណ្ណាល័យបង្កើត PDF មិនទាន់ផ្ទុកចប់ ឬគ្មានអ៊ីនធឺណិត។', '💡 សូមពិនិត្យអ៊ីនធឺណិត ហើយចុច «ទាញយក PDF» ម្ដងទៀត ឬប្រើ «បោះពុម្ព» ហើយជ្រើស Save as PDF។'); return; }
+      const btn = document.querySelector('.tb-btn.success'), btnHtml = btn ? btn.innerHTML : '';
+      if (btn) { if (btn.dataset.busy) return; btn.dataset.busy = '1'; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> <span>កំពុងបង្កើត...</span>'; }
+      const done = () => { if (btn) { btn.innerHTML = btnHtml; delete btn.dataset.busy; } };
+      /* 📄 ចម្លងសន្លឹក A4 ពិត ៧៩៤×១១២៣ ដោយគ្មាន scale/ស្រមោល (កុំឱ្យ PDF តូច ឬកាត់ពេលមើលលើទូរស័ព្ទ) */
+      const clone = src.cloneNode(true);
+      clone.style.cssText += ';transform:none!important;box-shadow:none!important;margin:0!important;position:relative!important;width:794px!important;height:1123px!important;min-height:1123px!important;max-height:1123px!important';
+      /* html2canvas ចាស់មិនស្គាល់ `inset` → ចម្លងទីតាំង top/left/right/bottom ជា px ពីសន្លឹកដើមទៅសន្លឹកចម្លង (ដើម្បីឱ្យស៊ុម និងក្បាលលិខិតត្រង់កន្លែង) */
+      try {
+        const so = [src].concat(Array.from(src.querySelectorAll('*'))), co = [clone].concat(Array.from(clone.querySelectorAll('*')));
+        so.forEach((e, i) => {
+          const c = co[i]; if (!c || c === clone) return;
+          const cs = getComputedStyle(e);
+          if (cs.position === 'absolute' || cs.position === 'fixed') {
+            c.style.top = cs.top; c.style.left = cs.left;
+            c.style.right = cs.right; c.style.bottom = cs.bottom;
+          }
+        });
+      } catch (e) {}
+      /* SVG ស៊ុម → រូប <img> (html2canvas គូរ SVG ត្រង់ៗខុសទីតាំង/ទំហំពេល scale>1) */
+      try {
+        const sv = Array.from(src.querySelectorAll('svg')), cv = Array.from(clone.querySelectorAll('svg'));
+        sv.forEach((e, i) => {
+          const c = cv[i]; if (!c) return;
+          const cs = getComputedStyle(e), w = Math.round(parseFloat(cs.width)), h = Math.round(parseFloat(cs.height));
+          if (!(w > 0 && h > 0)) return;
+          const ns = c.cloneNode(true); ns.setAttribute('xmlns', 'http://www.w3.org/2000/svg'); ns.setAttribute('width', w); ns.setAttribute('height', h);
+          const img = document.createElement('img');
+          img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(ns));
+          img.style.cssText = 'display:block;width:' + w + 'px;height:' + h + 'px;position:' + cs.position + ';top:' + cs.top + ';left:' + cs.left + ';z-index:' + (cs.zIndex === 'auto' ? '' : cs.zIndex) + ';pointer-events:none';
+          c.parentNode.replaceChild(img, c);
+        });
+      } catch (e) {}
+      const holder = document.createElement('div');
+      holder.style.cssText = 'position:fixed;left:0;top:0;width:794px;height:1123px;overflow:hidden;opacity:0;pointer-events:none;z-index:-1';
+      holder.appendChild(clone); document.body.appendChild(holder);
+      const cls = String(currentSelectedClass || '').replace(/[\\\/:*?"<>|]/g, '');
       const opt = {
         margin: 0,
-        filename: `តារាងកិត្តិយស_ថ្នាក់ទី_${currentSelectedClass}.pdf`,
+        filename: `តារាងកិត្តិយស_ថ្នាក់ទី_${cls}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2.2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        html2canvas: { scale: 2.2, useCORS: true, backgroundColor: '#ffffff', scrollX: 0, scrollY: 0, x: 0, y: 0, width: 794, height: 1123, windowWidth: 794, windowHeight: 1123 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: [] }
       };
-      html2pdf().from(element).set(opt).save();
+      html2pdf().set(opt).from(clone).toPdf().get('pdf').then(pdf => {
+        while (pdf.internal.getNumberOfPages() > 1) pdf.deletePage(pdf.internal.getNumberOfPages());   /* កុំឱ្យមានទំព័រទី ២ ទំនេរ */
+      }).save().then(() => { holder.remove(); done(); }).catch(e => {
+        console.error('PDF failed', e); holder.remove(); done();
+        hmAlert('error', 'បង្កើត PDF មិនបាន', 'មានបញ្ហាពេលបង្កើតឯកសារ PDF។', '💡 សូមព្យាយាមម្ដងទៀត ឬប្រើ «បោះពុម្ព» ហើយជ្រើស Save as PDF។');
+      });
     }
 
     function printReport() {
