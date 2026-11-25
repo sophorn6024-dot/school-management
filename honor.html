@@ -480,7 +480,7 @@ async function stRows(grades){
         margin: 0 !important;
         overflow: hidden !important;
       }
-      .top-toolbar, .cal-modal-backdrop, .cal-modal, #authDeniedWrap {
+      .top-toolbar, .cal-modal-backdrop, .cal-modal, .hm-back, #authDeniedWrap {
         display: none !important;
       }
       .paper-wrapper {
@@ -2260,8 +2260,11 @@ const RASTER = {"bee": {"img": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABA
       try {
         const so = [src].concat(Array.from(src.querySelectorAll('*'))), co = [clone].concat(Array.from(clone.querySelectorAll('*')));
         so.forEach((e, i) => {
-          const c = co[i]; if (!c || c === clone) return;
+          const c = co[i]; if (!c) return;
           const cs = getComputedStyle(e);
+          /* letter-spacing ធ្វើឱ្យ html2canvas កាត់អក្សរខ្មែរជាបំណែកៗ (ក្ត ិ → បែកបាក់) → ដាក់ជា normal ក្នុងសន្លឹកចម្លង */
+          if (cs.letterSpacing && cs.letterSpacing !== 'normal' && parseFloat(cs.letterSpacing) !== 0) c.style.setProperty('letter-spacing', 'normal', 'important');
+          if (c === clone) return;
           if (cs.position === 'absolute' || cs.position === 'fixed') {
             c.style.top = cs.top; c.style.left = cs.left;
             c.style.right = cs.right; c.style.bottom = cs.bottom;
