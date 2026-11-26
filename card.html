@@ -1946,6 +1946,19 @@ function toKhmerNum(val) {
   return val.toString().replace(/[0-9]/g, d => _KHMER_DIGITS[+d]);
 }
 function cleanGrade(g) { return String(g || '').replace(/^ថ្នាក់ទី\s*/, '').trim(); }
+/* 🎂 ថ្ងៃខែឆ្នាំកំណើត → «ថ្ងៃ/ខែ/ឆ្នាំ» (ឧ. ១២/០៣/២០១៥) ពីទម្រង់ណាក៏បាន៖ 2015-03-12, 12/03/2015, ២០១៥-០៣-១២, 2015-03-12T00:00:00 */
+function fmtDobKh(v) {
+  let t = String(v == null ? '' : v).trim();
+  if (!t) return '';
+  t = t.replace(/[០-៩]/g, c => String('០១២៣៤៥៦៧៨៩'.indexOf(c)));
+  let d, m, y, r;
+  if ((r = t.match(/^(\d{4})\s*[-\/.]\s*(\d{1,2})\s*[-\/.]\s*(\d{1,2})(?:[T\s].*)?$/))) { y = r[1]; m = r[2]; d = r[3]; }          /* ឆ្នាំ-ខែ-ថ្ងៃ */
+  else if ((r = t.match(/^(\d{1,2})\s*[-\/.]\s*(\d{1,2})\s*[-\/.]\s*(\d{4})(?:[T\s].*)?$/))) { d = r[1]; m = r[2]; y = r[3]; }      /* ថ្ងៃ/ខែ/ឆ្នាំ */
+  else return toKhmerNum(t);                                                                                                 /* ទម្រង់ផ្សេង (អក្សរ) → ទុកដដែល */
+  const mi = +m, di = +d;
+  if (mi < 1 || mi > 12 || di < 1 || di > 31) return toKhmerNum(t);
+  return toKhmerNum(String(di).padStart(2, '0') + '/' + String(mi).padStart(2, '0') + '/' + y);
+}
 
 const KH_MONTHS = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
 const SD_DOW = ['អាទិត្យ','ចន្ទ','អង្គារ','ពុធ','ព្រហស្បតិ៍','សុក្រ','សៅរ៍'];
@@ -2645,7 +2658,7 @@ function renderCards() {
     for (let i = 0; i < pageStudents.length; i++) {
       const s = pageStudents[i];
       const khmerId = s.realId ? toKhmerNum(s.realId) : '..............';
-      const dobFormatted = toKhmerNum(s.dob || '');
+      const dobFormatted = fmtDobKh(s.dob);
       const addressText = s.address || s.pob || 'ស្វាយជ្រុំ កំពង់ល្ពៅ សំឡូត បាត់ដំបង';
       const cleanGradeStr = cleanGrade(s.grade);
 
