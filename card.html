@@ -325,7 +325,6 @@ async function stRows(grades){
     .cd2-row { display:flex; gap:2mm; align-items:baseline; margin-bottom:.7mm; line-height:1.45; }
     .cd2-row > div { white-space:nowrap; }
     .cd2-row .grow { flex:1; white-space:normal; min-width:0; }
-    .cd2-row .grow.dob-fit { white-space:nowrap; }
     .cd2-row b { color:#1f3a8a; font-weight:700; }
     .cd2-photo { position:absolute; left:2.8mm; bottom:15mm; width:19mm; height:24.5mm; border:.3mm solid #1f4fa3; background:#e2e8f0; z-index:1; display:flex; align-items:center; justify-content:center; overflow:hidden; color:#94a3b8; font-size:16px; }
     .cd2-photo img { width:100%; height:100%; object-fit:cover; display:block; }
@@ -478,7 +477,6 @@ async function stRows(grades){
     .cln-col { width: 8px; color: var(--c-red) !important; font-weight: 700 !important; text-align: center; padding-right: 1px; }
     .val-col { font-weight: 700 !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; font-size: 9px; }
     .val-blue  { color: var(--c-blue) !important; }
-    .val-col.val-dob { white-space: nowrap; overflow: hidden; text-overflow: clip; }
     .val-green { color: var(--c-green) !important; }
 
     .student-photo-box {
@@ -1948,7 +1946,7 @@ function toKhmerNum(val) {
   return val.toString().replace(/[0-9]/g, d => _KHMER_DIGITS[+d]);
 }
 function cleanGrade(g) { return String(g || '').replace(/^ថ្នាក់ទី\s*/, '').trim(); }
-/* 🎂 ថ្ងៃខែឆ្នាំកំណើត → «ថ្ងៃទី១២ ខែមីនា ឆ្នាំ២០១៥» ពីទម្រង់ណាក៏បាន៖ 2015-03-12, 12/03/2015, ២០១៥-០៣-១២, 2015-03-12T00:00:00 */
+/* 🎂 ថ្ងៃខែឆ្នាំកំណើត → «ថ្ងៃ/ខែ/ឆ្នាំ» (ឧ. ១២/០៣/២០១៥) ពីទម្រង់ណាក៏បាន៖ 2015-03-12, 12/03/2015, ២០១៥-០៣-១២, 2015-03-12T00:00:00 */
 function fmtDobKh(v) {
   let t = String(v == null ? '' : v).trim();
   if (!t) return '';
@@ -1959,8 +1957,7 @@ function fmtDobKh(v) {
   else return toKhmerNum(t);                                                                                                 /* ទម្រង់ផ្សេង (អក្សរ) → ទុកដដែល */
   const mi = +m, di = +d;
   if (mi < 1 || mi > 12 || di < 1 || di > 31) return toKhmerNum(t);
-  const KM = ['មករា', 'កុម្ភៈ', 'មីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'វិច្ឆិកា', 'ធ្នូ'];
-  return 'ថ្ងៃទី' + toKhmerNum(di) + ' ខែ' + KM[mi - 1] + ' ឆ្នាំ' + toKhmerNum(y);
+  return toKhmerNum(String(di).padStart(2, '0') + '/' + String(mi).padStart(2, '0') + '/' + y);
 }
 
 const KH_MONTHS = ['មករា','កុម្ភៈ','មីនា','មេសា','ឧសភា','មិថុនា','កក្កដា','សីហា','កញ្ញា','តុលា','វិច្ឆិកា','ធ្នូ'];
@@ -2597,7 +2594,7 @@ function card2Html(s, c) {
       </div>
       <div class="cd2-info">
         <div class="cd2-row"><div class="grow">គោត្តនាម នាម : <b>${esc(s.name || '')}</b></div></div>
-        <div class="cd2-row"><div>ភេទ : <b>${esc(s.sex || '')}</b></div><div class="grow dob-fit">ថ្ងៃខែឆ្នាំកំណើត : <b>${esc(c.dobFormatted)}</b></div></div>
+        <div class="cd2-row"><div>ភេទ : <b>${esc(s.sex || '')}</b></div><div class="grow">ថ្ងៃខែឆ្នាំកំណើត : <b>${esc(c.dobFormatted)}</b></div></div>
         <div class="cd2-row"><div class="grow">ឈ្មោះឪពុក : <b>${esc(s.father || '')}</b></div></div>
         <div class="cd2-row"><div class="grow">ឈ្មោះម្តាយ : <b>${esc(s.mother || '')}</b></div></div>
         <div class="cd2-row"><div class="grow">អាសយដ្ឋាន : <b>${esc(c.addressText)}</b></div></div>
@@ -2636,24 +2633,6 @@ async function qrCreateMissing(cls) {
   if (error || !data || data.error) { uiAlert('❌ ' + ((error && error.message) || (data && data.error) || 'មិនអាចបង្កើតគណនីបាន')); return false; }
   toastQr('✅ បានបង្កើតគណនី ' + (data.ok || 0) + ' នាក់');
   return true;
-}
-
-/* ថ្ងៃខែឆ្នាំកំណើតត្រូវនៅលើមួយជួរ — បន្ថយទំហំអក្សរបន្តិចៗរហូតដល់ត្រូវទំហំ */
-function fitDobLines(root) {
-  (root || document).querySelectorAll('.val-dob, .dob-fit').forEach(el => {
-    const textW = () => { const r = document.createRange(); r.selectNodeContents(el); return r.getBoundingClientRect().width; };
-    let fs = parseFloat(getComputedStyle(el).fontSize) || 9;
-    let guard = 60;
-    const limit = () => {
-      const box = el.closest('.left-profile-block');
-      if (!box) return el.clientWidth;
-      return Math.min(el.clientWidth, box.getBoundingClientRect().right - el.getBoundingClientRect().left - 2);
-    };
-    while (textW() > limit() + 0.5 && fs > 4.5 && guard-- > 0) {
-      fs -= 0.2;
-      el.style.fontSize = fs + 'px';
-    }
-  });
 }
 
 function renderCards() {
@@ -2753,7 +2732,7 @@ function renderCards() {
                     <tr>
                       <td class="lbl-col">ថ្ងៃខែឆ្នាំកំណើត</td>
                       <td class="cln-col">៖</td>
-                      <td class="val-col val-blue val-dob">${dobFormatted}</td>
+                      <td class="val-col val-blue">${dobFormatted}</td>
                     </tr>
                     <tr>
                       <td class="lbl-col">ថ្នាក់ទី</td>
@@ -2810,7 +2789,6 @@ function renderCards() {
   }
 
   container.innerHTML = html;
-  try { fitDobLines(container); } catch (e) {}
   applyQrState();
   updatePaperUI();
 }
