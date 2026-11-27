@@ -1046,7 +1046,7 @@ function loadOf(cls){try{const d=JSON.parse(localStorage.getItem(keyOf(cls))||'n
 const hasName=m=>!!String(m&&m.name||'').trim();
 const nm=d=>d.members.filter(hasName);
 const DEF_TITLE='កិច្ចប្រជុំ គ.គ.ថ.';
-const mHas=x=>!!(String(x.agenda||'').trim()||String(x.notes||'').trim()||String(x.decision||'').trim()||Object.values(x.att||{}).some(Boolean)||(String(x.title||'').trim()&&x.title!==DEF_TITLE));
+const mHas=x=>!!(String(x.agenda||'').trim()||String(x.notes||'').trim()||String(x.decision||'').trim()||Object.values(x.att||{}).some(Boolean)||(x.guests&&x.guests.length>0)||(String(x.title||'').trim()&&x.title!==DEF_TITLE));
 function clean(d){return Object.assign({},d,{members:d.members.filter(hasName),meetings:d.meetings.filter(mHas)})}
 const DBHAS=new Set();
 function saveNow(){try{const c=clean(D);localStorage.setItem(keyOf(CUR.cls),JSON.stringify(c));const k=CUR.year+'|'+CUR.cls,empty=!c.members.length&&!c.meetings.length&&!c.elect&&!c.signDate&&!c.teacher;if(!empty||DBHAS.has(k)){DBHAS.add(k);dbPush(CUR.cls,CUR.year,c)}return true}catch(e){toast('⚠️ ទំហំផ្ទុកពេញ (រូបថតធំពេក)');return false}}
@@ -1514,9 +1514,9 @@ function newMeeting(){
 function renderMeetings(){
   const m=nm(D);
   const cards=D.meetings.map((x,i)=>{
-    const n=m.filter(z=>x.att[z.id]).length;
+    const n=m.filter(z=>x.att[z.id]).length,gs=x.guests||[];
     return `<div class="mcard" data-mid="${x.id}">
-      <div class="mh"><b>កិច្ចប្រជុំលើកទី ${toKh(i+1)}</b><span class="chip">ចូលរួម ${toKh(n)}/${toKh(m.length)}</span>${mHas(x)?'':'<span class="chip" style="background:var(--bads);color:var(--bad)">មិនទាន់មានទិន្នន័យ · មិនរក្សាទុក</span>'}<span class="sp"></span>
+      <div class="mh"><b>កិច្ចប្រជុំលើកទី ${toKh(i+1)}</b><span class="chip">ចូលរួម ${toKh(n)}/${toKh(m.length)}</span>${gs.length?`<span class="chip" style="background:var(--oks);color:var(--ok)">+ អ្នកចូលរួមបន្ថែម ${toKh(gs.length)}</span>`:''}${mHas(x)?'':'<span class="chip" style="background:var(--bads);color:var(--bad)">មិនទាន់មានទិន្នន័យ · មិនរក្សាទុក</span>'}<span class="sp"></span>
         <button class="btn sm gh" onclick="pickMtgDate('${x.id}')">${IC.cal}<span>${esc(dLabel(x.date))}</span></button>
         <button class="btn sm red" onclick="delMeeting('${x.id}')">${IC.trash}លុប</button></div>
       <div class="mgrid">
@@ -1530,7 +1530,7 @@ function renderMeetings(){
         <div><label>សេចក្តីសម្រេច</label><textarea class="fc" data-mf="decision" data-mid="${x.id}">${esc(x.decision)}</textarea></div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px"><span class="lbl" style="margin:0">វត្តមានអ្នកចូលរួម</span><button class="btn sm" onclick="attAll('${x.id}')">ជ្រើសទាំងអស់</button><button class="btn sm gh" onclick="attNone('${x.id}')">សម្អាត</button><span class="sp"></span><button class="btn sm" style="background:var(--acs)" onclick="openAddAtt('${x.id}')">${IC.plus}បន្ថែមអ្នកចូលរួម</button></div>
-      <div class="att">${m.length?m.map(z=>`<button type="button" class="at ${x.att[z.id]?'on':''}" onclick="toggleAtt('${x.id}','${z.id}')"><i>${x.att[z.id]?'✓':''}</i>${esc(z.name||'គ្មានឈ្មោះ')}<small style="color:var(--muted)">${esc(z.role)}</small></button>`).join(''):'<span class="hint">សូមបន្ថែមសមាជិកក្នុងផ្ទាំង គ.គ.ថ. ជាមុន</span>'}</div>
+      <div class="att">${gs.map(g=>`<button type="button" class="at on" title="ចុចដើម្បីលុប" onclick="delGuest('${x.id}','${g.id}')"><i>✓</i>${esc(g.name)}<small style="color:var(--muted)">${esc(g.role||'ភ្ញៀវ')}</small><small style="color:var(--bad);font-weight:800">✕</small></button>`).join('')}${m.length?m.map(z=>`<button type="button" class="at ${x.att[z.id]?'on':''}" onclick="toggleAtt('${x.id}','${z.id}')"><i>${x.att[z.id]?'✓':''}</i>${esc(z.name||'គ្មានឈ្មោះ')}<small style="color:var(--muted)">${esc(z.role)}</small></button>`).join(''):'<span class="hint">សូមបន្ថែមសមាជិកក្នុងផ្ទាំង គ.គ.ថ. ជាមុន</span>'}</div>
     </div>`}).join('');
   $('tabBody').innerHTML=`<div class="panel"><div class="ph2"><h2>កត់ត្រាកិច្ចប្រជុំ គ.គ.ថ. ថ្នាក់ទី${esc(toKh(CUR.cls))}</h2><span class="chip" id="mCount"></span><span class="sp"></span><button class="btn gh" onclick="newMeeting()">${IC.plus}កិច្ចប្រជុំថ្មី</button><button class="btn pri" onclick="saveMeetings()">${IC.save}រក្សាទុក</button></div>
     ${cards||'<div class="empty">មិនទាន់មានកិច្ចប្រជុំទេ<br>ចុច «កិច្ចប្រជុំថ្មី» ដើម្បីចាប់ផ្តើមកត់ត្រា វត្តមាន និងកំណត់ហេតុ</div>'}</div>`;
@@ -1553,9 +1553,9 @@ function openAddAtt(mid){
     <div><label>ឈ្មោះ</label><input class="fc" id="aaName" style="width:100%" placeholder="បញ្ចូលឈ្មោះអ្នកចូលរួម" onkeydown="if(event.key==='Enter')doAddAtt('${mid}')"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <div><label>ភេទ</label><select class="fc" id="aaSex" style="width:100%"><option value="ប្រុស">ប្រុស</option><option value="ស្រី">ស្រី</option><option value="មិនកំណត់">មិនកំណត់</option></select></div>
-      <div><label>តួនាទី</label><select class="fc" id="aaRole" style="width:100%">${ROLES.map(r=>`<option value="${esc(r)}" ${r==='សមាជិក'?'selected':''}>${esc(r)}</option>`).join('')}</select></div>
+      <div><label>តួនាទី / ឋានៈ</label><input class="fc" id="aaRole" style="width:100%" value="ភ្ញៀវ" placeholder="ឧ. ភ្ញៀវ, នាយកសាលា"></div>
     </div>
-    <div class="hint">អ្នកនេះនឹងត្រូវបន្ថែមក្នុងបញ្ជីសមាជិក គ.គ.ថ. ហើយត្រូវគូសវត្តមានក្នុងកិច្ចប្រជុំនេះដោយស្វ័យប្រវត្តិ</div>
+    <div class="hint">អ្នកនេះនឹងបន្ថែមតែក្នុងកិច្ចប្រជុំនេះ និងរបាយការណ៍កំណត់ហេតុប៉ុណ្ណោះ មិនចូលក្នុងបញ្ជីសមាជិក គ.គ.ថ. ទេ</div>
   </div>
   <div class="ft"><button class="btn gh" onclick="closeMd()">បោះបង់</button><button class="btn pri" onclick="doAddAtt('${mid}')">បន្ថែម</button></div>`;
   $('ov').classList.add('show');
@@ -1565,12 +1565,16 @@ function doAddAtt(mid){
   const x=D.meetings.find(z=>z.id===mid);if(!x)return;
   const name=($('aaName').value||'').trim();
   if(!name){$('aaName').classList.add('bad');$('aaName').focus();toast('⚠️ សូមបញ្ចូលឈ្មោះ');return}
-  if(nm(D).some(m=>m.name.trim()===name)){toast('⚠️ មានឈ្មោះនេះរួចហើយក្នុងបញ្ជី');return}
-  const sex=$('aaSex').value,role=$('aaRole').value;
-  addMember({name,sex,role});
-  const m=D.members[D.members.length-1];
-  if(!x.att)x.att={};x.att[m.id]=true;
+  if(!x.guests)x.guests=[];
+  if(x.guests.some(g=>g.name.trim()===name)||nm(D).some(m=>m.name.trim()===name)){toast('⚠️ មានឈ្មោះនេះរួចហើយក្នុងកិច្ចប្រជុំនេះ');return}
+  x.guests.push({id:uid(),name,sex:$('aaSex').value,role:($('aaRole').value||'').trim()||'ភ្ញៀវ'});
   saveNow();closeMd();renderMeetings();toast('✓ បានបន្ថែម '+name);
+}
+async function delGuest(mid,gid){
+  const x=D.meetings.find(z=>z.id===mid);if(!x||!x.guests)return;
+  const g=x.guests.find(z=>z.id===gid);if(!g)return;
+  if(!(await ask('លុប «'+g.name+'» ចេញពីកិច្ចប្រជុំនេះ ?')))return;
+  x.guests=x.guests.filter(z=>z.id!==gid);saveNow();renderMeetings();
 }
 function attAll(id){const x=D.meetings.find(z=>z.id===id);nm(D).forEach(z=>x.att[z.id]=true);saveNow();renderMeetings()}
 function attNone(id){const x=D.meetings.find(z=>z.id===id);x.att={};saveNow();renderMeetings()}
@@ -1667,13 +1671,14 @@ function docMinutes(){
     const x=(PV.mtg&&d.meetings.find(z=>z.id===PV.mtg))||d.meetings[d.meetings.length-1]||{date:'',time:'',place:'',title:'',agenda:'',notes:'',decision:'',att:{}};
     const cl=esc(toKh(c)),att=x.att||{};
     const rows=ms.length?ms.map((m,i)=>`<tr><td class="c">${toKh(i+1)}</td><td>${esc(m.name)}</td><td class="c">${esc(sexOf(m))}</td><td class="c">${esc(m.role)}</td><td class="c">${att[m.id]?'✓ ចូលរួម':(d.meetings.length&&x.id?'អវត្តមាន':'')}</td><td style="width:18%"></td></tr>`).join(''):`<tr><td colspan="6" class="mt">មិនទាន់មានសមាជិក ។</td></tr>`;
+    const gRows=(x.guests||[]).map((g,i)=>`<tr><td class="c">${toKh(ms.length+i+1)}</td><td>${esc(g.name)}</td><td class="c">${esc(sexOf(g))}</td><td class="c">${esc(g.role||'ភ្ញៀវ')}</td><td class="c">✓ ចូលរួម</td><td style="width:18%"></td></tr>`).join('');
     const dp=isoParts(x.date);
     const html=head('កំណត់ហេតុប្រជុំ​គណៈកម្មការគ្រប់គ្រងថ្នាក់រៀន ថ្នាក់ទី'+cl,'ឆ្នាំសិក្សា '+yrTxt())+`<div class="mn">
       <div class="meta"><b>ប្រធានបទ ៖</b> ${esc(x.title||'')||'<span class="dots">..........................................</span>'}</div>
       <div class="meta"><b>ថ្ងៃប្រជុំ ៖</b> ${dp?esc(lunarOf(x.date))+' ត្រូវនឹង'+esc(solarTxt(dp).replace(placeName()+' ','')):'<span class="dots">..........................................</span>'}</div>
       <div class="meta"><b>ម៉ោង ៖</b> ${esc(x.time||'')||'<span class="dots">..............</span>'} &nbsp;&nbsp; <b>ទីកន្លែង ៖</b> ${esc(x.place||'')||'<span class="dots">..............</span>'}</div>
       <h4>១. សមាសភាពចូលរួម</h4>
-      <table class="dt"><thead><tr><th style="width:7%">ល.រ</th><th>គោត្តនាម និងនាម</th><th style="width:9%">ភេទ</th><th style="width:18%">តួនាទី</th><th style="width:15%">វត្តមាន</th><th>ហត្ថលេខា</th></tr></thead><tbody>${rows}</tbody></table>
+      <table class="dt"><thead><tr><th style="width:7%">ល.រ</th><th>គោត្តនាម និងនាម</th><th style="width:9%">ភេទ</th><th style="width:18%">តួនាទី</th><th style="width:15%">វត្តមាន</th><th>ហត្ថលេខា</th></tr></thead><tbody>${rows}${gRows}</tbody></table>
       <h4>២. របៀបវារៈ</h4><div class="box">${esc(x.agenda||'')}</div>
       <h4>៣. ខ្លឹមសារពិភាក្សា</h4><div class="box big">${esc(x.notes||'')}</div>
       <h4>៤. សេចក្តីសម្រេច</h4><div class="box">${esc(x.decision||'')}</div></div>`+signBlock(c,d,{tTitle:'អ្នកកត់ត្រា / គ្រូទទួលបន្ទុកថ្នាក់'});
