@@ -1845,6 +1845,25 @@ function unfit(){document.querySelectorAll('.sheet .inner').forEach(i=>{i.style.
 window.addEventListener('beforeprint',()=>{if($('pv').style.display==='block')fitAll()});
 window.addEventListener('afterprint',unfit);
 function doPrint(){window.focus();setTimeout(()=>{try{window.print()}catch(e){window.parent.print()}},100)}
+/* html2canvas 1.4.1 មិនស្គាល់ color(...)/color-mix() — បម្លែងជា rgba() មុនគូរ */
+function fixModernColors(doc){
+  const cv=document.createElement('canvas');cv.width=cv.height=1;const cx=cv.getContext('2d',{willReadFrequently:true});
+  const conv=m=>{
+    const inner=m.slice(6,-1).trim();
+    const mm=inner.match(/^srgb\s+([\d.+-]+)\s+([\d.+-]+)\s+([\d.+-]+)(?:\s*\/\s*([\d.%]+))?$/);
+    if(mm){const f=v=>Math.round(Math.max(0,Math.min(1,+v))*255);let a=mm[4]==null?1:(/%$/.test(mm[4])?parseFloat(mm[4])/100:+mm[4]);return `rgba(${f(mm[1])},${f(mm[2])},${f(mm[3])},${a})`}
+    try{cx.clearRect(0,0,1,1);cx.fillStyle='#000';cx.fillStyle=m;cx.fillRect(0,0,1,1);const d=cx.getImageData(0,0,1,1).data;return `rgba(${d[0]},${d[1]},${d[2]},${(d[3]/255).toFixed(3)})`}catch(e){return 'rgba(0,0,0,0)'}
+  };
+  const props=['color','background-color','border-top-color','border-right-color','border-bottom-color','border-left-color','outline-color','text-decoration-color','box-shadow','text-shadow','fill','stroke'];
+  const win=doc.defaultView||window;
+  doc.querySelectorAll('*').forEach(el=>{
+    let cs;try{cs=win.getComputedStyle(el)}catch(e){return}
+    props.forEach(pr=>{
+      const v=cs.getPropertyValue(pr);
+      if(v&&v.indexOf('color(')>-1){el.style.setProperty(pr,v.replace(/color\([^)]*\)/g,conv),'important')}
+    });
+  });
+}
 async function doPdf(){
   if(!window.html2canvas||!window.jspdf){toast('មិនអាចផ្ទុក library PDF បានទេ');return}
   toast('កំពុងបង្កើត PDF...');
@@ -1853,7 +1872,7 @@ async function doPdf(){
     if(document.fonts&&document.fonts.ready)await document.fonts.ready;
     const {jsPDF}=window.jspdf,dm=pgDim(),PW=dm[0],PH=dm[1],pdf=new jsPDF({orientation:PW>PH?'l':'p',unit:'mm',format:[Math.min(PW,PH),Math.max(PW,PH)]});let first=true;
     for(const sh of document.querySelectorAll('.sheet')){
-      const c=await html2canvas(sh,{scale:2.4,backgroundColor:'#fff',useCORS:true});
+      const c=await html2canvas(sh,{scale:2.4,backgroundColor:'#fff',useCORS:true,onclone:fixModernColors});
       const pageH=c.width*PH/PW,one=sh.classList.contains('one');
       const n=one?1:Math.max(1,Math.ceil(c.height/pageH-0.02));
       for(let k=0;k<n;k++){
