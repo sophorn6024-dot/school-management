@@ -242,7 +242,7 @@
       padding: 16px 20px 20px; background: var(--surface); border-top: 1.5px solid var(--border);
     }
     .btn-sub-cancel {
-      background: #ffffff; color: #00875a; border: 1.5px solid #cbd5e1; padding: 10px 32px; border-radius: 14px;
+      background: var(--surface-elevated); color: var(--teal); border: 1.5px solid var(--border); padding: 10px 32px; border-radius: 14px;
       font-size: 14px; font-weight: 800; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
     }
     .btn-sub-save {
@@ -281,6 +281,21 @@
     .add-sub-footer { display: grid; grid-template-columns: 1fr 1.3fr; gap: 12px; margin-top: 6px; }
     .btn-sub-modal-cancel { height: 44px; border-radius: 12px; border: 1px solid var(--modal-border); background: var(--modal-btn-cancel); color: var(--modal-btn-cancel-txt); font-weight: 800; cursor: pointer; }
     .btn-sub-modal-save { height: 44px; border-radius: 12px; border: none; background: #00875a; color: #ffffff; font-weight: 800; cursor: pointer; }
+
+    /* ── Dialog បញ្ជាក់ (ជំនួស confirm) ── */
+    .sj-dlg-back { display:none; position:fixed; inset:0; background:var(--modal-bg); backdrop-filter:blur(6px); z-index:100000; align-items:center; justify-content:center; padding:16px; }
+    .sj-dlg-back.show { display:flex; }
+    .sj-dlg { background:var(--modal-card); color:var(--text); border:1.5px solid var(--modal-border); border-radius:20px; width:380px; max-width:100%; padding:22px 20px 18px; text-align:center; box-shadow:0 25px 60px rgba(0,0,0,.5); }
+    .sj-dlg .ic { width:54px; height:54px; border-radius:16px; margin:0 auto 12px; display:flex; align-items:center; justify-content:center; font-size:24px; background:rgba(239,68,68,.15); color:#ef4444; }
+    .sj-dlg .ti { font-size:16px; font-weight:800; margin-bottom:6px; }
+    .sj-dlg .ms { font-size:13px; color:var(--text-muted); line-height:1.7; white-space:pre-line; margin-bottom:16px; }
+    .sj-dlg .bt { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .sj-dlg .bt button { height:42px; border-radius:12px; font-weight:800; cursor:pointer; border:1px solid var(--modal-border); }
+    .sj-dlg .bt .no { background:var(--modal-btn-cancel); color:var(--modal-btn-cancel-txt); }
+    .sj-dlg .bt .yes { background:#dc2626; border-color:#dc2626; color:#fff; }
+    .sj-dlg .bt .yes.ok { background:#00875a; border-color:#00875a; }
+    .err-row td { padding:30px 10px !important; color:#f87171 !important; font-weight:700; }
+    .err-row button { margin-top:10px; background:var(--teal); color:#fff; border:none; border-radius:10px; padding:7px 18px; font-weight:800; cursor:pointer; }
   </style>
 
   <!-- 🌟 AUTO-DETECT & INITIALIZE THEME IMMEDIATELY FROM PARENT (index.html) -->
@@ -297,7 +312,9 @@
           }
         } catch(err) {}
         const savedTheme = localStorage.getItem('krou_theme_manual');
-        finalTheme = urlTheme || parentTheme || savedTheme || 'dark';
+        let autoTheme = null;
+        if (localStorage.getItem('krou_theme_auto') === '1') { const h = new Date().getHours(); autoTheme = (h >= 6 && h < 18) ? 'light' : 'dark'; }
+        finalTheme = urlTheme || parentTheme || autoTheme || savedTheme || 'dark';
       } catch(e) {}
       document.documentElement.setAttribute('data-theme', finalTheme);
     })();
@@ -306,6 +323,7 @@
 
 <body>
 
+  <div class="sj-dlg-back" id="sjDlg"><div class="sj-dlg"><div class="ic" id="sjDlgIc">🗑️</div><div class="ti" id="sjDlgTi"></div><div class="ms" id="sjDlgMs"></div><div class="bt"><button type="button" class="no" id="sjDlgNo">បោះបង់</button><button type="button" class="yes" id="sjDlgYes">បាទ/ចាស</button></div></div></div>
   <div id="toastNotif">✅ បានរក្សាទុកដោយជោគជ័យ!</div>
 
   <div class="auth-wrapper" id="authDeniedWrap">
@@ -513,7 +531,7 @@
 
     // ស្ដាប់តាមរយៈ LocalStorage
     window.addEventListener('storage', (e) => {
-      if (e.key === 'krou_theme_manual' && e.newValue) {
+      if (e.key === 'krou_theme_manual' && e.newValue && localStorage.getItem('krou_theme_auto') !== '1') {
         applyTheme(e.newValue);
       }
     });
@@ -543,13 +561,18 @@
       document.getElementById('mainContainer').style.display = 'flex';
       return true;
     }
-    function goToIndex(e) { if (e) e.preventDefault(); window.location.href = 'index.html'; }
+    function goToIndex(e) {
+      if (e) e.preventDefault();
+      try { if (window.top && window.top !== window) { window.top.location.href = 'index.html'; return; } } catch (err) {}
+      window.location.href = 'index.html';
+    }
 
     /* 🌟 អនុគមន៍ត្រឡប់ទៅកាន់ Form ស្រង់ពិន្ទុ (score) */
     function goBackToScore() {
       if (window.parent && window.parent !== window) {
         try {
           window.parent.postMessage({ type: 'NAVIGATE', page: 'score', target: 'score.html' }, '*');
+          return;
         } catch(e) {}
       }
       window.location.href = 'score.html';
@@ -613,31 +636,59 @@
       await initClassesDropdown();
     });
 
+    function userClassList() {
+      return String(USER_CLASS || '').split(/[,;،、\n]+/).map(cleanGrade).filter(Boolean);
+    }
+
+    async function fetchAllGrades() {
+      // ១) RPC staff_student_list (ដូចទំព័រផ្សេង)  ២) តារាង students
+      try {
+        const pw = localStorage.getItem('krou_pw') || '';
+        if (CURRENT_USER && CURRENT_USER.username && pw) {
+          const r = await sb.rpc('staff_student_list', { p_u: CURRENT_USER.username, p_p: pw });
+          if (!r.error && r.data && !r.data.error) {
+            const g = (r.data.rows || []).map(d => cleanGrade(d.grade)).filter(Boolean);
+            if (g.length) return g;
+          }
+        }
+      } catch (e) {}
+      try {
+        const { data, error } = await sb.from('students').select('grade').limit(5000);
+        if (!error && data && data.length) return data.map(d => cleanGrade(d.grade)).filter(Boolean);
+      } catch (e) {}
+      return null;
+    }
+
     async function initClassesDropdown() {
       const sel = document.getElementById('classFilterSelect');
-      const cleanUserClass = cleanGrade(USER_CLASS);
+      const mine = userClassList();
 
       if (!IS_ADMIN) {
-        sel.innerHTML = `<option value="${esc(cleanUserClass)}">ថ្នាក់ទី ${esc(cleanUserClass)}</option>`;
-        sel.disabled = true;
-        currentClassName = cleanUserClass;
+        if (!mine.length) {
+          sel.innerHTML = '<option value="">មិនមានថ្នាក់ទទួលបន្ទុក</option>';
+          sel.disabled = true;
+          showLoadError('មិនទាន់មានថ្នាក់ទទួលបន្ទុកសម្រាប់គណនីនេះ');
+          return;
+        }
+        sel.innerHTML = mine.map(c => `<option value="${esc(c)}">ថ្នាក់ទី ${esc(c)}</option>`).join('');
+        sel.disabled = mine.length < 2;
+        currentClassName = sel.value = mine[0];
         await loadSubjectsForClass();
         return;
       }
 
-      try {
-        const { data } = await sb.from('students').select('grade').limit(5000);
-        let grades = Array.from(new Set((data || []).map(d => cleanGrade(d.grade)).filter(Boolean)));
-        if (!grades.length) grades = ['១', '២', '៣(ក)', '៣(ខ)', '៤', '៥', '៦'];
-        grades.sort((a,b) => a.localeCompare(b, 'km', { numeric: true }));
+      let grades = await fetchAllGrades();
+      let fallback = false;
+      if (!grades) { grades = ['១', '២', '៣(ក)', '៣(ខ)', '៤', '៥', '៦']; fallback = true; }
+      mine.forEach(c => grades.push(c));
+      grades = Array.from(new Set(grades));
+      grades.sort((a,b) => a.localeCompare(b, 'km', { numeric: true }));
 
-        sel.innerHTML = grades.map(c => `<option value="${esc(c)}">ថ្នាក់ទី ${esc(c)}</option>`).join('');
-        sel.value = (cleanUserClass && grades.includes(cleanUserClass)) ? cleanUserClass : grades[0];
-        currentClassName = sel.value;
-        await loadSubjectsForClass();
-      } catch (e) {
-        sel.innerHTML = '<option value="">កំហុសទាញយកថ្នាក់</option>';
-      }
+      sel.innerHTML = grades.map(c => `<option value="${esc(c)}">ថ្នាក់ទី ${esc(c)}</option>`).join('');
+      sel.value = (mine[0] && grades.includes(mine[0])) ? mine[0] : grades[0];
+      currentClassName = sel.value;
+      if (fallback) showToast('⚠️ មិនអាចទាញបញ្ជីថ្នាក់ពី Database — ប្រើបញ្ជីស្តង់ដារ', true);
+      await loadSubjectsForClass();
     }
 
     function onClassChange() {
@@ -660,13 +711,22 @@
       }));
     }
 
+    let loadToken = 0;
+    function showLoadError(msg) {
+      const html = `<tr class="err-row"><td colspan="6">❌ ${esc(msg)}<br><button type="button" onclick="loadSubjectsForClass()">ព្យាយាមម្តងទៀត</button></td></tr>`;
+      document.getElementById('tableMonthlyBody').innerHTML = html;
+      document.getElementById('tableSemesterBody').innerHTML = html;
+    }
+
     async function loadSubjectsForClass() {
       const cls = cleanGrade(currentClassName);
       if (!cls) return;
+      const my = ++loadToken;
 
       try {
         const { data, error } = await sb.from('subjects').select('*').eq('assigned_class', cls)
           .order('sort_order', { ascending: true }).order('id', { ascending: true });
+        if (my !== loadToken) return;
         if (error) throw error;
 
         const rows = data || [];
@@ -681,7 +741,9 @@
 
         renderAllTables();
       } catch (err) {
+        if (my !== loadToken) return;
         console.error(err);
+        showLoadError('ទាញទិន្នន័យមុខវិជ្ជាមិនបាន៖ ' + (err.message || err));
       }
     }
 
@@ -816,51 +878,88 @@
       await saveSections([sec]);
     }
 
-    /* 🌟 SAVE & BROADCAST SYNC */
+    /* 🌟 SAVE & BROADCAST SYNC
+       សុវត្ថិភាព៖ update/insert មុន ហើយលុបតែជួរដែលអ្នកប្រើលុបពិត (ចុងក្រោយ)
+       → id ដើមមិនប្តូរ ហើយបើមានកំហុសពាក់កណ្តាលផ្លូវ ទិន្នន័យចាស់មិនបាត់ */
+    function validateTree(tree, label) {
+      const seen = new Set();
+      for (const p of tree) {
+        if (!String(p.name || '').trim()) return `មានឈ្មោះមុខវិជ្ជា${label}ទទេ`;
+        const k = p.name.trim();
+        if (seen.has(k)) return `ឈ្មោះមុខវិជ្ជា${label}ស្ទួន៖ ${k}`;
+        seen.add(k);
+        const seenC = new Set();
+        for (const c of (p.children || [])) {
+          if (!String(c.name || '').trim()) return `មានឈ្មោះមុខវិជ្ជារងទទេក្នុង «${k}»`;
+          const kc = c.name.trim();
+          if (seenC.has(kc)) return `ឈ្មោះមុខវិជ្ជារងស្ទួនក្នុង «${k}»៖ ${kc}`;
+          seenC.add(kc);
+        }
+      }
+      return '';
+    }
+
+    async function saveOneSection(cls, s, tree) {
+      const { data: existing, error: e0 } = await sb.from('subjects').select('id').eq('assigned_class', cls).eq('subject_type', s);
+      if (e0) throw e0;
+      const keep = new Set();
+      tree.forEach(p => { if (p.id != null) keep.add(String(p.id)); (p.children || []).forEach(c => { if (c.id != null) keep.add(String(c.id)); }); });
+      const toDelete = (existing || []).map(r => r.id).filter(id => !keep.has(String(id)));
+
+      // ១) មេ៖ update ឬ insert
+      const parentIds = [];
+      for (let i = 0; i < tree.length; i++) {
+        const p = tree[i];
+        const row = { assigned_class: cls, subject_type: s, name: p.name.trim(), code: p.code || `${s}_${i + 1}`,
+          max_score: toMax(p.max_score, 10), coefficient: parentCoefOf(p), sort_order: i + 1 };
+        if (p.id != null) {
+          const { error } = await sb.from('subjects').update(row).eq('id', p.id);
+          if (error) throw error;
+          parentIds.push(p.id);
+        } else {
+          const { data, error } = await sb.from('subjects').insert(row).select('id').single();
+          if (error) throw error;
+          parentIds.push(data.id);
+        }
+      }
+      // ២) រង៖ update ឬ insert
+      for (let i = 0; i < tree.length; i++) {
+        const kids = tree[i].children || [];
+        for (let j = 0; j < kids.length; j++) {
+          const c = kids[j];
+          const row = { assigned_class: cls, subject_type: s, name: c.name.trim(), code: c.code || `ch_${i + 1}_${j + 1}`,
+            max_score: toMax(c.max_score, 10), coefficient: toNum(c.coef, 1), parent_id: parentIds[i], sort_order: j + 1 };
+          if (c.id != null) {
+            const { error } = await sb.from('subjects').update(row).eq('id', c.id);
+            if (error) throw error;
+          } else {
+            const { error } = await sb.from('subjects').insert(row);
+            if (error) throw error;
+          }
+        }
+      }
+      // ៣) លុបចុងក្រោយ (រងមុន មេក្រោយ)
+      if (toDelete.length) {
+        const { error: e1 } = await sb.from('subjects').delete().in('id', toDelete).not('parent_id', 'is', null);
+        if (e1) throw e1;
+        const { error: e2 } = await sb.from('subjects').delete().in('id', toDelete);
+        if (e2) throw e2;
+      }
+    }
+
     async function saveSections(secs) {
       const cls = cleanGrade(currentClassName);
-      if (!cls || isSaving) return;
+      if (!cls) return;
+      if (isSaving) { showToast('⏳ កំពុងរក្សាទុក សូមរង់ចាំបន្តិច...', true); return; }
+
+      for (const s of secs) {
+        const msg = validateTree(s === 'monthly' ? monthlySubjects : semesterSubjects, s === 'monthly' ? 'ខែ' : 'ឆមាស');
+        if (msg) { showToast('⚠️ ' + msg, true); return; }
+      }
       isSaving = true;
 
       try {
-        for (const s of secs) {
-          const tree = (s === 'monthly' ? monthlySubjects : semesterSubjects);
-
-          await sb.from('subjects').delete().eq('assigned_class', cls).eq('subject_type', s);
-
-          const pRows = tree.map((p, i) => ({
-            assigned_class: cls,
-            subject_type: s,
-            name: p.name.trim(),
-            code: p.code || `${s}_${i + 1}`,
-            max_score: toMax(p.max_score, 10),
-            coefficient: parentCoefOf(p),
-            sort_order: i + 1
-          }));
-
-          const { data: ins, error } = await sb.from('subjects').insert(pRows).select('id, sort_order');
-          if (error) throw error;
-
-          const idMap = new Map((ins || []).map(r => [Number(r.sort_order), r.id]));
-          const cRows = [];
-          tree.forEach((p, i) => {
-            const pid = idMap.get(i + 1);
-            (p.children || []).forEach((c, j) => {
-              cRows.push({
-                assigned_class: cls,
-                subject_type: s,
-                name: c.name.trim(),
-                code: c.code || `ch_${i + 1}_${j + 1}`,
-                max_score: toMax(c.max_score, 10),
-                coefficient: toNum(c.coef, 1),
-                parent_id: pid,
-                sort_order: j + 1
-              });
-            });
-          });
-
-          if (cRows.length) await sb.from('subjects').insert(cRows);
-        }
+        for (const s of secs) await saveOneSection(cls, s, s === 'monthly' ? monthlySubjects : semesterSubjects);
 
         // 🌟 បាញ់សញ្ញា Real-time ទៅ Form ស្រង់ពិន្ទុ
         localStorage.setItem('krou_subjects_updated', Date.now().toString());
@@ -876,7 +975,8 @@
         await loadSubjectsForClass();
         showToast('✅ បានរក្សាទុក និង Update តារាងស្រង់ពិន្ទុជោគជ័យ!');
       } catch (err) {
-        showToast('❌ កំហុសរក្សាទុក៖ ' + err.message, true);
+        showToast('❌ កំហុសរក្សាទុក៖ ' + (err.message || err), true);
+        try { await loadSubjectsForClass(); } catch (e) {}
       } finally {
         isSaving = false;
       }
@@ -884,7 +984,7 @@
 
     async function importFromDefaultTemplate() {
       const cls = cleanGrade(currentClassName);
-      if (!confirm(`តើលោកគ្រូ/អ្នកគ្រូចង់កំណត់មុខវិជ្ជាថ្នាក់ទី ${cls} ឡើងវិញតាម Template ដើមមែនទេ?\n(រាល់មុខវិជ្ជាដែលបានកែប្រែកន្លងមកនឹងត្រូវជំនួសដោយ Template ស្តង់ដារ)`)) return;
+      if (!(await sjConfirm('កំណត់ឡើងវិញតាម Template', `តើលោកគ្រូ/អ្នកគ្រូចង់កំណត់មុខវិជ្ជាថ្នាក់ទី ${cls} ឡើងវិញតាម Template ដើមមែនទេ?\n(រាល់មុខវិជ្ជាដែលបានកែប្រែកន្លងមកនឹងត្រូវជំនួសដោយ Template ស្តង់ដារ)`, 'កំណត់ឡើងវិញ', false))) return;
 
       monthlySubjects = JSON.parse(JSON.stringify(DEFAULT_MONTHLY_TEMPLATE));
       semesterSubjects = JSON.parse(JSON.stringify(DEFAULT_SEMESTER_TEMPLATE));
@@ -898,6 +998,8 @@
       document.getElementById('newSubClass').value = 'ថ្នាក់ទី' + currentClassName;
       document.getElementById('newSubParentId').value = '';
       document.getElementById('newSubName').value = '';
+      document.getElementById('newSubMaxScore').value = 10;
+      document.getElementById('newSubOrder').value = (type === 'monthly' ? monthlySubjects.length : semesterSubjects.length) + 1;
       document.getElementById('newSubType').value = type;
       document.getElementById('newSubTypeIconText').innerText = type === 'monthly' ? '📅 ខែ' : '📚 ឆមាស';
       document.getElementById('addSubjectModal').style.display = 'flex';
@@ -909,6 +1011,8 @@
       document.getElementById('newSubClass').value = 'ថ្នាក់ទី' + currentClassName;
       document.getElementById('newSubParentId').value = String(pIdx);
       document.getElementById('newSubName').value = '';
+      document.getElementById('newSubMaxScore').value = 10;
+      document.getElementById('newSubOrder').value = ((p.children || []).length) + 1;
       document.getElementById('newSubType').value = 'monthly';
       document.getElementById('newSubTypeIconText').innerText = '📅 ខែ (មុខវិជ្ជារង)';
       document.getElementById('addSubjectModal').style.display = 'flex';
@@ -933,15 +1037,20 @@
       const max = toMax(document.getElementById('newSubMaxScore').value, 10);
       const code = 'sub_' + Date.now();
 
+      const ord = Math.max(1, parseInt(document.getElementById('newSubOrder').value, 10) || 1);
+      const place = (arr, item) => { arr.splice(Math.min(ord - 1, arr.length), 0, item); };
       if (pId !== '') {
         const idx = Number(pId);
         if (!monthlySubjects[idx].children) monthlySubjects[idx].children = [];
-        monthlySubjects[idx].children.push({ name, code, max_score: max, coef: 1 });
+        if (monthlySubjects[idx].children.some(c => c.name.trim() === name)) { showToast('⚠️ មានមុខវិជ្ជារងឈ្មោះនេះរួចហើយ', true); return; }
+        place(monthlySubjects[idx].children, { name, code, max_score: max, coef: 1 });
         subExpandedMap['m_' + idx] = true;
       } else if (type === 'monthly') {
-        monthlySubjects.push({ name, code, max_score: max, coef: 1, children: [] });
+        if (monthlySubjects.some(x => x.name.trim() === name)) { showToast('⚠️ មានមុខវិជ្ជាឈ្មោះនេះរួចហើយ', true); return; }
+        place(monthlySubjects, { name, code, max_score: max, coef: 1, children: [] });
       } else {
-        semesterSubjects.push({ name, code, max_score: max, coef: 1 });
+        if (semesterSubjects.some(x => x.name.trim() === name)) { showToast('⚠️ មានមុខវិជ្ជាឈ្មោះនេះរួចហើយ', true); return; }
+        place(semesterSubjects, { name, code, max_score: max, coef: 1 });
       }
 
       closeAddSubjectModal();
@@ -949,21 +1058,41 @@
     }
 
     async function deleteMonthlySubject(idx) {
-      if (!confirm(`តើអ្នកពិតជាចង់លុបមុខវិជ្ជា "${monthlySubjects[idx].name}" មែនទេ?`)) return;
+      if (!(await sjConfirm('លុបមុខវិជ្ជា', `តើអ្នកពិតជាចង់លុបមុខវិជ្ជា "${monthlySubjects[idx].name}" មែនទេ?`, 'លុប'))) return;
       monthlySubjects.splice(idx, 1);
       await saveSections(['monthly']);
     }
 
     async function deleteMonthlyChild(pIdx, cIdx) {
-      if (!confirm(`តើអ្នកពិតជាចង់លុបមុខវិជ្ជារង "${monthlySubjects[pIdx].children[cIdx].name}" មែនទេ?`)) return;
+      if (!(await sjConfirm('លុបមុខវិជ្ជារង', `តើអ្នកពិតជាចង់លុបមុខវិជ្ជារង "${monthlySubjects[pIdx].children[cIdx].name}" មែនទេ?`, 'លុប'))) return;
       monthlySubjects[pIdx].children.splice(cIdx, 1);
       await saveSections(['monthly']);
     }
 
     async function deleteSemesterSubject(idx) {
-      if (!confirm(`តើអ្នកពិតជាចង់លុបមុខវិជ្ជា "${semesterSubjects[idx].name}" មែនទេ?`)) return;
+      if (!(await sjConfirm('លុបមុខវិជ្ជា', `តើអ្នកពិតជាចង់លុបមុខវិជ្ជា "${semesterSubjects[idx].name}" មែនទេ?`, 'លុប'))) return;
       semesterSubjects.splice(idx, 1);
       await saveSections(['semester']);
+    }
+
+    function sjConfirm(title, msg, yesLbl, danger) {
+      return new Promise(res => {
+        const back = document.getElementById('sjDlg'), yes = document.getElementById('sjDlgYes'), no = document.getElementById('sjDlgNo');
+        document.getElementById('sjDlgTi').textContent = title;
+        document.getElementById('sjDlgMs').textContent = msg || '';
+        const ic = document.getElementById('sjDlgIc');
+        ic.textContent = danger === false ? '❓' : '🗑️';
+        ic.style.background = danger === false ? 'rgba(245,158,11,.15)' : 'rgba(239,68,68,.15)';
+        ic.style.color = danger === false ? '#f59e0b' : '#ef4444';
+        yes.textContent = yesLbl || 'បាទ/ចាស';
+        yes.classList.toggle('ok', danger === false);
+        const done = v => { back.classList.remove('show'); document.removeEventListener('keydown', onKey); res(v); };
+        const onKey = ev => { if (ev.key === 'Escape') done(false); };
+        yes.onclick = () => done(true); no.onclick = () => done(false);
+        back.onclick = ev => { if (ev.target === back) done(false); };
+        document.addEventListener('keydown', onKey);
+        back.classList.add('show');
+      });
     }
 
     function showToast(msg, isError) {
