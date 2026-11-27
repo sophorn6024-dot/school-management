@@ -879,8 +879,7 @@
     }
 
     /* 🌟 SAVE & BROADCAST SYNC
-       សុវត្ថិភាព៖ update/insert មុន ហើយលុបតែជួរដែលអ្នកប្រើលុបពិត (ចុងក្រោយ)
-       → id ដើមមិនប្តូរ ហើយបើមានកំហុសពាក់កណ្តាលផ្លូវ ទិន្នន័យចាស់មិនបាត់ */
+       RPC staff_subjects_save (SQL) — update/insert តាម id ដើម · លុបតែជួរដែលអ្នកលុប · ប្រតិបត្តិការតែមួយ */
     function validateTree(tree, label) {
       const seen = new Set();
       for (const p of tree) {
@@ -899,51 +898,42 @@
       return '';
     }
 
-    async function saveOneSection(cls, s, tree) {
-      const { data: existing, error: e0 } = await sb.from('subjects').select('id').eq('assigned_class', cls).eq('subject_type', s);
-      if (e0) throw e0;
-      const keep = new Set();
-      tree.forEach(p => { if (p.id != null) keep.add(String(p.id)); (p.children || []).forEach(c => { if (c.id != null) keep.add(String(c.id)); }); });
-      const toDelete = (existing || []).map(r => r.id).filter(id => !keep.has(String(id)));
+    function treePayload(tree) {
+      return tree.map(p => ({
+        id: p.id ?? null, name: String(p.name || '').trim(), code: p.code || null,
+        max_score: toMax(p.max_score, 10), coef: parentCoefOf(p),
+        children: (p.children || []).map(c => ({
+          id: c.id ?? null, name: String(c.name || '').trim(), code: c.code || null,
+          max_score: toMax(c.max_score, 10), coef: toNum(c.coef, 1)
+        }))
+      }));
+    }
 
-      // ១) មេ៖ update ឬ insert
-      const parentIds = [];
-      for (let i = 0; i < tree.length; i++) {
-        const p = tree[i];
-        const row = { assigned_class: cls, subject_type: s, name: p.name.trim(), code: p.code || `${s}_${i + 1}`,
-          max_score: toMax(p.max_score, 10), coefficient: parentCoefOf(p), sort_order: i + 1 };
-        if (p.id != null) {
-          const { error } = await sb.from('subjects').update(row).eq('id', p.id);
-          if (error) throw error;
-          parentIds.push(p.id);
-        } else {
-          const { data, error } = await sb.from('subjects').insert(row).select('id').single();
-          if (error) throw error;
-          parentIds.push(data.id);
+    const SAVE_ERR = {
+      forbidden: 'គ្មានសិទ្ធិកែមុខវិជ្ជាថ្នាក់នេះ',
+      auth: 'សូមចូលប្រព័ន្ធឡើងវិញ',
+      bad_type: 'ប្រភេទមុខវិជ្ជាមិនត្រឹមត្រូវ',
+      bad_tree: 'ទិន្នន័យមិនត្រឹមត្រូវ'
+    };
+
+    // រក្សាទុកតាម RPC (ប្រតិបត្តិការតែមួយ នៅ Server — មិនសរសេរតារាងដោយផ្ទាល់)
+    async function saveOneSection(cls, s, tree) {
+      let pw = '';
+      try { pw = localStorage.getItem('krou_pw') || ''; } catch (e) {}
+      if (!CURRENT_USER || !CURRENT_USER.username || !pw) throw new Error('សូមចូលប្រព័ន្ធឡើងវិញ');
+      const { data, error } = await sb.rpc('staff_subjects_save', {
+        p_u: CURRENT_USER.username, p_p: pw, p_class: cls, p_type: s, p_tree: treePayload(tree)
+      });
+      if (error) {
+        if (/staff_subjects_save|Could not find the function|schema cache/i.test(error.message || '')) {
+          throw new Error('មិនទាន់បានដំណើរការ SQL (subjects_save.sql) ក្នុង Supabase');
         }
+        throw error;
       }
-      // ២) រង៖ update ឬ insert
-      for (let i = 0; i < tree.length; i++) {
-        const kids = tree[i].children || [];
-        for (let j = 0; j < kids.length; j++) {
-          const c = kids[j];
-          const row = { assigned_class: cls, subject_type: s, name: c.name.trim(), code: c.code || `ch_${i + 1}_${j + 1}`,
-            max_score: toMax(c.max_score, 10), coefficient: toNum(c.coef, 1), parent_id: parentIds[i], sort_order: j + 1 };
-          if (c.id != null) {
-            const { error } = await sb.from('subjects').update(row).eq('id', c.id);
-            if (error) throw error;
-          } else {
-            const { error } = await sb.from('subjects').insert(row);
-            if (error) throw error;
-          }
-        }
-      }
-      // ៣) លុបចុងក្រោយ (រងមុន មេក្រោយ)
-      if (toDelete.length) {
-        const { error: e1 } = await sb.from('subjects').delete().in('id', toDelete).not('parent_id', 'is', null);
-        if (e1) throw e1;
-        const { error: e2 } = await sb.from('subjects').delete().in('id', toDelete);
-        if (e2) throw e2;
+      if (data && data.error) {
+        if (data.error === 'auth') { try { localStorage.removeItem('krou_pw'); } catch (e) {} }
+        if (/foreign key|violates/i.test(String(data.error))) throw new Error('មុខវិជ្ជាដែលចង់លុបមានពិន្ទុស្រង់រួចហើយ មិនអាចលុបបានទេ');
+        throw new Error(SAVE_ERR[data.error] || data.error);
       }
     }
 
