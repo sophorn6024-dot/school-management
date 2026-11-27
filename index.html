@@ -3475,20 +3475,72 @@ function qrFromCanvasData(img) {
   if (window.jsQR) { const r = window.jsQR(img.data, img.width, img.height, { inversionAttempts: 'attemptBoth' }); if (r && r.data) return r.data; }
   return null;
 }
+/* jsQR: បើមិនទាន់ផ្ទុក (បណ្តាញ/CDN) ព្យាយាមទាញពី CDN បម្រុង */
+let JSQR_PROMISE = null;
+function ensureJsQR() {
+  if (window.jsQR) return Promise.resolve(true);
+  if (JSQR_PROMISE) return JSQR_PROMISE;
+  const urls = [
+    'https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js',
+    'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js',
+    'https://unpkg.com/jsqr@1.4.0/dist/jsQR.js'
+  ];
+  JSQR_PROMISE = (async () => {
+    for (let i = 0; i < 25 && !window.jsQR; i++) { if (document.readyState === 'complete') break; await new Promise(r => setTimeout(r, 120)); }
+    for (const u of urls) {
+      if (window.jsQR) break;
+      try { await new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = u; sc.onload = res; sc.onerror = rej; document.head.appendChild(sc); }); } catch (e) {}
+    }
+    const ok = !!window.jsQR;
+    if (!ok) JSQR_PROMISE = null;   // អនុញ្ញាតឱ្យព្យាយាមម្តងទៀតលើកក្រោយ
+    return ok;
+  })();
+  return JSQR_PROMISE;
+}
+function qrTryDraw(src, sx, sy, sw, sh, outW, outH) {
+  const cv = document.createElement('canvas'); cv.width = outW; cv.height = outH;
+  const cx = cv.getContext('2d', { willReadFrequently: true });
+  cx.fillStyle = '#fff'; cx.fillRect(0, 0, outW, outH);
+  cx.imageSmoothingEnabled = true; cx.imageSmoothingQuality = 'high';
+  cx.drawImage(src, sx, sy, sw, sh, 0, 0, outW, outH);
+  return qrFromCanvasData(cx.getImageData(0, 0, outW, outH));
+}
 async function decodeQrFromFile(file) {
   let bmp = null;
   try { bmp = await createImageBitmap(file); } catch (e) {
-    bmp = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = URL.createObjectURL(file); });
+    bmp = await new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('ទម្រង់រូបមិនគាំទ្រ (សូមប្រើ PNG/JPG)')); im.src = URL.createObjectURL(file); });
   }
   const W = bmp.width || bmp.naturalWidth, H = bmp.height || bmp.naturalHeight;
-  for (const maxSide of [1400, 900, 600, 350]) {
-    const k = Math.min(1, maxSide / Math.max(W, H)), w = Math.max(1, Math.round(W * k)), h = Math.max(1, Math.round(H * k));
-    const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
-    const cx = cv.getContext('2d', { willReadFrequently: true }); cx.fillStyle = '#fff'; cx.fillRect(0, 0, w, h); cx.drawImage(bmp, 0, 0, w, h);
-    const r = qrFromCanvasData(cx.getImageData(0, 0, w, h)); if (r) return r;
-  }
+  // ១) BarcodeDetector (បើមាន — លឿន និងត្រឹមត្រូវ)
   if ('BarcodeDetector' in window) {
-    try { const r = await new BarcodeDetector({ formats: ['qr_code'] }).detect(bmp); if (r.length) return r[0].rawValue; } catch (e) {}
+    try { const r = await new BarcodeDetector({ formats: ['qr_code'] }).detect(bmp); if (r.length && r[0].rawValue) return r[0].rawValue; } catch (e) {}
+  }
+  // ២) jsQR — ត្រូវតែផ្ទុកបាន
+  if (!(await ensureJsQR())) { const e = new Error('JSQR_MISSING'); e.code = 'JSQR_MISSING'; throw e; }
+  const yieldUi = () => new Promise(r => setTimeout(r, 0));
+  // ២.ក) រូបទាំងមូល តាមទំហំជាច្រើន (រួមទាំងទំហំដើម និងពង្រីកបើរូបតូច)
+  const sides = [Math.min(Math.max(W, H), 2400), 1400, 900, 600, 350];
+  if (Math.max(W, H) < 500) sides.unshift(900);
+  const seen = new Set();
+  for (const side of sides) {
+    const k = side / Math.max(W, H), w = Math.max(1, Math.round(W * k)), h = Math.max(1, Math.round(H * k));
+    if (seen.has(w + 'x' + h)) continue; seen.add(w + 'x' + h);
+    const r = qrTryDraw(bmp, 0, 0, W, H, w, h); if (r) return r;
+    await yieldUi();
+  }
+  // ២.ខ) កាត់ជាផ្នែក (សម្រាប់ screenshot ធំ ដែល QR តូចក្នុងរូប)
+  if (Math.max(W, H) > 900) {
+    for (const n of [2, 3, 4]) {
+      const tw = W / n, th = H / n, ow = tw * 0.5, oh = th * 0.5;   // ត្រួតគ្នា ៥០%
+      const cw = Math.min(W, tw + ow), ch = Math.min(H, th + oh);
+      for (let iy = 0; iy < n; iy++) for (let ix = 0; ix < n; ix++) {
+        const sx = Math.max(0, Math.min(W - cw, ix * tw - ow / 2)), sy = Math.max(0, Math.min(H - ch, iy * th - oh / 2));
+        const k = Math.min(1, 1100 / Math.max(cw, ch));
+        const r = qrTryDraw(bmp, sx, sy, cw, ch, Math.max(1, Math.round(cw * k)), Math.max(1, Math.round(ch * k)));
+        if (r) return r;
+      }
+      await yieldUi();
+    }
   }
   return null;
 }
@@ -3501,11 +3553,15 @@ async function stuQrFromFile(inp) {
     if (!code) return showLoginError('រកមិនឃើញ QR ក្នុងរូបនេះទេ។ សូមប្រើរូបច្បាស់ ហើយឃើញ QR ទាំងមូល។');
     document.getElementById('stuQrCode').value = code;
     stuQrLogin(code);
-  } catch (e) { showLoginError('មិនអាចអានរូបបាន៖ ' + (e.message || e)); }
+  } catch (e) {
+    if (e && e.code === 'JSQR_MISSING') showLoginError('បណ្ណាល័យអាន QR មិនទាន់ផ្ទុកបាន (សូមពិនិត្យអ៊ីនធឺណិត ហើយ Refresh ទំព័រ) ឬបិទភ្ជាប់កូដ QR ដោយផ្ទាល់');
+    else showLoginError('មិនអាចអានរូបបាន៖ ' + (e.message || e));
+  }
 }
 async function stuScan() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return showLoginError('ឧបករណ៍នេះមិនគាំទ្រកាមេរ៉ា សូមផ្ទុករូប QR ឡើង ឬបិទភ្ជាប់កូដ');
   try {
+    ensureJsQR();
     stuStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
     const v = document.getElementById('stuVid'); v.srcObject = stuStream; v.style.display = 'block'; await v.play();
     const det = ('BarcodeDetector' in window) ? new BarcodeDetector({ formats: ['qr_code'] }) : null;
