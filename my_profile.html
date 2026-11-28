@@ -44,7 +44,8 @@ h3.sec small{font-weight:400;color:var(--muted);font-size:14px}
 .avatar .cam svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 3px rgba(0,0,0,.45))}
 .avatar:hover .cam{background:rgba(0,0,0,.32)}
 /* ផ្ទុក/ដកចេញ + រូបភាពស្រាប់ (Profile) */
-.av-row{display:grid;grid-template-columns:108px 1fr;gap:14px;margin-top:14px;align-items:stretch}
+.av-row{display:none;grid-template-columns:108px 1fr;gap:14px;margin-top:14px;align-items:stretch;animation:cvIn .2s ease-out}
+.av-row.open{display:grid}
 .av-acts{display:flex;flex-direction:column;gap:12px}
 .av-btn{flex:1;min-height:76px;border-radius:16px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-weight:700;padding:8px 6px;line-height:1.3;transition:transform .12s,box-shadow .12s}
 .av-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
@@ -132,7 +133,7 @@ label.l .rq{color:var(--danger)}
       <div class="ttl">Profile</div>
       <div class="cover" id="cover" onclick="toggleCovers()" style="cursor:pointer" title="ចុចដើម្បីជ្រើស cover">
         <button type="button" class="btn cv-btn" id="cvToggle">ជ្រើស cover</button>
-        <div class="avatar" id="avatar" onclick="event.stopPropagation();pick('avatar')" title="ប្តូររូប Profile"><span id="avLetter">ក</span><span class="cam"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.6-2.2h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.6"/></svg></span></div>
+        <div class="avatar" id="avatar" onclick="event.stopPropagation();toggleAvatarPanel()" title="ចុចដើម្បីប្តូររូប Profile"><span id="avLetter">ក</span><span class="cam"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.6-2.2h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.6"/></svg></span></div>
       </div>
       <div class="cv-pick" id="cvPick">
         <h4>ជ្រើស cover ស្រាប់</h4>
@@ -142,7 +143,7 @@ label.l .rq{color:var(--danger)}
           <button type="button" class="cv-del" id="cvDel" onclick="delMedia('cover')">🗑️ ដក cover</button>
         </div>
       </div>
-      <div class="av-row">
+      <div class="av-row" id="avRow">
         <div class="av-acts">
           <button type="button" class="av-btn" onclick="pick('avatar')"><svg viewBox="0 0 24 24"><path d="M12 15V4"/><path d="M7.5 8.2 12 3.7l4.5 4.5"/><path d="M4 14v4.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V14"/></svg>ផ្ទុករូប</button>
           <button type="button" class="av-btn del" id="avDel" onclick="delAvatar()"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4.5h6V7"/><path d="M6.5 7l.8 12a1.5 1.5 0 0 0 1.5 1.4h6.4a1.5 1.5 0 0 0 1.5-1.4l.8-12"/><path d="M10 11v6M14 11v6"/></svg>ដកចេញ</button>
@@ -368,7 +369,8 @@ function coverSvg(c,w,h){
 }
 function coverThumb(c){return "url('data:image/svg+xml;charset=utf-8,"+encodeURIComponent(coverSvg(c,400,300)).replace(/'/g,'%27')+"')"}
 function coverIdx(){try{const v=localStorage.getItem('krou_cover_preset');return v===null?-1:+v}catch(e){return -1}}
-function toggleCovers(){const o=$('cvPick').classList.toggle('open');$('cover').setAttribute('aria-expanded',o?'true':'false')}
+function toggleAvatarPanel(force){const r=$('avRow');if(!r)return;const o=force===undefined?!r.classList.contains('open'):!!force;r.classList.toggle('open',o);$('avatar').setAttribute('aria-expanded',o?'true':'false');if(o){$('cvPick').classList.remove('open')}}
+function toggleCovers(){const o=$('cvPick').classList.toggle('open');if(o)toggleAvatarPanel(false);$('cover').setAttribute('aria-expanded',o?'true':'false')}
 function renderCovers(){
   const cur=MEDIA.cover?coverIdx():-1;
   $('cvGrid').innerHTML=COVERS.map((c,i)=>'<button type="button" class="cv-opt'+(i===cur?' on':'')+'" style="background-image:'+coverThumb(c)+'" onclick="pickCover('+i+')" aria-label="cover '+(i+1)+'"></button>').join('');
@@ -582,13 +584,13 @@ function renderAvatars(){
 }
 function avToPng(a){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=360;c.getContext('2d').drawImage(im,0,0,360,360);res(c.toDataURL('image/png'))};im.onerror=()=>rej(new Error('បង្កើតរូបមិនបាន'));im.src=avDataUrl(a)})}
 async function usePreset(i){
-  try{const u=await avToPng(AV_PRESETS[i]);const d=await rpc('staff_my_profile_save',{p_users:{photo_url:u},p_data:{},p_media:{}});syncUser(d.row);setImg();toast('✅ បានប្តូររូប Profile')}
+  try{const u=await avToPng(AV_PRESETS[i]);const d=await rpc('staff_my_profile_save',{p_users:{photo_url:u},p_data:{},p_media:{}});syncUser(d.row);setImg();toggleAvatarPanel(false);toast('✅ បានប្តូររូប Profile')}
   catch(e){uiAlert('❌ '+(e.message||e))}
 }
 async function delAvatar(){
   if(!(ROW&&ROW.photo_url)){toast('មិនទាន់មានរូប Profile');return}
   if(!await uiConfirm('ដករូប Profile ចេញ?',{okText:'ដកចេញ'}))return;
-  try{const d=await rpc('staff_my_profile_save',{p_users:{photo_url:''},p_data:{},p_media:{}});syncUser(d.row);if(ROW&&d.row&&d.row.photo_url)ROW.photo_url='';setImg();toast('🗑️ បានដករូប Profile')}
+  try{const d=await rpc('staff_my_profile_save',{p_users:{photo_url:''},p_data:{},p_media:{}});syncUser(d.row);if(ROW&&d.row&&d.row.photo_url)ROW.photo_url='';setImg();toggleAvatarPanel(false);toast('🗑️ បានដករូប Profile')}
   catch(e){uiAlert('❌ '+(e.message||e))}
 }
 function pick(k){PICK=k;$('filePick').click()}
@@ -600,7 +602,7 @@ function resize(file,maxW,maxH,png,q){return new Promise((res,rej)=>{const fr=ne
 async function onPicked(inp){
   const f=inp.files&&inp.files[0];inp.value='';if(!f||!PICK)return;const k=PICK;
   try{
-    if(k==='avatar'){const u=await resize(f,360,360,false,.85);const d=await rpc('staff_my_profile_save',{p_users:{photo_url:u},p_data:{},p_media:{}});syncUser(d.row)}
+    if(k==='avatar'){const u=await resize(f,360,360,false,.85);const d=await rpc('staff_my_profile_save',{p_users:{photo_url:u},p_data:{},p_media:{}});syncUser(d.row);toggleAvatarPanel(false)}
     else if(k==='cover'){const u=await resize(f,1400,420,false,.82);const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{cover_url:u}});MEDIA.cover=d.cover_url||'';try{localStorage.removeItem('krou_cover_preset')}catch(e){}}
     else if(k==='sign'){const base=await resize(f,1200,420,true);const u=await bgDialog(base,'sign',600,200);if(!u)return;const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{signature_url:u}});MEDIA.sign=d.signature_url||''}
     else if(k==='logo'){const u=await resize(f,300,300,true);const d=await rpc('staff_school_save',{p_data:{},p_media:{logo_url:u}});SCH.logo=d.logo_url||''}
