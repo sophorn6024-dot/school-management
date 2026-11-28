@@ -4070,9 +4070,12 @@ window.addEventListener('resize',rgDdClose);window.addEventListener('scroll',rgD
 function playSidebarIntro(){
   try{
     var sbEl=document.getElementById('sidebar'); if(!sbEl||window.innerWidth<=768) return;
+    /* កុំឱ្យរត់ដដែលៗ៖ មិនលេងពេល sidebar លាក់ ហើយមិនចាប់ផ្តើមឡើងវិញក្នុង ៣.៥វិ (showAppScreen + load ហៅជាប់គ្នា) */
+    if(getComputedStyle(sbEl).display==='none'||!sbEl.getClientRects().length) return;
+    var now=Date.now(); if(playSidebarIntro._at&&now-playSidebarIntro._at<3500) return; playSidebarIntro._at=now;
     sbEl.querySelectorAll('.nav-link-btn,.sidebar-theme-btn,.sidebar-logout-btn').forEach(function(el,k){el.style.setProperty('--k',k)});
     sbEl.classList.remove('sb-intro'); void sbEl.offsetWidth; sbEl.classList.add('sb-intro');
-    clearTimeout(playSidebarIntro._t); playSidebarIntro._t=setTimeout(function(){sbEl.classList.remove('sb-intro')},4200);
+    clearTimeout(playSidebarIntro._t); playSidebarIntro._t=setTimeout(function(){sbEl.classList.remove('sb-intro')},3000);
   }catch(e){}
 }
 window.addEventListener('load',function(){setTimeout(playSidebarIntro,150)});
