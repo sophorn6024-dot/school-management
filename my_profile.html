@@ -85,6 +85,19 @@ label.l .rq{color:var(--danger)}
 .dlg h3{margin:6px 0}.dlg p{color:var(--muted);white-space:pre-line;margin-bottom:16px;line-height:1.7}
 .dlg .acts{display:flex;gap:10px}.dlg .acts button{flex:1;height:44px;border-radius:12px;border:0;font-weight:800;font-size:15px;cursor:pointer;background:rgba(127,127,127,.14);color:var(--text)}
 .dlg .acts .pri{background:var(--primary2);color:#fff}
+/* ── លុបផ្ទៃក្រោយ (ហត្ថលេខា/ត្រា) ── */
+.bg-dlg{max-width:460px}
+.bg-dlg .bgp{height:210px;border-radius:14px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;margin:12px 0;overflow:hidden;
+  background-color:#fff;background-image:linear-gradient(45deg,#d7dde5 25%,transparent 25%,transparent 75%,#d7dde5 75%),linear-gradient(45deg,#d7dde5 25%,transparent 25%,transparent 75%,#d7dde5 75%);background-size:16px 16px;background-position:0 0,8px 8px}
+[data-theme="dark"] .bg-dlg .bgp{background-color:#e9edf2}
+.bg-dlg .bgp img{max-width:94%;max-height:94%;object-fit:contain}
+.bg-dlg .bgrow{display:flex;align-items:center;gap:10px;justify-content:space-between;margin:8px 2px;text-align:left}
+.bg-dlg .bgrow label{display:flex;align-items:center;gap:8px;font-weight:700;cursor:pointer}
+.bg-dlg input[type=checkbox]{width:18px;height:18px;accent-color:var(--primary2)}
+.bg-dlg input[type=range]{flex:1;accent-color:var(--primary2);min-width:0}
+.bg-dlg .bgtip{font-size:12.5px;color:var(--muted);line-height:1.6;margin:6px 2px 14px;text-align:left}
+.bg-dlg .bgbusy{opacity:.55}
+
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:11px 18px;border-radius:14px;font-weight:700;z-index:100001;display:none;max-width:90vw}
 .auth{display:none;text-align:center;padding:80px 16px}
 @media(max-width:820px){.cv-grid{grid-template-columns:repeat(4,1fr);gap:8px}.two,.acc{grid-template-columns:1fr}.acc>div{padding:0;border:0!important}.acc>div+div{margin-top:20px;padding-top:18px;border-top:1px solid var(--border)!important}.fg{grid-template-columns:1fr}.cover{height:150px}.pwrow{flex-wrap:wrap}.pwrow .in{flex:1 1 30%}}
@@ -406,6 +419,100 @@ function analyzeStamp(src) {
   });
 }
 
+
+/* ═════ លុបផ្ទៃក្រោយរូប (ហត្ថលេខា/ត្រា) — ធ្វើក្នុង Browser ទាំងស្រុង មិនផ្ញើរូបទៅណាទេ ═════
+   វិធី៖ ប៉ាន់ស្មានពន្លឺក្រដាសតាមតំបន់ (percentile ក្នុងប្លុក) → ទំហំ «ទឹកថ្នាំ» = ១ − min(ពណ៌/ក្រដាស)
+   → alpha + ដកពណ៌ក្រដាសចេញពីពណ៌ទឹកថ្នាំ (រក្សាពណ៌ខៀវ/ក្រហម/ខ្មៅ) */
+function bgLoadImg(src){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=()=>rej(new Error('រូបភាពមិនត្រឹមត្រូវ'));im.src=src})}
+function bgIsTransparent(cv){
+  try{const w=cv.width,h=cv.height,d=cv.getContext('2d',{willReadFrequently:true}).getImageData(0,0,w,h).data;let t=0,n=0;
+    for(const [x,y] of [[0,0],[w-1,0],[0,h-1],[w-1,h-1],[w>>1,0],[w>>1,h-1],[0,h>>1],[w-1,h>>1]]){n++;if(d[(y*w+x)*4+3]<30)t++}
+    return t>=6}catch(e){return false}
+}
+function removeBgCanvas(src,strength){
+  const w=src.width,h=src.height,cx=src.getContext('2d',{willReadFrequently:true}),id=cx.getImageData(0,0,w,h),d=id.data;
+  const blk=Math.max(8,Math.round(Math.max(w,h)/26)),gw=Math.ceil(w/blk),gh=Math.ceil(h/blk);
+  const B=new Float32Array(gw*gh*3);
+  for(let gy=0;gy<gh;gy++)for(let gx=0;gx<gw;gx++){
+    const hist=[new Uint32Array(256),new Uint32Array(256),new Uint32Array(256)];let n=0;
+    const x1=Math.min(w,(gx+1)*blk),y1=Math.min(h,(gy+1)*blk);
+    for(let y=gy*blk;y<y1;y++)for(let x=gx*blk;x<x1;x++){const i=(y*w+x)*4;if(d[i+3]<20)continue;hist[0][d[i]]++;hist[1][d[i+1]]++;hist[2][d[i+2]]++;n++}
+    for(let c=0;c<3;c++){let acc=0,v=255;const target=n*0.85;if(!n){B[(gy*gw+gx)*3+c]=-1;continue}
+      for(let k=0;k<256;k++){acc+=hist[c][k];if(acc>=target){v=k;break}}B[(gy*gw+gx)*3+c]=v}
+  }
+  // ប្លុកទទេ → យកតម្លៃជិតបំផុត/ស
+  for(let k=0;k<gw*gh;k++)for(let c=0;c<3;c++)if(B[k*3+c]<0)B[k*3+c]=255;
+  const s=Math.max(0,Math.min(1,strength)),t0=0.06+0.16*s,t1=t0+0.28;
+  const sm=(a,b,v)=>{const t=Math.max(0,Math.min(1,(v-a)/(b-a)));return t*t*(3-2*t)};
+  const bl=[0,0,0];
+  for(let y=0;y<h;y++){
+    const fy=Math.max(0,Math.min(gh-1,(y+0.5)/blk-0.5)),y0=Math.floor(fy),y1=Math.min(gh-1,y0+1),ty=fy-y0;
+    for(let x=0;x<w;x++){
+      const fx=Math.max(0,Math.min(gw-1,(x+0.5)/blk-0.5)),x0=Math.floor(fx),x1=Math.min(gw-1,x0+1),tx=fx-x0;
+      for(let c=0;c<3;c++){
+        const a=B[(y0*gw+x0)*3+c],b=B[(y0*gw+x1)*3+c],e=B[(y1*gw+x0)*3+c],f=B[(y1*gw+x1)*3+c];
+        bl[c]=Math.max(40,(a*(1-tx)+b*tx)*(1-ty)+(e*(1-tx)+f*tx)*ty);
+      }
+      const i=(y*w+x)*4;
+      const rr=Math.min(1,d[i]/bl[0]),rg=Math.min(1,d[i+1]/bl[1]),rb=Math.min(1,d[i+2]/bl[2]);
+      const dk=1-Math.min(rr,rg,rb), al=sm(t0,t1,dk)*(d[i+3]/255);
+      if(al<=0.003){d[i+3]=0;continue}
+      const dd=Math.max(dk,0.08);
+      for(let c=0;c<3;c++){const v=(d[i+c]-bl[c]*(1-dd))/dd;d[i+c]=v<0?0:v>255?255:v}
+      d[i+3]=Math.round(al*255);
+    }
+  }
+  const o=document.createElement('canvas');o.width=w;o.height=h;o.getContext('2d').putImageData(id,0,0);return o;
+}
+function cropInk(cv,padFrac){
+  const w=cv.width,h=cv.height,d=cv.getContext('2d',{willReadFrequently:true}).getImageData(0,0,w,h).data;
+  let x0=w,y0=h,x1=-1,y1=-1;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(d[(y*w+x)*4+3]>40){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y}
+  if(x1<0)return null;
+  const pad=Math.round(Math.max(x1-x0,y1-y0)*(padFrac||0.04));
+  x0=Math.max(0,x0-pad);y0=Math.max(0,y0-pad);x1=Math.min(w-1,x1+pad);y1=Math.min(h-1,y1+pad);
+  const o=document.createElement('canvas');o.width=x1-x0+1;o.height=y1-y0+1;o.getContext('2d').drawImage(cv,x0,y0,o.width,o.height,0,0,o.width,o.height);return o;
+}
+function fitCanvas(cv,maxW,maxH){
+  const s=Math.min(1,maxW/cv.width,maxH/cv.height);if(s>=1)return cv;
+  const o=document.createElement('canvas');o.width=Math.max(1,Math.round(cv.width*s));o.height=Math.max(1,Math.round(cv.height*s));
+  const x=o.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(cv,0,0,o.width,o.height);return o;
+}
+/* ផ្ទាំងមើលជាមុន៖ លុបផ្ទៃក្រោយ បើក/បិទ + កម្រិត → ត្រឡប់ dataURL (PNG) ឬ null បើបោះបង់ */
+async function bgDialog(baseUrl,kind,maxW,maxH){
+  const im=await bgLoadImg(baseUrl);
+  const src=document.createElement('canvas');src.width=im.naturalWidth;src.height=im.naturalHeight;src.getContext('2d').drawImage(im,0,0);
+  const already=bgIsTransparent(src);
+  return new Promise(res=>{
+    const bg=document.createElement('div');bg.className='dlg-bg';
+    const name=kind==='stamp'?'ត្រា':'ហត្ថលេខា';
+    bg.innerHTML='<div class="dlg bg-dlg"><h3>✨ លុបផ្ទៃក្រោយ'+name+'</h3>'+
+      '<div class="bgp"><img id="bgImg" alt=""></div>'+
+      '<div class="bgrow"><label><input type="checkbox" id="bgOn" '+(already?'':'checked')+'> លុបផ្ទៃក្រោយ</label><span id="bgMsg" style="font-size:12.5px;color:var(--muted)">'+(already?'រូបនេះថ្លារួចហើយ':'')+'</span></div>'+
+      '<div class="bgrow"><span style="min-width:62px">កម្រិត</span><input type="range" id="bgS" min="0" max="100" value="50"><span id="bgSv" style="min-width:34px;text-align:right">50</span></div>'+
+      '<div class="bgtip">💡 កម្រិតខ្ពស់ = លុបខ្លាំង (ក្រដាសស្អាត) · កម្រិតទាប = រក្សាខ្សែស្តើងៗ។ ថត/ស្កេនលើក្រដាសស ក្នុងពន្លឺគ្រប់គ្រាន់ ទទួលបានលទ្ធផលល្អជាង។</div>'+
+      '<div class="acts"><button type="button" id="bgNo">បោះបង់</button><button type="button" class="pri" id="bgOk">រក្សាទុក</button></div></div>';
+    document.body.appendChild(bg);
+    const $$=id=>bg.querySelector('#'+id);let cur=null,timer=0,alive=true;
+    const render=()=>{
+      try{
+        let out=src;
+        if($$('bgOn').checked){out=removeBgCanvas(src,(+$$('bgS').value)/100);const c=cropInk(out,kind==='stamp'?0.01:0.05);
+          if(!c){cur=null;$$('bgMsg').textContent='រកមិនឃើញ'+name+' — សាកកម្រិតទាប';$$('bgImg').removeAttribute('src');return}out=c}
+        else if(kind!=='stamp'){const c=cropInk(src,0.05);if(c&&bgIsTransparent(src))out=c}
+        cur=out;$$('bgMsg').textContent='';$$('bgImg').src=out.toDataURL('image/png');
+      }catch(e){cur=null;$$('bgMsg').textContent='❌ '+(e.message||e)}
+    };
+    const later=()=>{clearTimeout(timer);timer=setTimeout(render,90)};
+    $$('bgOn').onchange=render;$$('bgS').oninput=()=>{$$('bgSv').textContent=$$('bgS').value;later()};
+    const close=v=>{if(!alive)return;alive=false;clearTimeout(timer);document.removeEventListener('keydown',onKey);bg.remove();res(v)};
+    const onKey=e=>{if(e.key==='Escape')close(null)};document.addEventListener('keydown',onKey);
+    $$('bgNo').onclick=()=>close(null);
+    $$('bgOk').onclick=()=>{if(!cur){toast('⚠️ រកមិនឃើញ'+name+' ក្នុងរូបនេះ');return}close(fitCanvas(cur,maxW,maxH).toDataURL('image/png'))};
+    bg.addEventListener('click',e=>{if(e.target===bg)close(null)});
+    setTimeout(render,30);
+  });
+}
 function pick(k){PICK=k;$('filePick').click()}
 function resize(file,maxW,maxH,png,q){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=()=>rej(new Error('អានឯកសារមិនបាន'));
   fr.onload=()=>{const im=new Image();im.onerror=()=>rej(new Error('រូបភាពមិនត្រឹមត្រូវ'));im.onload=()=>{
@@ -417,10 +524,10 @@ async function onPicked(inp){
   try{
     if(k==='avatar'){const u=await resize(f,360,360,false,.85);const d=await rpc('staff_my_profile_save',{p_users:{photo_url:u},p_data:{},p_media:{}});syncUser(d.row)}
     else if(k==='cover'){const u=await resize(f,1400,420,false,.82);const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{cover_url:u}});MEDIA.cover=d.cover_url||'';try{localStorage.removeItem('krou_cover_preset')}catch(e){}}
-    else if(k==='sign'){const u=await resize(f,600,200,true);const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{signature_url:u}});MEDIA.sign=d.signature_url||''}
+    else if(k==='sign'){const base=await resize(f,1200,420,true);const u=await bgDialog(base,'sign',600,200);if(!u)return;const d=await rpc('staff_my_profile_save',{p_users:{},p_data:{},p_media:{signature_url:u}});MEDIA.sign=d.signature_url||''}
     else if(k==='logo'){const u=await resize(f,300,300,true);const d=await rpc('staff_school_save',{p_data:{},p_media:{logo_url:u}});SCH.logo=d.logo_url||''}
     else if(k==='stamp'){
-      const u=await resize(f,800,800,true);const a=await analyzeStamp(u);
+      const base=await resize(f,900,900,true);const u=await bgDialog(base,'stamp',800,800);if(!u)return;const a=await analyzeStamp(u);
       if(!a){uiAlert('❌ រកមិនឃើញត្រាក្នុងរូបនេះ សូមជ្រើសរូបផ្សេង');return}
       const d=await rpc('staff_school_save',{p_data:{stamp_circle:{x:a.x,y:a.y,d:a.d,w:a.w,h:a.h}},p_media:{stamp_url:a.url}});SCH.stamp=d.stamp_url||'';SCH.data=d.data||SCH.data;
       if(a.fallback)toast('⚠️ រកមិនឃើញរង្វង់ត្រាច្បាស់ — ប្រើទំហំរូបទាំងមូលជាទំហំត្រា');
