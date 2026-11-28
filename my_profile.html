@@ -40,7 +40,26 @@ h3.sec small{font-weight:400;color:var(--muted);font-size:14px}
 .cv-opt.on{border-color:#10b981;box-shadow:0 0 0 2px rgba(16,185,129,.25)}
 .cv-del{display:flex;margin:12px auto 0;background:none;border:0;color:var(--danger);font-weight:700;cursor:pointer;align-items:center;gap:6px;padding:8px 14px}
 .avatar{position:absolute;left:14px;bottom:14px;width:78px;height:78px;border-radius:50%;border:4px solid #fff;background:#0f5fd8 center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;font-weight:800;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.2)}
-.avatar .cam{position:absolute;right:-2px;bottom:-2px;width:28px;height:28px;border-radius:50%;background:var(--primary);border:2px solid #fff;font-size:13px;display:flex;align-items:center;justify-content:center}
+.avatar .cam{position:absolute;inset:0;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.12);transition:background .15s}
+.avatar .cam svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 3px rgba(0,0,0,.45))}
+.avatar:hover .cam{background:rgba(0,0,0,.32)}
+/* ផ្ទុក/ដកចេញ + រូបភាពស្រាប់ (Profile) */
+.av-row{display:grid;grid-template-columns:108px 1fr;gap:14px;margin-top:14px;align-items:stretch}
+.av-acts{display:flex;flex-direction:column;gap:12px}
+.av-btn{flex:1;min-height:76px;border-radius:16px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;font-weight:700;padding:8px 6px;line-height:1.3;transition:transform .12s,box-shadow .12s}
+.av-btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+.av-btn svg{width:26px;height:26px;stroke:var(--primary);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.av-btn.del{color:#be123c;border-color:rgba(244,114,182,.45);background:rgba(255,228,236,.55)}
+[data-theme="dark"] .av-btn.del{color:#fda4af;background:rgba(244,63,94,.1)}
+.av-btn.del svg{stroke:#e11d48}
+.av-btn[disabled]{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.av-panel{border:1.5px solid var(--border);border-radius:16px;padding:12px 14px 14px;background:var(--surface)}
+.av-panel h4{text-align:center;font-weight:700;font-size:15px;color:var(--muted);margin-bottom:12px}
+.av-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px 8px;justify-items:center}
+.av-opt{width:100%;max-width:46px;aspect-ratio:1;border-radius:50%;border:2px solid transparent;padding:0;overflow:hidden;cursor:pointer;background:none;transition:transform .12s,border-color .12s}
+.av-opt:hover{transform:scale(1.1);border-color:var(--primary)}
+.av-opt img{width:100%;height:100%;display:block}
+@media(max-width:420px){.av-row{grid-template-columns:92px 1fr}.av-grid{grid-template-columns:repeat(4,1fr)}}
 
 .sign-box{flex:1;border:1.5px dashed var(--border);border-radius:18px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;background:rgba(14,143,176,.05)}
 .sign-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center}
@@ -113,7 +132,7 @@ label.l .rq{color:var(--danger)}
       <div class="ttl">Profile</div>
       <div class="cover" id="cover" onclick="toggleCovers()" style="cursor:pointer" title="ចុចដើម្បីជ្រើស cover">
         <button type="button" class="btn cv-btn" id="cvToggle">ជ្រើស cover</button>
-        <div class="avatar" id="avatar" onclick="event.stopPropagation();pick('avatar')" title="ប្តូររូប Profile"><span id="avLetter">ក</span><span class="cam">📷</span></div>
+        <div class="avatar" id="avatar" onclick="event.stopPropagation();pick('avatar')" title="ប្តូររូប Profile"><span id="avLetter">ក</span><span class="cam"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.6-2.2h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.6"/></svg></span></div>
       </div>
       <div class="cv-pick" id="cvPick">
         <h4>ជ្រើស cover ស្រាប់</h4>
@@ -122,6 +141,13 @@ label.l .rq{color:var(--danger)}
           <button type="button" class="cv-del" style="color:var(--primary2)" onclick="pick('cover')">📷 ផ្ទុករូបផ្ទាល់ខ្លួន</button>
           <button type="button" class="cv-del" id="cvDel" onclick="delMedia('cover')">🗑️ ដក cover</button>
         </div>
+      </div>
+      <div class="av-row">
+        <div class="av-acts">
+          <button type="button" class="av-btn" onclick="pick('avatar')"><svg viewBox="0 0 24 24"><path d="M12 15V4"/><path d="M7.5 8.2 12 3.7l4.5 4.5"/><path d="M4 14v4.5A1.5 1.5 0 0 0 5.5 20h13a1.5 1.5 0 0 0 1.5-1.5V14"/></svg>ផ្ទុករូប</button>
+          <button type="button" class="av-btn del" id="avDel" onclick="delAvatar()"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4.5h6V7"/><path d="M6.5 7l.8 12a1.5 1.5 0 0 0 1.5 1.4h6.4a1.5 1.5 0 0 0 1.5-1.4l.8-12"/><path d="M10 11v6M14 11v6"/></svg>ដកចេញ</button>
+        </div>
+        <div class="av-panel"><h4>រូបភាព</h4><div class="av-grid" id="avGrid"></div></div>
       </div>
     </div>
     <div>
@@ -289,6 +315,7 @@ function fill(){
   setImg();
 }
 function setImg(){
+  try{renderAvatars();const dv=$('avDel');if(dv)dv.disabled=!(ROW&&ROW.photo_url)}catch(e){}
   const av=$('avatar');const ph=ROW&&ROW.photo_url;av.style.backgroundImage=ph?'url("'+ph+'")':'';$('avLetter').style.display=ph?'none':'';
   $('cover').style.backgroundImage=MEDIA.cover?'url("'+MEDIA.cover+'")':'';renderCovers();
   $('signPrev').style.backgroundImage=MEDIA.sign?'url("'+MEDIA.sign+'")':'';$('signDel').style.display=MEDIA.sign?'':'none';$('signBtn').textContent=MEDIA.sign?'⬆️ ប្តូររូប':'⬆️ ផ្ទុករូប';
@@ -512,6 +539,57 @@ async function bgDialog(baseUrl,kind,maxW,maxH){
     bg.addEventListener('click',e=>{if(e.target===bg)close(null)});
     setTimeout(render,30);
   });
+}
+
+/* ═════ រូបភាពស្រាប់សម្រាប់ Profile (SVG គូរក្នុងកូដ → PNG 360px) ═════ */
+const AV_PRESETS=[
+  {bg:'#0f9d8a',skin:'#f6d3b8',hair:'#1f3b3a',st:'short',body:'#2dd4bf'},
+  {bg:'#db2777',skin:'#f6d3b8',hair:'#7f1d3a',st:'long',body:'#f472b6'},
+  {bg:'#2563eb',skin:'#f0c7a0',hair:'#1e3a8a',st:'glasses',body:'#60a5fa'},
+  {bg:'#7c3aed',skin:'#f6d3b8',hair:'#4c1d95',st:'ponytail',body:'#a78bfa'},
+  {bg:'#b45309',skin:'#f0c7a0',hair:'#94a3b8',st:'grey',body:'#f59e0b'},
+  {bg:'#059669',skin:'#f6d3b8',hair:'#cbd5e1',st:'bun',body:'#34d399'},
+  {bg:'#ea580c',skin:'#e8b98f',hair:'#5b2a1a',st:'curly',body:'#fb923c'},
+  {bg:'#4f46e5',skin:'#f6d3b8',hair:'#312e81',st:'long',body:'#818cf8'},
+  {bg:'#475569',skin:'#e0ac80',hair:'#111827',st:'beard',body:'#64748b'},
+  {bg:'#0891b2',skin:'#f6d3b8',hair:'#164e63',st:'bun',body:'#22d3ee'},
+  {bg:'#f43f5e',skin:'#f0c7a0',hair:'#881337',st:'short',body:'#fb7185'},
+  {bg:'#78716c',skin:'#f6d3b8',hair:'#e7e5e4',st:'grey',body:'#a8a29e'}
+];
+function avSvg(a){
+  const h=a.hair,sk=a.skin;let back='',front='',extra='';
+  if(a.st==='long'){back='<path d="M26 52c-2-18 10-30 24-30s26 12 24 30c-1 14 2 24 4 30H22c2-6 5-16 4-30z" fill="'+h+'"/>';front='<path d="M31 46c4-9 12-12 19-12s15 3 19 12c-6-3-13-5-19-5s-13 2-19 5z" fill="'+h+'"/>'}
+  else if(a.st==='ponytail'){back='<circle cx="75" cy="40" r="9" fill="'+h+'"/><path d="M71 43c6 4 10 12 8 22-4-2-7-7-8-12z" fill="'+h+'"/>';front='<path d="M31 47c2-14 11-19 19-19s17 5 19 19c-7-5-13-7-19-7s-12 2-19 7z" fill="'+h+'"/>'}
+  else if(a.st==='bun'){back='<circle cx="50" cy="24" r="9" fill="'+h+'"/>';front='<path d="M31 47c2-13 10-18 19-18s17 5 19 18c-7-4-13-6-19-6s-12 2-19 6z" fill="'+h+'"/>'}
+  else if(a.st==='curly'){front='<g fill="'+h+'"><circle cx="34" cy="42" r="8"/><circle cx="43" cy="33" r="8.5"/><circle cx="55" cy="32" r="8.5"/><circle cx="65" cy="40" r="8"/><circle cx="50" cy="36" r="9"/></g>'}
+  else if(a.st==='grey'){front='<path d="M32 46c1-12 8-17 18-17s17 5 18 17c-5-4-11-6-18-6s-13 2-18 6z" fill="'+h+'"/><circle cx="38" cy="33" r="5" fill="'+h+'"/><circle cx="50" cy="29" r="6" fill="'+h+'"/>'}
+  else {front='<path d="M31 47c1-14 9-19 19-19s18 5 19 19c-6-5-12-7-19-7s-13 2-19 7z" fill="'+h+'"/>'}
+  if(a.st==='glasses')extra='<g fill="none" stroke="#1e293b" stroke-width="2"><circle cx="42" cy="52" r="6"/><circle cx="58" cy="52" r="6"/><path d="M48 52h4"/></g>';
+  if(a.st==='beard')extra='<path d="M33 54c0 16 8 22 17 22s17-6 17-22c-3 6-9 9-17 9s-14-3-17-9z" fill="'+h+'"/>';
+  const mouth=a.st==='beard'?'<path d="M45 62q5 3 10 0" stroke="#f4d9c8" stroke-width="2" fill="none" stroke-linecap="round"/>':'<path d="M44 62q6 4 12 0" stroke="#9a3412" stroke-width="2" fill="none" stroke-linecap="round"/>';
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="'+a.bg+'"/>'+back+
+    '<path d="M16 100c0-16 14-24 34-24s34 8 34 24z" fill="'+a.body+'"/><rect x="43" y="66" width="14" height="12" rx="5" fill="'+sk+'"/>'+
+    '<ellipse cx="50" cy="52" rx="19" ry="21" fill="'+sk+'"/>'+front+
+    (a.st==='glasses'?'':'<circle cx="42" cy="52" r="2.4" fill="#1e293b"/><circle cx="58" cy="52" r="2.4" fill="#1e293b"/>')+
+    (a.st==='glasses'?'<circle cx="42" cy="52" r="1.8" fill="#1e293b"/><circle cx="58" cy="52" r="1.8" fill="#1e293b"/>':'')+
+    '<circle cx="37" cy="59" r="3.2" fill="#fb7185" opacity=".35"/><circle cx="63" cy="59" r="3.2" fill="#fb7185" opacity=".35"/>'+mouth+extra+'</svg>';
+}
+function avDataUrl(a){return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(avSvg(a))}
+function renderAvatars(){
+  const g=$('avGrid');if(!g||g.dataset.done)return;g.dataset.done='1';
+  g.innerHTML=AV_PRESETS.map((a,i)=>'<button type="button" class="av-opt" data-i="'+i+'" title="ប្រើរូបនេះ"><img alt="" src="'+avDataUrl(a)+'"></button>').join('');
+  g.addEventListener('click',e=>{const b=e.target.closest('.av-opt');if(b)usePreset(+b.dataset.i)});
+}
+function avToPng(a){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');c.width=c.height=360;c.getContext('2d').drawImage(im,0,0,360,360);res(c.toDataURL('image/png'))};im.onerror=()=>rej(new Error('បង្កើតរូបមិនបាន'));im.src=avDataUrl(a)})}
+async function usePreset(i){
+  try{const u=await avToPng(AV_PRESETS[i]);const d=await rpc('staff_my_profile_save',{p_users:{photo_url:u},p_data:{},p_media:{}});syncUser(d.row);setImg();toast('✅ បានប្តូររូប Profile')}
+  catch(e){uiAlert('❌ '+(e.message||e))}
+}
+async function delAvatar(){
+  if(!(ROW&&ROW.photo_url)){toast('មិនទាន់មានរូប Profile');return}
+  if(!await uiConfirm('ដករូប Profile ចេញ?',{okText:'ដកចេញ'}))return;
+  try{const d=await rpc('staff_my_profile_save',{p_users:{photo_url:''},p_data:{},p_media:{}});syncUser(d.row);if(ROW&&d.row&&d.row.photo_url)ROW.photo_url='';setImg();toast('🗑️ បានដករូប Profile')}
+  catch(e){uiAlert('❌ '+(e.message||e))}
 }
 function pick(k){PICK=k;$('filePick').click()}
 function resize(file,maxW,maxH,png,q){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=()=>rej(new Error('អានឯកសារមិនបាន'));
